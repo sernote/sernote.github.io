@@ -1,0 +1,83 @@
+---
+title: "LLM Observability Checklist"
+description: "Минимальная telemetry для production LLM, agent и AI platform scenarios."
+section: "observability"
+type: "checklist"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - mlops-engineer
+tags:
+  - observability
+  - tracing
+  - cost
+  - telemetry
+related:
+  - ai-gateway
+  - prefix-cache
+  - ai-quality-gate
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+LLM observability - это не «поставьте Grafana». Она должна связывать prompt, model, tokens, latency, cost, tool calls, evals, feedback и ownership.
+
+## Симптомы
+
+- Ты видишь errors, но не prompt versions.
+- Ты видишь total tokens, но не cached tokens.
+- Ты видишь latency, но не TTFT или fallback path.
+- Ты видишь traces, но не scenario success.
+
+## Ментальная модель
+
+Каждый AI call должен быть debuggable как product event, model event, cost event и quality event.
+
+## Архитектура
+
+Минимально traces должны включать request_id, user_id или tenant_id, scenario_id, model, provider, prompt version, system prompt version, input tokens, output tokens, cached tokens, total cost, TTFT, total latency, tool calls, fallback events, safety events, eval score, user feedback и error category.
+
+## Метрики
+
+Trace completeness, missing field rate, scenario latency, TTFT, TPOT, cost per accepted outcome, fallback rate, tool error rate, cache hit rate, safety event rate и feedback score.
+
+## Компромиссы
+
+Deep traces могут раскрывать sensitive data. Production observability требует redaction, retention rules и sanitized examples.
+
+## Анти-паттерны
+
+- Логировать full prompts без data boundaries.
+- Агрегировать across scenarios так, что исчезают полезные signals.
+- Отслеживать provider cost, но не accepted outcomes.
+- Прятать fallback events внутри retry code.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "request_id, tenant_id и scenario_id присутствуют.",
+    "model, provider, prompt version и system prompt version присутствуют.",
+    "input, output и cached tokens разделены.",
+    "TTFT, TPOT и total latency разделены.",
+    "tool calls, fallback events, safety events и eval scores видны."
+  ]}
+/>
+
+## Пример
+
+Если cache hit rate падает после deployment, trace должен показать, что стало причиной: prompt version, tools count, schema change, route, replica или traffic mix.
+
+## Шаблон решения
+
+Для каждого нового route определи required trace fields, redaction policy, dashboard owner, alert thresholds и retention.
+
+## Связанные главы
+
+- [AI Gateway](/ru/handbook/gateway/ai-gateway)
+- [Prefix Cache](/ru/handbook/caching/prefix-cache)
+- [AI Quality Gate](/ru/handbook/evals/ai-quality-gate)

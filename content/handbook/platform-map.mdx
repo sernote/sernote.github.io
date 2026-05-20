@@ -1,0 +1,81 @@
+---
+title: "Production AI Platform Map"
+description: "A responsibility-first map of production AI platform layers."
+section: "platform"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - cto
+tags:
+  - platform-map
+  - architecture
+  - strategy
+related:
+  - maturity-model
+  - ai-gateway
+  - ownership
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Without a map, every AI discussion collapses back to model choice.
+
+## Symptoms
+
+- Different teams solve gateway, evals, guardrails and observability differently.
+- The same failure is rediscovered in multiple products.
+- Leadership sees AI as a feature queue, not an operating surface.
+
+## Mental model
+
+Use cases flow down into infrastructure, and production feedback flows back up into product and model decisions.
+
+## Architecture
+
+<PlatformMap />
+
+## Metrics
+
+Each layer has its own metric: use-case adoption, gateway coverage, provider reliability, inference utilization, cache hit rate, eval pass rate, trace completeness, safety event rate and ownership coverage.
+
+## Trade-offs
+
+Maps simplify reality. The goal is not to freeze architecture but to make missing responsibilities visible before they become product incidents.
+
+## Anti-patterns
+
+- Treating RAG, agents or model serving as isolated projects.
+- Drawing a diagram without owners.
+- Ignoring cost and quality loops until after launch.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Every layer has an owner or explicit gap.",
+    "Every product scenario enters through a documented contract.",
+    "Model and prompt lifecycle are visible on the map.",
+    "Cost, quality and safety loops are first-class layers.",
+    "Operations and incident response are not hidden in infra."
+  ]}
+/>
+
+## Example
+
+When an agent loop gets expensive, the map points to several likely layers: tool schema stability in cache, routing in gateway, evals in quality gate, trace fields in observability and budget policy in operating model.
+
+## Decision template
+
+Before building a new feature, mark which platform layers it touches and which layer owns the release risk.
+
+## Related chapters
+
+- [AI Platform Maturity Model](/handbook/maturity-model)
+- [AI Gateway](/handbook/gateway/ai-gateway)
+- [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
+

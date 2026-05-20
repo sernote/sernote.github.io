@@ -1,0 +1,81 @@
+---
+title: "AI Platform Maturity Model"
+description: "A seven-level model for moving from demo to AI-native operating model."
+section: "platform"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - maturity-model
+  - leadership
+  - platform-strategy
+related:
+  - platform-map
+  - maas-vs-self-hosted
+  - ownership
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Teams need a shared language for how mature their AI platform is and what pain comes next.
+
+## Symptoms
+
+- Leaders ask for self-hosted models before there is a gateway.
+- Product teams request agents before evals exist.
+- Cost grows faster than quality confidence.
+
+## Mental model
+
+Maturity is not the number of models you run. It is how much of the lifecycle is repeatable, observable and owned.
+
+## Architecture
+
+<MaturityModel />
+
+## Metrics
+
+Track gateway coverage, scenario eval coverage, release quality, cost attribution, cache hit rate, model rollout lead time, incident MTTR and platform self-service adoption.
+
+## Trade-offs
+
+Skipping levels is possible but expensive. Self-hosted inference without quality gates and observability creates a faster way to ship unknown regressions.
+
+## Anti-patterns
+
+- Calling a shared API wrapper a platform.
+- Measuring maturity by provider count.
+- Building governance before golden paths exist.
+
+## Checklist
+
+<Checklist
+  items={[
+    "The current level is stated honestly.",
+    "The next bottleneck is named.",
+    "The next milestone reduces production risk.",
+    "Self-hosted decisions include capacity and ownership.",
+    "AI-native process changes are not confused with model upgrades."
+  ]}
+/>
+
+## Example
+
+A company can be advanced in product integration and still be immature in platform terms if each team owns its own provider key, prompts, logs and fallbacks.
+
+## Decision template
+
+State current level, target level, missing capabilities, evidence, owners and one milestone that makes the next level real.
+
+## Related chapters
+
+- [Production AI Platform Map](/handbook/platform-map)
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+- [Ownership and Operating Model](/handbook/operating-model/ownership)
+

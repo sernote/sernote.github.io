@@ -1,0 +1,84 @@
+---
+title: "Ownership and Operating Model"
+description: "Who owns production AI scenarios, platform layers, cost, quality and incidents."
+section: "operating-model"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - engineering-manager
+  - cto
+tags:
+  - ownership
+  - operating-model
+  - platform-team
+  - incidents
+related:
+  - platform-map
+  - ai-quality-gate
+  - llm-observability-checklist
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Production AI fails when ownership is split across model research, product teams, infra and support without an operating model.
+
+## Symptoms
+
+- Product owns UX but not model quality.
+- Platform owns serving but not scenario outcomes.
+- Nobody owns cost review.
+- Incidents are debugged by whoever knows the prompt.
+
+## Mental model
+
+AI Platform should enable product teams without becoming a bottleneck. That requires clear RACI, golden paths and escalation rules.
+
+## Architecture
+
+Operating model includes scenario intake, architecture review, model release process, quality review, cost review, incident process, hiring profiles, support model, onboarding and platform DevEx.
+
+## Metrics
+
+Track scenario onboarding time, self-service adoption, incident MTTR, cost review coverage, eval coverage, number of undocumented exceptions and platform support load.
+
+## Trade-offs
+
+Central platform ownership improves consistency but can slow teams. Product ownership improves speed but can fragment safety, cost and telemetry. Mature organizations split responsibilities explicitly.
+
+## Anti-patterns
+
+- Platform team approves every prompt manually.
+- Product teams own provider keys directly.
+- Incidents have no model, prompt or scenario owner.
+- Hiring profile ignores evaluation and platform DevEx skills.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Every scenario has product owner and platform owner.",
+    "Model releases have quality and cost review.",
+    "Incident process includes prompt/model/tool rollback.",
+    "Product teams have SDKs, templates and playgrounds.",
+    "Exceptions to the platform path are tracked and reviewed."
+  ]}
+/>
+
+## Example
+
+A platform team can own gateway, model aliases, eval tooling and observability. Product teams own scenario acceptance, UX, business feedback and product-specific risk. Both sign off on rollout.
+
+## Decision template
+
+For each scenario, document RACI, platform contract, product owner, quality owner, cost owner, incident owner and escalation path.
+
+## Related chapters
+
+- [Production AI Platform Map](/handbook/platform-map)
+- [AI Quality Gate](/handbook/evals/ai-quality-gate)
+- [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
+

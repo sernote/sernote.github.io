@@ -1,0 +1,83 @@
+---
+title: "AI Gateway"
+description: "Почему AI Gateway - это control plane production AI platform."
+section: "gateway"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - backend-engineer
+tags:
+  - ai-gateway
+  - routing
+  - quotas
+  - model-lifecycle
+related:
+  - maas-vs-self-hosted
+  - inference-economics
+  - observability
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+Если product teams напрямую ходят в разные модели, у тебя нет платформы. У тебя distributed liability.
+
+## Симптомы
+
+- Нет общих model aliases.
+- Нет единого token accounting.
+- Нет точки policy enforcement.
+- Provider failover реализован по-разному в каждом продукте.
+
+## Ментальная модель
+
+AI Gateway - не proxy к модели. Это control plane для contracts, routing, quotas, cost, policy, observability и lifecycle.
+
+## Архитектура
+
+Core responsibilities: auth, tenants, quotas, rate limits, request normalization, provider abstraction, fallbacks, retries, model aliases, token accounting, cost attribution и policy enforcement.
+
+## Метрики
+
+Gateway coverage, route success rate, fallback rate, quota rejections, cost attribution completeness, cache hit by route, latency by model alias и policy violation rate.
+
+## Компромиссы
+
+Gateway добавляет hop и platform dependency. Взамен он создаёт единое место, где можно улучшать routing, safety, cost и observability для всех продуктов.
+
+## Анти-паттерны
+
+- SDK wrappers без routing state.
+- Raw provider model names в product code.
+- Retries, которые прячут quality или cost failures.
+- Quotas, которые enforce-ятся только после provider invoice.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Product code использует model aliases, а не raw provider model names.",
+    "Каждый request несёт scenario_id и owner metadata.",
+    "Gateway пишет prompt version, model, provider, tokens, cost и latency.",
+    "Fallbacks имеют stop criteria и видны в traces.",
+    "Policy enforcement происходит до tool execution или external side effects."
+  ]}
+/>
+
+## Пример
+
+Вместо `gpt-5-mini` в product code используй `crm.summary.fast`. Gateway может направить alias в managed provider, self-hosted model или fallback, сохранив telemetry и quality ownership стабильными.
+
+## Шаблон решения
+
+Для каждого route определи: alias, use case, allowed providers, fallback order, quota, token budget, safety policy, trace fields и owner.
+
+## Связанные главы
+
+- [MaaS vs Self-hosted](/ru/handbook/strategy/maas-vs-self-hosted)
+- [Inference Economics](/ru/handbook/economics/inference-economics)
+- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)

@@ -1,0 +1,84 @@
+---
+title: "AI Gateway"
+description: "Why an AI Gateway is the control plane of a production AI platform."
+section: "gateway"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - backend-engineer
+tags:
+  - ai-gateway
+  - routing
+  - quotas
+  - model-lifecycle
+related:
+  - maas-vs-self-hosted
+  - inference-economics
+  - observability
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+If product teams call different models directly, you do not have a platform. You have distributed liability.
+
+## Symptoms
+
+- No shared model aliases.
+- No common token accounting.
+- No policy enforcement point.
+- Provider failover is implemented differently in every product.
+
+## Mental model
+
+AI Gateway is not a proxy to a model. It is the control plane for contracts, routing, quotas, cost, policy, observability and lifecycle.
+
+## Architecture
+
+Core responsibilities: auth, tenants, quotas, rate limits, request normalization, provider abstraction, fallbacks, retries, model aliases, token accounting, cost attribution and policy enforcement.
+
+## Metrics
+
+Gateway coverage, route success rate, fallback rate, quota rejections, cost attribution completeness, cache hit by route, latency by model alias and policy violation rate.
+
+## Trade-offs
+
+A gateway adds a hop and a platform dependency. In return it creates a single place to improve routing, safety, cost and observability for every product.
+
+## Anti-patterns
+
+- SDK wrappers without routing state.
+- Model names exposed directly to product code.
+- Retries that hide quality or cost failures.
+- Quotas enforced only after the provider invoice arrives.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Product code uses model aliases, not raw provider model names.",
+    "Every request carries scenario_id and owner metadata.",
+    "Gateway records prompt version, model, provider, tokens, cost and latency.",
+    "Fallbacks have stop criteria and are visible in traces.",
+    "Policy enforcement happens before tool execution or external side effects."
+  ]}
+/>
+
+## Example
+
+Instead of `gpt-5-mini` in product code, use `crm.summary.fast`. The gateway can route it to a managed provider, self-hosted model or fallback while keeping telemetry and quality ownership stable.
+
+## Decision template
+
+For each route define: alias, use case, allowed providers, fallback order, quota, token budget, safety policy, trace fields and owner.
+
+## Related chapters
+
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+- [Inference Economics](/handbook/economics/inference-economics)
+- [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
+

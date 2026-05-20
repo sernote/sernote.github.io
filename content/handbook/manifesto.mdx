@@ -1,0 +1,82 @@
+---
+title: "Manifesto"
+description: "Why production AI should be framed as a platform, not a model choice."
+section: "manifesto"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - manifesto
+  - platform
+  - ownership
+related:
+  - platform-map
+  - ownership
+  - ai-gateway
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Teams often confuse the most visible component with the system. In AI, that visible component is the model.
+
+## Symptoms
+
+- The roadmap says "upgrade model" but not "change release process".
+- Product teams compare benchmark charts without scenario evals.
+- Nobody can answer who owns cost, incidents, fallback or quality regression.
+
+## Mental model
+
+Production AI is a platform responsibility. The model is a component behind contracts, telemetry, quality gates, budgets and operations.
+
+## Architecture
+
+The platform owns the stable interface between product use cases and model execution: API contract, model aliases, policy, routing, prompt lifecycle, observability, quality and cost.
+
+## Metrics
+
+Measure accepted outcomes, regression rate, fallback rate, cost per scenario, incident count, cache hit rate, release lead time and ownership coverage.
+
+## Trade-offs
+
+Centralization can become a bottleneck. A good platform does not approve every prompt; it provides golden paths, tools, contracts and guardrails so product teams can move safely.
+
+## Anti-patterns
+
+- Direct provider calls from every product team.
+- "Model research" treated as "model lifecycle".
+- Guardrails bolted on after incidents.
+- Cost reviews that ignore retries, fallbacks and failed outcomes.
+
+## Checklist
+
+<Checklist
+  items={[
+    "The platform thesis is visible on the first screen.",
+    "Model replacement is possible without product rewrites.",
+    "Every production scenario has quality and cost telemetry.",
+    "Every release has rollback or fallback.",
+    "The platform team publishes reusable paths, not only support tickets."
+  ]}
+/>
+
+## Example
+
+A new transcription summarizer should not hardcode one model and one prompt in a product service. It should request a scenario through a platform API, get a model alias, emit telemetry and pass a quality gate before broader rollout.
+
+## Decision template
+
+Use this sentence: "This is a platform concern because it affects more than one model, team, scenario or release."
+
+## Related chapters
+
+- [Production AI Platform Map](/handbook/platform-map)
+- [AI Gateway](/handbook/gateway/ai-gateway)
+- [Ownership and Operating Model](/handbook/operating-model/ownership)
+

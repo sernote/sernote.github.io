@@ -1,0 +1,80 @@
+---
+title: "AI Platform Maturity Model"
+description: "Семь уровней от demo до AI-native operating model."
+section: "platform"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - maturity-model
+  - leadership
+  - platform-strategy
+related:
+  - platform-map
+  - maas-vs-self-hosted
+  - ownership
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+Командам нужен общий язык, чтобы честно назвать зрелость AI platform и следующую боль.
+
+## Симптомы
+
+- Leaders просят self-hosted models до появления gateway.
+- Product teams просят agents до появления evals.
+- Cost растёт быстрее, чем confidence в качестве.
+
+## Ментальная модель
+
+Maturity - это не количество моделей. Это то, насколько lifecycle repeatable, observable и owned.
+
+## Архитектура
+
+<MaturityModel locale="ru" />
+
+## Метрики
+
+Отслеживай gateway coverage, scenario eval coverage, release quality, cost attribution, cache hit rate, model rollout lead time, incident MTTR и platform self-service adoption.
+
+## Компромиссы
+
+Перепрыгивать уровни можно, но дорого. Self-hosted inference без quality gates и observability создаёт более быстрый способ выкатывать unknown regressions.
+
+## Анти-паттерны
+
+- Называть shared API wrapper платформой.
+- Измерять maturity количеством providers.
+- Строить governance до golden paths.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Текущий уровень назван честно.",
+    "Следующий bottleneck явно назван.",
+    "Следующий milestone снижает production risk.",
+    "Self-hosted decisions включают capacity и ownership.",
+    "AI-native process changes не путаются с model upgrades."
+  ]}
+/>
+
+## Пример
+
+Компания может быть продвинутой в product integration и всё ещё незрелой как платформа, если каждая команда владеет своими provider keys, prompts, logs и fallbacks.
+
+## Шаблон решения
+
+Зафиксируй current level, target level, missing capabilities, evidence, owners и один milestone, который делает следующий уровень реальным.
+
+## Связанные главы
+
+- [Карта Production AI Platform](/ru/handbook/platform-map)
+- [MaaS vs Self-hosted](/ru/handbook/strategy/maas-vs-self-hosted)
+- [Ownership and Operating Model](/ru/handbook/operating-model/ownership)

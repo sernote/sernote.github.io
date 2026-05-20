@@ -1,0 +1,18 @@
+{
+  "title": "Хэндбук",
+  "pages": [
+    "index",
+    "start-here",
+    "manifesto",
+    "platform-map",
+    "maturity-model",
+    "strategy",
+    "gateway",
+    "inference",
+    "economics",
+    "caching",
+    "evals",
+    "observability",
+    "operating-model"
+  ]
+}

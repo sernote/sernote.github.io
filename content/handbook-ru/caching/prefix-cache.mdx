@@ -1,0 +1,85 @@
+---
+title: "Prefix Cache"
+description: "Как prompt shape, tool schemas и routing определяют, будет ли cache работать в production."
+section: "caching"
+type: "chapter"
+level: "advanced"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - ml-platform-engineer
+tags:
+  - prefix-cache
+  - prompt-cache
+  - kv-cache
+  - tools
+related:
+  - inference-economics
+  - inference-runtime
+  - llm-observability-checklist
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+Cache может быть включён, но `cached_tokens` остаётся низким. Часто проблема не в provider, а в request shape.
+
+## Симптомы
+
+- Timestamps, request IDs или tenant fields появляются в начале.
+- Tool lists меняют порядок или содержимое между turns.
+- Agent loops используют более короткие dynamic prompts, которые становятся дороже после cache misses.
+- Round-robin routing размазывает warm prefixes по replicas.
+
+## Ментальная модель
+
+Prefix cache требует три вещи: начало должно совпадать, request должен попасть туда, где prefix warm, и cache должен жить достаточно долго для reuse.
+
+## Архитектура
+
+Стабилизируй system prompt, tool schemas и response formats. Перенеси dynamic fields поздно или в metadata. Используй canonical serialization. По возможности сохраняй append-only conversation growth. Route repeated prefixes через affinity или prefix-aware routing.
+
+## Метрики
+
+Отслеживай cached tokens, cache read input tokens, prefix hash, tools count, schema version, TTFT, route, replica, prompt version, warmup count и cache eviction indicators.
+
+## Компромиссы
+
+Большой стабильный tool list может быть дешевле маленького dynamic list в agent loop. Но большие tool lists могут ухудшать model tool-choice quality, особенно на smaller models.
+
+## Анти-паттерны
+
+- Current time в первых system tokens.
+- Плавающий `tools` order из unordered registry.
+- Dynamic `requestId` внутри JSON schema.
+- Переписывание начала history вместо append-only growth.
+- Parallel fan-out до прогрева shared prefix.
+- Plain round-robin для длинных shared prefixes.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Stable instructions и schemas стоят первыми.",
+    "Dynamic fields находятся поздно или вне cacheable prefix.",
+    "Tools и response formats сериализуются deterministically.",
+    "Agent route logs включают prefix_hash и tools_count.",
+    "Cache regressions alert-ят на cached token drop и TTFT rise."
+  ]}
+/>
+
+## Пример
+
+В multi-turn agent изменение tool subset на каждом step может снизить raw prompt length, но сбросить cacheable prefix. Stable tool declaration с route-level allowed tools или constrained decoding может сохранить reuse.
+
+## Шаблон решения
+
+Для cache change запиши before/after prompt shape, prefix hash stability, cached token distribution, TTFT, cost per task и quality impact.
+
+## Связанные главы
+
+- [Inference Economics](/ru/handbook/economics/inference-economics)
+- [Inference Runtime](/ru/handbook/inference/inference-runtime)
+- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)

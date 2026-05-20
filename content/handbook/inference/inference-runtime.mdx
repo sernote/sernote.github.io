@@ -1,0 +1,82 @@
+---
+title: "Inference Runtime"
+description: "How to reason about production serving for LLMs, STT, embeddings and rerankers."
+section: "inference"
+type: "chapter"
+level: "advanced"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - ml-platform-engineer
+  - mlops-engineer
+tags:
+  - inference
+  - vllm
+  - gpu
+  - serving
+related:
+  - maas-vs-self-hosted
+  - inference-economics
+  - prefix-cache
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Serving a model is not the same as operating inference as a platform capability.
+
+## Symptoms
+
+- Throughput looks good in a benchmark but TTFT is bad in product.
+- GPU utilization is high but successful task cost is worse than MaaS.
+- New models are launched by copying flags from chat history.
+
+## Mental model
+
+Inference runtime is a product of model, hardware, scheduler, batching, memory, cache, routing and workload shape.
+
+## Architecture
+
+The runtime layer includes OpenAI-compatible serving, model workers, batching, KV-cache, prefix cache, quantization, speculative decoding, multi-GPU serving, autoscaling, capacity planning and non-LLM models such as STT, embeddings and rerankers.
+
+## Metrics
+
+Track TTFT, TPOT, total latency, tokens per second, queue time, batch size, cache hit rate, GPU memory, utilization, error rate, cold starts and cost per accepted outcome.
+
+## Trade-offs
+
+Higher throughput can increase latency. Quantization can reduce memory and cost but may degrade quality. Larger context can reduce truncation but increase prefill and cache pressure.
+
+## Anti-patterns
+
+- Treating vLLM flags as folklore instead of versioned recipes.
+- Choosing hardware by brand debates rather than workload envelope.
+- Serving LLMs but ignoring embeddings, STT and rerankers as platform citizens.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Every serving recipe is versioned and reproducible.",
+    "Model launch includes hardware, flags, expected throughput and latency.",
+    "Capacity planning uses real scenario traffic shape.",
+    "Cache budget is sized for the working set, not only max context.",
+    "Rollout has fallback and quality comparison against the previous alias."
+  ]}
+/>
+
+## Example
+
+A vLLM recipe should capture model, tensor parallelism, max context, batching limits, tool parser flags, expected VRAM and throughput-vs-latency notes so the next launch is not rebuilt from memory.
+
+## Decision template
+
+Record model, hardware, runtime, serving flags, workload, latency SLO, quality gate, cache behavior, capacity envelope and rollback path.
+
+## Related chapters
+
+- [Inference Economics](/handbook/economics/inference-economics)
+- [Prefix Cache](/handbook/caching/prefix-cache)
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+

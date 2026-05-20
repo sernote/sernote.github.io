@@ -1,0 +1,87 @@
+---
+title: "MaaS vs Self-hosted"
+description: "A strategy decision for managed APIs, self-hosted inference and hybrid AI platforms."
+section: "strategy"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - staff-engineer
+tags:
+  - maas
+  - self-hosted
+  - provider-strategy
+related:
+  - inference-runtime
+  - inference-economics
+  - ai-gateway
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+MaaS vs self-hosted is usually framed as religion: closed API or own GPUs. In production it is a strategy decision with different failure modes.
+
+## Symptoms
+
+- The team wants cheaper tokens but has no capacity model.
+- Leadership wants data control but underestimates reliability work.
+- Product teams need model choice but lack a gateway contract.
+
+## Mental model
+
+Use managed APIs for speed, breadth and research loops. Use self-hosted when control, data boundary, economics, latency or product strategy justify owning inference operations.
+
+## Architecture
+
+<DecisionMatrix
+  rows={[
+    { option: "MaaS", useWhen: "Fast iteration, broad model access, uncertain demand.", tradeoff: "Less control over routing, cache internals and provider economics." },
+    { option: "Self-hosted", useWhen: "Stable demand, data boundary, latency/cost control or custom serving needs.", tradeoff: "You own GPU capacity, uptime, upgrades and incidents." },
+    { option: "Hybrid", useWhen: "Production needs control but research still needs model breadth.", tradeoff: "Requires gateway, routing policy and clear model lifecycle." }
+  ]}
+/>
+
+## Metrics
+
+Compare cost per accepted outcome, latency distribution, availability, quality gate pass rate, cache hit rate, utilization, engineering load and incident risk.
+
+## Trade-offs
+
+Self-hosted can reduce marginal cost but increase fixed cost. MaaS can accelerate evaluation but hide cache and routing behavior. Hybrid can be best but only if the gateway prevents product teams from seeing the complexity.
+
+## Anti-patterns
+
+- Moving to GPUs because a spreadsheet says tokens are cheaper.
+- Keeping every product team on direct provider integrations.
+- Running self-hosted models without model release notes, evals or rollback.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Demand is predictable enough for capacity planning.",
+    "Quality is measured by scenario, not only model benchmark.",
+    "Gateway can route between providers and self-hosted aliases.",
+    "Fallback behavior is defined before migration.",
+    "Cost comparison includes engineering, observability, evals and incidents."
+  ]}
+/>
+
+## Example
+
+A customer support summarization flow might stay on MaaS during research, move heavy stable traffic to self-hosted inference, and keep MaaS fallback for spikes or quality regressions.
+
+## Decision template
+
+Document scenario, data boundary, demand shape, model candidates, cost model, capacity assumptions, quality gate, fallback and owner.
+
+## Related chapters
+
+- [Inference Runtime](/handbook/inference/inference-runtime)
+- [Inference Economics](/handbook/economics/inference-economics)
+- [AI Gateway](/handbook/gateway/ai-gateway)
+

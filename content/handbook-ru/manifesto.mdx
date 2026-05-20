@@ -1,0 +1,81 @@
+---
+title: "Manifesto"
+description: "Почему production AI стоит мыслить как платформу, а не как выбор модели."
+section: "manifesto"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - manifesto
+  - platform
+  - ownership
+related:
+  - platform-map
+  - ownership
+  - ai-gateway
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+Команды часто путают самый видимый компонент с системой. В AI этот видимый компонент - модель.
+
+## Симптомы
+
+- Roadmap говорит «обновить модель», но не «изменить release process».
+- Продуктовые команды сравнивают benchmark charts без scenario evals.
+- Никто не может ответить, кто владеет cost, incidents, fallback или quality regression.
+
+## Ментальная модель
+
+Production AI - это platform responsibility. Модель - компонент за contracts, telemetry, quality gates, budgets и operations.
+
+## Архитектура
+
+Платформа владеет стабильным интерфейсом между product use cases и model execution: API contract, model aliases, policy, routing, prompt lifecycle, observability, quality и cost.
+
+## Метрики
+
+Измеряй accepted outcomes, regression rate, fallback rate, cost per scenario, incident count, cache hit rate, release lead time и ownership coverage.
+
+## Компромиссы
+
+Централизация может стать bottleneck. Хорошая платформа не approve-ит каждый prompt; она даёт golden paths, tools, contracts и guardrails, чтобы продуктовые команды двигались безопасно.
+
+## Анти-паттерны
+
+- Direct provider calls из каждой продуктовой команды.
+- "Model research" считается "model lifecycle".
+- Guardrails прикручиваются после incidents.
+- Cost reviews игнорируют retries, fallbacks и failed outcomes.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Platform thesis виден на первом экране.",
+    "Model replacement возможен без product rewrites.",
+    "У каждого production-сценария есть quality и cost telemetry.",
+    "У каждого release есть rollback или fallback.",
+    "Platform team публикует reusable paths, а не только support tickets."
+  ]}
+/>
+
+## Пример
+
+Новый transcription summarizer не должен hardcode-ить одну model и один prompt в product service. Он должен запросить scenario через platform API, получить model alias, emit-ить telemetry и пройти quality gate до широкого rollout.
+
+## Шаблон решения
+
+Используй фразу: "Это platform concern, потому что влияет больше чем на одну model, team, scenario или release."
+
+## Связанные главы
+
+- [Карта Production AI Platform](/ru/handbook/platform-map)
+- [AI Gateway](/ru/handbook/gateway/ai-gateway)
+- [Ownership and Operating Model](/ru/handbook/operating-model/ownership)

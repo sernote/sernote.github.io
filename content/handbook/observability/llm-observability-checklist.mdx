@@ -1,0 +1,84 @@
+---
+title: "LLM Observability Checklist"
+description: "Minimum telemetry for production LLM, agent and AI platform scenarios."
+section: "observability"
+type: "checklist"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - mlops-engineer
+tags:
+  - observability
+  - tracing
+  - cost
+  - telemetry
+related:
+  - ai-gateway
+  - prefix-cache
+  - ai-quality-gate
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+LLM observability is not "put it in Grafana". It must connect prompt, model, tokens, latency, cost, tool calls, evals, feedback and ownership.
+
+## Symptoms
+
+- You can see errors but not prompt versions.
+- You can see total tokens but not cached tokens.
+- You can see latency but not TTFT or fallback path.
+- You can see traces but not scenario success.
+
+## Mental model
+
+Every AI call should be debuggable as a product event, model event, cost event and quality event.
+
+## Architecture
+
+At minimum, traces should include request_id, user_id or tenant_id, scenario_id, model, provider, prompt version, system prompt version, input tokens, output tokens, cached tokens, total cost, TTFT, total latency, tool calls, fallback events, safety events, eval score, user feedback and error category.
+
+## Metrics
+
+Trace completeness, missing field rate, scenario latency, TTFT, TPOT, cost per accepted outcome, fallback rate, tool error rate, cache hit rate, safety event rate and feedback score.
+
+## Trade-offs
+
+Deep traces can expose sensitive data. Production observability needs redaction, retention rules and sanitized examples.
+
+## Anti-patterns
+
+- Logging full prompts without data boundaries.
+- Aggregating across scenarios until all useful signals disappear.
+- Tracking provider cost but not accepted outcomes.
+- Hiding fallback events inside retry code.
+
+## Checklist
+
+<Checklist
+  items={[
+    "request_id, tenant_id and scenario_id are present.",
+    "model, provider, prompt version and system prompt version are present.",
+    "input, output and cached tokens are separated.",
+    "TTFT, TPOT and total latency are separated.",
+    "tool calls, fallback events, safety events and eval scores are visible."
+  ]}
+/>
+
+## Example
+
+If cache hit rate drops after a deployment, the trace should show whether the cause was prompt version, tools count, schema change, route, replica or traffic mix.
+
+## Decision template
+
+For every new route, define required trace fields, redaction policy, dashboard owner, alert thresholds and retention.
+
+## Related chapters
+
+- [AI Gateway](/handbook/gateway/ai-gateway)
+- [Prefix Cache](/handbook/caching/prefix-cache)
+- [AI Quality Gate](/handbook/evals/ai-quality-gate)
+

@@ -1,0 +1,81 @@
+---
+title: "Start Here"
+description: "How to read the handbook and what to build first."
+section: "start"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - engineering-manager
+tags:
+  - roadmap
+  - start
+  - artifacts
+related:
+  - platform-map
+  - prefix-cache
+  - ai-quality-gate
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Trying to write everything about AI creates a generic blog. The useful path is to ship strong artifacts that compound into a handbook.
+
+## Symptoms
+
+- Too many topics, no central map.
+- Articles, talks and tools are disconnected.
+- The audience remembers individual posts, not the platform thesis.
+
+## Mental model
+
+Build the public system in this order: Map -> Prefix Cache Auditor -> Quality Gate Kit -> Handbook.
+
+## Architecture
+
+The first release is a small complete system: manifesto, platform map, maturity model, AI Gateway, inference runtime, inference economics, prefix cache, quality gate, observability and operating model.
+
+## Metrics
+
+Useful metrics are not page counts. Track whether readers can reuse the map, run the tools, cite the maturity model and connect articles back to a durable chapter.
+
+## Trade-offs
+
+A narrow v0.1 feels smaller, but it makes the project launchable. A broad unfinished handbook looks impressive in a file tree and weak in public.
+
+## Anti-patterns
+
+- Starting with twenty empty sections.
+- Writing tutorials without a platform responsibility frame.
+- Publishing internal details instead of sanitized production-like examples.
+
+## Checklist
+
+<Checklist
+  items={[
+    "The map explains the whole project in one page.",
+    "Every public article has a target chapter.",
+    "Every tool has a decision or diagnostic use case.",
+    "Every example is sanitized or synthetic.",
+    "No chapter depends on private company numbers."
+  ]}
+/>
+
+## Example
+
+The prefix cache series becomes a Caching chapter plus the Prefix Cache Auditor. The MaaS to self-hosted talk becomes Strategy and Inference chapters. Telegram notes become short bridges into the same map.
+
+## Decision template
+
+For every new artifact, decide: which platform layer it strengthens, which chapter owns it, which tool or checklist it can become, and what must remain private.
+
+## Related chapters
+
+- [Production AI Platform Map](/handbook/platform-map)
+- [Prefix Cache](/handbook/caching/prefix-cache)
+- [AI Quality Gate](/handbook/evals/ai-quality-gate)
+

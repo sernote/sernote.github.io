@@ -1,0 +1,82 @@
+---
+title: "Inference Economics"
+description: "Почему AI cost нужно считать по accepted outcomes, а не по raw token price."
+section: "economics"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - cost
+  - finops
+  - cache
+  - accepted-outcome
+related:
+  - maas-vs-self-hosted
+  - prefix-cache
+  - ai-quality-gate
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+LLM cost часто сводят к `tokens * price`. Это пропускает cache hits, retries, fallbacks, failed tasks, latency impact и engineering cost.
+
+## Симптомы
+
+- Более дешёвая модель увеличивает retries.
+- Более короткий prompt теряет prefix cache и становится дороже.
+- Finance видит provider cost, но product не видит cost per scenario.
+
+## Ментальная модель
+
+AI Cost - это provider cost плюс GPU amortization, engineering cost, observability и evals, quality loss, latency impact, incident cost и opportunity cost.
+
+## Архитектура
+
+Cost attribution требует gateway metadata, provider pricing, cached token fields, scenario IDs, quality outcomes, retries, fallback events и business acceptance signals.
+
+## Метрики
+
+Самая сильная метрика - cost per accepted outcome: принятое CRM-письмо, корректная расшифровка, полезное summary, задача, прошедшая quality gate, или agent loop, который завершился в рамках budget.
+
+## Компромиссы
+
+Оптимизация cost per token может ударить по quality. Оптимизация под лучшую model может ударить по throughput. Оптимизация prompt length может ударить по cache. Зрелая экономика балансирует successful outcomes, latency и operating risk.
+
+## Анти-паттерны
+
+- Выбирать models только по price table.
+- Игнорировать cached input token pricing.
+- Считать retries невидимыми.
+- Считать successful API calls вместо successful user tasks.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "У каждого route есть scenario_id и owner metadata.",
+    "Cost reports разделяют input, cached input и output tokens.",
+    "Retries и fallbacks включены в scenario cost.",
+    "Quality failures видны в cost reviews.",
+    "Dashboard показывает cost per accepted outcome."
+  ]}
+/>
+
+## Пример
+
+Две модели могут иметь одинаковое raw количество input и output tokens. Если одна сохраняет cached prefixes между agent turns, а другая теряет cache из-за tool drift, их effective cost может резко разойтись.
+
+## Шаблон решения
+
+Пиши cost decisions так: scenario, model/provider options, raw token cost, cache-adjusted cost, retry rate, quality pass rate, latency, accepted outcome rate и owner.
+
+## Связанные главы
+
+- [Prefix Cache](/ru/handbook/caching/prefix-cache)
+- [AI Quality Gate](/ru/handbook/evals/ai-quality-gate)
+- [MaaS vs Self-hosted](/ru/handbook/strategy/maas-vs-self-hosted)

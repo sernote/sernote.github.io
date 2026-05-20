@@ -1,0 +1,87 @@
+---
+title: "MaaS vs Self-hosted"
+description: "Стратегическое решение между managed APIs, self-hosted inference и hybrid AI platforms."
+section: "strategy"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - staff-engineer
+tags:
+  - maas
+  - self-hosted
+  - provider-strategy
+related:
+  - inference-runtime
+  - inference-economics
+  - ai-gateway
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+MaaS vs self-hosted часто подают как религию: закрытый API или свои GPU. В production это strategy decision с разными failure modes.
+
+## Симптомы
+
+- Команда хочет более дешёвые tokens, но не имеет capacity model.
+- Leadership хочет data control, но недооценивает reliability work.
+- Product teams хотят model choice, но не имеют gateway contract.
+
+## Ментальная модель
+
+Managed APIs нужны для скорости, широты и research loops. Self-hosted нужен, когда control, data boundary, economics, latency или product strategy оправдывают ownership inference operations.
+
+## Архитектура
+
+<DecisionMatrix
+  locale="ru"
+  rows={[
+    { option: "MaaS", useWhen: "Быстрые итерации, широкий model access, неопределённый спрос.", tradeoff: "Меньше контроля над routing, cache internals и provider economics." },
+    { option: "Self-hosted", useWhen: "Стабильный спрос, data boundary, latency/cost control или custom serving needs.", tradeoff: "Вы владеете GPU capacity, uptime, upgrades и incidents." },
+    { option: "Hybrid", useWhen: "Production требует control, а research всё ещё требует model breadth.", tradeoff: "Нужны gateway, routing policy и clear model lifecycle." }
+  ]}
+/>
+
+## Метрики
+
+Сравнивай cost per accepted outcome, latency distribution, availability, quality gate pass rate, cache hit rate, utilization, engineering load и incident risk.
+
+## Компромиссы
+
+Self-hosted может снизить marginal cost, но увеличить fixed cost. MaaS ускоряет evaluation, но скрывает cache и routing behavior. Hybrid может быть лучшим, если gateway не даёт продуктовым командам видеть complexity.
+
+## Анти-паттерны
+
+- Переходить на GPU, потому что spreadsheet говорит, что tokens дешевле.
+- Оставлять каждую product team на direct provider integrations.
+- Запускать self-hosted models без model release notes, evals или rollback.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Demand достаточно предсказуем для capacity planning.",
+    "Quality измеряется по scenario, а не только model benchmark.",
+    "Gateway умеет route-ить между providers и self-hosted aliases.",
+    "Fallback behavior определён до migration.",
+    "Cost comparison включает engineering, observability, evals и incidents."
+  ]}
+/>
+
+## Пример
+
+Customer support summarization flow может оставаться на MaaS во время research, перенести тяжёлый стабильный traffic на self-hosted inference и оставить MaaS fallback для spikes или quality regressions.
+
+## Шаблон решения
+
+Задокументируй scenario, data boundary, demand shape, model candidates, cost model, capacity assumptions, quality gate, fallback и owner.
+
+## Связанные главы
+
+- [Inference Runtime](/ru/handbook/inference/inference-runtime)
+- [Inference Economics](/ru/handbook/economics/inference-economics)
+- [AI Gateway](/ru/handbook/gateway/ai-gateway)

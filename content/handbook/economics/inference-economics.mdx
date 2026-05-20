@@ -1,0 +1,83 @@
+---
+title: "Inference Economics"
+description: "Why AI cost must be measured by accepted outcomes, not raw token price."
+section: "economics"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - engineering-manager
+tags:
+  - cost
+  - finops
+  - cache
+  - accepted-outcome
+related:
+  - maas-vs-self-hosted
+  - prefix-cache
+  - ai-quality-gate
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+LLM cost is often reduced to `tokens * price`. That misses cache hits, retries, fallbacks, failed tasks, latency impact and engineering cost.
+
+## Symptoms
+
+- A cheaper model increases retries.
+- A shorter prompt loses prefix cache and becomes more expensive.
+- Finance sees provider cost but product cannot see cost per scenario.
+
+## Mental model
+
+AI Cost is provider cost plus GPU amortization, engineering cost, observability and evals, quality loss, latency impact, incident cost and opportunity cost.
+
+## Architecture
+
+Cost attribution needs gateway metadata, provider pricing, cached token fields, scenario IDs, quality outcomes, retries, fallback events and business acceptance signals.
+
+## Metrics
+
+The strongest metric is cost per accepted outcome: accepted CRM email, correct transcript, useful summary, task passing quality gate or agent loop that completes within budget.
+
+## Trade-offs
+
+Optimizing for cost per token can hurt quality. Optimizing for the best model can hurt throughput. Optimizing prompt length can hurt cache. Mature economics balances successful outcomes, latency and operating risk.
+
+## Anti-patterns
+
+- Choosing models by price table only.
+- Ignoring cached input token pricing.
+- Treating retries as invisible.
+- Counting successful API calls instead of successful user tasks.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Every route has scenario_id and owner metadata.",
+    "Cost reports separate input, cached input and output tokens.",
+    "Retries and fallbacks are included in scenario cost.",
+    "Quality failures are visible in cost reviews.",
+    "The dashboard can show cost per accepted outcome."
+  ]}
+/>
+
+## Example
+
+Two models can have the same raw input and output token count. If one preserves cached prefixes across agent turns and the other misses cache due to tool drift, their effective cost can diverge sharply.
+
+## Decision template
+
+Write cost decisions as: scenario, model/provider options, raw token cost, cache-adjusted cost, retry rate, quality pass rate, latency, accepted outcome rate and owner.
+
+## Related chapters
+
+- [Prefix Cache](/handbook/caching/prefix-cache)
+- [AI Quality Gate](/handbook/evals/ai-quality-gate)
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+

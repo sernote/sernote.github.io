@@ -1,0 +1,86 @@
+---
+title: "Production AI Platform Handbook"
+description: "A field guide for building LLM, STT, embeddings and agent platforms in production."
+section: "start"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - cto
+tags:
+  - platform-map
+  - ai-platform
+  - handbook
+related:
+  - platform-map
+  - maturity-model
+  - ai-gateway
+published: "2026-05-18"
+updated: "2026-05-19"
+---
+
+## Problem
+
+Most AI initiatives start as a working demo and then discover the real system: gateway, routing, inference, cache, evals, observability, cost, guardrails, incidents and ownership.
+
+## Symptoms
+
+- Product teams call providers directly.
+- Model changes ship as config edits rather than releases.
+- Cost is tracked per provider invoice, not per accepted outcome.
+- Cache is enabled but nobody can explain hit rate.
+- Quality is judged by vibes until a regression reaches users.
+
+## Mental model
+
+Production AI is not a model. It is a platform.
+
+A model is replaceable. A platform is compounding.
+
+## Architecture
+
+<PlatformMap />
+
+## Metrics
+
+Track request volume, scenario success, accepted outcomes, input tokens, output tokens, cached tokens, TTFT, TPOT, total latency, fallback rate, quality gate pass rate and cost per accepted outcome.
+
+## Trade-offs
+
+Managed APIs reduce operational burden but can hide cost and routing mechanics. Self-hosted inference gives control but moves capacity, reliability and model lifecycle onto the platform team.
+
+## Anti-patterns
+
+- Treating a single provider SDK as architecture.
+- Optimizing raw token count while destroying prefix cache.
+- Shipping new model names without evals, canary or rollback.
+- Building product-specific AI stacks that cannot share telemetry or policy.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Every production scenario has an owner and success metric.",
+    "All AI calls go through a gateway or documented exception.",
+    "Model, prompt and tool changes have a quality gate.",
+    "Cost is attributable to scenario, tenant or product surface.",
+    "Telemetry links prompt version, model, tokens, latency and outcome."
+  ]}
+/>
+
+## Example
+
+A production-like CRM assistant can begin as one prompt and one model. The platform version adds a gateway, stable tool definitions, prefix-aware routing, scenario evals, trace-level cost and an owner for fallback behavior.
+
+## Decision template
+
+Write the decision as: scenario, user value, risk level, provider strategy, quality gate, observability fields, cost guardrail, fallback path and owner.
+
+## Related chapters
+
+- [Production AI Platform Map](/handbook/platform-map)
+- [AI Platform Maturity Model](/handbook/maturity-model)
+- [AI Gateway](/handbook/gateway/ai-gateway)
+

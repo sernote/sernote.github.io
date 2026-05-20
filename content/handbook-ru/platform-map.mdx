@@ -1,0 +1,80 @@
+---
+title: "Карта Production AI Platform"
+description: "Responsibility-first карта слоёв production AI platform."
+section: "platform"
+type: "chapter"
+level: "beginner"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - cto
+tags:
+  - platform-map
+  - architecture
+  - strategy
+related:
+  - maturity-model
+  - ai-gateway
+  - ownership
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+Без карты любой разговор про AI снова схлопывается к выбору модели.
+
+## Симптомы
+
+- Разные команды по-разному решают gateway, evals, guardrails и observability.
+- Один и тот же failure заново открывается в нескольких продуктах.
+- Leadership видит AI как feature queue, а не operating surface.
+
+## Ментальная модель
+
+Use cases текут вниз в infrastructure, а production feedback возвращается наверх в product и model decisions.
+
+## Архитектура
+
+<PlatformMap locale="ru" />
+
+## Метрики
+
+У каждого слоя своя метрика: use-case adoption, gateway coverage, provider reliability, inference utilization, cache hit rate, eval pass rate, trace completeness, safety event rate и ownership coverage.
+
+## Компромиссы
+
+Карты упрощают реальность. Цель не в том, чтобы заморозить архитектуру, а в том, чтобы сделать missing responsibilities видимыми до product incidents.
+
+## Анти-паттерны
+
+- Считать RAG, agents или model serving изолированными проектами.
+- Рисовать diagram без owners.
+- Игнорировать cost и quality loops до запуска.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "У каждого слоя есть owner или explicit gap.",
+    "Каждый product scenario входит через documented contract.",
+    "Model и prompt lifecycle видны на карте.",
+    "Cost, quality и safety loops являются first-class layers.",
+    "Operations и incident response не спрятаны в infra."
+  ]}
+/>
+
+## Пример
+
+Когда agent loop становится дорогим, карта указывает на несколько вероятных слоёв: tool schema stability в cache, routing в gateway, evals в quality gate, trace fields в observability и budget policy в operating model.
+
+## Шаблон решения
+
+Перед разработкой новой feature отметь, какие platform layers она трогает и какой слой владеет release risk.
+
+## Связанные главы
+
+- [AI Platform Maturity Model](/ru/handbook/maturity-model)
+- [AI Gateway](/ru/handbook/gateway/ai-gateway)
+- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)

@@ -1,0 +1,83 @@
+---
+title: "AI Quality Gate"
+description: "Rollout process, который предотвращает silent regressions модели, prompt и agent."
+section: "evals"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - product-engineer
+tags:
+  - evals
+  - quality-gate
+  - regression
+  - rollout
+related:
+  - inference-economics
+  - llm-observability-checklist
+  - ownership
+published: "2026-05-18"
+updated: "2026-05-20"
+---
+
+## Проблема
+
+"Модель вроде отвечает хорошо" - это не quality process.
+
+## Симптомы
+
+- Model changes выкатываются без scenario datasets.
+- Prompt edits не проходят regression tests.
+- LLM-as-a-judge scores есть, но failures никто не доверяет.
+- Production feedback не обновляет dataset.
+
+## Ментальная модель
+
+Quality Gate - это не один score. Это loop, который не даёт платформе деградировать незаметно.
+
+## Архитектура
+
+Dataset -> eval suite -> error taxonomy -> prompt/model change -> regression -> canary -> production feedback -> dataset update.
+
+## Метрики
+
+Измеряй scenario pass rate, critical error rate, regression delta, judge agreement, manual review load, canary stop events, feedback acceptance и cost per passed task.
+
+## Компромиссы
+
+Строгие gates замедляют releases, но предотвращают invisible degradation. Слабые gates сохраняют скорость, но переносят quality risk на users. Правильный gate зависит от scenario risk.
+
+## Анти-паттерны
+
+- Golden datasets, которые никогда не получают production failures.
+- Один aggregate score, скрывающий critical categories.
+- Judge prompts без versioning.
+- Canary rollout без stop criteria.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Scenario dataset существует и имеет owners.",
+    "Critical failures отделены от cosmetic issues.",
+    "Prompt, model и judge versions отслеживаются.",
+    "Canary имеет stop criteria и rollback path.",
+    "Production feedback обновляет dataset."
+  ]}
+/>
+
+## Пример
+
+Новая summarization model может пройти generic benchmarks и всё равно провалить product needs, если пропускает CRM-specific action items. Gate должен включать scenario examples и task-level acceptance metric.
+
+## Шаблон решения
+
+Каждый rollout должен включать dataset, metrics, threshold, regression delta, canary plan, fallback, owner и release note.
+
+## Связанные главы
+
+- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)
+- [Inference Economics](/ru/handbook/economics/inference-economics)
+- [Ownership and Operating Model](/ru/handbook/operating-model/ownership)
