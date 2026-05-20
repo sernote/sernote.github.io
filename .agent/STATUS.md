@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch preparation in progress.
+MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch preparation complete locally.
 
 ## Completed
 
@@ -84,7 +84,13 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
   - `pnpm build` passed and generated 46 static/SSG pages.
   - Static smoke checks passed for `/ru/`, `/ru/handbook/`, `/ru/handbook/platform-map/` and `/ru/tools/prefix-cache-auditor/`.
   - Desktop and mobile screenshots of `/ru/` were captured with local headless Chrome and reviewed.
-- GitHub Pages launch prep validation is pending after the deployment/config changes.
+- GitHub Pages launch prep validation after deployment/config changes:
+  - `pnpm typecheck` passed after regenerating Next route types.
+  - `pnpm lint` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 46 static/SSG pages.
+  - Static export includes `out/.nojekyll`.
+  - Static export emits `lang="en"` for `/` and `lang="ru"` for `/ru/`.
 
 ## Decisions
 
@@ -110,6 +116,7 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
 - GitHub CLI authentication is currently invalid for account `sernote`; remote repository creation/push is blocked until re-authentication.
+- The first local git commit exists on `main`: `81277ed`.
 
 ## Follow-ups
 
