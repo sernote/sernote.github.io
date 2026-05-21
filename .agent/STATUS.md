@@ -61,6 +61,7 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Added `.gitignore` and `.env.example`.
 - Moved English routes into an `(en)` route group and made `/ru` use its own root layout with `lang="ru"`.
 - Removed unverified LinkedIn, Instagram and generic GitHub public links from runtime site config.
+- Switched the no-custom-domain deployment target to a user Pages repo at `https://sernote.github.io`.
 
 ## Validation results
 
@@ -107,7 +108,7 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Kept English as the default route set to avoid breaking existing URLs.
 - Created a second Fumadocs source for Russian MDX instead of trying to translate handbook content at runtime.
 - Targeted GitHub Pages deployment via GitHub Actions rather than committing `out/` to the repository.
-- Kept root-relative asset paths because the intended deployment target is GitHub Pages behind a custom domain.
+- Kept root-relative asset paths; without a custom domain, the target must be a user Pages repo named `sernote.github.io` instead of project Pages under `/<repo>/`.
 
 ## Known issues
 
@@ -130,7 +131,7 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Add Model Lifecycle, Guardrails, RAG/Agents and Platform DevEx sections in later versions.
 - Add `docs/CODEX_SETUP.md` for optional shadcn MCP setup if this repo will be shared with other agents.
 - Add richer visual diagrams or downloadable maps after content stabilizes.
-- Add `public/CNAME` once the final custom domain is known.
+- Add `public/CNAME` only if a custom domain is added later.
 
 ## Blockers
 

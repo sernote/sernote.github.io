@@ -45,6 +45,8 @@ jobs:
             echo "NEXT_PUBLIC_SITE_URL=${{ vars.SITE_URL }}" >> "$GITHUB_ENV"
           elif [ -f public/CNAME ]; then
             echo "NEXT_PUBLIC_SITE_URL=https://$(cat public/CNAME)" >> "$GITHUB_ENV"
+          elif [ "${{ github.event.repository.name }}" = "${{ github.repository_owner }}.github.io" ]; then
+            echo "NEXT_PUBLIC_SITE_URL=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_ENV"
           else
             echo "NEXT_PUBLIC_SITE_URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
           fi

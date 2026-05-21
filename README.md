@@ -129,7 +129,7 @@ There are no API routes, server actions, auth, database, analytics or live AI ca
 
 Primary target:
 
-- GitHub Pages with a custom domain
+- GitHub Pages
 
 Secondary targets:
 
@@ -155,18 +155,20 @@ The repository includes `.github/workflows/pages.yml`. On every push to `main`, 
 5. run `pnpm build`
 6. deploy `out/` to GitHub Pages
 
+Without a custom domain, publish this as a user Pages repository named `<github-user>.github.io`, for example `sernote.github.io`. That gives the site the root URL `https://sernote.github.io/`, which matches the static export's root-relative asset paths.
+
+Project Pages URLs like `https://<github-user>.github.io/<repo>/` require a separate `basePath`/asset-prefix setup and are not enabled in v0.
+
 In GitHub repository settings:
 
 1. Open **Settings -> Pages**.
 2. Set **Source** to **GitHub Actions**.
-3. Add a repository variable `SITE_URL` with the production URL, for example `https://example.com`.
-4. If using a custom domain, add a `public/CNAME` file containing only the domain name, for example `example.com`.
-5. Configure DNS at the domain provider:
+3. Optional without a custom domain: add repository variable `SITE_URL=https://sernote.github.io`.
+4. If using a custom domain later, add a `public/CNAME` file containing only the domain name, for example `example.com`, and set `SITE_URL=https://example.com`.
+5. For a custom domain, configure DNS at the domain provider:
    - apex domain: GitHub Pages `A` records
    - subdomain: `CNAME` to `<github-user>.github.io`
 6. Enable **Enforce HTTPS** after DNS is verified.
-
-This project is optimized for a custom domain. Without a custom domain, GitHub project pages serve under `/<repo>/`, while the static export is built for root-relative asset paths.
 
 ## Public Content Sources
 

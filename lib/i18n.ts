@@ -29,7 +29,7 @@ export const siteLinks = {
 };
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://production-ai-platform.example.com";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://sernote.github.io";
 
 export function getSiteConfig(locale: Locale = defaultLocale) {
   return {
