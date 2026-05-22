@@ -8,6 +8,7 @@ import { ChapterMeta } from "@/components/handbook/chapter-meta";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
 import { HandbookLanding } from "@/components/pages/handbook-landing";
+import { createPageMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
 export const dynamicParams = false;
@@ -23,10 +24,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   if (!slug || slug.length === 0) {
-    return {
+    return createPageMetadata({
+      locale: "en",
+      path: "/handbook",
       title: "Production AI Platform Handbook",
       description: "From API key to platform: a field guide for production AI platforms."
-    };
+    });
   }
 
   const page = source.getPage(slug);
@@ -36,8 +39,15 @@ export async function generateMetadata({
   }
 
   return {
+    ...createPageMetadata({
+      locale: "en",
+      path: `/handbook/${slug.join("/")}`,
+      title: page.data.title,
+      description: page.data.description ?? page.data.title
+    }),
     title: page.data.title,
-    description: page.data.description
+    description: page.data.description,
+    keywords: page.data.tags
   };
 }
 
@@ -61,7 +71,15 @@ export default async function HandbookPage({ params }: { params: Promise<{ slug?
       <LanguageSwitcher locale="en" currentPath={currentPath} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
-      <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} locale="en" />
+      <ChapterMeta
+        level={page.data.level}
+        status={page.data.status}
+        audience={page.data.audience}
+        tags={page.data.tags}
+        published={page.data.published}
+        updated={page.data.updated}
+        locale="en"
+      />
       <ChapterActions locale="en" itemId={currentPath} />
       <DocsBody>
         <MDX

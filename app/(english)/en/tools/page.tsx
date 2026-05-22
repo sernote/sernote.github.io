@@ -1,11 +1,7 @@
-import type { Metadata } from "next";
-
 import { ToolsIndexPageContent } from "@/components/pages/tool-pages";
+import { toolsIndexMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Tools",
-  description: "Client-side tools for production AI platform work."
-};
+export const metadata = toolsIndexMetadata("en");
 
 export default function ToolsPage() {
   return <ToolsIndexPageContent currentPath="/en/tools" />;

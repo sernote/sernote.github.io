@@ -182,6 +182,21 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - `pnpm test` passed: 1 test file, 5 tests.
   - `pnpm build` passed and generated 80 static/SSG pages.
   - Captured a full-page desktop screenshot for `/` with Playwright from the local static export.
+- Productization pass validation:
+  - Added route-specific metadata helpers and applied page-level titles/descriptions to personal pages, tools and handbook pages.
+  - Added `canonical` and `hreflang` alternates for Russian root routes and English `/en/...` routes.
+  - Reworked the handbook landing with role-based entry points, a searchable/filterable materials catalog, local progress and bookmarks.
+  - Added updated-date and tag metadata to chapter headers while keeping raw `draft` out of public chapter badges.
+  - Added direct top-level navigation for projects and about, while keeping contact as the primary header action.
+  - Expanded the contact page with clear interaction formats and the context to provide before a talk, review or collaboration.
+  - Forced Fumadocs to the dark theme so the handbook sidebar matches the dark technical field-manual direction.
+  - Cleaned additional Russian UI/content wording: `AI-платформа` / `AI-сценарий` became `ИИ-платформа` / `ИИ-сценарий` where the English term was not needed.
+  - Local static smoke checks confirmed distinct metadata for `/about/`, `/contact/`, `/tools/llm-cost-calculator/`, updated chapter metadata on `/handbook/gateway/ai-gateway/`, and role/search/catalog content on `/handbook/`.
+  - Captured desktop screenshots for `/handbook/`, `/contact/` and `/tools/` from the local static export.
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 80 static/SSG pages.
 
 ## Decisions
 

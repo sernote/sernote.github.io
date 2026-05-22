@@ -391,9 +391,16 @@ export function TalksPageContent({ locale = "en", currentPath }: PageProps) {
 }
 
 export function ContactPageContent({ locale = "en", currentPath }: PageProps) {
-  const page = getDictionary(locale).pages.contact;
+  const dictionary = getDictionary(locale);
+  const page = dictionary.pages.contact;
   const siteConfig = getSiteConfig(locale);
   const links = [siteConfig.links.telegram, siteConfig.links.habr];
+  const contextItems =
+    locale === "ru"
+      ? ["какая задача или аудитория", "какой формат нужен", "какой результат ожидается", "какой горизонт по времени"]
+      : ["the task or audience", "the format you need", "the expected outcome", "the timing or deadline"];
+  const formatsTitle = locale === "ru" ? "Форматы взаимодействия" : "Ways to work";
+  const contextTitle = locale === "ru" ? "Что лучше сразу написать" : "What to include";
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
@@ -401,11 +408,33 @@ export function ContactPageContent({ locale = "en", currentPath }: PageProps) {
         <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {page.cards.map(([title, description], index) => (
-            <SectionCard key={title} title={title} description={description} href={links[index]} />
-          ))}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="grid gap-4">
+            {page.cards.map(([title, description], index) => (
+              <SectionCard key={title} title={title} description={description} href={links[index]} />
+            ))}
+          </div>
+          <div className="manual-surface rounded-lg p-6">
+            <p className="font-mono text-xs uppercase text-primary">{contextTitle}</p>
+            <div className="mt-5 grid gap-4">
+              {contextItems.map((item, index) => (
+                <div key={item} className="flex gap-4">
+                  <span className="mt-0.5 font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                  <p className="text-sm leading-6 text-muted-foreground">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <section className="mt-16">
+          <p className="mb-3 font-mono text-xs uppercase text-primary">{formatsTitle}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {dictionary.home.engagements.map(([title, description]) => (
+              <SectionCard key={title} title={title} description={description} href={siteConfig.links.telegram} />
+            ))}
+          </div>
+        </section>
       </main>
     </MarketingPage>
   );

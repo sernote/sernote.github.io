@@ -38,7 +38,7 @@ export const handbookTracks: Array<{
   },
   {
     id: "lead",
-    label: { en: "AI Platform Lead", ru: "Руководитель AI-платформы" },
+    label: { en: "AI Platform Lead", ru: "Руководитель ИИ-платформы" },
     description: { en: "Ownership, platform map, quality and economics.", ru: "Ответственность, карта, качество и экономика." }
   },
   {
@@ -48,7 +48,7 @@ export const handbookTracks: Array<{
   },
   {
     id: "backend-ai",
-    label: { en: "Backend to AI", ru: "Backend в AI" },
+    label: { en: "Backend to AI", ru: "Backend-инженер" },
     description: { en: "Gateway, observability, tools and production contracts.", ru: "AI Gateway, наблюдаемость, инструменты и контракты." }
   },
   {
@@ -77,7 +77,7 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     status: "available",
     href: "/handbook/maturity-model",
     tracks: ["lead", "cto"],
-    title: { en: "AI Platform Maturity Model", ru: "Модель зрелости AI-платформы" },
+    title: { en: "AI Platform Maturity Model", ru: "Модель зрелости ИИ-платформы" },
     description: {
       en: "Seven levels from one API key to AI-native operations.",
       ru: "Семь уровней: от API-ключа до AI-native операционной модели."
@@ -280,7 +280,7 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     format: "template",
     status: "planned",
     tracks: ["lead", "backend-ai", "cto"],
-    title: { en: "AI Scenario RFC", ru: "RFC AI-сценария" },
+    title: { en: "AI Scenario RFC", ru: "RFC ИИ-сценария" },
     description: {
       en: "A template for use case, owner, risk, evals, cost and rollout path.",
       ru: "Шаблон для сценария, владельца, риска, проверок качества, стоимости и выкатки."

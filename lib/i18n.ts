@@ -57,18 +57,20 @@ export function getNavItems(locale: Locale = defaultLocale) {
           { href: "/handbook", label: "Хэндбук" },
           { href: "/handbook/platform-map", label: "Карта" },
           { href: "/tools", label: "Инструменты" },
+          { href: "/projects", label: "Проекты" },
           { href: "/writing", label: "Тексты" },
           { href: "/talks", label: "Выступления" },
-          { href: "/contact", label: "Контакты" }
+          { href: "/about", label: "Обо мне" }
         ]
       : [
           { href: "/", label: "Home" },
           { href: "/handbook", label: "Handbook" },
           { href: "/handbook/platform-map", label: "Map" },
           { href: "/tools", label: "Tools" },
+          { href: "/projects", label: "Projects" },
           { href: "/writing", label: "Writing" },
           { href: "/talks", label: "Talks" },
-          { href: "/contact", label: "Contact" }
+          { href: "/about", label: "About" }
         ];
 
   return items.map((item) => ({ ...item, href: localizedPath(item.href, locale) }));
@@ -212,9 +214,9 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
             description: "Карта ответственности: от сценариев к AI Gateway, инференсу, проверке качества и владельцам."
           },
           {
-            title: "Модель зрелости AI-платформы",
+            title: "Модель зрелости ИИ-платформы",
             href: "/handbook/maturity-model",
-            description: "Модель зрелости: от одного API-ключа до зрелой AI-платформы."
+            description: "Модель зрелости: от одного API-ключа до зрелой ИИ-платформы."
           },
           {
             title: "MaaS vs Self-hosted",
@@ -708,7 +710,7 @@ const ruDictionary = {
       ]
     },
     sections: {
-      proofTitle: "Практика",
+      proofTitle: "Опыт",
       proofCopy: "Опыт на стыке платформы, инференса и качества.",
       problemTitle: "После демо",
       problemCopy: "Демо работает. Дальше начинаются платформенные вопросы.",
@@ -901,12 +903,12 @@ const ruDictionary = {
       headers: ["Уровень", "Состояние", "Типичная боль"],
       levels: [
         ["0. Demo", "Один API-ключ, один сценарий", "Ничего не измеряется"],
-        ["1. Продуктовая интеграция", "AI встроен в продукт", "Качество и стоимость слабо контролируются"],
+        ["1. Продуктовая интеграция", "ИИ встроен в продукт", "Качество и стоимость слабо контролируются"],
         ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё хаотичен"],
         ["3. Контроль качества", "Датасеты, оценки и регрессии", "Релизы моделей замедляются"],
         ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
         ["5. AI Platform", "Жизненный цикл, наблюдаемость и управление", "Ответственность нужно масштабировать"],
-        ["6. AI-native org", "AI в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]
+        ["6. AI-native org", "ИИ в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]
       ]
     }
   }

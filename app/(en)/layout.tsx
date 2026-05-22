@@ -27,9 +27,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" className="dark" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider theme={{ defaultTheme: "dark", enableSystem: false, forcedTheme: "dark" }}>
+          {children}
+        </RootProvider>
       </body>
     </html>
   );

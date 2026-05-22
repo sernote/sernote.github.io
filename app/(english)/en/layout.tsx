@@ -27,11 +27,12 @@ export const metadata: Metadata = {
 
 export default function EnglishLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider theme={{ defaultTheme: "dark", enableSystem: false, forcedTheme: "dark" }}>
+          {children}
+        </RootProvider>
       </body>
     </html>
   );
 }
-

@@ -33,7 +33,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
           </span>
           <span className="text-sm font-semibold tracking-normal max-sm:hidden">{siteConfig.author}</span>
         </Link>
-        <nav className="flex items-center gap-6 max-md:hidden">
+        <nav className="flex items-center gap-5 max-md:hidden">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
               {item.label}
@@ -47,7 +47,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href={localizedPath("/handbook", locale)}>{dictionary.shell.startReading}</Link>
+            <Link href={localizedPath("/contact", locale)}>{dictionary.shell.contact}</Link>
           </Button>
         </div>
         <Sheet>
@@ -68,6 +68,9 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
               ))}
               <Link href={languageHref} className="text-sm text-primary">
                 {dictionary.language.switchTo}
+              </Link>
+              <Link href={localizedPath("/contact", locale)} className="text-sm text-primary">
+                {dictionary.shell.contact}
               </Link>
             </nav>
           </SheetContent>

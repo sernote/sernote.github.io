@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, CheckCircle2, Filter, Route } from "lucide-react";
+import { Bookmark, CheckCircle2, Filter, Route, Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toggleStoredSet, useHandbookLocalSet } from "@/components/handbook/local-handbook-state";
 import {
   handbookCatalog,
@@ -24,8 +25,10 @@ type FilterTrack = HandbookTrack | "all";
 const copy = {
   en: {
     title: "Handbook navigator",
-    copy: "Filter the first release by format or role, then mark what you have read. Progress stays in this browser only.",
+    copy: "Search the first release by role, format or topic, then mark what you have read. Progress stays in this browser only.",
+    search: "Search chapters, tools and templates",
     formats: "Formats",
+    searchLabel: "Search",
     tracks: "Role tracks",
     progress: "Progress",
     read: "read",
@@ -36,12 +39,15 @@ const copy = {
     bookmark: "Bookmark",
     bookmarkedAction: "Bookmarked",
     open: "Open",
+    empty: "No materials match this filter yet.",
     localOnly: "Local progress only. No account, tracking or backend."
   },
   ru: {
     title: "Навигатор хэндбука",
-    copy: "Фильтруйте первый релиз по формату или роли и отмечайте прочитанное. Прогресс хранится только в этом браузере.",
+    copy: "Ищите материалы по роли, формату или теме и отмечайте прочитанное. Прогресс хранится только в этом браузере.",
+    search: "Поиск по главам, инструментам и шаблонам",
     formats: "Форматы",
+    searchLabel: "Поиск",
     tracks: "Роли",
     progress: "Прогресс",
     read: "прочитано",
@@ -52,7 +58,8 @@ const copy = {
     bookmark: "В закладки",
     bookmarkedAction: "В закладках",
     open: "Открыть",
-    localOnly: "Только локальное состояние. Без аккаунта, слежки и backend."
+    empty: "По этому фильтру пока ничего нет.",
+    localOnly: "Только локальное состояние. Без аккаунта, слежки и серверной части."
   }
 } as const;
 
@@ -60,16 +67,37 @@ export function HandbookNavigator({ locale = "en" }: { locale?: Locale }) {
   const t = copy[locale];
   const [format, setFormat] = useState<FilterFormat>("all");
   const [track, setTrack] = useState<FilterTrack>("all");
+  const [query, setQuery] = useState("");
   const progress = useHandbookLocalSet(locale, "progress");
   const bookmarks = useHandbookLocalSet(locale, "bookmarks");
 
   const items = useMemo(
-    () =>
-      handbookCatalog
+    () => {
+      const normalizedQuery = query.trim().toLowerCase();
+
+      return handbookCatalog
         .map((item) => localizeCatalogItem(item, locale))
         .filter((item) => (format === "all" ? true : item.format === format))
-        .filter((item) => (track === "all" ? true : item.tracks.includes(track))),
-    [format, locale, track]
+        .filter((item) => (track === "all" ? true : item.tracks.includes(track)))
+        .filter((item) => {
+          if (!normalizedQuery) {
+            return true;
+          }
+
+          const searchable = [
+            item.title,
+            item.description,
+            item.format,
+            ...item.tracks,
+            handbookFormats.find((formatItem) => formatItem.id === item.format)?.label[locale] ?? ""
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          return searchable.includes(normalizedQuery);
+        });
+    },
+    [format, locale, query, track]
   );
 
   const availableIds = useMemo(
@@ -115,6 +143,14 @@ export function HandbookNavigator({ locale = "en" }: { locale?: Locale }) {
 
         <div>
           <div className="grid gap-4">
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <Search className="h-3.5 w-3.5 text-primary" />
+                <p className="font-mono text-xs uppercase text-muted-foreground">{t.searchLabel}</p>
+              </div>
+              <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} />
+            </div>
+
             <FilterGroup title={t.formats}>
               {handbookFormats.map((item) => (
                 <FilterButton
@@ -139,6 +175,11 @@ export function HandbookNavigator({ locale = "en" }: { locale?: Locale }) {
           </div>
 
           <div className="mt-6 grid gap-3 md:grid-cols-2">
+            {items.length === 0 ? (
+              <div className="rounded-lg border border-border bg-background/55 p-4 text-sm text-muted-foreground md:col-span-2">
+                {t.empty}
+              </div>
+            ) : null}
             {items.map((item) => {
               const isRead = progress.has(item.storageId);
               const isBookmarked = bookmarks.has(item.storageId);

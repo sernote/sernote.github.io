@@ -5,7 +5,7 @@ import { ArrowRight, BookOpen, ClipboardCheck, Map, Wrench } from "lucide-react"
 import { HandbookNavigator } from "@/components/handbook/handbook-navigator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getHandbookStats } from "@/lib/handbook-catalog";
+import { getHandbookStats, handbookTracks } from "@/lib/handbook-catalog";
 import { getFeaturedChapters, getPlatformLayers, localizedPath, type Locale } from "@/lib/i18n";
 
 const copy = {
@@ -28,6 +28,8 @@ const copy = {
     ],
     layersTitle: "Platform layers",
     layersCopy: "The map has twelve responsibilities. If one is missing, a product team will implement it locally.",
+    rolesTitle: "Start by role",
+    rolesCopy: "Pick the path closest to your current responsibility, then use the catalog below to filter materials.",
     startsTitle: "Start points",
     startsCopy: "Foundational chapters for the first public version.",
     artifactsTitle: "Tools and templates",
@@ -58,6 +60,8 @@ const copy = {
     ],
     layersTitle: "Слои платформы",
     layersCopy: "В карте двенадцать зон ответственности. Если слоя нет, его всё равно кто-то сделает внутри продукта.",
+    rolesTitle: "Начать по роли",
+    rolesCopy: "Выберите маршрут по своей зоне ответственности, а затем отфильтруйте материалы в каталоге ниже.",
     startsTitle: "Быстрые входы",
     startsCopy: "Короткий маршрут по основным главам v0.1.",
     artifactsTitle: "Инструменты и шаблоны",
@@ -66,7 +70,7 @@ const copy = {
       ["Prefix Cache Auditor", "Ищет нестабильный префикс, динамические поля и дрейф схем.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Оценивает реальную стоимость с кешированными входными токенами.", "/tools/llm-cost-calculator"],
       ["Чеклист контроля качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
-      ["Шаблоны", "Следующие: RFC AI-сценария, релиз модели, отчёт по качеству и разбор инцидента.", ""]
+      ["Шаблоны", "Следующие: RFC ИИ-сценария, релиз модели, отчёт по качеству и разбор инцидента.", ""]
     ]
   }
 } as const;
@@ -134,6 +138,16 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
           {t.steps.map(([title, description]) => (
             <InfoCard key={title} title={title} description={description} />
           ))}
+        </div>
+      </HandbookSection>
+
+      <HandbookSection title={t.rolesTitle} copy={t.rolesCopy}>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {handbookTracks
+            .filter((track) => track.id !== "all")
+            .map((track) => (
+              <InfoCard key={track.id} title={track.label[locale]} description={track.description[locale]} />
+            ))}
         </div>
       </HandbookSection>
 
