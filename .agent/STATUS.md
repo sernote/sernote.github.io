@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparation complete, and review-driven editorial pass complete.
+MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparation complete, review-driven editorial pass complete, and product-onboarding improvements complete.
 
 ## Completed
 
@@ -70,6 +70,19 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Expanded the platform map to 12 layers and split Observability from Economics / FinOps.
 - Added initial Guardrails, STT and Embeddings chapters in both English and Russian.
 - Performed a Russian editorial pass to reduce unnecessary English wording and replace raw phrases such as `feature` and `data control` with concise Russian wording.
+- Added a static handbook catalog for maps, chapters, checklists, tools and planned templates.
+- Added handbook landing counters, format filters and role-track filters.
+- Added local progress and bookmark controls for handbook items and individual chapters.
+- Added `/tools` and `/ru/tools` index pages.
+- Updated the global navigation so `Инструменты` / `Tools` points to the tools index instead of a single tool.
+- Added personal landing engagement formats:
+  - architecture review
+  - executive workshop / working session
+  - talk or podcast
+  - handbook collaboration
+- Reduced the personal landing platform-map section to a concise preview and kept the full 12-layer map inside the handbook.
+- Performed an additional Russian wording pass after review feedback to remove visible `feature`, `data control`, `fallback`, `guardrails` and similar avoidable English calques from Russian chapter text.
+- Added `public/CNAME` for `notevskii.tech` and updated README deployment notes for the custom domain.
 
 ## Validation results
 
@@ -106,6 +119,18 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
   - `pnpm test` passed: 1 test file, 5 tests.
   - `pnpm build` passed and generated 52 static/SSG pages.
   - Static output spot-check confirmed the removed phrases `feature` and `data control` are no longer present in the Russian source/output surfaces checked.
+- Review-driven product-onboarding validation:
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 54 static/SSG pages.
+  - Static smoke checks passed for `/ru/`, `/ru/handbook/` and `/ru/tools/` through the generated `out/` directory.
+- Custom-domain and final editorial validation:
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 54 static/SSG pages.
+  - Static export includes `out/CNAME` with `notevskii.tech`.
 
 ## Decisions
 
@@ -122,9 +147,12 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Kept English as the default route set to avoid breaking existing URLs.
 - Created a second Fumadocs source for Russian MDX instead of trying to translate handbook content at runtime.
 - Targeted GitHub Pages deployment via GitHub Actions rather than committing `out/` to the repository.
-- Kept root-relative asset paths; without a custom domain, the target must be a user Pages repo named `sernote.github.io` instead of project Pages under `/<repo>/`.
+- Kept root-relative asset paths; the target is a user Pages repo named `sernote.github.io`, now served through the custom domain `notevskii.tech`.
+- Added `public/CNAME` with `notevskii.tech` for GitHub Pages custom-domain publishing.
 - Kept established technical terms in the Russian version where they are useful for the target audience, but replaced avoidable English wording with Russian wording.
 - Treated `feature` as `фича` or `возможность` by context; treated `data control` as `контроль данных`.
+- Implemented progress and bookmarks with browser `localStorage` only, preserving static export and avoiding accounts, backend storage, analytics or tracking.
+- Kept tracks and filters as static product navigation for v0 instead of adding a full learning platform, graph database or user accounts.
 
 ## Known issues
 
@@ -133,6 +161,8 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
 - GitHub repository exists at `https://github.com/sernote/sernote.github.io`; pushes to `main` have worked in this environment.
+- DNS for `notevskii.tech` was configured by the user in REG.RU with GitHub Pages apex records and `www` CNAME; propagation and HTTPS verification may take time.
+- Progress and bookmarks are intentionally local to one browser/device and do not sync across devices.
 
 ## Follow-ups
 
@@ -146,7 +176,7 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Add Model Lifecycle, Guardrails, RAG/Agents and Platform DevEx sections in later versions.
 - Add `docs/CODEX_SETUP.md` for optional shadcn MCP setup if this repo will be shared with other agents.
 - Add richer visual diagrams or downloadable maps after content stabilizes.
-- Add `public/CNAME` only if a custom domain is added later.
+- Verify `notevskii.tech` and `www.notevskii.tech` after DNS propagation and enable Enforce HTTPS in GitHub Pages when GitHub marks the domain as ready.
 
 ## Blockers
 

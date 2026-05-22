@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRight, BookOpen, ClipboardCheck, Map, Wrench } from "lucide-react";
 
+import { HandbookNavigator } from "@/components/handbook/handbook-navigator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getHandbookStats } from "@/lib/handbook-catalog";
 import { getFeaturedChapters, getPlatformLayers, localizedPath, type Locale } from "@/lib/i18n";
 
 const copy = {
@@ -16,6 +18,9 @@ const copy = {
     map: "Start with the map",
     maturity: "Maturity model",
     tools: "Tools",
+    boundaryTitle: "Product boundary",
+    boundaryCopy:
+      "For now this is one static GitHub Pages site. The product boundary is explicit: `/` is the personal executive landing, `/handbook` is the handbook product.",
     useTitle: "How to use the handbook",
     useCopy: "Do not read it linearly. Start from the platform problem in front of you.",
     steps: [
@@ -42,17 +47,20 @@ const copy = {
     title: "Production AI Platform Handbook",
     subtitle: "От API-ключа к платформе.",
     description:
-      "Production AI — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, embeddings и агентов в production: инференс, маршрутизация, кеш, evals, guardrails, наблюдаемость, стоимость и ответственность.",
+      "Production AI — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, embeddings и агентов в production: инференс, маршрутизация, кеш, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
     map: "Начать с карты",
     maturity: "Модель зрелости",
     tools: "Инструменты",
+    boundaryTitle: "Граница продуктов",
+    boundaryCopy:
+      "Пока это один статический сайт на GitHub Pages. Граница уже явная: `/` — личная страница, `/handbook` — хэндбук как отдельный продукт.",
     useTitle: "Как пользоваться хэндбуком",
     useCopy: "Не читайте подряд. Начните с той платформенной проблемы, которая уже болит.",
     steps: [
       ["Нужна общая картина?", "Откройте карту платформы и найдите слой, где нет владельца."],
       ["Нужен язык для CTO?", "Начните с модели зрелости и главы про MaaS vs self-hosted."],
       ["Растёт стоимость или задержка?", "Идите в экономику инференса и prefix cache."],
-      ["Плывёт качество?", "Берите AI Quality Gate, наблюдаемость и ответственность."]
+      ["Плывёт качество?", "Берите ворота качества, наблюдаемость и ответственность."]
     ],
     layersTitle: "Слои платформы",
     layersCopy: "В карте двенадцать зон ответственности. Если слоя нет, его всё равно кто-то сделает внутри продукта.",
@@ -63,8 +71,8 @@ const copy = {
     artifacts: [
       ["Prefix Cache Auditor", "Ищет нестабильный префикс, динамические поля и дрейф схем.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Оценивает реальную стоимость с кешированными входными токенами.", "/tools/llm-cost-calculator"],
-      ["AI Quality Gate Checklist", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
-      ["Шаблоны", "Следующие: RFC AI-сценария, релиз модели, отчёт evals и разбор инцидента.", ""]
+      ["Чеклист ворот качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
+      ["Шаблоны", "Следующие: RFC AI-сценария, релиз модели, отчёт по качеству и разбор инцидента.", ""]
     ]
   }
 } as const;
@@ -73,6 +81,7 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
   const t = copy[locale];
   const layers = getPlatformLayers(locale);
   const chapters = getFeaturedChapters(locale);
+  const stats = getHandbookStats(locale);
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -101,6 +110,14 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
               </Link>
             </Button>
           </div>
+          <div className="mt-8 grid gap-3 sm:grid-cols-5">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-lg border border-border bg-card/55 p-3">
+                <p className="text-2xl font-semibold">{stat.value}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="manual-surface rounded-lg p-5">
           <div className="mb-4 flex items-center justify-between border-b border-border pb-4">
@@ -118,6 +135,11 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
         </div>
       </section>
 
+      <section className="mt-16 rounded-lg border border-border bg-card/45 p-5">
+        <p className="font-mono text-xs uppercase text-primary">{t.boundaryTitle}</p>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-muted-foreground">{t.boundaryCopy}</p>
+      </section>
+
       <HandbookSection title={t.useTitle} copy={t.useCopy}>
         <div className="grid gap-4 md:grid-cols-4">
           {t.steps.map(([title, description]) => (
@@ -125,6 +147,8 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
           ))}
         </div>
       </HandbookSection>
+
+      <HandbookNavigator locale={locale} />
 
       <HandbookSection title={t.layersTitle} copy={t.layersCopy}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

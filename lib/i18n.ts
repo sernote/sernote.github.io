@@ -39,7 +39,7 @@ export function getSiteConfig(locale: Locale = defaultLocale) {
     url: siteUrl,
     description:
       locale === "ru"
-        ? "Хэндбук о production AI-платформах: инференс, маршрутизация, кеш, evals, guardrails, наблюдаемость, стоимость и ответственность."
+        ? "Хэндбук о production AI-платформах: инференс, маршрутизация, кеш, проверка качества, защитные контуры, наблюдаемость, стоимость и ответственность."
         : "A field guide for building LLM, STT, embeddings and agent platforms in production: inference, routing, cache, evals, guardrails, observability, cost, incidents and ownership.",
     links: siteLinks
   };
@@ -52,7 +52,7 @@ export function getNavItems(locale: Locale = defaultLocale) {
           { href: "/", label: "Главная" },
           { href: "/handbook", label: "Хэндбук" },
           { href: "/handbook/platform-map", label: "Карта" },
-          { href: "/tools/prefix-cache-auditor", label: "Инструменты" },
+          { href: "/tools", label: "Инструменты" },
           { href: "/writing", label: "Тексты" },
           { href: "/talks", label: "Выступления" },
           { href: "/contact", label: "Контакты" }
@@ -61,7 +61,7 @@ export function getNavItems(locale: Locale = defaultLocale) {
           { href: "/", label: "Home" },
           { href: "/handbook", label: "Handbook" },
           { href: "/handbook/platform-map", label: "Map" },
-          { href: "/tools/prefix-cache-auditor", label: "Tools" },
+          { href: "/tools", label: "Tools" },
           { href: "/writing", label: "Writing" },
           { href: "/talks", label: "Talks" },
           { href: "/contact", label: "Contact" }
@@ -74,13 +74,13 @@ export function getExpertiseAreas(locale: Locale = defaultLocale) {
   return locale === "ru"
     ? [
         "AI-платформы",
-        "Self-hosted инференс",
+        "Свой инференс",
         "vLLM и GPU",
-        "Маршрутизация и fallback",
+        "Маршрутизация и резервные пути",
         "Экономика prefix cache",
-        "Evals и Quality Gate",
+        "Оценка качества и ворота релиза",
         "Наблюдаемость LLM",
-        "Guardrails и ответственность"
+        "Защитные контуры и ответственность"
       ]
     : [
         "AI Platform",
@@ -111,11 +111,11 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
         },
         {
           title: "Маршрутизация моделей",
-          description: "Алиасы, fallback, canary и версии моделей."
+          description: "Алиасы, резервные пути, канареечные выкатки и версии моделей."
         },
         {
           title: "Инференс-рантайм",
-          description: "Serving LLM, STT, embeddings и rerankers с бюджетами задержки и пропускной способности."
+          description: "Запуск LLM, STT, embeddings и rerankers с бюджетами задержки и пропускной способности."
         },
         {
           title: "Кеширование",
@@ -123,27 +123,27 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
         },
         {
           title: "Жизненный цикл модели",
-          description: "От исследования до shadow-теста, canary, продакшна, отката и вывода из эксплуатации."
+          description: "От исследования до теневого теста, канареечной выкатки, production, отката и вывода из эксплуатации."
         },
         {
-          title: "Evals и Quality Gate",
-          description: "Датасеты, регрессионные проверки, canary и обратная связь."
+          title: "Оценка качества и ворота релиза",
+          description: "Датасеты, регрессионные проверки, канареечная выкатка и обратная связь."
         },
         {
           title: "Наблюдаемость",
-          description: "Трейсы, токены, TTFT, TPOT, fallback-события, safety-события и обратная связь."
+          description: "Трейсы, токены, TTFT, TPOT, события резервного маршрута, события безопасности и обратная связь."
         },
         {
-          title: "Economics / FinOps",
+          title: "Экономика / FinOps",
           description: "Стоимость сценария, кешированные токены, повторы, загрузка GPU и цена принятого результата."
         },
         {
-          title: "Guardrails / Security",
+          title: "Защитные контуры / безопасность",
           description: "Политики, PII, prompt injection, риски инструментов и аудит."
         },
         {
           title: "Эксплуатация / ответственность",
-          description: "SLO, инциденты, планирование мощности, runbooks и DevEx платформы."
+          description: "SLO, инциденты, планирование мощности, инструкции и опыт разработчиков платформы."
         }
       ]
     : [
@@ -205,7 +205,7 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
           {
             title: "Карта Production AI Platform",
             href: "/handbook/platform-map",
-            description: "Карта ответственности: от сценариев к AI Gateway, инференсу, evals и владельцам."
+            description: "Карта ответственности: от сценариев к AI Gateway, инференсу, проверке качества и владельцам."
           },
           {
             title: "Модель зрелости AI-платформы",
@@ -343,7 +343,7 @@ export function getTalks(locale: Locale = defaultLocale) {
           title: "Экономика prefix cache",
           venue: "Public article series",
           description:
-            "Как разбирать падение cache hit rate, рост стоимости и скачки задержки после небольших правок."
+            "Как разбирать падение доли попаданий в кеш, рост стоимости и скачки задержки после небольших правок."
         }
       ]
     : [
@@ -395,7 +395,7 @@ const enDictionary = {
       projects: "Contact",
       mapVersion: "From API key to platform",
       layers: [
-        "API-ключ / demo",
+        "API key / demo",
         "AI Gateway",
         "Routing / Inference / Cache",
         "Evals / Observability / Cost",
@@ -417,6 +417,8 @@ const enDictionary = {
       writingCopy: "Public writing becomes chapters, checklists and tools inside the handbook.",
       talksTitle: "Talks",
       talksCopy: "Talks and conference material feed the strategy, inference and economics tracks.",
+      engagementTitle: "Ways to work",
+      engagementCopy: "Clear formats for talks, reviews and executive conversations.",
       authorLabel: "About the author",
       centralSentenceLabel: "Central sentence",
       readMore: "Read more"
@@ -438,7 +440,19 @@ const enDictionary = {
     authorCopy:
       "I write Production AI Platform Handbook: a practical field guide for teams turning AI demos into production platforms.",
     centralSentence:
-      "The materials are public and sanitized: no internal details, but with production taste."
+      "The materials are public and sanitized: no internal details, but with production taste.",
+    engagements: [
+      [
+        "Architecture review",
+        "Review gateway, routing, cache, evals, observability, cost and ownership before they harden into platform debt."
+      ],
+      [
+        "Executive workshop",
+        "Align MaaS vs self-hosted strategy, maturity, team responsibilities and the first platform roadmap."
+      ],
+      ["Talk or podcast", "A practical, non-hype conversation about production AI platform engineering."],
+      ["Handbook collaboration", "Turn public field notes, tools and templates into durable handbook artifacts."]
+    ]
   },
   pages: {
     about: {
@@ -606,17 +620,17 @@ const ruDictionary = {
       badge: "AI Platform Lead",
       title: "Sergei Notevskii",
       copy:
-        "Строю production-grade AI-платформы: LLM, STT, embeddings, агенты, инференс, evals, guardrails, наблюдаемость, стоимость и ответственность.",
+        "Строю AI-платформы для production: LLM, STT, embeddings, агенты, инференс, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
       start: "Открыть хэндбук",
       map: "Карта платформы",
       projects: "Связаться",
       mapVersion: "От API-ключа к платформе",
       layers: [
-        "API key / demo",
+        "API-ключ / демо",
         "Gateway",
         "Маршрутизация / инференс / кеш",
-        "Evals / наблюдаемость / стоимость",
-        "Guardrails / ответственность"
+        "Оценка качества / наблюдаемость / стоимость",
+        "Защитные контуры / ответственность"
       ]
     },
     sections: {
@@ -627,21 +641,23 @@ const ruDictionary = {
       layersTitle: "Слои платформы",
       layersCopy: "Хэндбук устроен вокруг ответственности платформы, а не вокруг хайпа.",
       expertiseTitle: "Где я полезен",
-      expertiseCopy: "Разбор архитектуры, стратегия платформы, Quality Gate и экономика инференса.",
+      expertiseCopy: "Разбор архитектуры, стратегия платформы, ворота качества и экономика инференса.",
       projectsTitle: "Проекты",
       projectsCopy: "Хэндбук - главный проект. Вокруг него растут инструменты и шаблоны.",
       writingTitle: "Тексты",
       writingCopy: "Публичные статьи становятся главами, чеклистами и инструментами внутри хэндбука.",
       talksTitle: "Выступления",
       talksCopy: "Доклады становятся главами про стратегию, инференс и экономику.",
+      engagementTitle: "Форматы взаимодействия",
+      engagementCopy: "Понятные форматы для докладов, разборов и разговоров на уровне руководства.",
       authorLabel: "Об авторе",
       centralSentenceLabel: "Центральная фраза",
       readMore: "Подробнее"
     },
     proof: [
       ["Production AI-платформы", "LLM · STT · embeddings · агенты"],
-      ["Self-hosted инференс", "vLLM · GPU · маршрутизация"],
-      ["Системы качества", "Evals · регрессии · обратная связь"],
+      ["Свой инференс", "vLLM · GPU · маршрутизация"],
+      ["Системы качества", "Оценки · регрессии · обратная связь"],
       ["Публичные материалы", "Habr · Telegram · доклады"]
     ],
     metrics: [
@@ -649,37 +665,49 @@ const ruDictionary = {
       "Стоимость токенов растёт.",
       "Промпты ломаются.",
       "Агенты уходят в цикл.",
-      "Evals нет.",
+      "Оценки качества нет.",
       "Владелец качества размыт."
     ],
     authorCopy:
       "Я пишу Production AI Platform Handbook: практический хэндбук для команд, которые превращают AI-демо в production-платформу.",
     centralSentence:
-      "Материалы публичные и очищенные: без внутренних деталей, но с production-вкусом."
+      "Материалы публичные и очищенные: без внутренних деталей, но с production-вкусом.",
+    engagements: [
+      [
+        "Разбор архитектуры",
+        "Проверка AI Gateway, маршрутизации, кеша, качества, наблюдаемости, стоимости и ответственности до того, как это станет платформенным долгом."
+      ],
+      [
+        "Рабочая сессия для руководства",
+        "Синхронизация стратегии MaaS vs self-hosted, зрелости платформы, ответственности команды и первого плана развития."
+      ],
+      ["Доклад или подкаст", "Практичный разговор о production AI-платформах без хайпа."],
+      ["Коллаборация по хэндбуку", "Превращение публичных заметок, инструментов и шаблонов в устойчивые материалы хэндбука."]
+    ]
   },
   pages: {
     about: {
       label: "Об авторе",
       title: "Sergei Notevskii",
       copy:
-        "AI Platform Lead. Строю production-grade AI-платформы для LLM, STT, embeddings и агентов. Публичная работа здесь про production-вкус: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
+        "AI Platform Lead. Строю AI-платформы для production: LLM, STT, embeddings и агенты. Публичная работа здесь про production-вкус: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
       cards: [
-        ["Hard engineering", "Self-hosted инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
-        ["Системы качества", "Evals, датасеты сценариев, обратная связь, регрессионные проверки и ворота релиза моделей."],
-        ["Платформенное лидерство", "Операционная модель, ответственность, DevEx, разбор стоимости, инциденты и очищенные публичные фреймворки."]
+        ["Инженерная глубина", "Свой инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
+        ["Системы качества", "Проверочные датасеты, обратная связь, регрессионные проверки и ворота релиза моделей."],
+        ["Платформенное лидерство", "Операционная модель, ответственность, опыт разработчиков, разбор стоимости, инциденты и очищенные публичные модели."]
       ]
     },
     projects: {
       label: "Проекты",
       title: "Публичные артефакты про AI-платформы.",
       copy:
-        "План строится вокруг артефактов: Production AI Platform Map, Prefix Cache Auditor, AI Quality Gate Kit, затем полный хэндбук."
+        "План строится вокруг артефактов: карта Production AI Platform, Prefix Cache Auditor, набор ворот качества AI, затем полный хэндбук."
     },
     writing: {
       label: "Тексты",
       title: "Статьи, заметки в канале и главы хэндбука.",
       copy:
-        "Статьи на Habr и заметки в Telegram становятся материалами хэндбука: чеклисты кеша, модели стоимости, дизайн агентского цикла, заметки про vLLM serving и стратегию платформы.",
+        "Статьи на Habr и заметки в Telegram становятся материалами хэндбука: чеклисты кеша, модели стоимости, дизайн агентского цикла, заметки про запуск vLLM и стратегию платформы.",
       verified: "Проверенные публичные ссылки",
       telegram: "Telegram: AI да парен! / Sergei Notevskii",
       habr: "Habr: статьи Ser_no"
@@ -688,13 +716,13 @@ const ruDictionary = {
       label: "Выступления",
       title: "Конференции и заметки из практики.",
       copy:
-        "Доклады про трудный переход от demo к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, Quality Gate и операционная модель."
+        "Доклады про трудный переход от демо к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, ворота качества и операционная модель."
     },
     contact: {
       label: "Контакты",
       title: "Доклады, коллаборации и разговоры про платформы.",
       copy:
-        "Лучшее пересечение: проектирование production AI-платформ, self-hosted инференс, экономика кеша, evals, наблюдаемость, guardrails, операционная модель и платформенное лидерство.",
+        "Лучшее пересечение: проектирование production AI-платформ, self-hosted инференс, экономика кеша, проверка качества, наблюдаемость, защитные контуры, операционная модель и платформенное лидерство.",
       cards: [
         ["Telegram", "Канал и комментарии про AI-платформы."],
         ["Habr", "Большие статьи и серии на русском."]
@@ -704,7 +732,7 @@ const ruDictionary = {
   projects: [
     [
       "Production AI Platform Handbook",
-      "Карта платформенной ответственности для команд, которые идут от API-ключа и demo к инференсу, маршрутизации, evals, стоимости и владельцам.",
+      "Карта платформенной ответственности для команд, которые идут от API-ключа и демо к инференсу, маршрутизации, оценке качества, стоимости и владельцам.",
       "/handbook"
     ],
     [
@@ -713,8 +741,8 @@ const ruDictionary = {
       "/tools/prefix-cache-auditor"
     ],
     [
-      "AI Quality Gate Kit",
-      "Чеклист готовности к выкатке: evals, регрессии, canary, обратная связь, fallback и ответственность.",
+      "Набор ворот качества AI",
+      "Чеклист готовности к выкатке: проверка качества, регрессии, канареечная выкатка, обратная связь, резервный маршрут и ответственность.",
       "/tools/ai-quality-gate-checklist"
     ]
   ],
@@ -732,7 +760,7 @@ const ruDictionary = {
         "Локальная v0-версия для оценки кешируемости, нестабильных префиксов, динамических полей и дрейфа схем.",
       formTitle: "Промпт и форма запроса",
       formDescription: "Без внешних вызовов. Инструмент локально анализирует только структуру текста.",
-      fields: ["System prompt", "JSON-схема инструментов", "Пример запроса 1", "Пример запроса 2"],
+      fields: ["Системный промпт", "JSON-схема инструментов", "Пример запроса 1", "Пример запроса 2"],
       loadStable: "Загрузить стабильный пример",
       resultTitle: "Оценка кешируемости",
       resultDescription: "Оценка риска по форме префикса, динамическим полям и дрейфу схем.",
@@ -758,13 +786,13 @@ const ruDictionary = {
       metrics: ["Без кеша", "С кешем", "Экономия", "Процент экономии"]
     },
     quality: {
-      title: "AI Quality Gate Checklist",
+      title: "Чеклист ворот качества AI",
       copy:
-        "Локальный чеклист готовности к выкатке: evals, регрессии, canary, наблюдаемость, fallback и ответственность.",
-      checklistTitle: "Чеклист Quality Gate",
+        "Локальный чеклист готовности к выкатке: проверка качества, регрессии, канареечная выкатка, наблюдаемость, резервный маршрут и ответственность.",
+      checklistTitle: "Чеклист ворот качества",
       checklistDescription: "Только локальное состояние. Используй перед выкаткой.",
       readinessTitle: "Готовность",
-      readinessDescription: "Quality Gate - это процесс, а не одна оценка. Здесь лёгкая v0-проверка.",
+      readinessDescription: "Ворота качества - это процесс, а не одна оценка. Здесь лёгкая v0-проверка.",
       complete: "проверок закрыто",
       status: "Статус",
       statuses: {
@@ -773,12 +801,12 @@ const ruDictionary = {
         blocked: "заблокировано"
       },
       items: [
-        "Golden dataset есть для сценария",
+        "Эталонный датасет есть для сценария",
         "Таксономия ошибок определена",
-        "Offline eval suite запускается до выкатки",
+        "Набор проверок запускается до выкатки",
         "Регрессионные проверки сравнивают версии промпта и модели",
-        "Canary-выкатка имеет критерии остановки",
-        "Fallback и путь отката описаны",
+        "Канареечная выкатка имеет критерии остановки",
+        "Резервный маршрут и путь отката описаны",
         "Трейсы включают токены, стоимость, задержку и версию модели",
         "Владелец сценария и владелец платформы явно определены"
       ]
@@ -794,11 +822,11 @@ const ruDictionary = {
       headers: ["Уровень", "Состояние", "Типичная боль"],
       levels: [
         ["0. Demo", "Один API-ключ, один сценарий", "Ничего не измеряется"],
-        ["1. Product Integration", "AI встроен в продукт", "Качество и стоимость слабо контролируются"],
-        ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё ad hoc"],
-        ["3. Quality Gate", "Evals, датасеты и регрессии", "Релизы моделей замедляются"],
+        ["1. Продуктовая интеграция", "AI встроен в продукт", "Качество и стоимость слабо контролируются"],
+        ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё хаотичен"],
+        ["3. Ворота качества", "Датасеты, оценки и регрессии", "Релизы моделей замедляются"],
         ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
-        ["5. AI Platform", "Жизненный цикл, наблюдаемость и governance", "Ответственность нужно масштабировать"],
+        ["5. AI Platform", "Жизненный цикл, наблюдаемость и управление", "Ответственность нужно масштабировать"],
         ["6. AI-native org", "AI в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]
       ]
     }

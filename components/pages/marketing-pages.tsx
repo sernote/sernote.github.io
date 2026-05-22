@@ -55,10 +55,13 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
       </Section>
       <Section title={sections.layersTitle} copy={sections.layersCopy}>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {platformLayers.map((layer, index) => (
+          {platformLayers.slice(0, 4).map((layer, index) => (
             <PlatformLayerCard key={layer.title} index={index} {...layer} />
           ))}
         </div>
+        <Link href={localizedPath("/handbook/platform-map", locale)} className="mt-5 inline-block text-sm text-primary">
+          {locale === "ru" ? "Открыть полную карту из 12 слоёв" : "Open the full 12-layer map"}
+        </Link>
       </Section>
       <Section title={sections.expertiseTitle} copy={sections.expertiseCopy}>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -77,6 +80,13 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
       </Section>
       <Section title={sections.talksTitle} copy={sections.talksCopy}>
         <TalksPreview locale={locale} />
+      </Section>
+      <Section title={sections.engagementTitle} copy={sections.engagementCopy}>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {dictionary.home.engagements.map(([title, description]) => (
+            <SectionCard key={title} title={title} description={description} href={localizedPath("/contact", locale)} />
+          ))}
+        </div>
       </Section>
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-[1fr_0.8fr] md:items-center">

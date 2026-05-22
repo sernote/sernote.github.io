@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 
+import { ChapterActions } from "@/components/handbook/chapter-actions";
 import { ChapterMeta } from "@/components/handbook/chapter-meta";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
@@ -53,13 +54,15 @@ export default async function RuHandbookPage({ params }: { params: Promise<{ slu
   }
 
   const MDX = page.data.body;
+  const currentPath = `/ru/handbook/${slug.join("/")}`;
 
   return (
     <DocsPage toc={page.data.toc} tableOfContent={{ enabled: true }}>
-      <LanguageSwitcher locale="ru" currentPath={slug ? `/ru/handbook/${slug.join("/")}` : "/ru/handbook"} />
+      <LanguageSwitcher locale="ru" currentPath={currentPath} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} locale="ru" />
+      <ChapterActions locale="ru" itemId={currentPath} />
       <DocsBody>
         <MDX
           components={getMDXComponents({
