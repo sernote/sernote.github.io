@@ -131,6 +131,9 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
   - `pnpm test` passed: 1 test file, 5 tests.
   - `pnpm build` passed and generated 54 static/SSG pages.
   - Static export includes `out/CNAME` with `notevskii.tech`.
+  - GitHub Pages is configured with `cname: notevskii.tech`, `build_type: workflow` and `https_enforced: true`.
+  - `curl -I https://notevskii.tech` returned `HTTP/2 200`.
+  - `curl -I https://www.notevskii.tech` returned `HTTP/2 301` to `https://notevskii.tech/`.
 
 ## Decisions
 
@@ -161,7 +164,7 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
 - GitHub repository exists at `https://github.com/sernote/sernote.github.io`; pushes to `main` have worked in this environment.
-- DNS for `notevskii.tech` was configured by the user in REG.RU with GitHub Pages apex records and `www` CNAME; propagation and HTTPS verification may take time.
+- DNS for `notevskii.tech` was configured by the user in REG.RU with GitHub Pages apex records and `www` CNAME; GitHub Pages now resolves the apex domain over HTTPS and redirects `www` to the apex.
 - Progress and bookmarks are intentionally local to one browser/device and do not sync across devices.
 
 ## Follow-ups
@@ -176,7 +179,7 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Add Model Lifecycle, Guardrails, RAG/Agents and Platform DevEx sections in later versions.
 - Add `docs/CODEX_SETUP.md` for optional shadcn MCP setup if this repo will be shared with other agents.
 - Add richer visual diagrams or downloadable maps after content stabilizes.
-- Verify `notevskii.tech` and `www.notevskii.tech` after DNS propagation and enable Enforce HTTPS in GitHub Pages when GitHub marks the domain as ready.
+- Watch the first few GitHub Pages deploys after future content pushes to ensure the workflow remains green.
 
 ## Blockers
 
