@@ -9,6 +9,7 @@ import {
   getDictionary,
   getNavItems,
   getSiteConfig,
+  localizedPath,
   type Locale
 } from "@/lib/i18n";
 
@@ -26,7 +27,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/82 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href={locale === "ru" ? "/ru" : "/"} className="flex items-center gap-3">
+        <Link href={localizedPath("/", locale)} className="flex items-center gap-3">
           <span className="flex size-8 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-xs font-semibold text-primary">
             SN
           </span>
@@ -46,7 +47,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href={locale === "ru" ? "/ru/handbook" : "/handbook"}>{dictionary.shell.startReading}</Link>
+            <Link href={localizedPath("/handbook", locale)}>{dictionary.shell.startReading}</Link>
           </Button>
         </div>
         <Sheet>
@@ -90,7 +91,7 @@ export function SiteFooter({ locale = "en" }: Pick<LocalizedShellProps, "locale"
           <div className="flex flex-wrap gap-4">
             <Link href={siteConfig.links.telegram}>Telegram</Link>
             <Link href={siteConfig.links.habr}>Habr</Link>
-            <Link href={locale === "ru" ? "/ru/contact" : "/contact"}>{dictionary.shell.contact}</Link>
+            <Link href={localizedPath("/contact", locale)}>{dictionary.shell.contact}</Link>
           </div>
         </div>
       </div>

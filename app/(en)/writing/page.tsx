@@ -1,5 +1,5 @@
 import { WritingPageContent } from "@/components/pages/marketing-pages";
 
 export default function WritingPage() {
-  return <WritingPageContent locale="en" currentPath="/writing" />;
+  return <WritingPageContent locale="ru" currentPath="/writing" />;
 }

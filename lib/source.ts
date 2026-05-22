@@ -2,8 +2,13 @@ import { docs, docsRu } from "collections/server";
 import { loader } from "fumadocs-core/source";
 
 export const source = loader({
-  baseUrl: "/handbook",
+  baseUrl: "/en/handbook",
   source: docs.toFumadocsSource()
+});
+
+export const sourceRuRoot = loader({
+  baseUrl: "/handbook",
+  source: docsRu.toFumadocsSource()
 });
 
 export const sourceRu = loader({

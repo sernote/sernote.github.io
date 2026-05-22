@@ -18,9 +18,6 @@ const copy = {
     map: "Start with the map",
     maturity: "Maturity model",
     tools: "Tools",
-    boundaryTitle: "Product boundary",
-    boundaryCopy:
-      "For now this is one static GitHub Pages site. The product boundary is explicit: `/` is the personal executive landing, `/handbook` is the handbook product.",
     useTitle: "How to use the handbook",
     useCopy: "Do not read it linearly. Start from the platform problem in front of you.",
     steps: [
@@ -51,27 +48,24 @@ const copy = {
     map: "Начать с карты",
     maturity: "Модель зрелости",
     tools: "Инструменты",
-    boundaryTitle: "Граница продуктов",
-    boundaryCopy:
-      "Пока это один статический сайт на GitHub Pages. Граница уже явная: `/` — личная страница, `/handbook` — хэндбук как отдельный продукт.",
     useTitle: "Как пользоваться хэндбуком",
     useCopy: "Не читайте подряд. Начните с той платформенной проблемы, которая уже болит.",
     steps: [
       ["Нужна общая картина?", "Откройте карту платформы и найдите слой, где нет владельца."],
       ["Нужен язык для CTO?", "Начните с модели зрелости и главы про MaaS vs self-hosted."],
       ["Растёт стоимость или задержка?", "Идите в экономику инференса и prefix cache."],
-      ["Плывёт качество?", "Берите ворота качества, наблюдаемость и ответственность."]
+      ["Плывёт качество?", "Начните с контроля качества, наблюдаемости и ответственности."]
     ],
     layersTitle: "Слои платформы",
     layersCopy: "В карте двенадцать зон ответственности. Если слоя нет, его всё равно кто-то сделает внутри продукта.",
     startsTitle: "Быстрые входы",
-    startsCopy: "Основные главы для первой публичной версии.",
+    startsCopy: "Короткий маршрут по основным главам v0.1.",
     artifactsTitle: "Инструменты и шаблоны",
-    artifactsCopy: "Хэндбук должен расти в карты, чеклисты, шаблоны и небольшие диагностические инструменты.",
+    artifactsCopy: "Карты, чеклисты, шаблоны и инструменты собраны как рабочие артефакты, а не как список статей.",
     artifacts: [
       ["Prefix Cache Auditor", "Ищет нестабильный префикс, динамические поля и дрейф схем.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Оценивает реальную стоимость с кешированными входными токенами.", "/tools/llm-cost-calculator"],
-      ["Чеклист ворот качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
+      ["Чеклист контроля качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
       ["Шаблоны", "Следующие: RFC AI-сценария, релиз модели, отчёт по качеству и разбор инцидента.", ""]
     ]
   }
@@ -105,7 +99,7 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
               </Link>
             </Button>
             <Button asChild variant="ghost" size="lg">
-              <Link href={localizedPath("/tools/prefix-cache-auditor", locale)}>
+              <Link href={localizedPath("/tools", locale)}>
                 {t.tools} <Wrench data-icon="inline-end" />
               </Link>
             </Button>
@@ -133,11 +127,6 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
             ))}
           </div>
         </div>
-      </section>
-
-      <section className="mt-16 rounded-lg border border-border bg-card/45 p-5">
-        <p className="font-mono text-xs uppercase text-primary">{t.boundaryTitle}</p>
-        <p className="mt-3 max-w-4xl text-sm leading-6 text-muted-foreground">{t.boundaryCopy}</p>
       </section>
 
       <HandbookSection title={t.useTitle} copy={t.useCopy}>
@@ -199,8 +188,8 @@ function HandbookSection({
   return (
     <section className="mt-20">
       <div className="mb-8 max-w-3xl">
-        <p className="font-mono text-xs uppercase text-primary">{title}</p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-normal md:text-5xl">{copy}</h2>
+        <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{title}</h2>
+        <p className="mt-3 text-base leading-7 text-muted-foreground">{copy}</p>
       </div>
       {children}
     </section>

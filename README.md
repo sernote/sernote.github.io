@@ -23,7 +23,6 @@ Node.js 22 or newer is recommended.
 ## Routes
 
 - `/` - personal executive landing
-- `/ru` - Russian personal executive landing
 - `/about` - bio and positioning
 - `/projects` - flagship projects and tools
 - `/talks` - conference and webinar topics
@@ -31,22 +30,24 @@ Node.js 22 or newer is recommended.
 - `/contact` - public contact links
 - `/handbook` - Production AI Platform Handbook landing
 - `/handbook/...` - MDX handbook chapters
-- `/ru/handbook` - Russian handbook landing
-- `/ru/handbook/...` - Russian MDX handbook chapters
+- `/en` - English personal executive landing
+- `/en/handbook` - English handbook landing
+- `/en/handbook/...` - English MDX handbook chapters
 - `/tools/prefix-cache-auditor` - client-side prefix cache audit
 - `/tools/llm-cost-calculator` - client-side LLM cost model
-- `/tools/ai-quality-gate-checklist` - client-side quality gate checklist
-- `/ru/tools/...` - Russian tool pages
+- `/tools/ai-quality-gate-checklist` - client-side rollout quality checklist
+- `/en/tools/...` - English tool pages
+- `/ru/...` - legacy Russian routes kept for compatibility
 
 ## Localization
 
-English is the default route set. Russian pages are served under `/ru`.
+Russian is the default route set and is served from the root. English pages are served under `/en`.
 
 The language switcher maps equivalent static routes:
 
-- `/handbook/platform-map` -> `/ru/handbook/platform-map`
-- `/tools/prefix-cache-auditor` -> `/ru/tools/prefix-cache-auditor`
-- `/writing` -> `/ru/writing`
+- `/handbook/platform-map` -> `/en/handbook/platform-map`
+- `/tools/prefix-cache-auditor` -> `/en/tools/prefix-cache-auditor`
+- `/writing` -> `/en/writing`
 
 Marketing and tool UI copy lives in `lib/i18n.ts`. English handbook content lives in `content/handbook`, and Russian handbook content lives in `content/handbook-ru`.
 
@@ -177,7 +178,7 @@ The site references only verified public surfaces:
 - Telegram: `https://t.me/s/sergeinotevskii`
 - Habr articles: `https://habr.com/ru/users/Ser_no/articles/`
 
-The initial handbook and writing pages use public themes around prefix cache, effective cost with cache, MaaS vs self-hosted, AI quality gates and production AI platform engineering.
+The initial handbook and writing pages use public themes around prefix cache, effective cost with cache, MaaS vs self-hosted, AI quality review and production AI platform engineering.
 
 ## Agent Notes
 

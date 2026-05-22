@@ -197,7 +197,7 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     status: "available",
     href: "/handbook/evals/ai-quality-gate",
     tracks: ["lead", "cto", "backend-ai"],
-    title: { en: "AI Quality Gate", ru: "Ворота качества AI" },
+    title: { en: "AI Quality Gate", ru: "Контроль качества ИИ" },
     description: {
       en: "A rollout loop that prevents silent quality degradation.",
       ru: "Цикл выкатки, который не даёт качеству деградировать незаметно."
@@ -269,7 +269,7 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     status: "available",
     href: "/tools/ai-quality-gate-checklist",
     tracks: ["lead", "backend-ai", "cto"],
-    title: { en: "AI Quality Gate Checklist", ru: "Чеклист ворот качества" },
+    title: { en: "AI Quality Gate Checklist", ru: "Чеклист контроля качества" },
     description: {
       en: "Local readiness review before rollout.",
       ru: "Локальная проверка готовности перед выкаткой."

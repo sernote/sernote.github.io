@@ -29,13 +29,13 @@ updated: "2026-05-22"
 
 ## Быстрый выбор
 
-- Нужна общая картина -> [Карта Production AI Platform](/ru/handbook/platform-map).
-- Нужно объяснить зрелость руководству -> [Модель зрелости AI-платформы](/ru/handbook/maturity-model).
-- Выбираете MaaS, self-hosted или гибридный подход -> [MaaS vs Self-hosted](/ru/handbook/strategy/maas-vs-self-hosted).
-- Растёт стоимость или задержка -> [Экономика инференса](/ru/handbook/economics/inference-economics) и [Prefix Cache](/ru/handbook/caching/prefix-cache).
-- Плывёт качество после смены модели или промпта -> [ворота качества AI](/ru/handbook/evals/ai-quality-gate).
-- Не хватает логов для разборов -> [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist).
-- Непонятно, кто отвечает за AI-сценарий -> [Ответственность и операционная модель](/ru/handbook/operating-model/ownership).
+- Нужна общая картина -> [Карта Production AI Platform](/handbook/platform-map).
+- Нужно объяснить зрелость руководству -> [Модель зрелости AI-платформы](/handbook/maturity-model).
+- Выбираете MaaS, self-hosted или гибридный подход -> [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted).
+- Растёт стоимость или задержка -> [Экономика инференса](/handbook/economics/inference-economics) и [Prefix Cache](/handbook/caching/prefix-cache).
+- Плывёт качество после смены модели или промпта -> [контроль качества ИИ](/handbook/evals/ai-quality-gate).
+- Не хватает логов для разборов -> [Чеклист наблюдаемости LLM](/handbook/observability/llm-observability-checklist).
+- Непонятно, кто отвечает за AI-сценарий -> [Ответственность и операционная модель](/handbook/operating-model/ownership).
 
 ## Ментальная модель
 
@@ -46,9 +46,9 @@ Production AI-платформа - это не один слой. Это свя�
 ## Для разных ролей
 
 - AI Platform Lead: карта, модель зрелости, AI Gateway, проверка качества, наблюдаемость, ответственность.
-- Staff Engineer: карта платформы, инференс-рантайм, prefix cache, ворота качества.
+- Staff Engineer: карта платформы, инференс-рантайм, prefix cache, контроль качества.
 - CTO / Head of Engineering: модель зрелости, MaaS vs self-hosted, экономика инференса, операционная модель.
-- Product Engineer: стартовая страница, AI Gateway, чеклист наблюдаемости, ворота качества.
+- Product Engineer: стартовая страница, AI Gateway, чеклист наблюдаемости, контроль качества.
 
 ## Что читать первым
 
@@ -58,7 +58,7 @@ Production AI-платформа - это не один слой. Это свя�
     "Если нет общего языка зрелости, начните с Maturity Model.",
     "Если есть спор MaaS vs self-hosted, начните со стратегической главы.",
     "Если кеш не даёт эффекта, начните с Prefix Cache.",
-    "Если релизы моделей опасны, начните с ворот качества."
+    "Если релизы моделей опасны, начните с контроля качества."
   ]}
 />
 
@@ -82,6 +82,6 @@ v0.1 ещё не пытается закрыть всё. STT, embeddings, защ
 
 ## Связанные главы
 
-- [Карта Production AI Platform](/ru/handbook/platform-map)
-- [Prefix Cache](/ru/handbook/caching/prefix-cache)
-- [Ворота качества AI](/ru/handbook/evals/ai-quality-gate)
+- [Карта Production AI Platform](/handbook/platform-map)
+- [Prefix Cache](/handbook/caching/prefix-cache)
+- [Контроль качества ИИ](/handbook/evals/ai-quality-gate)

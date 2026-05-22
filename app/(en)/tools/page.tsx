@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import { ToolsIndexPageContent } from "@/components/pages/tool-pages";
 
 export const metadata: Metadata = {
-  title: "Tools",
-  description: "Client-side tools for production AI platform work."
+  title: "Инструменты",
+  description: "Локальные инструменты для работы с production AI-платформой."
 };
 
 export default function ToolsPage() {
-  return <ToolsIndexPageContent currentPath="/tools" />;
+  return <ToolsIndexPageContent locale="ru" currentPath="/tools" />;
 }

@@ -2,7 +2,7 @@ export const locales = ["en", "ru"] as const;
 
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = "en";
+export const defaultLocale: Locale = "ru";
 
 export function isLocale(value: string | undefined): value is Locale {
   return value === "en" || value === "ru";
@@ -10,13 +10,13 @@ export function isLocale(value: string | undefined): value is Locale {
 
 export function localizedPath(path: string, locale: Locale): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
+  const withoutLocale = normalized.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
 
   if (locale === "en") {
-    return normalized === "/ru" ? "/" : normalized.replace(/^\/ru(?=\/|$)/, "") || "/";
+    return withoutLocale === "/" ? "/en" : `/en${withoutLocale}`;
   }
 
-  const withoutLocale = normalized.replace(/^\/ru(?=\/|$)/, "") || "/";
-  return withoutLocale === "/" ? "/ru" : `/ru${withoutLocale}`;
+  return withoutLocale;
 }
 
 export function alternateLocalePath(path: string, locale: Locale): string {
@@ -29,7 +29,7 @@ export const siteLinks = {
 };
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://sernote.github.io";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://notevskii.tech";
 
 export function getSiteConfig(locale: Locale = defaultLocale) {
   return {
@@ -78,7 +78,7 @@ export function getExpertiseAreas(locale: Locale = defaultLocale) {
         "vLLM и GPU",
         "Маршрутизация и резервные пути",
         "Экономика prefix cache",
-        "Оценка качества и ворота релиза",
+        "Оценка качества и релизный контроль",
         "Наблюдаемость LLM",
         "Защитные контуры и ответственность"
       ]
@@ -126,7 +126,7 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
           description: "От исследования до теневого теста, канареечной выкатки, production, отката и вывода из эксплуатации."
         },
         {
-          title: "Оценка качества и ворота релиза",
+          title: "Оценка качества и релизный контроль",
           description: "Датасеты, регрессионные проверки, канареечная выкатка и обратная связь."
         },
         {
@@ -223,7 +223,7 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
             description: "Как стабильный префикс, схемы инструментов и маршрутизация влияют на реальную стоимость."
           },
           {
-            title: "AI Quality Gate",
+            title: "Контроль качества ИИ",
             href: "/handbook/evals/ai-quality-gate",
             description: "Процесс, который не даёт качеству незаметно деградировать."
           },
@@ -635,13 +635,13 @@ const ruDictionary = {
     },
     sections: {
       proofTitle: "Почему мне можно доверять",
-      proofCopy: "Публичные, очищенные заметки из практики production.",
+      proofCopy: "Публичные, очищенные заметки из production-контекста.",
       problemTitle: "После демо",
       problemCopy: "Демо работает. Потом начинается production.",
       layersTitle: "Слои платформы",
       layersCopy: "Хэндбук устроен вокруг ответственности платформы, а не вокруг хайпа.",
       expertiseTitle: "Где я полезен",
-      expertiseCopy: "Разбор архитектуры, стратегия платформы, ворота качества и экономика инференса.",
+      expertiseCopy: "Разбор архитектуры, стратегия платформы, контроль качества и экономика инференса.",
       projectsTitle: "Проекты",
       projectsCopy: "Хэндбук - главный проект. Вокруг него растут инструменты и шаблоны.",
       writingTitle: "Тексты",
@@ -693,7 +693,7 @@ const ruDictionary = {
         "AI Platform Lead. Строю AI-платформы для production: LLM, STT, embeddings и агенты. Публичная работа здесь про production-вкус: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
       cards: [
         ["Инженерная глубина", "Свой инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
-        ["Системы качества", "Проверочные датасеты, обратная связь, регрессионные проверки и ворота релиза моделей."],
+        ["Системы качества", "Проверочные датасеты, обратная связь, регрессионные проверки и контроль релиза моделей."],
         ["Платформенное лидерство", "Операционная модель, ответственность, опыт разработчиков, разбор стоимости, инциденты и очищенные публичные модели."]
       ]
     },
@@ -701,7 +701,7 @@ const ruDictionary = {
       label: "Проекты",
       title: "Публичные артефакты про AI-платформы.",
       copy:
-        "План строится вокруг артефактов: карта Production AI Platform, Prefix Cache Auditor, набор ворот качества AI, затем полный хэндбук."
+        "План строится вокруг артефактов: карта Production AI Platform, Prefix Cache Auditor, набор проверок качества ИИ, затем полный хэндбук."
     },
     writing: {
       label: "Тексты",
@@ -714,9 +714,9 @@ const ruDictionary = {
     },
     talks: {
       label: "Выступления",
-      title: "Конференции и заметки из практики.",
+      title: "Конференции и технические заметки.",
       copy:
-        "Доклады про трудный переход от демо к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, ворота качества и операционная модель."
+        "Доклады про трудный переход от демо к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, контроль качества и операционная модель."
     },
     contact: {
       label: "Контакты",
@@ -741,7 +741,7 @@ const ruDictionary = {
       "/tools/prefix-cache-auditor"
     ],
     [
-      "Набор ворот качества AI",
+      "Набор проверок качества ИИ",
       "Чеклист готовности к выкатке: проверка качества, регрессии, канареечная выкатка, обратная связь, резервный маршрут и ответственность.",
       "/tools/ai-quality-gate-checklist"
     ]
@@ -786,13 +786,13 @@ const ruDictionary = {
       metrics: ["Без кеша", "С кешем", "Экономия", "Процент экономии"]
     },
     quality: {
-      title: "Чеклист ворот качества AI",
+      title: "Чеклист контроля качества ИИ",
       copy:
         "Локальный чеклист готовности к выкатке: проверка качества, регрессии, канареечная выкатка, наблюдаемость, резервный маршрут и ответственность.",
-      checklistTitle: "Чеклист ворот качества",
+      checklistTitle: "Чеклист контроля качества",
       checklistDescription: "Только локальное состояние. Используй перед выкаткой.",
       readinessTitle: "Готовность",
-      readinessDescription: "Ворота качества - это процесс, а не одна оценка. Здесь лёгкая v0-проверка.",
+      readinessDescription: "Контроль качества перед релизом - это процесс, а не одна оценка. Здесь лёгкая v0-проверка.",
       complete: "проверок закрыто",
       status: "Статус",
       statuses: {
@@ -824,7 +824,7 @@ const ruDictionary = {
         ["0. Demo", "Один API-ключ, один сценарий", "Ничего не измеряется"],
         ["1. Продуктовая интеграция", "AI встроен в продукт", "Качество и стоимость слабо контролируются"],
         ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё хаотичен"],
-        ["3. Ворота качества", "Датасеты, оценки и регрессии", "Релизы моделей замедляются"],
+        ["3. Контроль качества", "Датасеты, оценки и регрессии", "Релизы моделей замедляются"],
         ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
         ["5. AI Platform", "Жизненный цикл, наблюдаемость и управление", "Ответственность нужно масштабировать"],
         ["6. AI-native org", "AI в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]

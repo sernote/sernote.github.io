@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparation complete, review-driven editorial pass complete, and product-onboarding improvements complete.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, and default-root Russian routing complete.
 
 ## Completed
 
@@ -83,6 +83,21 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
 - Reduced the personal landing platform-map section to a concise preview and kept the full 12-layer map inside the handbook.
 - Performed an additional Russian wording pass after review feedback to remove visible `feature`, `data control`, `fallback`, `guardrails` and similar avoidable English calques from Russian chapter text.
 - Added `public/CNAME` for `notevskii.tech` and updated README deployment notes for the custom domain.
+- Switched the primary public route set to Russian at the root:
+  - `/`
+  - `/handbook`
+  - `/tools`
+  - `/writing`
+  - `/talks`
+  - `/contact`
+- Moved the English public route set under `/en/...`.
+- Kept `/ru/...` as legacy compatibility routes while making public navigation point to the unprefixed Russian routes.
+- Removed the public "product boundary" note from the handbook landing.
+- Fixed handbook landing section hierarchy so section headings are short labels and explanatory text remains body copy.
+- Updated the handbook tools CTA to point to `/tools` instead of the Prefix Cache Auditor.
+- Replaced the awkward Russian public labels around "ворота качества" with "контроль качества" / "проверка качества" wording.
+- Replaced the chapter metadata chip `Практика` with clear level labels such as `Средний уровень`.
+- Translated Russian chapter audience metadata badges instead of showing raw English role labels.
 
 ## Validation results
 
@@ -134,6 +149,16 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
   - GitHub Pages is configured with `cname: notevskii.tech`, `build_type: workflow` and `https_enforced: true`.
   - `curl -I https://notevskii.tech` returned `HTTP/2 200`.
   - `curl -I https://www.notevskii.tech` returned `HTTP/2 301` to `https://notevskii.tech/`.
+- Default-root Russian routing and handbook landing validation:
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 80 static/SSG pages.
+  - Static smoke checks confirmed `/` renders `lang="ru"` and `/en/` renders `lang="en"`.
+  - Static smoke checks confirmed `/tools/` is the tools index and links to `/tools/llm-cost-calculator/`.
+  - Static smoke checks confirmed `/en/tools/` links to `/en/tools/llm-cost-calculator/`.
+  - Static smoke checks confirmed `/handbook/` no longer contains the removed "Граница продуктов" block or the old `Практика` / `Ворота качества` labels.
+  - Desktop screenshots for `/handbook/` and `/tools/` were captured with local headless Chrome from the static export.
 
 ## Decisions
 
@@ -146,11 +171,13 @@ MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparat
   - Habr: `https://habr.com/ru/users/Ser_no/articles/`
 - Treated public Habr topics on prefix cache and effective cost as content anchors.
 - Kept examples synthetic and sanitized.
-- Chose route-prefix i18n (`/ru/...`) instead of localStorage/client-only toggling to preserve static hosting and direct links.
+- Chose route-prefix i18n for the secondary language instead of localStorage/client-only toggling to preserve static hosting and direct links.
+- Chose Russian as the root language for `notevskii.tech`; English is available under `/en/...`.
+- Kept `/ru/...` routes as compatibility aliases for previously shared links.
 - Kept English as the default route set to avoid breaking existing URLs.
 - Created a second Fumadocs source for Russian MDX instead of trying to translate handbook content at runtime.
 - Targeted GitHub Pages deployment via GitHub Actions rather than committing `out/` to the repository.
-- Kept root-relative asset paths; the target is a user Pages repo named `sernote.github.io`, now served through the custom domain `notevskii.tech`.
+- Kept root-relative asset paths; the target is a user Pages repo named `sernote.github.io`, served through the custom domain `notevskii.tech`.
 - Added `public/CNAME` with `notevskii.tech` for GitHub Pages custom-domain publishing.
 - Kept established technical terms in the Russian version where they are useful for the target audience, but replaced avoidable English wording with Russian wording.
 - Treated `feature` as `фича` or `возможность` by context; treated `data control` as `контроль данных`.

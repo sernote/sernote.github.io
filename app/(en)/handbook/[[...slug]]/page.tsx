@@ -8,12 +8,12 @@ import { ChapterMeta } from "@/components/handbook/chapter-meta";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
 import { HandbookLanding } from "@/components/pages/handbook-landing";
-import { source } from "@/lib/source";
+import { sourceRuRoot } from "@/lib/source";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return [{ slug: [] }, ...source.generateParams().filter((param) => param.slug?.length)];
+  return [{ slug: [] }, ...sourceRuRoot.generateParams().filter((param) => param.slug?.length)];
 }
 
 export async function generateMetadata({
@@ -25,11 +25,11 @@ export async function generateMetadata({
   if (!slug || slug.length === 0) {
     return {
       title: "Production AI Platform Handbook",
-      description: "From API key to platform: a field guide for production AI platforms."
+      description: "От API-ключа к платформе: практический хэндбук о production AI."
     };
   }
 
-  const page = source.getPage(slug);
+  const page = sourceRuRoot.getPage(slug);
 
   if (!page) {
     return {};
@@ -44,10 +44,10 @@ export async function generateMetadata({
 export default async function HandbookPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
   if (!slug || slug.length === 0) {
-    return <HandbookLanding locale="en" />;
+    return <HandbookLanding locale="ru" />;
   }
 
-  const page = source.getPage(slug);
+  const page = sourceRuRoot.getPage(slug);
 
   if (!page) {
     notFound();
@@ -58,15 +58,15 @@ export default async function HandbookPage({ params }: { params: Promise<{ slug?
 
   return (
     <DocsPage toc={page.data.toc} tableOfContent={{ enabled: true }}>
-      <LanguageSwitcher locale="en" currentPath={currentPath} />
+      <LanguageSwitcher locale="ru" currentPath={currentPath} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
-      <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} locale="en" />
-      <ChapterActions locale="en" itemId={currentPath} />
+      <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} locale="ru" />
+      <ChapterActions locale="ru" itemId={currentPath} />
       <DocsBody>
         <MDX
           components={getMDXComponents({
-            a: createRelativeLink(source, page)
+            a: createRelativeLink(sourceRuRoot, page)
           })}
         />
       </DocsBody>

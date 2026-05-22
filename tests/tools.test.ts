@@ -73,10 +73,12 @@ describe("AI Quality Gate checklist", () => {
 });
 
 describe("locale routing", () => {
-  it("maps default routes to Russian static routes and back", () => {
-    expect(localizedPath("/handbook/platform-map", "ru")).toBe("/ru/handbook/platform-map");
-    expect(localizedPath("/ru/handbook/platform-map", "en")).toBe("/handbook/platform-map");
-    expect(alternateLocalePath("/tools/prefix-cache-auditor", "en")).toBe("/ru/tools/prefix-cache-auditor");
-    expect(alternateLocalePath("/ru/tools/prefix-cache-auditor", "ru")).toBe("/tools/prefix-cache-auditor");
+  it("keeps Russian routes at the root and maps English routes under /en", () => {
+    expect(localizedPath("/handbook/platform-map", "ru")).toBe("/handbook/platform-map");
+    expect(localizedPath("/ru/handbook/platform-map", "ru")).toBe("/handbook/platform-map");
+    expect(localizedPath("/handbook/platform-map", "en")).toBe("/en/handbook/platform-map");
+    expect(localizedPath("/ru/handbook/platform-map", "en")).toBe("/en/handbook/platform-map");
+    expect(alternateLocalePath("/tools/prefix-cache-auditor", "ru")).toBe("/en/tools/prefix-cache-auditor");
+    expect(alternateLocalePath("/en/tools/prefix-cache-auditor", "en")).toBe("/tools/prefix-cache-auditor");
   });
 });

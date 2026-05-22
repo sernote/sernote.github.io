@@ -16,10 +16,10 @@ const levelLabels = {
     expert: "Expert"
   },
   ru: {
-    beginner: "Основа",
-    intermediate: "Практика",
-    advanced: "Глубина",
-    expert: "Эксперт"
+    beginner: "Базовый уровень",
+    intermediate: "Средний уровень",
+    advanced: "Продвинутый уровень",
+    expert: "Экспертный уровень"
   }
 } as const;
 
@@ -36,15 +36,15 @@ const audienceLabels = {
     "product-engineer": "Product Engineers"
   },
   ru: {
-    "ai-platform-lead": "AI Platform Leads",
-    "staff-engineer": "Staff Engineers",
-    "principal-engineer": "Principal Engineers",
-    "ml-platform-engineer": "ML Platform Engineers",
-    "mlops-engineer": "MLOps Engineers",
-    "backend-engineer": "Backend Engineers",
-    "engineering-manager": "Engineering Managers",
+    "ai-platform-lead": "Руководители AI-платформ",
+    "staff-engineer": "Staff-инженеры",
+    "principal-engineer": "Principal-инженеры",
+    "ml-platform-engineer": "ML Platform-инженеры",
+    "mlops-engineer": "MLOps-инженеры",
+    "backend-engineer": "Backend-инженеры",
+    "engineering-manager": "Инженерные руководители",
     cto: "CTO",
-    "product-engineer": "Product Engineers"
+    "product-engineer": "Продуктовые инженеры"
   }
 } as const;
 

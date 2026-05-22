@@ -7,7 +7,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 
 import { getSiteConfig } from "@/lib/i18n";
 
-const siteConfig = getSiteConfig("en");
+const siteConfig = getSiteConfig("ru");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
         <RootProvider>{children}</RootProvider>
       </body>
