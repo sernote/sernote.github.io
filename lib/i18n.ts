@@ -43,7 +43,7 @@ export function getSiteConfig(locale: Locale = defaultLocale) {
     url: siteUrl,
     description:
       locale === "ru"
-        ? "Хэндбук о production AI-платформах: инференс, маршрутизация, кеш, проверка качества, защитные контуры, наблюдаемость, стоимость и ответственность."
+        ? "Хэндбук про ИИ-платформы в продакшене: инференс, маршрутизация, кеш, проверка качества, защитные контуры, наблюдаемость, стоимость и ответственность."
         : "A field guide for building LLM, STT, embeddings and agent platforms in production: inference, routing, cache, evals, guardrails, observability, cost, incidents and ownership.",
     links: siteLinks
   };
@@ -77,11 +77,11 @@ export function getNavItems(locale: Locale = defaultLocale) {
 export function getExpertiseAreas(locale: Locale = defaultLocale) {
   return locale === "ru"
     ? [
-        "AI-платформы",
+        "ИИ-платформы",
         "Свой инференс",
         "vLLM и GPU",
         "Маршрутизация и резервные пути",
-        "Экономика prefix cache",
+        "Экономика кеша префикса",
         "Оценка качества и релизный контроль",
         "Наблюдаемость LLM",
         "Защитные контуры и ответственность"
@@ -118,8 +118,8 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
           description: "Алиасы, резервные пути, канареечные выкатки и версии моделей."
         },
         {
-          title: "Инференс-рантайм",
-          description: "Запуск LLM, STT, embeddings и rerankers с бюджетами задержки и пропускной способности."
+          title: "Среда инференса",
+          description: "Запуск LLM, STT, embeddings и моделей ранжирования с бюджетами задержки и пропускной способности."
         },
         {
           title: "Кеширование",
@@ -127,7 +127,7 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
         },
         {
           title: "Жизненный цикл модели",
-          description: "От исследования до теневого теста, канареечной выкатки, production, отката и вывода из эксплуатации."
+          description: "От исследования до теневого теста, канареечной выкатки, продакшена, отката и вывода из эксплуатации."
         },
         {
           title: "Оценка качества и релизный контроль",
@@ -472,22 +472,22 @@ const enDictionary = {
       ]
     },
     sections: {
-      proofTitle: "Why this work exists",
-      proofCopy: "Public, sanitized field notes from production AI platform work.",
+      proofTitle: "Practice",
+      proofCopy: "Platform work across inference, quality and operations.",
       problemTitle: "After the demo",
-      problemCopy: "The demo works. Then production starts.",
-      layersTitle: "Platform layers",
-      layersCopy: "The handbook is organized by platform responsibility, not by hype cycle.",
+      problemCopy: "The demo works. Platform questions start next.",
+      layersTitle: "Handbook",
+      layersCopy: "A responsibility map: scenarios, gateway, routing, inference, cache, quality, observability, cost and owners.",
       expertiseTitle: "Where I am useful",
-      expertiseCopy: "Architecture reviews, platform strategy, quality gates and inference economics.",
-      projectsTitle: "Projects",
-      projectsCopy: "The handbook is the flagship project. Tools and templates grow around it.",
+      expertiseCopy: "Architecture review, platform strategy, quality control and inference economics.",
+      projectsTitle: "What to open",
+      projectsCopy: "The handbook, tools and public artifacts in one compact path.",
       writingTitle: "Writing",
-      writingCopy: "Public writing becomes chapters, checklists and tools inside the handbook.",
+      writingCopy: "Long-form Habr articles and short Telegram notes.",
       talksTitle: "Talks",
-      talksCopy: "Talks and conference material feed the strategy, inference and economics tracks.",
+      talksCopy: "Videos and podcasts about model choice, platform strategy and engineering work.",
       engagementTitle: "Ways to work",
-      engagementCopy: "Clear formats for talks, reviews and executive conversations.",
+      engagementCopy: "Architecture review, working session, talk or handbook collaboration.",
       authorLabel: "About the author",
       centralSentenceLabel: "Central sentence",
       readMore: "Read more"
@@ -496,7 +496,7 @@ const enDictionary = {
       ["Production AI platforms", "LLM · STT · embeddings · agents"],
       ["Self-hosted inference", "vLLM · GPU capacity · routing"],
       ["Quality systems", "Evals · regression · feedback loops"],
-      ["Public field notes", "Habr · Telegram · talks"]
+      ["Public work", "Habr · Telegram · talks"]
     ],
     metrics: [
       "Latency spikes.",
@@ -694,42 +694,42 @@ const ruDictionary = {
       badge: "AI Platform Lead",
       title: "Sergei Notevskii",
       copy:
-        "Строю AI-платформы для production: LLM, STT, embeddings, агенты, инференс, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
+        "Строю ИИ-платформы для продакшена: LLM, STT, embeddings, агенты, инференс, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
       start: "Открыть хэндбук",
       map: "Карта платформы",
       projects: "Связаться",
       mapVersion: "От API-ключа к платформе",
       layers: [
         "API-ключ / демо",
-        "Gateway",
+        "AI Gateway",
         "Маршрутизация / инференс / кеш",
         "Оценка качества / наблюдаемость / стоимость",
         "Защитные контуры / ответственность"
       ]
     },
     sections: {
-      proofTitle: "Почему мне можно доверять",
-      proofCopy: "Публичные, очищенные заметки из production-контекста.",
+      proofTitle: "Практика",
+      proofCopy: "Опыт на стыке платформы, инференса и качества.",
       problemTitle: "После демо",
-      problemCopy: "Демо работает. Потом начинается production.",
-      layersTitle: "Слои платформы",
-      layersCopy: "Хэндбук устроен вокруг ответственности платформы, а не вокруг хайпа.",
+      problemCopy: "Демо работает. Дальше начинаются платформенные вопросы.",
+      layersTitle: "Хэндбук",
+      layersCopy: "Карта ответственности: сценарии, AI Gateway, маршрутизация, инференс, кеш, качество, наблюдаемость, стоимость и владельцы.",
       expertiseTitle: "Где я полезен",
       expertiseCopy: "Разбор архитектуры, стратегия платформы, контроль качества и экономика инференса.",
-      projectsTitle: "Проекты",
-      projectsCopy: "Хэндбук - главный проект. Вокруг него растут инструменты и шаблоны.",
+      projectsTitle: "Что открыть",
+      projectsCopy: "Хэндбук, инструменты и публичные материалы в одном коротком маршруте.",
       writingTitle: "Тексты",
-      writingCopy: "Публичные статьи становятся главами, чеклистами и инструментами внутри хэндбука.",
+      writingCopy: "Длинные разборы на Habr и короткие заметки в Telegram.",
       talksTitle: "Выступления",
-      talksCopy: "Доклады становятся главами про стратегию, инференс и экономику.",
-      engagementTitle: "Форматы взаимодействия",
-      engagementCopy: "Понятные форматы для докладов, разборов и разговоров на уровне руководства.",
+      talksCopy: "Видео и подкасты про выбор моделей, стратегию платформы и инженерную работу.",
+      engagementTitle: "Форматы работы",
+      engagementCopy: "Разбор архитектуры, рабочая сессия, доклад или коллаборация.",
       authorLabel: "Об авторе",
       centralSentenceLabel: "Центральная фраза",
       readMore: "Подробнее"
     },
     proof: [
-      ["Production AI-платформы", "LLM · STT · embeddings · агенты"],
+      ["ИИ-платформы", "LLM · STT · embeddings · агенты"],
       ["Свой инференс", "vLLM · GPU · маршрутизация"],
       ["Системы качества", "Оценки · регрессии · обратная связь"],
       ["Публичные материалы", "Habr · Telegram · доклады"]
@@ -743,9 +743,9 @@ const ruDictionary = {
       "Владелец качества размыт."
     ],
     authorCopy:
-      "Я пишу Production AI Platform Handbook: практический хэндбук для команд, которые превращают AI-демо в production-платформу.",
+      "Я пишу Production AI Platform Handbook: практический хэндбук для команд, которые превращают демо с моделью в ИИ-платформу.",
     centralSentence:
-      "Материалы публичные и очищенные: без внутренних деталей, но с production-вкусом.",
+      "Материалы публичные и очищенные: без внутренних деталей, но со следами реальной эксплуатации.",
     engagements: [
       [
         "Разбор архитектуры",
@@ -755,7 +755,7 @@ const ruDictionary = {
         "Рабочая сессия для руководства",
         "Синхронизация стратегии MaaS vs self-hosted, зрелости платформы, ответственности команды и первого плана развития."
       ],
-      ["Доклад или подкаст", "Практичный разговор о production AI-платформах без хайпа."],
+      ["Доклад или подкаст", "Практичный разговор об ИИ-платформах без хайпа."],
       ["Коллаборация по хэндбуку", "Превращение публичных заметок, инструментов и шаблонов в устойчивые материалы хэндбука."]
     ]
   },
@@ -764,7 +764,7 @@ const ruDictionary = {
       label: "Об авторе",
       title: "Sergei Notevskii",
       copy:
-        "AI Platform Lead. Строю AI-платформы для production: LLM, STT, embeddings и агенты. Публичная работа здесь про production-вкус: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
+        "AI Platform Lead. Строю ИИ-платформы для продакшена: LLM, STT, embeddings и агенты. Публичная работа здесь про практический опыт: как делать ИИ-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
       cards: [
         ["Инженерная глубина", "Свой инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
         ["Системы качества", "Проверочные датасеты, обратная связь, регрессионные проверки и контроль релиза моделей."],
@@ -773,7 +773,7 @@ const ruDictionary = {
     },
     projects: {
       label: "Проекты",
-      title: "Публичные артефакты про AI-платформы.",
+      title: "Публичные артефакты про ИИ-платформы.",
       copy:
         "План строится вокруг артефактов: карта Production AI Platform, Prefix Cache Auditor, набор проверок качества ИИ, затем полный хэндбук."
     },
@@ -790,15 +790,15 @@ const ruDictionary = {
       label: "Выступления",
       title: "Конференции и технические заметки.",
       copy:
-        "Доклады про трудный переход от демо к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, контроль качества и операционная модель."
+        "Доклады про трудный переход от демо к продакшену: MaaS vs self-hosted, агенты, экономика кеша, vLLM, контроль качества и операционная модель."
     },
     contact: {
       label: "Контакты",
       title: "Доклады, коллаборации и разговоры про платформы.",
       copy:
-        "Лучшее пересечение: проектирование production AI-платформ, self-hosted инференс, экономика кеша, проверка качества, наблюдаемость, защитные контуры, операционная модель и платформенное лидерство.",
+        "Лучшее пересечение: проектирование ИИ-платформ для продакшена, self-hosted инференс, экономика кеша, проверка качества, наблюдаемость, защитные контуры, операционная модель и платформенное лидерство.",
       cards: [
-        ["Telegram", "Канал и комментарии про AI-платформы."],
+        ["Telegram", "Канал и комментарии про ИИ-платформы."],
         ["Habr", "Большие статьи и серии на русском."]
       ]
     }

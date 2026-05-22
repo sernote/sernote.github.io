@@ -171,6 +171,17 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Captured a desktop screenshot for `/writing/` with local headless Chrome from the static export.
 - Start-here cleanup validation:
   - Removed the public "What is still missing" / "Чего пока нет" block from the start-here chapter in both languages.
+- Homepage composition cleanup validation:
+  - Reworked the root homepage from repeated large card sections into a shorter sequence: hero, proof strip, after-demo problems, handbook map, recommended links, useful formats and public work.
+  - Removed old homepage phrasing from the built static HTML: "Почему мне можно доверять", "production-контекст", "Публичные, очищенные", "Форматы взаимодействия", "Демо работает. Потом начинается production", "Хэндбук - главный проект", "Публичные статьи становятся", and "Доклады становятся".
+  - Reduced avoidable English in the Russian root page: `AI-платформы для production` became `ИИ-платформы для продакшена`, and `production-вкус` became wording about real operational experience.
+  - Fixed the desktop header so the author name, navigation, language switch and read button render in the static export.
+  - Shortened the root hero height so the first viewport hints at the next section instead of leaving a large empty top area.
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 80 static/SSG pages.
+  - Captured a full-page desktop screenshot for `/` with Playwright from the local static export.
 
 ## Decisions
 

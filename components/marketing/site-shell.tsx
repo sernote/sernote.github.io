@@ -31,16 +31,16 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
           <span className="flex size-8 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-xs font-semibold text-primary">
             SN
           </span>
-          <span className="hidden text-sm font-semibold tracking-normal sm:block">{siteConfig.author}</span>
+          <span className="text-sm font-semibold tracking-normal max-sm:hidden">{siteConfig.author}</span>
         </Link>
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="flex items-center gap-6 max-md:hidden">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="flex items-center gap-2 max-md:hidden">
           <Button asChild variant="ghost" size="sm">
             <Link href={languageHref} aria-label={dictionary.language.switchTo}>
               {dictionary.language.alternate}

@@ -11,7 +11,7 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+      <div className="mx-auto grid min-h-[calc(82svh-4rem)] w-full max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
         <div className="flex w-full max-w-[358px] flex-col gap-8 sm:max-w-none">
           <div className="flex flex-col gap-5">
             <Badge variant="outline" className="w-fit font-mono uppercase tracking-normal text-primary">
