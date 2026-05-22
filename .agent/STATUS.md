@@ -169,6 +169,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Added `sernote/audit-prompt-caching` as a public project artifact.
   - Local static server smoke checks returned 200 for `/writing/` and `/talks/`.
   - Captured a desktop screenshot for `/writing/` with local headless Chrome from the static export.
+- Start-here cleanup validation:
+  - Removed the public "What is still missing" / "Чего пока нет" block from the start-here chapter in both languages.
 
 ## Decisions
 
