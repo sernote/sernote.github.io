@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, ExternalLink, FileText, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { FinalCta } from "@/components/marketing/final-cta";
@@ -10,11 +11,11 @@ import { WritingPreview } from "@/components/marketing/writing-preview";
 import { MetricGrid } from "@/components/marketing/metric-grid";
 import { PlatformLayerCard } from "@/components/marketing/platform-layer-card";
 import { SectionCard } from "@/components/marketing/section-card";
+import { Button } from "@/components/ui/button";
 import {
   getDictionary,
   getExpertiseAreas,
   getPlatformLayers,
-  getPublicWriting,
   getSiteConfig,
   localizedPath,
   type Locale
@@ -151,29 +152,124 @@ export function WritingPageContent({ locale = "en", currentPath }: PageProps) {
   const dictionary = getDictionary(locale);
   const page = dictionary.pages.writing;
   const siteConfig = getSiteConfig(locale);
-  const publicWriting = getPublicWriting(locale);
+  const topics =
+    locale === "ru"
+      ? ["Кеш префикса", "Стоимость инференса", "Агенты", "vLLM", "Контроль качества", "Наблюдаемость"]
+      : ["Prefix cache", "Inference economics", "Agents", "vLLM", "Quality gates", "Observability"];
+  const editorialSteps =
+    locale === "ru"
+      ? [
+          "Habr: длинные разборы про кеш, стоимость, инференс и архитектурные компромиссы.",
+          "Telegram: короткие заметки, наблюдения и черновики будущих глав.",
+          "Хэндбук: очищенные выводы, чеклисты, карты и шаблоны."
+        ]
+      : [
+          "Habr - long-form breakdowns on cache, cost, inference and architecture trade-offs.",
+          "Telegram - short notes, observations and early drafts for future chapters.",
+          "Handbook - distilled takeaways, checklists, maps and templates."
+        ];
+  const featuredTitle =
+    locale === "ru" ? "Материалы, из которых собирается хэндбук." : "Writing that feeds the handbook.";
+  const channels =
+    locale === "ru"
+      ? [
+          {
+            title: "Статьи на Habr",
+            description: "Длинные технические разборы про кеш, стоимость, инференс и запуск ИИ-сценариев.",
+            href: siteConfig.links.habr,
+            Icon: FileText
+          },
+          {
+            title: "Telegram-канал",
+            description: "Короткие заметки, ссылки, наблюдения и черновые мысли про ИИ-платформы в боевой эксплуатации.",
+            href: siteConfig.links.telegram,
+            Icon: MessageSquare
+          }
+        ]
+      : [
+          {
+            title: "Habr articles",
+            description: "Long-form technical writing on cache, cost, inference and production AI scenarios.",
+            href: siteConfig.links.habr,
+            Icon: FileText
+          },
+          {
+            title: "Telegram channel",
+            description: "Short notes, links, observations and draft thinking about production AI platforms.",
+            href: siteConfig.links.telegram,
+            Icon: MessageSquare
+          }
+        ];
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
       <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
-        <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
-        <div className="mt-12">
-          <WritingPreview locale={locale} />
-        </div>
-        <div className="mt-8 rounded-lg border border-border bg-card/60 p-6">
-          <p className="font-mono text-xs uppercase text-primary">{page.verified}</p>
-          <div className="mt-4 grid gap-3 text-sm text-muted-foreground">
-            <a href={siteConfig.links.telegram}>{page.telegram}</a>
-            <a href={siteConfig.links.habr}>{page.habr}</a>
-            {publicWriting.slice(0, 3).map((item) => (
-              <a key={item.href} href={item.href}>
-                {item.source}: {item.title}
-              </a>
-            ))}
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+          <div>
+            <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
+            <h1 className="max-w-4xl text-4xl font-semibold tracking-normal md:text-6xl">{page.title}</h1>
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild>
+                <a href={siteConfig.links.habr} target="_blank" rel="noreferrer">
+                  {page.habr}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href={siteConfig.links.telegram} target="_blank" rel="noreferrer">
+                  {page.telegram}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {topics.map((topic) => (
+                <span key={topic} className="rounded-full border border-border bg-card/60 px-3 py-1 text-sm text-muted-foreground">
+                  {topic}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+          <aside className="manual-surface rounded-lg p-6">
+            <p className="font-mono text-xs uppercase text-primary">{page.verified}</p>
+            <div className="mt-5 grid gap-4">
+              {editorialSteps.map((step, index) => (
+                <div key={step} className="flex gap-4">
+                  <span className="mt-0.5 font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                  <p className="text-sm leading-6 text-muted-foreground">{step}</p>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </section>
+
+        <section className="mt-16">
+          <p className="mb-3 font-mono text-xs uppercase text-primary">
+            {locale === "ru" ? "Ключевые тексты" : "Selected writing"}
+          </p>
+          <h2 className="mb-7 max-w-3xl text-3xl font-semibold tracking-normal md:text-5xl">{featuredTitle}</h2>
+          <WritingPreview locale={locale} limit={9} />
+        </section>
+
+        <section className="mt-10 grid gap-4 md:grid-cols-2">
+          {channels.map(({ title, description, href, Icon }) => (
+            <a
+              key={title}
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              className="group rounded-lg border border-border/80 bg-card/60 p-5 transition-colors hover:border-primary/45"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <Icon className="h-5 w-5 text-primary" />
+                <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">{description}</p>
+            </a>
+          ))}
+        </section>
       </main>
     </MarketingPage>
   );

@@ -25,7 +25,11 @@ export function alternateLocalePath(path: string, locale: Locale): string {
 
 export const siteLinks = {
   telegram: "https://t.me/s/sergeinotevskii",
-  habr: "https://habr.com/ru/users/Ser_no/articles/"
+  habr: "https://habr.com/ru/users/Ser_no/articles/",
+  auditPromptCaching: "https://github.com/sernote/audit-prompt-caching",
+  talkUral: "https://www.youtube.com/live/2RvzgMYrX0o?si=TrgfDk2wVLht-I6k&t=11102",
+  talkRoii: "https://youtu.be/RHbbeHKGh6I",
+  podcastSmallTalk: "https://www.youtube.com/watch?v=NrvGciRm8Ps&t=1992s"
 };
 
 const siteUrl =
@@ -273,28 +277,58 @@ export function getPublicWriting(locale: Locale = defaultLocale) {
   return locale === "ru"
     ? [
         {
-          title: "Короткий промпт не значит дешёвый промпт",
+          title: "Короткий промпт не значит дешёвый",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1033822/",
-          description: "Agent loops, стабильный список инструментов и дизайн промпта с учётом кеша."
+          description: "Циклы агентов, стабильный список инструментов и промпт, который не ломает кеш."
         },
         {
-          title: "7 анти-паттернов prefix cache",
+          title: "Кеш префикса: 7 анти-паттернов",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1016734/",
-          description: "Дрейф timestamp, плавающий порядок инструментов, round-robin маршрутизация и KV-cache."
+          description: "Метки времени, плавающий порядок инструментов, круговая маршрутизация и срок жизни KV-cache."
         },
         {
-          title: "Реальная стоимость с кешем",
+          title: "Стоимость модели с учётом кеша",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1008320/",
           description: "Почему выбор модели нельзя считать только по цене токенов."
         },
         {
+          title: "Agent Skills: больше, чем папка с промптами",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/980654/",
+          description: "Как навыки агентов связаны с инструментами, RAG, MCP и архитектурой агентных систем."
+        },
+        {
+          title: "Почему миллион токенов не решает проблему контекста",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/976528/",
+          description: "Рабочий контекст, деградация качества и границы длинных контекстных окон."
+        },
+        {
+          title: "ИИ-агенты на примере Deep Research",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/971930/",
+          description: "Чем отличаются одиночный вызов LLM, процесс, RAG и агентный цикл."
+        },
+        {
+          title: "Как стиль ответа влияет на рейтинг LLM",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/904092/",
+          description: "Почему выбор модели нельзя сводить к красивой форме ответа."
+        },
+        {
+          title: "Как выбирать LLM для продукта",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/850614/",
+          description: "Контекст, качество, стоимость, юрисдикция и другие параметры выбора модели."
+        },
+        {
           title: "AI да парен!",
           source: "Telegram",
           href: siteLinks.telegram,
-          description: "Заметки про AI-платформы, vLLM, агентов и продакшн-компромиссы."
+          description: "Заметки про ИИ-платформы, vLLM, агентов и работу в боевой эксплуатации."
         }
       ]
     : [
@@ -317,6 +351,36 @@ export function getPublicWriting(locale: Locale = defaultLocale) {
           description: "Why model choice needs cache-aware economics, not only list prices."
         },
         {
+          title: "Agent Skills are more than a prompt folder",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/980654/",
+          description: "How agent skills relate to tools, RAG, MCP and agent architecture."
+        },
+        {
+          title: "Why one million tokens do not solve context",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/976528/",
+          description: "Working context, quality decay and the limits of long context windows."
+        },
+        {
+          title: "AI agents explained with Deep Research",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/971930/",
+          description: "How LLM calls, workflows, RAG and agent loops differ in practice."
+        },
+        {
+          title: "How answer style changes LLM rankings",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/904092/",
+          description: "Why model choice should not be reduced to polished answer style."
+        },
+        {
+          title: "How to choose an LLM for a product",
+          source: "Habr",
+          href: "https://habr.com/ru/companies/bitrix/articles/850614/",
+          description: "Context, quality, cost, jurisdiction and other model-selection parameters."
+        },
+        {
           title: "AI da paren!",
           source: "Telegram",
           href: siteLinks.telegram,
@@ -329,40 +393,45 @@ export function getTalks(locale: Locale = defaultLocale) {
   return locale === "ru"
     ? [
         {
-          title: "From MaaS to self-hosted / on-premise models",
-          venue: "Merge Tatarstan 2026",
+          title: "Свои ИИ-модели или API по подписке?",
+          venue: "Конференция ROИИ",
           description:
-            "Практический доклад о внутреннем провайдере моделей, self-hosted и мифах перед миграцией."
+            "Доклад про выбор между MaaS, self-hosted и гибридной стратегией для продуктовой ИИ-платформы.",
+          href: siteLinks.talkRoii
         },
         {
-          title: "AI-агенты без тумана",
-          venue: "Internal AI conference / Habr follow-up",
-          description: "Рабочая модель: где LLM-вызов, где процесс, а где agent loop."
+          title: "Управление разработкой",
+          venue: "Ural Digital Weekend 2025",
+          description: "Секция про управление разработкой. Ссылка ведёт сразу на фрагмент с выступлением.",
+          href: siteLinks.talkUral
         },
         {
-          title: "Экономика prefix cache",
-          venue: "Public article series",
+          title: "Как выбрать нейросеть",
+          venue: "Small talk с техдиром",
           description:
-            "Как разбирать падение доли попаданий в кеш, рост стоимости и скачки задержки после небольших правок."
+            "Подкаст про практический выбор моделей, ограничения, стоимость и внедрение в продукт.",
+          href: siteLinks.podcastSmallTalk
         }
       ]
     : [
         {
-          title: "From MaaS to self-hosted / on-premise models",
-          venue: "Merge Tatarstan 2026",
+          title: "Own AI models or subscription API?",
+          venue: "ROII Conference",
           description:
-            "A practical talk about becoming an internal model provider, self-hosted trade-offs and myths to remove before migration."
+            "A talk about choosing between MaaS, self-hosted and hybrid strategy for a product AI platform.",
+          href: siteLinks.talkRoii
         },
         {
-          title: "AI agents without the fog",
-          venue: "Internal AI conference / Habr follow-up",
-          description: "A clear working model for distinguishing LLM calls, workflows and agent loops."
+          title: "Engineering management",
+          venue: "Ural Digital Weekend 2025",
+          description: "A software engineering management section. The link opens the relevant talk timestamp.",
+          href: siteLinks.talkUral
         },
         {
-          title: "Prefix cache economics",
-          venue: "Public article series",
-          description:
-            "A repeatable way to debug why cache hit rate, effective cost and latency drift after harmless changes."
+          title: "How to choose an AI model",
+          venue: "Small talk podcast",
+          description: "A podcast on practical model choice, constraints, cost and product adoption.",
+          href: siteLinks.podcastSmallTalk
         }
       ];
 }
@@ -474,12 +543,12 @@ const enDictionary = {
     },
     writing: {
       label: "Writing",
-      title: "Articles, channel notes and handbook chapters.",
+      title: "Writing about production AI platforms.",
       copy:
-        "Habr articles and Telegram notes become durable handbook pieces: cache checklists, cost models, agent-loop design, vLLM serving notes and platform strategy.",
-      verified: "Verified public links",
-      telegram: "Telegram: AI da paren! / Sergei Notevskii",
-      habr: "Habr: Ser_no articles"
+        "I write about what starts after the demo: cache, cost, inference, agents, quality, observability and ownership.",
+      verified: "How this section works",
+      telegram: "Telegram",
+      habr: "Habr"
     },
     talks: {
       label: "Talks",
@@ -508,6 +577,11 @@ const enDictionary = {
       "Prefix Cache Auditor",
       "A client-side diagnostic tool for unstable prefixes, dynamic fields, tool schema drift and cache-aware recommendations.",
       "/tools/prefix-cache-auditor"
+    ],
+    [
+      "audit-prompt-caching",
+      "An open-source diagnostic package for prompt and prefix cache audits: stable layout, volatile fields and cache-aware recommendations.",
+      siteLinks.auditPromptCaching
     ],
     [
       "AI Quality Gate Kit",
@@ -705,12 +779,12 @@ const ruDictionary = {
     },
     writing: {
       label: "Тексты",
-      title: "Статьи, заметки в канале и главы хэндбука.",
+      title: "Тексты про ИИ-платформы в боевой эксплуатации.",
       copy:
-        "Статьи на Habr и заметки в Telegram становятся материалами хэндбука: чеклисты кеша, модели стоимости, дизайн агентского цикла, заметки про запуск vLLM и стратегию платформы.",
-      verified: "Проверенные публичные ссылки",
-      telegram: "Telegram: AI да парен! / Sergei Notevskii",
-      habr: "Habr: статьи Ser_no"
+        "Пишу о том, что начинается после демо: кеш, стоимость, инференс, агенты, качество, наблюдаемость и ответственность.",
+      verified: "Как устроен раздел",
+      telegram: "Telegram",
+      habr: "Habr"
     },
     talks: {
       label: "Выступления",
@@ -739,6 +813,11 @@ const ruDictionary = {
       "Prefix Cache Auditor",
       "Локальный инструмент для поиска нестабильного префикса, динамических полей, дрейфа схем инструментов и рекомендаций по кешу.",
       "/tools/prefix-cache-auditor"
+    ],
+    [
+      "audit-prompt-caching",
+      "Открытый пакет для аудита кеша: стабильная форма промпта, динамические поля и рекомендации по структуре запроса.",
+      siteLinks.auditPromptCaching
     ],
     [
       "Набор проверок качества ИИ",

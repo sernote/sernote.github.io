@@ -28,10 +28,17 @@ export function SectionCard({ title, description, href }: SectionCardProps) {
     return body;
   }
 
+  if (href.startsWith("http")) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className="block h-full">
+        {body}
+      </a>
+    );
+  }
+
   return (
     <Link href={href} className="block h-full">
       {body}
     </Link>
   );
 }
-

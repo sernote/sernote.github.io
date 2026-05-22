@@ -159,6 +159,16 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Static smoke checks confirmed `/en/tools/` links to `/en/tools/llm-cost-calculator/`.
   - Static smoke checks confirmed `/handbook/` no longer contains the removed "Граница продуктов" block or the old `Практика` / `Ворота качества` labels.
   - Desktop screenshots for `/handbook/` and `/tools/` were captured with local headless Chrome from the static export.
+- Writing, talks and public artifacts validation:
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 80 static/SSG pages.
+  - Reworked `/writing/` from a raw source-link list into a public writing page with cleaner Russian copy, topic chips, source cards and all verified Habr articles.
+  - Added public video/podcast links to `/talks/`.
+  - Added `sernote/audit-prompt-caching` as a public project artifact.
+  - Local static server smoke checks returned 200 for `/writing/` and `/talks/`.
+  - Captured a desktop screenshot for `/writing/` with local headless Chrome from the static export.
 
 ## Decisions
 
@@ -169,6 +179,11 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Used verified public author links only:
   - Telegram: `https://t.me/s/sergeinotevskii`
   - Habr: `https://habr.com/ru/users/Ser_no/articles/`
+- Added verified public media/artifact links supplied by the author:
+  - `https://www.youtube.com/live/2RvzgMYrX0o?si=TrgfDk2wVLht-I6k&t=11102`
+  - `https://youtu.be/RHbbeHKGh6I`
+  - `https://www.youtube.com/watch?v=NrvGciRm8Ps&t=1992s`
+  - `https://github.com/sernote/audit-prompt-caching`
 - Treated public Habr topics on prefix cache and effective cost as content anchors.
 - Kept examples synthetic and sanitized.
 - Chose route-prefix i18n for the secondary language instead of localStorage/client-only toggling to preserve static hosting and direct links.

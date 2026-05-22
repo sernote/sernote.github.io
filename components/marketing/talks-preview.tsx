@@ -7,7 +7,7 @@ export function TalksPreview({ locale = "en" }: { locale?: Locale }) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {talks.map((talk) => (
-        <SectionCard key={talk.title} title={talk.title} description={`${talk.venue}. ${talk.description}`} />
+        <SectionCard key={talk.title} title={talk.title} description={`${talk.venue}. ${talk.description}`} href={talk.href} />
       ))}
     </div>
   );
