@@ -1,31 +1,19 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { getDictionary, localizedPath, type Locale } from "@/lib/i18n";
+import { getNavItems, localizedPath, type Locale } from "@/lib/i18n";
 
 export function baseOptions(locale: Locale = "en"): BaseLayoutProps {
-  const dictionary = getDictionary(locale);
+  const navItems = getNavItems(locale);
 
   return {
     nav: {
-      title: "Production AI Platform Handbook",
+      title: "Sergei Notevskii",
       url: localizedPath("/", locale)
     },
-    links: [
-      {
-        text: dictionary.handbook.home,
-        url: localizedPath("/", locale),
-        active: "url"
-      },
-      {
-        text: dictionary.handbook.tools,
-        url: localizedPath("/tools/prefix-cache-auditor", locale),
-        active: "nested-url"
-      },
-      {
-        text: dictionary.handbook.writing,
-        url: localizedPath("/writing", locale),
-        active: "url"
-      }
-    ],
+    links: navItems.map((item) => ({
+      text: item.label,
+      url: item.href,
+      active: item.href === localizedPath("/", locale) ? "url" : "nested-url"
+    })),
     searchToggle: {
       enabled: false
     },

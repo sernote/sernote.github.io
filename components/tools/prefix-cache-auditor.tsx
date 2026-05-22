@@ -87,17 +87,17 @@ function getPrefixExamples(locale: Locale) {
     return {
       unstable: {
         systemPrompt:
-          "Ты production AI assistant. Следуй стабильной policy и отвечай кратко, но в начале случайно используй {{current_date}}.",
+          "Ты production AI-ассистент. Следуй стабильной политике и отвечай кратко, но в начале случайно используй {{current_date}}.",
         toolSchemaJson:
           "{\"name\":\"search_docs\",\"properties\":{\"query\":{\"type\":\"string\"},\"trace_id\":{\"type\":\"string\"}}}",
-        exampleRequestOne: "Суммаризируй account 123 с текущим timestamp 2026-05-18T10:10:00Z",
-        exampleRequestTwo: "Суммаризируй account 987 с текущим timestamp 2026-05-18T10:11:00Z"
+        exampleRequestOne: "Суммаризируй аккаунт 123 с текущим timestamp 2026-05-18T10:10:00Z",
+        exampleRequestTwo: "Суммаризируй аккаунт 987 с текущим timestamp 2026-05-18T10:11:00Z"
       },
       stable: {
-        systemPrompt: "Классифицируй requests по фиксированной taxonomy. Stable instructions всегда остаются первыми.",
+        systemPrompt: "Классифицируй запросы по фиксированной таксономии. Стабильные инструкции всегда остаются первыми.",
         toolSchemaJson: "{\"name\":\"classify\",\"properties\":{\"label\":{\"enum\":[\"sales\",\"support\"]}}}",
-        exampleRequestOne: "Классифицируй request: клиент спрашивает про invoice",
-        exampleRequestTwo: "Классифицируй request: клиент спрашивает про CRM export"
+        exampleRequestOne: "Классифицируй запрос: клиент спрашивает про счёт",
+        exampleRequestTwo: "Классифицируй запрос: клиент спрашивает про экспорт из CRM"
       }
     };
   }
@@ -176,22 +176,22 @@ function translatePrefixItems(items: string[], locale: Locale): string[] {
 
   return items.map((item) => {
     if (item.startsWith("Tool schema includes volatile field: ")) {
-      return `Схема инструмента содержит volatile field: ${item.replace("Tool schema includes volatile field: ", "")}`;
+      return `Схема инструмента содержит нестабильное поле: ${item.replace("Tool schema includes volatile field: ", "")}`;
     }
 
     const translations: Record<string, string> = {
       "Tool schema is not valid JSON, which makes cache behavior harder to reason about.":
-        "Tool schema не является валидным JSON, поэтому cache behavior сложнее анализировать.",
+        "Схема инструмента не является валидным JSON, поэтому поведение кеша сложнее анализировать.",
       "Move dates, user identifiers, and per-request values after the stable prompt prefix.":
-        "Перенеси даты, user identifiers и per-request values после стабильного prompt prefix.",
+        "Перенеси даты, идентификаторы пользователей и значения конкретного запроса после стабильного префикса промпта.",
       "Keep tool schemas stable and avoid embedding trace/session/request fields in the cached prefix.":
-        "Держи tool schemas стабильными и не встраивай trace/session/request fields в cached prefix.",
+        "Держи схемы инструментов стабильными и не встраивай поля трейса, сессии и запроса в кешируемый префикс.",
       "Normalize dynamic fields into late request payloads instead of early system instructions.":
-        "Нормализуй dynamic fields в поздний request payload, а не в ранние system instructions.",
+        "Перенеси динамические поля в позднюю часть запроса, а не в ранние системные инструкции.",
       "Make the first tokens of similar requests identical so provider prefix caches can match them.":
-        "Сделай первые токены похожих requests одинаковыми, чтобы provider prefix caches могли их матчить.",
+        "Сделай первые токены похожих запросов одинаковыми, чтобы prefix cache провайдера мог их сопоставить.",
       "The prompt shape is cache-friendly; keep stable instructions and schemas before dynamic payloads.":
-        "Prompt shape выглядит cache-friendly: держи stable instructions и schemas перед dynamic payloads."
+        "Форма промпта дружелюбна к кешу: держи стабильные инструкции и схемы перед динамическими данными."
     };
 
     return translations[item] ?? item;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, GitBranch, Map } from "lucide-react";
+import { ArrowRight, BookOpen, Mail, Map } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +36,8 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
               </Link>
             </Button>
             <Button asChild variant="ghost" size="lg" className="w-full sm:w-auto">
-              <Link href={localizedPath("/projects", locale)}>
-                {hero.projects} <GitBranch data-icon="inline-end" />
+              <Link href={localizedPath("/contact", locale)}>
+                {hero.projects} <Mail data-icon="inline-end" />
               </Link>
             </Button>
           </div>

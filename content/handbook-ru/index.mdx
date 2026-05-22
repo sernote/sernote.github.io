@@ -1,6 +1,6 @@
 ---
 title: "Production AI Platform Handbook"
-description: "Практический field guide по LLM, STT, embeddings и agent platforms в production."
+description: "Практический хэндбук по LLM, STT, embeddings и агентам в production."
 section: "start"
 type: "chapter"
 level: "beginner"
@@ -18,20 +18,20 @@ related:
   - maturity-model
   - ai-gateway
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-Большинство AI-инициатив начинается с работающего demo, а затем обнаруживает настоящую систему: gateway, routing, inference, cache, evals, observability, cost, guardrails, incidents и ownership.
+Большинство AI-инициатив начинается с работающего demo, а затем обнаруживает настоящую систему: AI Gateway, маршрутизация, инференс, кеш, evals, наблюдаемость, стоимость, guardrails, инциденты и ответственность.
 
 ## Симптомы
 
-- Продуктовые команды напрямую вызывают разных providers.
-- Смена модели выкатывается как правка config, а не как release.
-- Cost считается по provider invoice, а не по accepted outcome.
+- Продуктовые команды напрямую вызывают разных провайдеров.
+- Смена модели выкатывается как правка config, а не как релиз.
+- Стоимость считается по счёту провайдера, а не по принятому результату.
 - Cache включён, но никто не может объяснить hit rate.
-- Качество оценивается по ощущениям, пока regression не доходит до пользователей.
+- Качество оценивается по ощущениям, пока регрессия не доходит до пользователей.
 
 ## Ментальная модель
 
@@ -45,41 +45,41 @@ Production AI - это не модель. Это платформа.
 
 ## Метрики
 
-Отслеживай request volume, scenario success, accepted outcomes, input tokens, output tokens, cached tokens, TTFT, TPOT, total latency, fallback rate, quality gate pass rate и cost per accepted outcome.
+Отслеживай объём запросов, успешность сценария, принятые результаты, входные токены, выходные токены, кешированные токены, TTFT, TPOT, общую задержку, долю fallback, прохождение Quality Gate и стоимость принятого результата.
 
 ## Компромиссы
 
-Managed APIs снижают операционную нагрузку, но могут скрывать cost и routing mechanics. Self-hosted inference даёт контроль, но переносит capacity, reliability и model lifecycle на platform team.
+MaaS снижает операционную нагрузку, но может скрывать стоимость и механику маршрутизации. Self-hosted инференс даёт контроль, но переносит мощность, надёжность и жизненный цикл модели на платформенную команду.
 
 ## Анти-паттерны
 
-- Считать один provider SDK архитектурой.
-- Оптимизировать raw token count и ломать prefix cache.
-- Выкатывать новые model names без evals, canary или rollback.
-- Строить product-specific AI stacks, которые не могут делить telemetry или policy.
+- Считать один SDK провайдера архитектурой.
+- Оптимизировать сырое число токенов и ломать prefix cache.
+- Выкатывать новые имена моделей без evals, canary или отката.
+- Строить локальные AI-стеки, которые не могут делить телеметрию или политики.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "У каждого production-сценария есть owner и success metric.",
-    "Все AI-вызовы идут через gateway или задокументированное исключение.",
-    "Изменения model, prompt и tools проходят quality gate.",
-    "Cost атрибутируется к scenario, tenant или product surface.",
-    "Telemetry связывает prompt version, model, tokens, latency и outcome."
+    "У каждого production-сценария есть владелец и метрика успеха.",
+    "Все AI-вызовы идут через AI Gateway или задокументированное исключение.",
+    "Изменения модели, промпта и инструментов проходят Quality Gate.",
+    "Стоимость атрибутируется к сценарию, тенанту или продуктовой поверхности.",
+    "Телеметрия связывает версию промпта, модель, токены, задержку и результат."
   ]}
 />
 
 ## Пример
 
-Production-like CRM assistant может начаться как один prompt и одна model. Platform version добавляет gateway, стабильные tool definitions, prefix-aware routing, scenario evals, trace-level cost и owner для fallback behavior.
+CRM-ассистент может начаться как один промпт и одна модель. Платформенная версия добавляет AI Gateway, стабильные определения инструментов, prefix-aware маршрутизацию, evals сценария, стоимость в трейсе и владельца fallback.
 
 ## Шаблон решения
 
-Оформи решение так: scenario, user value, risk level, provider strategy, quality gate, observability fields, cost guardrail, fallback path и owner.
+Оформи решение так: сценарий, ценность для пользователя, уровень риска, стратегия провайдеров, Quality Gate, поля наблюдаемости, ограничитель стоимости, путь fallback и владелец.
 
 ## Связанные главы
 
 - [Карта Production AI Platform](/ru/handbook/platform-map)
-- [AI Platform Maturity Model](/ru/handbook/maturity-model)
+- [Модель зрелости AI-платформы](/ru/handbook/maturity-model)
 - [AI Gateway](/ru/handbook/gateway/ai-gateway)

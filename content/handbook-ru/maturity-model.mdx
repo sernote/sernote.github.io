@@ -1,6 +1,6 @@
 ---
-title: "AI Platform Maturity Model"
-description: "Семь уровней от demo до AI-native operating model."
+title: "Модель зрелости AI-платформы"
+description: "Семь уровней от demo до AI-native операционной модели."
 section: "platform"
 type: "chapter"
 level: "intermediate"
@@ -18,22 +18,22 @@ related:
   - maas-vs-self-hosted
   - ownership
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-Командам нужен общий язык, чтобы честно назвать зрелость AI platform и следующую боль.
+Командам нужен общий язык, чтобы честно назвать зрелость AI-платформы и следующую боль.
 
 ## Симптомы
 
-- Leaders просят self-hosted models до появления gateway.
-- Product teams просят agents до появления evals.
-- Cost растёт быстрее, чем confidence в качестве.
+- Руководители просят self-hosted модели до появления AI Gateway.
+- Продуктовые команды просят агентов до появления evals.
+- Стоимость растёт быстрее, чем уверенность в качестве.
 
 ## Ментальная модель
 
-Maturity - это не количество моделей. Это то, насколько lifecycle repeatable, observable и owned.
+Зрелость - это не количество моделей. Это то, насколько жизненный цикл повторяем, наблюдаем и имеет владельца.
 
 ## Архитектура
 
@@ -41,16 +41,16 @@ Maturity - это не количество моделей. Это то, нас�
 
 ## Метрики
 
-Отслеживай gateway coverage, scenario eval coverage, release quality, cost attribution, cache hit rate, model rollout lead time, incident MTTR и platform self-service adoption.
+Отслеживай покрытие AI Gateway, покрытие сценариев evals, качество релизов, атрибуцию стоимости, долю попаданий в кеш, время выкатки модели, MTTR инцидентов и принятие self-service платформы.
 
 ## Компромиссы
 
-Перепрыгивать уровни можно, но дорого. Self-hosted inference без quality gates и observability создаёт более быстрый способ выкатывать unknown regressions.
+Перепрыгивать уровни можно, но дорого. Self-hosted инференс без Quality Gate и наблюдаемости создаёт более быстрый способ выкатывать неизвестные регрессии.
 
 ## Анти-паттерны
 
-- Называть shared API wrapper платформой.
-- Измерять maturity количеством providers.
+- Называть общую API-обёртку платформой.
+- Измерять зрелость количеством провайдеров.
 - Строить governance до golden paths.
 
 ## Чеклист
@@ -58,23 +58,23 @@ Maturity - это не количество моделей. Это то, нас�
 <Checklist
   items={[
     "Текущий уровень назван честно.",
-    "Следующий bottleneck явно назван.",
-    "Следующий milestone снижает production risk.",
-    "Self-hosted decisions включают capacity и ownership.",
-    "AI-native process changes не путаются с model upgrades."
+    "Следующее узкое место явно названо.",
+    "Следующий milestone снижает production-риск.",
+    "Self-hosted решения включают мощность и ответственность.",
+    "AI-native изменения процессов не путаются с обновлением моделей."
   ]}
 />
 
 ## Пример
 
-Компания может быть продвинутой в product integration и всё ещё незрелой как платформа, если каждая команда владеет своими provider keys, prompts, logs и fallbacks.
+Компания может быть продвинутой в продуктовой интеграции и всё ещё незрелой как платформа, если каждая команда владеет своими ключами провайдеров, промптами, логами и fallback.
 
 ## Шаблон решения
 
-Зафиксируй current level, target level, missing capabilities, evidence, owners и один milestone, который делает следующий уровень реальным.
+Зафиксируй текущий уровень, целевой уровень, недостающие возможности, доказательства, владельцев и один milestone, который делает следующий уровень реальным.
 
 ## Связанные главы
 
 - [Карта Production AI Platform](/ru/handbook/platform-map)
 - [MaaS vs Self-hosted](/ru/handbook/strategy/maas-vs-self-hosted)
-- [Ownership and Operating Model](/ru/handbook/operating-model/ownership)
+- [Ответственность и операционная модель](/ru/handbook/operating-model/ownership)

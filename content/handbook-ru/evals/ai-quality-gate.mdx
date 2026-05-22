@@ -1,6 +1,6 @@
 ---
 title: "AI Quality Gate"
-description: "Rollout process, который предотвращает silent regressions модели, prompt и agent."
+description: "Процесс выкатки, который предотвращает незаметные регрессии модели, промпта и агента."
 section: "evals"
 type: "chapter"
 level: "intermediate"
@@ -19,65 +19,65 @@ related:
   - llm-observability-checklist
   - ownership
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-"Модель вроде отвечает хорошо" - это не quality process.
+"Модель вроде отвечает хорошо" - это не процесс качества.
 
 ## Симптомы
 
-- Model changes выкатываются без scenario datasets.
-- Prompt edits не проходят regression tests.
-- LLM-as-a-judge scores есть, но failures никто не доверяет.
-- Production feedback не обновляет dataset.
+- Изменения модели выкатываются без датасетов сценария.
+- Правки промпта не проходят регрессионные тесты.
+- Оценки LLM-as-a-judge есть, но провалам никто не доверяет.
+- Обратная связь из production не обновляет датасет.
 
 ## Ментальная модель
 
-Quality Gate - это не один score. Это loop, который не даёт платформе деградировать незаметно.
+Quality Gate - это не одна оценка. Это цикл, который не даёт платформе деградировать незаметно.
 
 ## Архитектура
 
-Dataset -> eval suite -> error taxonomy -> prompt/model change -> regression -> canary -> production feedback -> dataset update.
+Датасет -> eval suite -> таксономия ошибок -> изменение промпта или модели -> регрессия -> canary -> обратная связь из production -> обновление датасета.
 
 ## Метрики
 
-Измеряй scenario pass rate, critical error rate, regression delta, judge agreement, manual review load, canary stop events, feedback acceptance и cost per passed task.
+Измеряй прохождение сценария, долю критичных ошибок, регрессионную дельту, согласие judge, нагрузку ручной проверки, остановки canary, принятие обратной связи и стоимость прошедшей задачи.
 
 ## Компромиссы
 
-Строгие gates замедляют releases, но предотвращают invisible degradation. Слабые gates сохраняют скорость, но переносят quality risk на users. Правильный gate зависит от scenario risk.
+Строгие gates замедляют релизы, но предотвращают незаметную деградацию. Слабые gates сохраняют скорость, но переносят риск качества на пользователей. Правильный gate зависит от риска сценария.
 
 ## Анти-паттерны
 
-- Golden datasets, которые никогда не получают production failures.
-- Один aggregate score, скрывающий critical categories.
-- Judge prompts без versioning.
-- Canary rollout без stop criteria.
+- Golden datasets, которые никогда не получают реальные провалы из production.
+- Одна агрегированная оценка, скрывающая критичные категории.
+- Judge-промпты без версионирования.
+- Canary-выкатка без критериев остановки.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "Scenario dataset существует и имеет owners.",
-    "Critical failures отделены от cosmetic issues.",
-    "Prompt, model и judge versions отслеживаются.",
-    "Canary имеет stop criteria и rollback path.",
-    "Production feedback обновляет dataset."
+    "Датасет сценария существует и имеет владельцев.",
+    "Критичные провалы отделены от косметических проблем.",
+    "Версии промпта, модели и judge отслеживаются.",
+    "Canary имеет критерии остановки и путь отката.",
+    "Обратная связь из production обновляет датасет."
   ]}
 />
 
 ## Пример
 
-Новая summarization model может пройти generic benchmarks и всё равно провалить product needs, если пропускает CRM-specific action items. Gate должен включать scenario examples и task-level acceptance metric.
+Новая модель суммаризации может пройти generic benchmarks и всё равно провалить продуктовый сценарий: summary звучит хорошо, но теряет action items и next steps. Gate должен проверять примеры сценария, критичные категории ошибок и метрику принятия на уровне задачи.
 
 ## Шаблон решения
 
-Каждый rollout должен включать dataset, metrics, threshold, regression delta, canary plan, fallback, owner и release note.
+Каждая выкатка должна включать датасет, метрики, порог, регрессионную дельту, план canary, fallback, владельца и описание релиза.
 
 ## Связанные главы
 
-- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)
-- [Inference Economics](/ru/handbook/economics/inference-economics)
-- [Ownership and Operating Model](/ru/handbook/operating-model/ownership)
+- [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist)
+- [Экономика инференса](/ru/handbook/economics/inference-economics)
+- [Ответственность и операционная модель](/ru/handbook/operating-model/ownership)

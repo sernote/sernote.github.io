@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch preparation complete locally.
+MVP implemented, bilingual EN/RU version validated, GitHub Pages launch preparation complete, and review-driven editorial pass complete.
 
 ## Completed
 
@@ -62,6 +62,14 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Moved English routes into an `(en)` route group and made `/ru` use its own root layout with `lang="ru"`.
 - Removed unverified LinkedIn, Instagram and generic GitHub public links from runtime site config.
 - Switched the no-custom-domain deployment target to a user Pages repo at `https://sernote.github.io`.
+- Refactored `/` and `/ru` into personal executive landing pages for Sergei Notevskii.
+- Refactored `/handbook` and `/ru/handbook` into dedicated Production AI Platform Handbook landing pages.
+- Added proof rows, unified top navigation, a top-level map link, and friendly public chapter metadata.
+- Reworked `/ru/handbook/start-here` as a reader-first entry page.
+- Rewrote manifesto pages as manifesto-style position pieces rather than regular template chapters.
+- Expanded the platform map to 12 layers and split Observability from Economics / FinOps.
+- Added initial Guardrails, STT and Embeddings chapters in both English and Russian.
+- Performed a Russian editorial pass to reduce unnecessary English wording and replace raw phrases such as `feature` and `data control` with concise Russian wording.
 
 ## Validation results
 
@@ -92,6 +100,12 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
   - `pnpm build` passed and generated 46 static/SSG pages.
   - Static export includes `out/.nojekyll`.
   - Static export emits `lang="en"` for `/` and `lang="ru"` for `/ru/`.
+- Review-driven landing/content/editorial validation:
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 52 static/SSG pages.
+  - Static output spot-check confirmed the removed phrases `feature` and `data control` are no longer present in the Russian source/output surfaces checked.
 
 ## Decisions
 
@@ -109,15 +123,16 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 - Created a second Fumadocs source for Russian MDX instead of trying to translate handbook content at runtime.
 - Targeted GitHub Pages deployment via GitHub Actions rather than committing `out/` to the repository.
 - Kept root-relative asset paths; without a custom domain, the target must be a user Pages repo named `sernote.github.io` instead of project Pages under `/<repo>/`.
+- Kept established technical terms in the Russian version where they are useful for the target audience, but replaced avoidable English wording with Russian wording.
+- Treated `feature` as `фича` or `возможность` by context; treated `data control` as `контроль данных`.
 
 ## Known issues
 
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
-- Russian content is translated for the v0 surface, but still needs human editorial polishing before public launch.
+- Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
-- GitHub CLI authentication is currently invalid for account `sernote`; remote repository creation/push is blocked until re-authentication.
-- The first local git commit exists on `main`: `81277ed`.
+- GitHub repository exists at `https://github.com/sernote/sernote.github.io`; pushes to `main` have worked in this environment.
 
 ## Follow-ups
 
@@ -135,4 +150,4 @@ MVP implemented, bilingual EN/RU version validated, and GitHub Pages launch prep
 
 ## Blockers
 
-Remote repository creation is blocked by invalid local GitHub CLI authentication. Run `gh auth login -h github.com` or provide another authenticated GitHub path.
+None.

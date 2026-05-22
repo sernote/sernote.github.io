@@ -1,0 +1,81 @@
+---
+title: "STT Serving"
+description: "How to treat speech-to-text as part of the AI platform, not a side service."
+section: "inference"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - ml-platform-engineer
+  - backend-engineer
+tags:
+  - stt
+  - inference
+  - latency
+related:
+  - inference-runtime
+  - inference-economics
+  - llm-observability-checklist
+published: "2026-05-22"
+updated: "2026-05-22"
+---
+
+## Problem
+
+STT is often treated as preprocessing before an LLM. In production, it is a separate inference workload with its own queues, latency, quality and cost.
+
+## Symptoms
+
+- Call summaries are poor, but the root cause is transcript quality, not the LLM.
+- Batch throughput is high, but interactive latency is unusable.
+- Audio metadata, transcript quality and downstream AI outcome are not linked.
+
+## Mental model
+
+STT is first-class model serving. It needs its own SLOs, quality checks, telemetry, capacity and fallback.
+
+## Architecture
+
+The layer includes audio intake, normalization, chunking, model workers, language hints, diarization or speaker labels, transcript storage boundary, quality checks and trace linking to downstream LLM scenarios.
+
+## Metrics
+
+Track audio duration, realtime factor, queue time, segment latency, word error proxy, language mix, retry rate, model version, GPU/CPU utilization and cost per accepted transcript.
+
+## Trade-offs
+
+Batch throughput and interactive latency conflict. A stronger model can break the cost profile. Aggressive chunking improves speed, but can hurt punctuation, context and downstream summaries.
+
+## Anti-patterns
+
+- Measuring only total processing time.
+- Not linking transcript quality to downstream task quality.
+- Ignoring language mix and noisy audio.
+- Treating STT as "not part of the AI platform".
+
+## Checklist
+
+<Checklist
+  items={[
+    "STT has its own latency and throughput budget.",
+    "Transcript quality is linked to downstream outcome.",
+    "Audio metadata enters the trace.",
+    "Model version and serving config are logged.",
+    "Fallback path exists for noisy or long audio."
+  ]}
+/>
+
+## Example
+
+If a call summary degrades, do not start by rewriting the LLM prompt. First check STT route, language hints, chunking, diarization, realtime factor and transcript quality on failed cases.
+
+## Decision template
+
+For an STT route, document: model, hardware, chunking, language policy, latency SLO, quality proxy, fallback, trace fields and owner.
+
+## Related chapters
+
+- [Inference Runtime](/handbook/inference/inference-runtime)
+- [Inference Economics](/handbook/economics/inference-economics)
+- [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)

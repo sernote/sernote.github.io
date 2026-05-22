@@ -6,12 +6,13 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { ChapterMeta } from "@/components/handbook/chapter-meta";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
+import { HandbookLanding } from "@/components/pages/handbook-landing";
 import { sourceRu } from "@/lib/source";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return sourceRu.generateParams();
+  return [{ slug: [] }, ...sourceRu.generateParams().filter((param) => param.slug?.length)];
 }
 
 export async function generateMetadata({
@@ -20,6 +21,13 @@ export async function generateMetadata({
   params: Promise<{ slug?: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  if (!slug || slug.length === 0) {
+    return {
+      title: "Production AI Platform Handbook",
+      description: "От API-ключа к платформе: практический хэндбук о production AI."
+    };
+  }
+
   const page = sourceRu.getPage(slug);
 
   if (!page) {
@@ -34,6 +42,10 @@ export async function generateMetadata({
 
 export default async function RuHandbookPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
+  if (!slug || slug.length === 0) {
+    return <HandbookLanding locale="ru" />;
+  }
+
   const page = sourceRu.getPage(slug);
 
   if (!page) {
@@ -47,7 +59,7 @@ export default async function RuHandbookPage({ params }: { params: Promise<{ slu
       <LanguageSwitcher locale="ru" currentPath={slug ? `/ru/handbook/${slug.join("/")}` : "/ru/handbook"} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
-      <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} />
+      <ChapterMeta level={page.data.level} status={page.data.status} audience={page.data.audience} locale="ru" />
       <DocsBody>
         <MDX
           components={getMDXComponents({

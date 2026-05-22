@@ -1,6 +1,6 @@
 ---
 title: "MaaS vs Self-hosted"
-description: "Стратегическое решение между managed APIs, self-hosted inference и hybrid AI platforms."
+description: "Стратегическое решение между MaaS, self-hosted инференсом и гибридным подходом."
 section: "strategy"
 type: "chapter"
 level: "intermediate"
@@ -18,70 +18,70 @@ related:
   - inference-economics
   - ai-gateway
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-MaaS vs self-hosted часто подают как религию: закрытый API или свои GPU. В production это strategy decision с разными failure modes.
+MaaS vs self-hosted часто подают как религию: внешний API или свои GPU. В production это стратегическое решение с разными режимами отказа.
 
 ## Симптомы
 
-- Команда хочет более дешёвые tokens, но не имеет capacity model.
-- Leadership хочет data control, но недооценивает reliability work.
-- Product teams хотят model choice, но не имеют gateway contract.
+- Команда хочет более дешёвые токены, но не имеет модели мощности.
+- Руководство хочет контроль данных, но недооценивает работу над надёжностью.
+- Продуктовые команды хотят выбор моделей, но не имеют контракта AI Gateway.
 
 ## Ментальная модель
 
-Managed APIs нужны для скорости, широты и research loops. Self-hosted нужен, когда control, data boundary, economics, latency или product strategy оправдывают ownership inference operations.
+MaaS нужен для скорости, широты выбора и исследовательского цикла. Self-hosted нужен, когда контроль, границы данных, экономика, задержка или продуктовая стратегия оправдывают владение инференсом.
 
 ## Архитектура
 
 <DecisionMatrix
   locale="ru"
   rows={[
-    { option: "MaaS", useWhen: "Быстрые итерации, широкий model access, неопределённый спрос.", tradeoff: "Меньше контроля над routing, cache internals и provider economics." },
-    { option: "Self-hosted", useWhen: "Стабильный спрос, data boundary, latency/cost control или custom serving needs.", tradeoff: "Вы владеете GPU capacity, uptime, upgrades и incidents." },
-    { option: "Hybrid", useWhen: "Production требует control, а research всё ещё требует model breadth.", tradeoff: "Нужны gateway, routing policy и clear model lifecycle." }
+    { option: "MaaS", useWhen: "Быстрые итерации, широкий доступ к моделям, неопределённый спрос.", tradeoff: "Меньше контроля над маршрутизацией, внутренним кешем и экономикой провайдера." },
+    { option: "Self-hosted", useWhen: "Стабильный спрос, границы данных, контроль задержки и стоимости или кастомный serving.", tradeoff: "Вы владеете мощностью GPU, доступностью, обновлениями и инцидентами." },
+    { option: "Hybrid", useWhen: "Production требует контроля, а исследование всё ещё требует широты моделей.", tradeoff: "Нужны AI Gateway, политика маршрутизации и понятный жизненный цикл модели." }
   ]}
 />
 
 ## Метрики
 
-Сравнивай cost per accepted outcome, latency distribution, availability, quality gate pass rate, cache hit rate, utilization, engineering load и incident risk.
+Сравнивай стоимость принятого результата, распределение задержки, доступность, прохождение Quality Gate, долю попаданий в кеш, загрузку, инженерную нагрузку и риск инцидентов.
 
 ## Компромиссы
 
-Self-hosted может снизить marginal cost, но увеличить fixed cost. MaaS ускоряет evaluation, но скрывает cache и routing behavior. Hybrid может быть лучшим, если gateway не даёт продуктовым командам видеть complexity.
+Self-hosted может снизить предельную стоимость, но увеличить постоянные расходы. MaaS ускоряет оценку, но скрывает кеш и поведение маршрутизации. Гибрид работает, если AI Gateway прячет сложность от продуктовых команд.
 
 ## Анти-паттерны
 
-- Переходить на GPU, потому что spreadsheet говорит, что tokens дешевле.
-- Оставлять каждую product team на direct provider integrations.
-- Запускать self-hosted models без model release notes, evals или rollback.
+- Переходить на GPU, потому что таблица говорит, что токены дешевле.
+- Оставлять каждую продуктовую команду с прямыми интеграциями к провайдерам.
+- Запускать self-hosted модели без описания релиза, evals или плана отката.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "Demand достаточно предсказуем для capacity planning.",
-    "Quality измеряется по scenario, а не только model benchmark.",
-    "Gateway умеет route-ить между providers и self-hosted aliases.",
-    "Fallback behavior определён до migration.",
-    "Cost comparison включает engineering, observability, evals и incidents."
+    "Спрос достаточно предсказуем для планирования мощности.",
+    "Качество измеряется по сценарию, а не только по бенчмарку модели.",
+    "AI Gateway умеет направлять запросы между провайдерами и self-hosted алиасами.",
+    "Поведение fallback определено до миграции.",
+    "Сравнение стоимости включает разработку, наблюдаемость, evals и инциденты."
   ]}
 />
 
 ## Пример
 
-Customer support summarization flow может оставаться на MaaS во время research, перенести тяжёлый стабильный traffic на self-hosted inference и оставить MaaS fallback для spikes или quality regressions.
+Суммаризация обращений в поддержке может оставаться на MaaS во время исследования, перенести тяжёлый стабильный трафик на self-hosted инференс и оставить MaaS как fallback на пики или регрессии качества. Это не "миграция навсегда", а политика маршрутизации.
 
 ## Шаблон решения
 
-Задокументируй scenario, data boundary, demand shape, model candidates, cost model, capacity assumptions, quality gate, fallback и owner.
+Задокументируй сценарий, границы данных, форму спроса, модели-кандидаты, модель стоимости, допущения по мощности, Quality Gate, fallback и владельца.
 
 ## Связанные главы
 
-- [Inference Runtime](/ru/handbook/inference/inference-runtime)
-- [Inference Economics](/ru/handbook/economics/inference-economics)
+- [Инференс-рантайм](/ru/handbook/inference/inference-runtime)
+- [Экономика инференса](/ru/handbook/economics/inference-economics)
 - [AI Gateway](/ru/handbook/gateway/ai-gateway)

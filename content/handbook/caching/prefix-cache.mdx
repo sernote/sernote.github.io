@@ -19,7 +19,7 @@ related:
   - inference-runtime
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-22"
 ---
 
 ## Problem
@@ -72,7 +72,7 @@ A large stable tool list can be cheaper than a small dynamic list in an agent lo
 
 ## Example
 
-In a multi-turn agent, changing the tool subset on each step may reduce raw prompt length but reset the cacheable prefix. A stable tool declaration with route-level allowed tools or constrained decoding can preserve reuse.
+In a multi-turn agent, the team reduced the tool subset on every step. Raw prompt length went down, but `cached_tokens` fell almost to zero: tool order and content kept changing the request prefix. A stable tool declaration with route-level allowed tools restored reuse without exposing every tool to the model.
 
 ## Decision template
 
@@ -83,4 +83,3 @@ For a cache change, record before/after prompt shape, prefix hash stability, cac
 - [Inference Economics](/handbook/economics/inference-economics)
 - [Inference Runtime](/handbook/inference/inference-runtime)
 - [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
-

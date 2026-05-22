@@ -35,6 +35,16 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
       <Hero locale={locale} />
+      <Section title={sections.proofTitle} copy={sections.proofCopy}>
+        <div className="grid gap-4 md:grid-cols-4">
+          {dictionary.home.proof.map(([title, description]) => (
+            <div key={title} className="rounded-lg border border-border bg-card/60 p-4">
+              <p className="font-mono text-xs uppercase text-primary">{title}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
       <Section title={sections.problemTitle} copy={sections.problemCopy}>
         <MetricGrid
           items={dictionary.home.metrics.map((label, index) => ({
@@ -187,7 +197,7 @@ export function ContactPageContent({ locale = "en", currentPath }: PageProps) {
         <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
           {page.cards.map(([title, description], index) => (
             <SectionCard key={title} title={title} description={description} href={links[index]} />
           ))}

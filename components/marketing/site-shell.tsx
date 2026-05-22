@@ -28,7 +28,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href={locale === "ru" ? "/ru" : "/"} className="flex items-center gap-3">
           <span className="flex size-8 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-xs font-semibold text-primary">
-            AI
+            SN
           </span>
           <span className="hidden text-sm font-semibold tracking-normal sm:block">{siteConfig.author}</span>
         </Link>

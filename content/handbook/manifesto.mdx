@@ -18,65 +18,81 @@ related:
   - ownership
   - ai-gateway
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-22"
 ---
 
-## Problem
+## Thesis
 
-Teams often confuse the most visible component with the system. In AI, that visible component is the model.
+Production AI is not a model.
 
-## Symptoms
+A model is replaceable. A platform is compounding.
 
-- The roadmap says "upgrade model" but not "change release process".
-- Product teams compare benchmark charts without scenario evals.
-- Nobody can answer who owns cost, incidents, fallback or quality regression.
+If product teams call different providers directly, you do not have an AI platform. You have distributed liability: cost, latency, quality, safety and incidents scattered across services.
 
-## Mental model
+## After The Demo
 
-Production AI is a platform responsibility. The model is a component behind contracts, telemetry, quality gates, budgets and operations.
+The demo proves that a model can answer.
 
-## Architecture
+Production proves something else:
 
-The platform owns the stable interface between product use cases and model execution: API contract, model aliases, policy, routing, prompt lifecycle, observability, quality and cost.
+- the answer is stable on real data;
+- latency fits the product workflow;
+- cost is visible before launch;
+- quality is measured before rollout;
+- fallback works before an incident;
+- ownership is clear before escalation.
 
-## Metrics
+This is where AI stops being a model call and becomes a platform problem.
 
-Measure accepted outcomes, regression rate, fallback rate, cost per scenario, incident count, cache hit rate, release lead time and ownership coverage.
+## The Model Is One Component
 
-## Trade-offs
+A new model is not just a new `model_name`.
 
-Centralization can become a bottleneck. A good platform does not approve every prompt; it provides golden paths, tools, contracts and guardrails so product teams can move safely.
+It is a release with a quality gate, regression risk, fallback plan, cost profile and observability. Without that, the team changes hope, not the platform.
 
-## Anti-patterns
+## What I Mean By Platform
 
-- Direct provider calls from every product team.
-- "Model research" treated as "model lifecycle".
-- Guardrails bolted on after incidents.
-- Cost reviews that ignore retries, fallbacks and failed outcomes.
+A platform is the stable contract between product and model execution:
 
-## Checklist
+- AI Gateway and a unified API layer;
+- aliases, routing, quotas and fallback;
+- inference runtime for LLM, STT, embeddings and rerankers;
+- prompt, prefix and KV-cache;
+- evals and quality gate;
+- observability, cost and feedback;
+- guardrails, policy and audit;
+- ownership, runbooks and incident process.
+
+## What This Handbook Is Not
+
+It is not a monthly model ranking, a generic prompt engineering guide or agent magic.
+
+It is about one engineering question: how to make an AI scenario measurable, operable, safe and economically legible in production.
+
+## Principles
+
+- API key is not a platform.
+- Benchmark is not a quality process.
+- Cache is not enabled by one checkbox.
+- Guardrails are policy, telemetry and ownership, not a library.
+- Cost per token is a weak metric. Cost per accepted outcome matters more.
+- An agent in production is a controlled loop with budget, policy, observability and fallback.
+- A platform team should not approve every prompt. It should provide contracts, tools and golden paths.
+
+## Minimum Check
 
 <Checklist
   items={[
-    "The platform thesis is visible on the first screen.",
     "Model replacement is possible without product rewrites.",
     "Every production scenario has quality and cost telemetry.",
     "Every release has rollback or fallback.",
-    "The platform team publishes reusable paths, not only support tickets."
+    "Guardrails and observability exist before rollout.",
+    "The scenario has a product owner and a platform owner."
   ]}
 />
-
-## Example
-
-A new transcription summarizer should not hardcode one model and one prompt in a product service. It should request a scenario through a platform API, get a model alias, emit telemetry and pass a quality gate before broader rollout.
-
-## Decision template
-
-Use this sentence: "This is a platform concern because it affects more than one model, team, scenario or release."
 
 ## Related chapters
 
 - [Production AI Platform Map](/handbook/platform-map)
 - [AI Gateway](/handbook/gateway/ai-gateway)
 - [Ownership and Operating Model](/handbook/operating-model/ownership)
-

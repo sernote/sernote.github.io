@@ -1,5 +1,4 @@
 {
   "title": "Inference",
-  "pages": ["inference-runtime"]
+  "pages": ["inference-runtime", "stt-serving", "embeddings-serving"]
 }
-

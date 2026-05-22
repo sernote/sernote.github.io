@@ -39,7 +39,7 @@ export function getSiteConfig(locale: Locale = defaultLocale) {
     url: siteUrl,
     description:
       locale === "ru"
-        ? "Практический field guide по production AI-платформам: inference, routing, cache, evals, guardrails, observability, cost, incidents и ownership."
+        ? "Хэндбук о production AI-платформах: инференс, маршрутизация, кеш, evals, guardrails, наблюдаемость, стоимость и ответственность."
         : "A field guide for building LLM, STT, embeddings and agent platforms in production: inference, routing, cache, evals, guardrails, observability, cost, incidents and ownership.",
     links: siteLinks
   };
@@ -51,6 +51,7 @@ export function getNavItems(locale: Locale = defaultLocale) {
       ? [
           { href: "/", label: "Главная" },
           { href: "/handbook", label: "Хэндбук" },
+          { href: "/handbook/platform-map", label: "Карта" },
           { href: "/tools/prefix-cache-auditor", label: "Инструменты" },
           { href: "/writing", label: "Тексты" },
           { href: "/talks", label: "Выступления" },
@@ -59,6 +60,7 @@ export function getNavItems(locale: Locale = defaultLocale) {
       : [
           { href: "/", label: "Home" },
           { href: "/handbook", label: "Handbook" },
+          { href: "/handbook/platform-map", label: "Map" },
           { href: "/tools/prefix-cache-auditor", label: "Tools" },
           { href: "/writing", label: "Writing" },
           { href: "/talks", label: "Talks" },
@@ -71,14 +73,14 @@ export function getNavItems(locale: Locale = defaultLocale) {
 export function getExpertiseAreas(locale: Locale = defaultLocale) {
   return locale === "ru"
     ? [
-        "AI Platform",
-        "Self-hosted inference",
-        "vLLM и GPU capacity",
-        "Model routing и fallback",
+        "AI-платформы",
+        "Self-hosted инференс",
+        "vLLM и GPU",
+        "Маршрутизация и fallback",
         "Экономика prefix cache",
-        "Evals и quality gates",
-        "LLM observability",
-        "Guardrails и ownership"
+        "Evals и Quality Gate",
+        "Наблюдаемость LLM",
+        "Guardrails и ответственность"
       ]
     : [
         "AI Platform",
@@ -97,35 +99,51 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
     ? [
         {
           title: "Продуктовые сценарии",
-          description: "Scenario intake, пользовательская ценность, риск-профиль и acceptance criteria."
+          description: "Ценность, риски, владелец и критерии успеха."
         },
         {
           title: "AI Gateway",
-          description: "Единый API-слой для auth, quotas, routing, policy и cost attribution."
+          description: "Единый вход: доступ, лимиты, маршрутизация, политики и учёт стоимости."
         },
         {
-          title: "Provider strategy",
-          description: "MaaS, OpenRouter-style research loop, self-hosted и hybrid decisions."
+          title: "Стратегия провайдеров",
+          description: "MaaS, self-hosted и гибридный подход как стратегия, а не религия."
         },
         {
-          title: "Inference runtime",
-          description: "Serving LLM, STT, embeddings и rerankers с бюджетами throughput и latency."
+          title: "Маршрутизация моделей",
+          description: "Алиасы, fallback, canary и версии моделей."
         },
         {
-          title: "Routing и cache",
-          description: "Model aliases, fallback, prompt cache, prefix cache и KV-cache reuse."
+          title: "Инференс-рантайм",
+          description: "Serving LLM, STT, embeddings и rerankers с бюджетами задержки и пропускной способности."
         },
         {
-          title: "Quality gate",
-          description: "Datasets, eval suites, regression checks, canary rollout и feedback loops."
+          title: "Кеширование",
+          description: "Prompt cache, prefix cache, KV-cache и стабильная форма запроса."
         },
         {
-          title: "Observability",
-          description: "Traces, tokens, TTFT, TPOT, cost, fallback events, safety events и feedback."
+          title: "Жизненный цикл модели",
+          description: "От исследования до shadow-теста, canary, продакшна, отката и вывода из эксплуатации."
         },
         {
-          title: "Operating model",
-          description: "Ownership, SLO, incidents, capacity planning, runbooks и platform DevEx."
+          title: "Evals и Quality Gate",
+          description: "Датасеты, регрессионные проверки, canary и обратная связь."
+        },
+        {
+          title: "Наблюдаемость",
+          description: "Трейсы, токены, TTFT, TPOT, fallback-события, safety-события и обратная связь."
+        },
+        {
+          title: "Economics / FinOps",
+          description: "Стоимость сценария, кешированные токены, повторы, загрузка GPU и цена принятого результата."
+        },
+        {
+          title: "Guardrails / Security",
+          description: "Политики, PII, prompt injection, риски инструментов и аудит."
+        },
+        {
+          title: "Эксплуатация / ответственность",
+          description: "SLO, инциденты, планирование мощности, runbooks и DevEx платформы."
         }
       ]
     : [
@@ -142,23 +160,39 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
           description: "MaaS, OpenRouter-style research loops, self-hosted and hybrid decisions."
         },
         {
+          title: "Model routing",
+          description: "Aliases, fallback, canary and model versioning."
+        },
+        {
           title: "Inference runtime",
-          description: "LLM, STT, embeddings and reranker serving with throughput and latency budgets."
+          description: "LLM, STT, embeddings and reranker serving with latency and throughput budgets."
         },
         {
-          title: "Routing and cache",
-          description: "Model aliases, fallback, prompt cache, prefix cache and KV-cache reuse."
+          title: "Caching",
+          description: "Prompt cache, prefix cache, KV-cache and stable request shape."
         },
         {
-          title: "Quality gate",
+          title: "Model lifecycle",
+          description: "From research to shadow, canary, production, rollback and retire."
+        },
+        {
+          title: "Evals and Quality Gate",
           description: "Datasets, eval suites, regression checks, canary rollout and feedback loops."
         },
         {
           title: "Observability",
-          description: "Traces, tokens, TTFT, TPOT, cost, fallback events, safety events and feedback."
+          description: "Traces, tokens, TTFT, TPOT, fallback events, safety events and feedback."
         },
         {
-          title: "Operating model",
+          title: "Economics / FinOps",
+          description: "Scenario cost, cached tokens, retries, GPU utilization and cost per accepted outcome."
+        },
+        {
+          title: "Guardrails / Security",
+          description: "Policies, PII, prompt injection, tool risks and audit trail."
+        },
+        {
+          title: "Operations / Ownership",
           description: "Ownership, SLOs, incidents, capacity planning, runbooks and platform DevEx."
         }
       ];
@@ -171,32 +205,32 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
           {
             title: "Карта Production AI Platform",
             href: "/handbook/platform-map",
-            description: "Responsibility-first карта: от сценариев к gateway, inference, evals и ownership."
+            description: "Карта ответственности: от сценариев к AI Gateway, инференсу, evals и владельцам."
           },
           {
-            title: "AI Platform Maturity Model",
+            title: "Модель зрелости AI-платформы",
             href: "/handbook/maturity-model",
-            description: "Leadership-фреймворк от одного API-ключа до AI-native operating model."
+            description: "Модель зрелости: от одного API-ключа до зрелой AI-платформы."
           },
           {
             title: "MaaS vs Self-hosted",
             href: "/handbook/strategy/maas-vs-self-hosted",
-            description: "Стратегия выбора managed, self-hosted или hybrid serving."
+            description: "Как выбирать MaaS, self-hosted или гибридный инференс."
           },
           {
             title: "Prefix Cache",
             href: "/handbook/caching/prefix-cache",
-            description: "Как stable prefixes, tool schemas и routing определяют effective LLM cost."
+            description: "Как стабильный префикс, схемы инструментов и маршрутизация влияют на реальную стоимость."
           },
           {
             title: "AI Quality Gate",
             href: "/handbook/evals/ai-quality-gate",
-            description: "Rollout loop, который не даёт качеству незаметно деградировать."
+            description: "Процесс, который не даёт качеству незаметно деградировать."
           },
           {
-            title: "LLM Observability Checklist",
+            title: "Чеклист наблюдаемости LLM",
             href: "/handbook/observability/llm-observability-checklist",
-            description: "Минимальная telemetry для debug model, prompt, cost, latency и outcome."
+            description: "Минимальная телеметрия для модели, промпта, задержки, стоимости и результата."
           }
         ]
       : [
@@ -242,25 +276,25 @@ export function getPublicWriting(locale: Locale = defaultLocale) {
           title: "Короткий промпт не значит дешёвый промпт",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1033822/",
-          description: "Agent loops, стабильность tool list, allowed tools и cache-aware prompt design."
+          description: "Agent loops, стабильный список инструментов и дизайн промпта с учётом кеша."
         },
         {
           title: "7 анти-паттернов prefix cache",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1016734/",
-          description: "Timestamp drift, плавающий порядок tools, round-robin routing и lifetime KV-cache."
+          description: "Дрейф timestamp, плавающий порядок инструментов, round-robin маршрутизация и KV-cache."
         },
         {
-          title: "Effective cost with cache",
+          title: "Реальная стоимость с кешем",
           source: "Habr",
           href: "https://habr.com/ru/companies/bitrix/articles/1008320/",
-          description: "Почему model choice надо считать через cache-aware economics, а не только list prices."
+          description: "Почему выбор модели нельзя считать только по цене токенов."
         },
         {
           title: "AI да парен!",
           source: "Telegram",
           href: siteLinks.telegram,
-          description: "Заметки про AI platform engineering, tools, vLLM, agent systems и production trade-offs."
+          description: "Заметки про AI-платформы, vLLM, агентов и продакшн-компромиссы."
         }
       ]
     : [
@@ -298,18 +332,18 @@ export function getTalks(locale: Locale = defaultLocale) {
           title: "From MaaS to self-hosted / on-premise models",
           venue: "Merge Tatarstan 2026",
           description:
-            "Практический доклад о том, как стать внутренним model provider, какие trade-offs есть у self-hosted и какие мифы надо снять до миграции."
+            "Практический доклад о внутреннем провайдере моделей, self-hosted и мифах перед миграцией."
         },
         {
-          title: "AI agents без тумана",
+          title: "AI-агенты без тумана",
           venue: "Internal AI conference / Habr follow-up",
-          description: "Рабочая модель, которая разделяет LLM calls, workflows и agent loops."
+          description: "Рабочая модель: где LLM-вызов, где процесс, а где agent loop."
         },
         {
           title: "Экономика prefix cache",
           venue: "Public article series",
           description:
-            "Повторяемый способ debug-ить, почему cache hit rate, effective cost и latency меняются после безобидных правок."
+            "Как разбирать падение cache hit rate, рост стоимости и скачки задержки после небольших правок."
         }
       ]
     : [
@@ -352,36 +386,33 @@ const enDictionary = {
   },
   home: {
     hero: {
-      badge: "Production AI Platform",
-      title: "AI Platform Lead building production-grade LLM, STT, embeddings and agent platforms.",
+      badge: "AI Platform Lead",
+      title: "Sergei Notevskii",
       copy:
-        "I write and speak about turning AI demos into production platforms: inference, routing, caching, evals, guardrails, observability, cost and ownership.",
-      start: "Start reading",
-      map: "Open platform map",
-      projects: "View projects",
-      mapVersion: "Platform map v0.1",
+        "I build production-grade AI platforms for LLM, STT, embeddings and agents: inference, evals, guardrails, observability, cost and ownership.",
+      start: "Open handbook",
+      map: "Platform map",
+      projects: "Contact",
+      mapVersion: "From API key to platform",
       layers: [
-        "Product use cases",
-        "AI Gateway / API Layer",
-        "Provider strategy",
-        "Inference runtime",
-        "Routing / Cache",
-        "Evals / Quality Gate",
-        "Observability / Cost",
-        "Guardrails / Security",
-        "Operations / Ownership"
+        "API-ключ / demo",
+        "AI Gateway",
+        "Routing / Inference / Cache",
+        "Evals / Observability / Cost",
+        "Guardrails / Ownership"
       ]
     },
     sections: {
-      problemTitle: "The problem after the demo",
-      problemCopy:
-        "The expensive part starts after the first successful LLM call: ownership, latency, routing, evals, cache, cost, policy, incidents and product integration.",
+      proofTitle: "Why this work exists",
+      proofCopy: "Public, sanitized field notes from production AI platform work.",
+      problemTitle: "After the demo",
+      problemCopy: "The demo works. Then production starts.",
       layersTitle: "Platform layers",
       layersCopy: "The handbook is organized by platform responsibility, not by hype cycle.",
-      expertiseTitle: "Expertise",
-      expertiseCopy: "The site packages the public surface around production AI platform engineering.",
+      expertiseTitle: "Where I am useful",
+      expertiseCopy: "Architecture reviews, platform strategy, quality gates and inference economics.",
       projectsTitle: "Projects",
-      projectsCopy: "Map first, then tools, then the full handbook.",
+      projectsCopy: "The handbook is the flagship project. Tools and templates grow around it.",
       writingTitle: "Writing",
       writingCopy: "Public writing becomes chapters, checklists and tools inside the handbook.",
       talksTitle: "Talks",
@@ -390,16 +421,24 @@ const enDictionary = {
       centralSentenceLabel: "Central sentence",
       readMore: "Read more"
     },
+    proof: [
+      ["Production AI platforms", "LLM · STT · embeddings · agents"],
+      ["Self-hosted inference", "vLLM · GPU capacity · routing"],
+      ["Quality systems", "Evals · regression · feedback loops"],
+      ["Public field notes", "Habr · Telegram · talks"]
+    ],
     metrics: [
-      "Model choice is not a platform strategy.",
-      "A cheaper model can be more expensive after cache misses and retries.",
-      "Quality needs a gate before model and prompt releases.",
-      "Observability must connect prompts, tokens, cost, latency and outcomes."
+      "Latency spikes.",
+      "Token cost grows.",
+      "Prompts break.",
+      "Agents loop.",
+      "Evals are missing.",
+      "Nobody owns quality."
     ],
     authorCopy:
-      "AI Platform Lead focused on production-grade LLM, STT, embeddings and agent platforms: self-hosted inference, routing, caching, evals, observability, guardrails, cost and operating model.",
+      "I write Production AI Platform Handbook: a practical field guide for teams turning AI demos into production platforms.",
     centralSentence:
-      "I write Production AI Platform Handbook, a practical map for people building LLM platforms in production."
+      "The materials are public and sanitized: no internal details, but with production taste."
   },
   pages: {
     about: {
@@ -564,120 +603,125 @@ const ruDictionary = {
   },
   home: {
     hero: {
-      badge: "Production AI Platform",
-      title: "AI Platform Lead, который строит production-grade LLM, STT, embeddings и agent platforms.",
+      badge: "AI Platform Lead",
+      title: "Sergei Notevskii",
       copy:
-        "Я пишу и выступаю о том, как превращать AI-демо в production-платформы: inference, routing, caching, evals, guardrails, observability, cost и ownership.",
-      start: "Начать читать",
-      map: "Открыть карту платформы",
-      projects: "Смотреть проекты",
-      mapVersion: "Карта платформы v0.1",
+        "Строю production-grade AI-платформы: LLM, STT, embeddings, агенты, инференс, evals, guardrails, наблюдаемость, стоимость и ответственность.",
+      start: "Открыть хэндбук",
+      map: "Карта платформы",
+      projects: "Связаться",
+      mapVersion: "От API-ключа к платформе",
       layers: [
-        "Продуктовые сценарии",
-        "AI Gateway / API Layer",
-        "Provider strategy",
-        "Inference runtime",
-        "Routing / Cache",
-        "Evals / Quality Gate",
-        "Observability / Cost",
-        "Guardrails / Security",
-        "Operations / Ownership"
+        "API key / demo",
+        "Gateway",
+        "Маршрутизация / инференс / кеш",
+        "Evals / наблюдаемость / стоимость",
+        "Guardrails / ответственность"
       ]
     },
     sections: {
-      problemTitle: "Проблема после демо",
-      problemCopy:
-        "Дорогая часть начинается после первого успешного LLM-вызова: ownership, latency, routing, evals, cache, cost, policy, incidents и product integration.",
+      proofTitle: "Почему мне можно доверять",
+      proofCopy: "Публичные, очищенные заметки из практики production.",
+      problemTitle: "После демо",
+      problemCopy: "Демо работает. Потом начинается production.",
       layersTitle: "Слои платформы",
-      layersCopy: "Хэндбук организован вокруг платформенной ответственности, а не вокруг hype cycle.",
-      expertiseTitle: "Экспертиза",
-      expertiseCopy: "Сайт собирает публичный контур вокруг production AI platform engineering.",
+      layersCopy: "Хэндбук устроен вокруг ответственности платформы, а не вокруг хайпа.",
+      expertiseTitle: "Где я полезен",
+      expertiseCopy: "Разбор архитектуры, стратегия платформы, Quality Gate и экономика инференса.",
       projectsTitle: "Проекты",
-      projectsCopy: "Сначала карта, затем инструменты, затем полный хэндбук.",
+      projectsCopy: "Хэндбук - главный проект. Вокруг него растут инструменты и шаблоны.",
       writingTitle: "Тексты",
       writingCopy: "Публичные статьи становятся главами, чеклистами и инструментами внутри хэндбука.",
       talksTitle: "Выступления",
-      talksCopy: "Доклады питают треки strategy, inference и economics.",
+      talksCopy: "Доклады становятся главами про стратегию, инференс и экономику.",
       authorLabel: "Об авторе",
       centralSentenceLabel: "Центральная фраза",
       readMore: "Подробнее"
     },
+    proof: [
+      ["Production AI-платформы", "LLM · STT · embeddings · агенты"],
+      ["Self-hosted инференс", "vLLM · GPU · маршрутизация"],
+      ["Системы качества", "Evals · регрессии · обратная связь"],
+      ["Публичные материалы", "Habr · Telegram · доклады"]
+    ],
     metrics: [
-      "Выбор модели сам по себе не является platform strategy.",
-      "Более дешёвая модель может оказаться дороже после cache misses и retries.",
-      "Качеству нужен gate до релиза модели или промпта.",
-      "Observability должна связывать prompts, tokens, cost, latency и outcomes."
+      "Задержка скачет.",
+      "Стоимость токенов растёт.",
+      "Промпты ломаются.",
+      "Агенты уходят в цикл.",
+      "Evals нет.",
+      "Владелец качества размыт."
     ],
     authorCopy:
-      "AI Platform Lead, сфокусированный на production-grade LLM, STT, embeddings и agent platforms: self-hosted inference, routing, caching, evals, observability, guardrails, cost и operating model.",
+      "Я пишу Production AI Platform Handbook: практический хэндбук для команд, которые превращают AI-демо в production-платформу.",
     centralSentence:
-      "Я пишу Production AI Platform Handbook: практическую карту для тех, кто строит LLM-платформы в production."
+      "Материалы публичные и очищенные: без внутренних деталей, но с production-вкусом."
   },
   pages: {
     about: {
       label: "Об авторе",
       title: "Sergei Notevskii",
       copy:
-        "AI Platform Lead, который строит production-grade LLM, STT, embeddings и agent platforms. Публичная работа здесь про production-вкус: делать AI-системы измеримыми, эксплуатируемыми, cost-aware и полезными в реальных продуктах.",
+        "AI Platform Lead. Строю production-grade AI-платформы для LLM, STT, embeddings и агентов. Публичная работа здесь про production-вкус: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
       cards: [
-        ["Hard engineering", "Self-hosted inference, vLLM, GPU capacity, model routing, cache и latency."],
-        ["Quality systems", "Evals, scenario datasets, feedback loops, regression checks и model release gates."],
-        ["Platform leadership", "Operating model, ownership, DevEx, cost review, incident process и sanitized public frameworks."]
+        ["Hard engineering", "Self-hosted инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
+        ["Системы качества", "Evals, датасеты сценариев, обратная связь, регрессионные проверки и ворота релиза моделей."],
+        ["Платформенное лидерство", "Операционная модель, ответственность, DevEx, разбор стоимости, инциденты и очищенные публичные фреймворки."]
       ]
     },
     projects: {
       label: "Проекты",
-      title: "Публичные platform knowledge products.",
+      title: "Публичные артефакты про AI-платформы.",
       copy:
-        "Roadmap намеренно строится вокруг артефактов: Production AI Platform Map, Prefix Cache Auditor, AI Quality Gate Kit, затем полный handbook."
+        "План строится вокруг артефактов: Production AI Platform Map, Prefix Cache Auditor, AI Quality Gate Kit, затем полный хэндбук."
     },
     writing: {
       label: "Тексты",
       title: "Статьи, заметки в канале и главы хэндбука.",
       copy:
-        "Статьи на Habr и заметки в Telegram становятся устойчивыми материалами хэндбука: cache checklists, cost models, agent-loop design, vLLM serving notes и platform strategy.",
+        "Статьи на Habr и заметки в Telegram становятся материалами хэндбука: чеклисты кеша, модели стоимости, дизайн агентского цикла, заметки про vLLM serving и стратегию платформы.",
       verified: "Проверенные публичные ссылки",
       telegram: "Telegram: AI да парен! / Sergei Notevskii",
       habr: "Habr: статьи Ser_no"
     },
     talks: {
       label: "Выступления",
-      title: "Конференции и field notes.",
+      title: "Конференции и заметки из практики.",
       copy:
-        "Доклады фокусируются на трудном переходе от demos к production: MaaS vs self-hosted, agents, cache economics, vLLM, quality gates и operating model."
+        "Доклады про трудный переход от demo к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, Quality Gate и операционная модель."
     },
     contact: {
       label: "Контакты",
       title: "Доклады, коллаборации и разговоры про платформы.",
       copy:
-        "Лучшее пересечение: production AI platform engineering, self-hosted inference, cache economics, evals, observability, guardrails, operating model и AI platform leadership.",
+        "Лучшее пересечение: проектирование production AI-платформ, self-hosted инференс, экономика кеша, evals, наблюдаемость, guardrails, операционная модель и платформенное лидерство.",
       cards: [
-        ["Telegram", "Канал и комментарии для заметок про AI platform."],
-        ["Habr", "Long-form статьи и серии на русском."]
+        ["Telegram", "Канал и комментарии про AI-платформы."],
+        ["Habr", "Большие статьи и серии на русском."]
       ]
     }
   },
   projects: [
     [
       "Production AI Platform Handbook",
-      "Карта платформенной ответственности для команд, которые идут от API key и demo к inference, routing, evals, cost и ownership.",
+      "Карта платформенной ответственности для команд, которые идут от API-ключа и demo к инференсу, маршрутизации, evals, стоимости и владельцам.",
       "/handbook"
     ],
     [
       "Prefix Cache Auditor",
-      "Client-side diagnostic tool для unstable prefixes, dynamic fields, tool schema drift и cache-aware recommendations.",
+      "Локальный инструмент для поиска нестабильного префикса, динамических полей, дрейфа схем инструментов и рекомендаций по кешу.",
       "/tools/prefix-cache-auditor"
     ],
     [
       "AI Quality Gate Kit",
-      "Checklist готовности rollout: evals, regression, canary, feedback, fallback и production ownership.",
+      "Чеклист готовности к выкатке: evals, регрессии, canary, обратная связь, fallback и ответственность.",
       "/tools/ai-quality-gate-checklist"
     ]
   ],
   finalCta: {
     label: "Начни с карты",
     title: "Модель заменяема. Платформа накапливает эффект.",
-    copy: "Первый релиз намеренно небольшой: карта, maturity model, основные слои платформы и практические инструменты.",
+    copy: "Первый релиз намеренно небольшой: карта, модель зрелости, основные слои платформы и практические инструменты.",
     button: "Открыть карту"
   },
   tools: {
@@ -685,58 +729,58 @@ const ruDictionary = {
     prefix: {
       title: "Prefix Cache Auditor",
       copy:
-        "Client-side v0 для диагностики cacheability score, unstable prefix segments, dynamic fields, schema volatility и cache-aware recommendations.",
-      formTitle: "Prompt и форма request",
+        "Локальная v0-версия для оценки кешируемости, нестабильных префиксов, динамических полей и дрейфа схем.",
+      formTitle: "Промпт и форма запроса",
       formDescription: "Без внешних вызовов. Инструмент локально анализирует только структуру текста.",
-      fields: ["System prompt", "Tool schema JSON", "Example request 1", "Example request 2"],
+      fields: ["System prompt", "JSON-схема инструментов", "Пример запроса 1", "Пример запроса 2"],
       loadStable: "Загрузить стабильный пример",
-      resultTitle: "Cacheability score",
-      resultDescription: "Оценка риска по unstable prefix shape, dynamic fields и schema volatility.",
-      groups: ["Нестабильные prefix segments", "Предупреждения о dynamic fields", "Volatility tool schema", "Рекомендации"],
+      resultTitle: "Оценка кешируемости",
+      resultDescription: "Оценка риска по форме префикса, динамическим полям и дрейфу схем.",
+      groups: ["Нестабильные сегменты префикса", "Предупреждения о динамических полях", "Дрейф схемы инструментов", "Рекомендации"],
       noIssue: "Явных проблем не найдено."
     },
     cost: {
       title: "LLM Cost Calculator",
-      copy: "Оценивает стоимость с cached input tokens и без них. Цель - effective cost, а не list-price token math.",
-      formTitle: "Cost model",
-      formDescription: "Укажи token volume, provider prices и request count. Значения считаются per request, если не указано иначе.",
+      copy: "Оценивает стоимость с кешированными входными токенами и без них. Цель - реальная стоимость, а не цена токенов в прайсе.",
+      formTitle: "Модель стоимости",
+      formDescription: "Укажи объём токенов, цены провайдера и число запросов. Значения считаются на один запрос, если не указано иначе.",
       fields: [
-        "Input tokens",
-        "Output tokens",
-        "Cached input tokens",
-        "Request count",
-        "Input $ / 1M",
-        "Cached input $ / 1M",
-        "Output $ / 1M"
+        "Входные токены",
+        "Выходные токены",
+        "Кешированные входные токены",
+        "Число запросов",
+        "Вход $ / 1M",
+        "Кешированный вход $ / 1M",
+        "Выход $ / 1M"
       ],
       resultTitle: "Оценка расходов",
-      resultDescription: "Cache-aware cost в сравнении с raw token pricing.",
-      metrics: ["Без cache", "С cache", "Экономия", "Процент экономии"]
+      resultDescription: "Стоимость с учётом кеша в сравнении с обычным расчётом по токенам.",
+      metrics: ["Без кеша", "С кешем", "Экономия", "Процент экономии"]
     },
     quality: {
       title: "AI Quality Gate Checklist",
       copy:
-        "Интерактивный локальный checklist для pre-rollout readiness: evals, regression, canary, observability, fallback и ownership.",
-      checklistTitle: "Quality gate checklist",
-      checklistDescription: "Только local state. Используй как pre-rollout readiness review.",
+        "Локальный чеклист готовности к выкатке: evals, регрессии, canary, наблюдаемость, fallback и ответственность.",
+      checklistTitle: "Чеклист Quality Gate",
+      checklistDescription: "Только локальное состояние. Используй перед выкаткой.",
       readinessTitle: "Готовность",
-      readinessDescription: "Quality Gate - это процесс, а не один score. Здесь лёгкая v0-прокси.",
+      readinessDescription: "Quality Gate - это процесс, а не одна оценка. Здесь лёгкая v0-проверка.",
       complete: "проверок закрыто",
       status: "Статус",
       statuses: {
-        ready: "ready",
-        "needs-work": "needs work",
-        blocked: "blocked"
+        ready: "готово",
+        "needs-work": "нужна доработка",
+        blocked: "заблокировано"
       },
       items: [
-        "Golden dataset существует для сценария",
-        "Error taxonomy определена",
-        "Offline eval suite запускается до rollout",
-        "Regression checks сравнивают prompt/model versions",
-        "Canary rollout имеет stop criteria",
-        "Fallback и rollback path задокументированы",
-        "Traces включают tokens, cost, latency и model version",
-        "Scenario owner и platform owner явно определены"
+        "Golden dataset есть для сценария",
+        "Таксономия ошибок определена",
+        "Offline eval suite запускается до выкатки",
+        "Регрессионные проверки сравнивают версии промпта и модели",
+        "Canary-выкатка имеет критерии остановки",
+        "Fallback и путь отката описаны",
+        "Трейсы включают токены, стоимость, задержку и версию модели",
+        "Владелец сценария и владелец платформы явно определены"
       ]
     }
   },
@@ -749,13 +793,13 @@ const ruDictionary = {
     maturity: {
       headers: ["Уровень", "Состояние", "Типичная боль"],
       levels: [
-        ["0. Demo", "Один API key, один сценарий", "Ничего не измеряется"],
-        ["1. Product Integration", "AI встроен в продукт", "Качество и cost слабо контролируются"],
-        ["2. Gateway", "Единый API layer", "Model lifecycle всё ещё ad hoc"],
-        ["3. Quality Gate", "Evals, datasets и regression", "Релизы моделей замедляются"],
-        ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Capacity, GPU cost и reliability"],
-        ["5. AI Platform", "Lifecycle, observability и governance", "Ownership нужно масштабировать"],
-        ["6. AI-native org", "AI в продукте и SDLC operations", "Меняются роли, процессы и экономика"]
+        ["0. Demo", "Один API-ключ, один сценарий", "Ничего не измеряется"],
+        ["1. Product Integration", "AI встроен в продукт", "Качество и стоимость слабо контролируются"],
+        ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё ad hoc"],
+        ["3. Quality Gate", "Evals, датасеты и регрессии", "Релизы моделей замедляются"],
+        ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
+        ["5. AI Platform", "Жизненный цикл, наблюдаемость и governance", "Ответственность нужно масштабировать"],
+        ["6. AI-native org", "AI в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]
       ]
     }
   }

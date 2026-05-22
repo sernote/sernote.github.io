@@ -1,6 +1,6 @@
 ---
-title: "Inference Economics"
-description: "Почему AI cost нужно считать по accepted outcomes, а не по raw token price."
+title: "Экономика инференса"
+description: "Почему AI-стоимость нужно считать по принятым результатам, а не по сырой цене токена."
 section: "economics"
 type: "chapter"
 level: "intermediate"
@@ -19,61 +19,61 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-LLM cost часто сводят к `tokens * price`. Это пропускает cache hits, retries, fallbacks, failed tasks, latency impact и engineering cost.
+Стоимость LLM часто сводят к `tokens * price`. Так теряются попадания в кеш, повторы, fallback, проваленные задачи, влияние задержки и инженерная стоимость.
 
 ## Симптомы
 
-- Более дешёвая модель увеличивает retries.
-- Более короткий prompt теряет prefix cache и становится дороже.
-- Finance видит provider cost, но product не видит cost per scenario.
+- Более дешёвая модель увеличивает число повторов.
+- Более короткий промпт теряет prefix cache и становится дороже.
+- Финансы видят счёт провайдера, но продукт не видит стоимость сценария.
 
 ## Ментальная модель
 
-AI Cost - это provider cost плюс GPU amortization, engineering cost, observability и evals, quality loss, latency impact, incident cost и opportunity cost.
+AI-стоимость - это счёт провайдера плюс амортизация GPU, инженерная стоимость, наблюдаемость, evals, потери качества, влияние задержки, инциденты и стоимость упущенных возможностей.
 
 ## Архитектура
 
-Cost attribution требует gateway metadata, provider pricing, cached token fields, scenario IDs, quality outcomes, retries, fallback events и business acceptance signals.
+Атрибуция стоимости требует метаданные AI Gateway, цены провайдера, поля кешированных токенов, scenario_id, результаты качества, повторы, fallback-события и сигналы принятия результата.
 
 ## Метрики
 
-Самая сильная метрика - cost per accepted outcome: принятое CRM-письмо, корректная расшифровка, полезное summary, задача, прошедшая quality gate, или agent loop, который завершился в рамках budget.
+Самая сильная метрика - стоимость принятого результата: принятое CRM-письмо, корректная расшифровка, полезное summary, задача, прошедшая Quality Gate, или агентский цикл, который завершился в рамках бюджета.
 
 ## Компромиссы
 
-Оптимизация cost per token может ударить по quality. Оптимизация под лучшую model может ударить по throughput. Оптимизация prompt length может ударить по cache. Зрелая экономика балансирует successful outcomes, latency и operating risk.
+Оптимизация стоимости токена может ударить по качеству. Оптимизация под лучшую модель может ударить по пропускной способности. Оптимизация длины промпта может ударить по кешу. Зрелая экономика балансирует успешные результаты, задержку и эксплуатационный риск.
 
 ## Анти-паттерны
 
-- Выбирать models только по price table.
-- Игнорировать cached input token pricing.
+- Выбирать модели только по прайсу.
+- Игнорировать цену кешированных входных токенов.
 - Считать retries невидимыми.
-- Считать successful API calls вместо successful user tasks.
+- Считать успешные API-вызовы вместо успешных пользовательских задач.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "У каждого route есть scenario_id и owner metadata.",
-    "Cost reports разделяют input, cached input и output tokens.",
-    "Retries и fallbacks включены в scenario cost.",
-    "Quality failures видны в cost reviews.",
-    "Dashboard показывает cost per accepted outcome."
+    "У каждого маршрута есть scenario_id и метаданные владельца.",
+    "Отчёты по стоимости разделяют входные, кешированные входные и выходные токены.",
+    "Повторы и fallback включены в стоимость сценария.",
+    "Проблемы качества видны в разборах стоимости.",
+    "Дашборд показывает стоимость принятого результата."
   ]}
 />
 
 ## Пример
 
-Две модели могут иметь одинаковое raw количество input и output tokens. Если одна сохраняет cached prefixes между agent turns, а другая теряет cache из-за tool drift, их effective cost может резко разойтись.
+Две модели могут иметь одинаковое сырое количество входных и выходных токенов. Если одна сохраняет кешированные префиксы между шагами агента, а другая теряет кеш из-за дрейфа инструментов, их реальная стоимость резко расходится.
 
 ## Шаблон решения
 
-Пиши cost decisions так: scenario, model/provider options, raw token cost, cache-adjusted cost, retry rate, quality pass rate, latency, accepted outcome rate и owner.
+Пиши решения по стоимости так: сценарий, варианты моделей и провайдеров, сырая стоимость токенов, стоимость с учётом кеша, доля повторов, прохождение Quality Gate, задержка, доля принятых результатов и владелец.
 
 ## Связанные главы
 

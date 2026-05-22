@@ -13,6 +13,7 @@
     "caching",
     "evals",
     "observability",
+    "guardrails",
     "operating-model"
   ]
 }

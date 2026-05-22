@@ -1,6 +1,6 @@
 ---
 title: "Production AI Platform Map"
-description: "A responsibility-first map of production AI platform layers."
+description: "A map of twelve responsibility layers in a production AI platform."
 section: "platform"
 type: "chapter"
 level: "beginner"
@@ -18,22 +18,25 @@ related:
   - ai-gateway
   - ownership
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-22"
 ---
 
 ## Problem
 
-Without a map, every AI discussion collapses back to model choice.
+Without a map, every AI discussion collapses back to model choice. In production, that is too narrow: the real system lives between product scenario, gateway, inference, quality, cost, safety and ownership.
 
 ## Symptoms
 
 - Different teams solve gateway, evals, guardrails and observability differently.
 - The same failure is rediscovered in multiple products.
 - Leadership sees AI as a feature queue, not an operating surface.
+- Cost, quality and incidents are discussed after launch, not before it.
 
 ## Mental model
 
-Use cases flow down into infrastructure, and production feedback flows back up into product and model decisions.
+Product scenarios flow down into platform layers. Production feedback flows back up into product, model and ownership decisions.
+
+If a layer is missing from the map, it does not disappear. A product team implements it locally: in service code, manual support or a late-night incident.
 
 ## Architecture
 
@@ -41,7 +44,7 @@ Use cases flow down into infrastructure, and production feedback flows back up i
 
 ## Metrics
 
-Each layer has its own metric: use-case adoption, gateway coverage, provider reliability, inference utilization, cache hit rate, eval pass rate, trace completeness, safety event rate and ownership coverage.
+Each layer has its own metric: use-case adoption, gateway coverage, provider reliability, routing fallback rate, inference utilization, cache hit rate, eval pass rate, trace completeness, cost per accepted outcome, safety event rate and ownership coverage.
 
 ## Trade-offs
 
@@ -51,6 +54,7 @@ Maps simplify reality. The goal is not to freeze architecture but to make missin
 
 - Treating RAG, agents or model serving as isolated projects.
 - Drawing a diagram without owners.
+- Collapsing observability and economics into one "we will check later" layer.
 - Ignoring cost and quality loops until after launch.
 
 ## Checklist
@@ -61,21 +65,21 @@ Maps simplify reality. The goal is not to freeze architecture but to make missin
     "Every product scenario enters through a documented contract.",
     "Model and prompt lifecycle are visible on the map.",
     "Cost, quality and safety loops are first-class layers.",
+    "STT, embeddings and rerankers are not lost behind the LLM layer.",
     "Operations and incident response are not hidden in infra."
   ]}
 />
 
 ## Example
 
-When an agent loop gets expensive, the map points to several likely layers: tool schema stability in cache, routing in gateway, evals in quality gate, trace fields in observability and budget policy in operating model.
+An agent loop suddenly becomes expensive. The map prevents blaming only the model. Check route, retries, tool schema stability, cached tokens, eval pass rate, trace fields and budget policy. Often the root cause is not a bad model, but a broken request shape or fallback path.
 
 ## Decision template
 
-Before building a new feature, mark which platform layers it touches and which layer owns the release risk.
+Before building a new scenario, mark which platform layers it touches, who owns release risk, which fields enter telemetry, where fallback lives and who accepts the cost/quality trade-off.
 
 ## Related chapters
 
 - [AI Platform Maturity Model](/handbook/maturity-model)
 - [AI Gateway](/handbook/gateway/ai-gateway)
 - [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
-

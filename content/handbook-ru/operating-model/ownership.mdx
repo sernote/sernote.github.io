@@ -1,6 +1,6 @@
 ---
-title: "Ownership and Operating Model"
-description: "Кто владеет production AI scenarios, platform layers, cost, quality и incidents."
+title: "Ответственность и операционная модель"
+description: "Кто владеет production AI-сценариями, слоями платформы, стоимостью, качеством и инцидентами."
 section: "operating-model"
 type: "chapter"
 level: "intermediate"
@@ -19,65 +19,65 @@ related:
   - ai-quality-gate
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-Production AI ломается, когда ownership размазан между model research, product teams, infra и support без operating model.
+Production AI ломается, когда ответственность размазана между исследованием моделей, продуктовыми командами, инфраструктурой и поддержкой без операционной модели.
 
 ## Симптомы
 
-- Product владеет UX, но не model quality.
-- Platform владеет serving, но не scenario outcomes.
-- Никто не владеет cost review.
-- Incidents debug-ит тот, кто помнит prompt.
+- Продукт владеет UX, но не качеством модели.
+- Платформа владеет serving, но не результатами сценария.
+- Никто не владеет разбором стоимости.
+- Инциденты debug-ит тот, кто помнит промпт.
 
 ## Ментальная модель
 
-AI Platform должна включать product teams, не становясь bottleneck. Для этого нужны clear RACI, golden paths и escalation rules.
+AI Platform должна включать продуктовые команды, не становясь bottleneck. Для этого нужны понятные RACI, golden paths и правила эскалации.
 
 ## Архитектура
 
-Operating model включает scenario intake, architecture review, model release process, quality review, cost review, incident process, hiring profiles, support model, onboarding и platform DevEx.
+Операционная модель включает приём сценариев, архитектурное ревью, процесс релиза моделей, ревью качества, разбор стоимости, процесс инцидентов, профили найма, модель поддержки, онбординг и DevEx платформы.
 
 ## Метрики
 
-Отслеживай scenario onboarding time, self-service adoption, incident MTTR, cost review coverage, eval coverage, number of undocumented exceptions и platform support load.
+Отслеживай время онбординга сценария, принятие self-service, MTTR инцидентов, покрытие разборов стоимости, покрытие evals, число неописанных исключений и нагрузку на поддержку платформы.
 
 ## Компромиссы
 
-Central platform ownership повышает consistency, но может замедлить команды. Product ownership повышает скорость, но может фрагментировать safety, cost и telemetry. Зрелые организации явно делят responsibilities.
+Центральная ответственность платформы повышает согласованность, но может замедлить команды. Ответственность продукта повышает скорость, но может фрагментировать безопасность, стоимость и телеметрию. Зрелые организации явно делят зоны ответственности.
 
 ## Анти-паттерны
 
-- Platform team вручную approve-ит каждый prompt.
-- Product teams напрямую владеют provider keys.
-- У incidents нет model, prompt или scenario owner.
-- Hiring profile игнорирует evaluation и platform DevEx skills.
+- Платформенная команда вручную утверждает каждый промпт.
+- Продуктовые команды напрямую владеют ключами провайдеров.
+- У инцидентов нет владельца модели, промпта или сценария.
+- Профиль найма игнорирует evals и DevEx платформы.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "У каждого scenario есть product owner и platform owner.",
-    "Model releases имеют quality и cost review.",
-    "Incident process включает prompt/model/tool rollback.",
-    "Product teams имеют SDKs, templates и playgrounds.",
-    "Exceptions to the platform path tracked и reviewed."
+    "У каждого сценария есть продуктовый владелец и владелец платформы.",
+    "Релизы моделей проходят ревью качества и стоимости.",
+    "Процесс инцидента включает откат промпта, модели или инструмента.",
+    "У продуктовых команд есть SDK, шаблоны и playground.",
+    "Исключения из платформенного пути отслеживаются и ревьюятся."
   ]}
 />
 
 ## Пример
 
-Platform team может владеть gateway, model aliases, eval tooling и observability. Product teams владеют scenario acceptance, UX, business feedback и product-specific risk. Обе стороны sign off-ят rollout.
+Платформенная команда может владеть AI Gateway, алиасами моделей, инструментами evals и наблюдаемостью. Продуктовые команды владеют принятием сценария, UX, бизнес-обратной связью и продуктовым риском. Обе стороны подтверждают выкатку.
 
 ## Шаблон решения
 
-Для каждого scenario задокументируй RACI, platform contract, product owner, quality owner, cost owner, incident owner и escalation path.
+Для каждого сценария задокументируй RACI, платформенный контракт, продуктового владельца, владельца качества, владельца стоимости, владельца инцидента и путь эскалации.
 
 ## Связанные главы
 
 - [Карта Production AI Platform](/ru/handbook/platform-map)
 - [AI Quality Gate](/ru/handbook/evals/ai-quality-gate)
-- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)
+- [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist)

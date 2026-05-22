@@ -1,0 +1,82 @@
+---
+title: "Embeddings Serving"
+description: "How to serve embeddings and rerankers as a platform layer with quality, latency and lifecycle."
+section: "inference"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - ml-platform-engineer
+  - backend-engineer
+tags:
+  - embeddings
+  - rerankers
+  - inference
+related:
+  - inference-runtime
+  - ai-quality-gate
+  - llm-observability-checklist
+published: "2026-05-22"
+updated: "2026-05-22"
+---
+
+## Problem
+
+Embeddings and rerankers often sit in the shadow of LLMs. But they define retrieval quality, classification behavior, latency and cost for many AI scenarios.
+
+## Symptoms
+
+- RAG "answers poorly", but retrieval quality is not measured.
+- An embedding model changes without a reindex plan.
+- A classification model lives outside model lifecycle.
+- A reranker is added, but latency budget is not recalculated.
+
+## Mental model
+
+An embedding model is not a utility. It is part of model lifecycle: version, dataset, quality gate, index compatibility, rollback and cost profile.
+
+## Architecture
+
+The layer includes embedding API, batching, index compatibility, reindex pipeline, reranker serving, model aliases, evaluation dataset, latency budget and trace fields for the retrieval step.
+
+## Metrics
+
+Track recall@k, precision@k, reranker lift, index freshness, embedding latency, reranker latency, batch size, cost per query, model version and reindex duration.
+
+## Trade-offs
+
+A stronger embedding model can require reindexing. A reranker improves quality, but adds latency and cost. A small model is faster, but can break long-tail retrieval.
+
+## Anti-patterns
+
+- Changing an embedding model without a reindex strategy.
+- Evaluating only the final LLM answer, not the retrieval step.
+- Not logging retrieved document IDs.
+- Treating classifier serving as "not a platform concern".
+
+## Checklist
+
+<Checklist
+  items={[
+    "Embedding model has alias and version.",
+    "Reindex plan and rollback path exist.",
+    "Retrieval quality is measured separately from LLM answer.",
+    "Reranker latency is part of the scenario SLO.",
+    "Trace shows query, model version, retrieved IDs and reranker score."
+  ]}
+/>
+
+## Example
+
+If a RAG scenario degrades after an embedding model change, do not check only the prompt. You need recall@k, index version, reindex completeness, reranker score distribution and traces for failed queries.
+
+## Decision template
+
+For an embedding route, document: model alias, index compatibility, reindex plan, eval dataset, latency SLO, rollback path, trace fields and owner.
+
+## Related chapters
+
+- [Inference Runtime](/handbook/inference/inference-runtime)
+- [AI Quality Gate](/handbook/evals/ai-quality-gate)
+- [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)

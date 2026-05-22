@@ -1,6 +1,6 @@
 ---
 title: "Карта Production AI Platform"
-description: "Responsibility-first карта слоёв production AI platform."
+description: "Карта двенадцати зон ответственности production AI-платформы."
 section: "platform"
 type: "chapter"
 level: "beginner"
@@ -18,22 +18,25 @@ related:
   - ai-gateway
   - ownership
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-Без карты любой разговор про AI снова схлопывается к выбору модели.
+Без карты любой разговор про AI схлопывается к выбору модели. В production это слишком узко: настоящая система живёт между продуктовым сценарием, AI Gateway, инференсом, качеством, стоимостью, безопасностью и ответственностью.
 
 ## Симптомы
 
-- Разные команды по-разному решают gateway, evals, guardrails и observability.
-- Один и тот же failure заново открывается в нескольких продуктах.
-- Leadership видит AI как feature queue, а не operating surface.
+- Разные команды по-разному решают AI Gateway, evals, guardrails и наблюдаемость.
+- Один и тот же сбой повторяется в нескольких продуктах.
+- Руководство видит AI как очередь фич, а не как эксплуатационную поверхность.
+- Стоимость, качество и инциденты обсуждаются после запуска, а не до него.
 
 ## Ментальная модель
 
-Use cases текут вниз в infrastructure, а production feedback возвращается наверх в product и model decisions.
+Продуктовые сценарии идут вниз в слои платформы. Обратная связь из production возвращается вверх: в продуктовые решения, выбор моделей и зоны ответственности.
+
+Если слоя нет на карте, он не исчезает. Его просто неявно реализует продуктовая команда: в коде сервиса, в ручной поддержке или в ночном инциденте.
 
 ## Архитектура
 
@@ -41,40 +44,42 @@ Use cases текут вниз в infrastructure, а production feedback возв
 
 ## Метрики
 
-У каждого слоя своя метрика: use-case adoption, gateway coverage, provider reliability, inference utilization, cache hit rate, eval pass rate, trace completeness, safety event rate и ownership coverage.
+У каждого слоя своя метрика: принятие сценария, покрытие AI Gateway, надёжность провайдера, доля fallback в маршрутизации, загрузка инференса, доля попаданий в кеш, прохождение evals, полнота трейсов, стоимость принятого результата, доля safety-событий и покрытие владельцами.
 
 ## Компромиссы
 
-Карты упрощают реальность. Цель не в том, чтобы заморозить архитектуру, а в том, чтобы сделать missing responsibilities видимыми до product incidents.
+Карта упрощает реальность. Её задача не заморозить архитектуру, а показать пропущенные зоны ответственности до продуктовых инцидентов.
 
 ## Анти-паттерны
 
-- Считать RAG, agents или model serving изолированными проектами.
-- Рисовать diagram без owners.
-- Игнорировать cost и quality loops до запуска.
+- Считать RAG, агентов или serving моделей отдельными островами.
+- Рисовать схему без владельцев.
+- Объединять наблюдаемость и экономику в один слой "потом посмотрим".
+- Игнорировать стоимость и циклы качества до запуска.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "У каждого слоя есть owner или explicit gap.",
-    "Каждый product scenario входит через documented contract.",
-    "Model и prompt lifecycle видны на карте.",
-    "Cost, quality и safety loops являются first-class layers.",
-    "Operations и incident response не спрятаны в infra."
+    "У каждого слоя есть владелец или явно отмеченный пробел.",
+    "Каждый продуктовый сценарий входит через описанный контракт.",
+    "Жизненный цикл модели и промпта виден на карте.",
+    "Стоимость, качество и safety loop выделены в отдельные слои.",
+    "STT, embeddings и rerankers не потеряны за LLM-слоем.",
+    "Эксплуатация и реакция на инциденты не спрятаны в инфраструктуре."
   ]}
 />
 
 ## Пример
 
-Когда agent loop становится дорогим, карта указывает на несколько вероятных слоёв: tool schema stability в cache, routing в gateway, evals в quality gate, trace fields в observability и budget policy в operating model.
+Agent loop внезапно стал дороже. Карта не даёт списать всё на модель. Проверяем маршрут, повторы, стабильность схемы инструментов, кешированные токены, прохождение evals, поля трейса и бюджетную политику. Часто причина не в "плохой модели", а в сломанной форме запроса или fallback.
 
 ## Шаблон решения
 
-Перед разработкой новой feature отметь, какие platform layers она трогает и какой слой владеет release risk.
+Перед разработкой нового сценария отметь: какие слои платформы он трогает, кто владеет риском релиза, какие поля попадут в телеметрию, где будет fallback и кто принимает компромисс между стоимостью и качеством.
 
 ## Связанные главы
 
-- [AI Platform Maturity Model](/ru/handbook/maturity-model)
+- [Модель зрелости AI-платформы](/ru/handbook/maturity-model)
 - [AI Gateway](/ru/handbook/gateway/ai-gateway)
-- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)
+- [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist)

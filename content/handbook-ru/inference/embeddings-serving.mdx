@@ -1,0 +1,82 @@
+---
+title: "Embeddings в production"
+description: "Как обслуживать embeddings и rerankers как платформенный слой с качеством, задержкой и жизненным циклом."
+section: "inference"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - ml-platform-engineer
+  - backend-engineer
+tags:
+  - embeddings
+  - rerankers
+  - inference
+related:
+  - inference-runtime
+  - ai-quality-gate
+  - llm-observability-checklist
+published: "2026-05-22"
+updated: "2026-05-22"
+---
+
+## Проблема
+
+Embeddings и rerankers часто остаются в тени LLM. Но именно они задают качество retrieval, поведение классификации, задержку и стоимость многих AI-сценариев.
+
+## Симптомы
+
+- RAG "плохо отвечает", но никто не измеряет качество retrieval.
+- Embedding-модель меняется без плана переиндексации.
+- Классификационная модель живёт отдельно от жизненного цикла моделей.
+- Reranker добавлен, но бюджет задержки не пересчитан.
+
+## Ментальная модель
+
+Embedding-модель - это не утилита. Это часть жизненного цикла моделей: версия, датасет, Quality Gate, совместимость индекса, откат и профиль стоимости.
+
+## Архитектура
+
+Слой включает embedding API, batching, совместимость индекса, pipeline переиндексации, serving reranker, алиасы моделей, eval-датасет, бюджет задержки и поля трейса для шага retrieval.
+
+## Метрики
+
+Отслеживай recall@k, precision@k, lift от reranker, свежесть индекса, задержку embedding, задержку reranker, размер batch, стоимость запроса, версию модели и длительность переиндексации.
+
+## Компромиссы
+
+Более сильная embedding-модель может потребовать переиндексации. Reranker улучшает качество, но добавляет задержку и стоимость. Маленькая модель быстрее, но может ломать long-tail retrieval.
+
+## Анти-паттерны
+
+- Менять embedding-модель без стратегии переиндексации.
+- Оценивать только финальный ответ LLM, а не шаг retrieval.
+- Не логировать retrieved document IDs.
+- Считать classifier serving "не платформой".
+
+## Чеклист
+
+<Checklist
+  items={[
+    "Embedding-модель имеет алиас и версию.",
+    "Есть план переиндексации и путь отката.",
+    "Качество retrieval измеряется отдельно от ответа LLM.",
+    "Задержка reranker входит в сценарный SLO.",
+    "Трейс показывает запрос, версию модели, retrieved IDs и оценку reranker."
+  ]}
+/>
+
+## Пример
+
+Если RAG-сценарий деградировал после смены embedding-модели, проверь не только промпт. Нужны recall@k, версия индекса, полнота переиндексации, распределение оценки reranker и трейс по неудачным запросам.
+
+## Шаблон решения
+
+Для embedding-маршрута зафиксируй: алиас модели, совместимость индекса, план переиндексации, eval-датасет, SLO по задержке, путь отката, поля трейса и владельца.
+
+## Связанные главы
+
+- [Инференс-рантайм](/ru/handbook/inference/inference-runtime)
+- [AI Quality Gate](/ru/handbook/evals/ai-quality-gate)
+- [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist)

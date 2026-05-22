@@ -19,7 +19,7 @@ related:
   - llm-observability-checklist
   - ownership
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-22"
 ---
 
 ## Problem
@@ -70,7 +70,7 @@ Strict gates slow releases but prevent invisible degradation. Loose gates preser
 
 ## Example
 
-A new summarization model can pass generic benchmarks and still fail product needs if it misses CRM-specific action items. The gate should include scenario examples and a task-level acceptance metric.
+A new summarization model can pass generic benchmarks and still fail the product scenario: the summary sounds fluent, but loses action items and next steps. The gate should check scenario examples, critical error categories and a task-level acceptance metric.
 
 ## Decision template
 
@@ -81,4 +81,3 @@ Every rollout should include dataset, metrics, threshold, regression delta, cana
 - [LLM Observability Checklist](/handbook/observability/llm-observability-checklist)
 - [Inference Economics](/handbook/economics/inference-economics)
 - [Ownership and Operating Model](/handbook/operating-model/ownership)
-

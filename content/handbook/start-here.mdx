@@ -1,6 +1,6 @@
 ---
 title: "Start Here"
-description: "How to read the handbook and what to build first."
+description: "How to choose a reading path by the AI platform problem in front of you."
 section: "start"
 type: "chapter"
 level: "beginner"
@@ -18,64 +18,70 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-22"
 ---
 
 ## Problem
 
-Trying to write everything about AI creates a generic blog. The useful path is to ship strong artifacts that compound into a handbook.
+The demo works. Then the real questions start: who owns quality, where cost is visible, why latency drifts, how a model change ships, and how product teams avoid building local AI stacks in every service.
 
-## Symptoms
+This page helps you choose the first path. Do not read the handbook linearly.
 
-- Too many topics, no central map.
-- Articles, talks and tools are disconnected.
-- The audience remembers individual posts, not the platform thesis.
+## Quick Choice
+
+- Need the big picture -> [Production AI Platform Map](/handbook/platform-map).
+- Need an executive maturity language -> [AI Platform Maturity Model](/handbook/maturity-model).
+- Choosing MaaS, self-hosted or hybrid -> [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted).
+- Cost or latency is drifting -> [Inference Economics](/handbook/economics/inference-economics) and [Prefix Cache](/handbook/caching/prefix-cache).
+- Quality moves after a model or prompt change -> [AI Quality Gate](/handbook/evals/ai-quality-gate).
+- Debugging is blind -> [LLM Observability Checklist](/handbook/observability/llm-observability-checklist).
+- Ownership is unclear -> [Ownership and Operating Model](/handbook/operating-model/ownership).
 
 ## Mental model
 
-Build the public system in this order: Map -> Prefix Cache Auditor -> Quality Gate Kit -> Handbook.
+Production AI platform is not one layer. It is the connection between product scenarios, gateway, routing, inference, cache, evals, observability, cost, guardrails and ownership.
 
-## Architecture
+Start with the current pain. If cost hurts, go to economics and cache. If quality hurts, go to evals. If product teams are fragmented, go to gateway and ownership.
 
-The first release is a small complete system: manifesto, platform map, maturity model, AI Gateway, inference runtime, inference economics, prefix cache, quality gate, observability and operating model.
+## Paths By Role
 
-## Metrics
+- AI Platform Lead: map, maturity model, gateway, evals, observability, ownership.
+- Staff Engineer: platform map, inference runtime, prefix cache, quality gate.
+- CTO / Head of Engineering: maturity model, MaaS vs self-hosted, inference economics, operating model.
+- Product Engineer: start here, gateway, observability checklist, quality gate.
 
-Useful metrics are not page counts. Track whether readers can reuse the map, run the tools, cite the maturity model and connect articles back to a durable chapter.
-
-## Trade-offs
-
-A narrow v0.1 feels smaller, but it makes the project launchable. A broad unfinished handbook looks impressive in a file tree and weak in public.
-
-## Anti-patterns
-
-- Starting with twenty empty sections.
-- Writing tutorials without a platform responsibility frame.
-- Publishing internal details instead of sanitized production-like examples.
-
-## Checklist
+## What To Read First
 
 <Checklist
   items={[
-    "The map explains the whole project in one page.",
-    "Every public article has a target chapter.",
-    "Every tool has a decision or diagnostic use case.",
-    "Every example is sanitized or synthetic.",
-    "No chapter depends on private company numbers."
+    "If there is no shared map, start with Platform Map.",
+    "If maturity language is missing, start with Maturity Model.",
+    "If MaaS vs self-hosted is disputed, start with the strategy chapter.",
+    "If cache does not help, start with Prefix Cache.",
+    "If model releases are risky, start with AI Quality Gate."
   ]}
 />
 
+## How To Apply It
+
+Use each chapter as a review checklist. After reading, you should know:
+
+- which platform layer is involved;
+- which owner is missing;
+- which metrics matter;
+- what can break in production;
+- which next document or tool to open.
+
+## What Is Still Missing
+
+v0.1 does not try to cover everything. STT, embeddings, guardrails, templates and model lifecycle are explicit growth areas. The first release gives a map and a working language for production AI platforms.
+
 ## Example
 
-The prefix cache series becomes a Caching chapter plus the Prefix Cache Auditor. The MaaS to self-hosted talk becomes Strategy and Inference chapters. Telegram notes become short bridges into the same map.
-
-## Decision template
-
-For every new artifact, decide: which platform layer it strengthens, which chapter owns it, which tool or checklist it can become, and what must remain private.
+A team says: "the model became too expensive." Do not start by swapping the model. Check route, retries, cached tokens, tool schema stability, accepted outcome rate and fallback events. That path usually finds the real cause faster.
 
 ## Related chapters
 
 - [Production AI Platform Map](/handbook/platform-map)
 - [Prefix Cache](/handbook/caching/prefix-cache)
 - [AI Quality Gate](/handbook/evals/ai-quality-gate)
-

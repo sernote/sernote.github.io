@@ -1,6 +1,6 @@
 ---
-title: "LLM Observability Checklist"
-description: "Минимальная telemetry для production LLM, agent и AI platform scenarios."
+title: "Чеклист наблюдаемости LLM"
+description: "Минимальная телеметрия для production LLM, агентов и AI-сценариев."
 section: "observability"
 type: "checklist"
 level: "intermediate"
@@ -19,62 +19,62 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-LLM observability - это не «поставьте Grafana». Она должна связывать prompt, model, tokens, latency, cost, tool calls, evals, feedback и ownership.
+Наблюдаемость LLM - это не «поставьте Grafana». Она должна связывать промпт, модель, токены, задержку, стоимость, вызовы инструментов, evals, обратную связь и владельцев.
 
 ## Симптомы
 
-- Ты видишь errors, но не prompt versions.
-- Ты видишь total tokens, но не cached tokens.
-- Ты видишь latency, но не TTFT или fallback path.
-- Ты видишь traces, но не scenario success.
+- Ты видишь ошибки, но не версии промпта.
+- Ты видишь общее число токенов, но не кешированные токены.
+- Ты видишь задержку, но не TTFT или путь fallback.
+- Ты видишь трейсы, но не успешность сценария.
 
 ## Ментальная модель
 
-Каждый AI call должен быть debuggable как product event, model event, cost event и quality event.
+Каждый AI-вызов должен разбираться как событие продукта, модели, стоимости и качества.
 
 ## Архитектура
 
-Минимально traces должны включать request_id, user_id или tenant_id, scenario_id, model, provider, prompt version, system prompt version, input tokens, output tokens, cached tokens, total cost, TTFT, total latency, tool calls, fallback events, safety events, eval score, user feedback и error category.
+Минимально трейсы должны включать request_id, user_id или tenant_id, scenario_id, модель, провайдера, версию промпта, версию system prompt, входные токены, выходные токены, кешированные токены, общую стоимость, TTFT, общую задержку, вызовы инструментов, fallback-события, safety-события, eval score, обратную связь пользователя и категорию ошибки.
 
 ## Метрики
 
-Trace completeness, missing field rate, scenario latency, TTFT, TPOT, cost per accepted outcome, fallback rate, tool error rate, cache hit rate, safety event rate и feedback score.
+Полнота трейсов, доля пропущенных полей, задержка сценария, TTFT, TPOT, стоимость принятого результата, доля fallback, ошибки инструментов, доля попаданий в кеш, доля safety-событий и оценка обратной связи.
 
 ## Компромиссы
 
-Deep traces могут раскрывать sensitive data. Production observability требует redaction, retention rules и sanitized examples.
+Глубокие трейсы могут раскрывать чувствительные данные. Production-наблюдаемость требует маскирования, правил хранения и очищенных примеров.
 
 ## Анти-паттерны
 
-- Логировать full prompts без data boundaries.
-- Агрегировать across scenarios так, что исчезают полезные signals.
-- Отслеживать provider cost, но не accepted outcomes.
-- Прятать fallback events внутри retry code.
+- Логировать полные промпты без границ данных.
+- Агрегировать сценарии так, что исчезают полезные сигналы.
+- Отслеживать стоимость провайдера, но не принятые результаты.
+- Прятать fallback-события внутри кода повторов.
 
 ## Чеклист
 
 <Checklist
   items={[
     "request_id, tenant_id и scenario_id присутствуют.",
-    "model, provider, prompt version и system prompt version присутствуют.",
-    "input, output и cached tokens разделены.",
-    "TTFT, TPOT и total latency разделены.",
-    "tool calls, fallback events, safety events и eval scores видны."
+    "Модель, провайдер, версия промпта и версия system prompt присутствуют.",
+    "Входные, выходные и кешированные токены разделены.",
+    "TTFT, TPOT и общая задержка разделены.",
+    "Вызовы инструментов, fallback-события, safety-события и eval scores видны."
   ]}
 />
 
 ## Пример
 
-Если cache hit rate падает после deployment, trace должен показать, что стало причиной: prompt version, tools count, schema change, route, replica или traffic mix.
+Если доля попаданий в кеш падает после деплоя, трейс должен показать причину: версия промпта, число инструментов, изменение схемы, маршрут, реплика или смесь трафика.
 
 ## Шаблон решения
 
-Для каждого нового route определи required trace fields, redaction policy, dashboard owner, alert thresholds и retention.
+Для каждого нового маршрута определи обязательные поля трейса, политику маскирования, владельца дашборда, пороги алертов и срок хранения.
 
 ## Связанные главы
 

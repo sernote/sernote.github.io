@@ -1,6 +1,6 @@
 ---
 title: "Prefix Cache"
-description: "Как prompt shape, tool schemas и routing определяют, будет ли cache работать в production."
+description: "Как форма промпта, схемы инструментов и маршрутизация определяют, будет ли кеш работать в production."
 section: "caching"
 type: "chapter"
 level: "advanced"
@@ -19,67 +19,67 @@ related:
   - inference-runtime
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-20"
+updated: "2026-05-22"
 ---
 
 ## Проблема
 
-Cache может быть включён, но `cached_tokens` остаётся низким. Часто проблема не в provider, а в request shape.
+Кеш может быть включён, но `cached_tokens` остаётся низким. Часто проблема не в провайдере, а в форме запроса.
 
 ## Симптомы
 
-- Timestamps, request IDs или tenant fields появляются в начале.
-- Tool lists меняют порядок или содержимое между turns.
-- Agent loops используют более короткие dynamic prompts, которые становятся дороже после cache misses.
-- Round-robin routing размазывает warm prefixes по replicas.
+- Временная метка, request ID или поля тенанта появляются в начале.
+- Списки инструментов меняют порядок или содержимое между шагами.
+- Агентские циклы используют короткие динамические промпты, которые становятся дороже после cache miss.
+- Round-robin маршрутизация размазывает прогретые префиксы по репликам.
 
 ## Ментальная модель
 
-Prefix cache требует три вещи: начало должно совпадать, request должен попасть туда, где prefix warm, и cache должен жить достаточно долго для reuse.
+Prefix cache требует три вещи: начало должно совпадать, запрос должен попасть туда, где префикс прогрет, и кеш должен жить достаточно долго для повторного использования.
 
 ## Архитектура
 
-Стабилизируй system prompt, tool schemas и response formats. Перенеси dynamic fields поздно или в metadata. Используй canonical serialization. По возможности сохраняй append-only conversation growth. Route repeated prefixes через affinity или prefix-aware routing.
+Стабилизируй системный промпт, схемы инструментов и форматы ответа. Динамические поля перенеси поздно или в метаданные. Используй каноническую сериализацию. По возможности сохраняй историю append-only. Повторяющиеся префиксы направляй через affinity или prefix-aware маршрутизацию.
 
 ## Метрики
 
-Отслеживай cached tokens, cache read input tokens, prefix hash, tools count, schema version, TTFT, route, replica, prompt version, warmup count и cache eviction indicators.
+Отслеживай кешированные токены, cache read input tokens, хеш префикса, число инструментов, версию схемы, TTFT, маршрут, реплику, версию промпта, число прогревов и признаки вытеснения кеша.
 
 ## Компромиссы
 
-Большой стабильный tool list может быть дешевле маленького dynamic list в agent loop. Но большие tool lists могут ухудшать model tool-choice quality, особенно на smaller models.
+Большой стабильный список инструментов может быть дешевле маленького динамического списка в агентском цикле. Но большие списки инструментов могут ухудшать качество выбора инструмента моделью, особенно на маленьких моделях.
 
 ## Анти-паттерны
 
-- Current time в первых system tokens.
-- Плавающий `tools` order из unordered registry.
-- Dynamic `requestId` внутри JSON schema.
-- Переписывание начала history вместо append-only growth.
-- Parallel fan-out до прогрева shared prefix.
-- Plain round-robin для длинных shared prefixes.
+- Текущее время в первых системных токенах.
+- Плавающий порядок `tools` из неупорядоченного реестра.
+- Динамический `requestId` внутри JSON-схемы.
+- Переписывание начала истории вместо append-only роста.
+- Параллельный fan-out до прогрева общего префикса.
+- Обычный round-robin для длинных общих префиксов.
 
 ## Чеклист
 
 <Checklist
   items={[
-    "Stable instructions и schemas стоят первыми.",
-    "Dynamic fields находятся поздно или вне cacheable prefix.",
-    "Tools и response formats сериализуются deterministically.",
-    "Agent route logs включают prefix_hash и tools_count.",
-    "Cache regressions alert-ят на cached token drop и TTFT rise."
+    "Стабильные инструкции и схемы стоят первыми.",
+    "Динамические поля находятся поздно или вне кешируемого префикса.",
+    "Инструменты и форматы ответа сериализуются детерминированно.",
+    "Логи маршрута агента включают prefix_hash и tools_count.",
+    "Регрессии кеша поднимают алерт при падении cached tokens и росте TTFT."
   ]}
 />
 
 ## Пример
 
-В multi-turn agent изменение tool subset на каждом step может снизить raw prompt length, но сбросить cacheable prefix. Stable tool declaration с route-level allowed tools или constrained decoding может сохранить reuse.
+В многошаговом агенте команда уменьшала набор инструментов на каждом шаге. Сырой промпт стал короче, но `cached_tokens` упали почти до нуля: порядок и состав инструментов начали менять начало запроса. Стабильное объявление инструментов и разрешённые инструменты на уровне маршрута вернули повторное использование кеша без лишнего раскрытия инструментов модели.
 
 ## Шаблон решения
 
-Для cache change запиши before/after prompt shape, prefix hash stability, cached token distribution, TTFT, cost per task и quality impact.
+Для изменения кеша запиши форму промпта до и после, стабильность хеша префикса, распределение кешированных токенов, TTFT, стоимость задачи и влияние на качество.
 
 ## Связанные главы
 
-- [Inference Economics](/ru/handbook/economics/inference-economics)
-- [Inference Runtime](/ru/handbook/inference/inference-runtime)
-- [LLM Observability Checklist](/ru/handbook/observability/llm-observability-checklist)
+- [Экономика инференса](/ru/handbook/economics/inference-economics)
+- [Инференс-рантайм](/ru/handbook/inference/inference-runtime)
+- [Чеклист наблюдаемости LLM](/ru/handbook/observability/llm-observability-checklist)
