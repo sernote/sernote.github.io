@@ -70,6 +70,44 @@ body {
   overflow-x: hidden;
 }
 
+@media (max-width: 767px) {
+  #nd-docs-layout {
+    --fd-header-height: 56px;
+    --fd-sidebar-width: 0px;
+    --fd-toc-width: 0px;
+    grid-template:
+      "header" var(--fd-header-height)
+      "toc-popover" auto
+      "main" 1fr / minmax(0, 1fr) !important;
+  }
+
+  #nd-subnav {
+    grid-area: header !important;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #nd-subnav a {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #nd-docs-layout > main {
+    grid-area: main !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #nd-docs-layout [data-sidebar-placeholder] {
+    display: none !important;
+  }
+}
+
 a {
   text-underline-offset: 4px;
 }

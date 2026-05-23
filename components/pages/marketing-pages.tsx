@@ -31,7 +31,8 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
     description,
     href: href.startsWith("http") ? href : localizedPath(href, locale)
   }));
-  const mediaLinks = [
+  const artifactLinks = [
+    ...projectLinks,
     {
       label: sections.writingTitle,
       title: locale === "ru" ? "Статьи на Habr и заметки в Telegram" : "Habr articles and Telegram notes",
@@ -43,15 +44,6 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
       title: locale === "ru" ? "Выступления и подкасты" : "Talks and podcasts",
       description: sections.talksCopy,
       href: localizedPath("/talks", locale)
-    },
-    {
-      label: locale === "ru" ? "Открытый код" : "Open source",
-      title: "audit-prompt-caching",
-      description:
-        locale === "ru"
-          ? "Публичный пакет для аудита формы промпта и кешируемого префикса."
-          : "A public package for auditing prompt shape and cacheable prefixes.",
-      href: siteConfig.links.auditPromptCaching
     }
   ];
 
@@ -60,22 +52,22 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
       <Hero locale={locale} />
       <section className="border-y border-border/70">
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="mb-7 max-w-3xl">
+          <div className="mb-6 max-w-3xl">
             <p className="mb-2 font-mono text-xs uppercase text-primary">{sections.proofTitle}</p>
             <p className="text-sm leading-6 text-muted-foreground">{sections.proofCopy}</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-5">
+          <div className="grid gap-px overflow-hidden rounded-lg border border-border/80 bg-border/70 sm:grid-cols-2 lg:grid-cols-5">
             {dictionary.home.proof.map(([title, description]) => (
-              <div key={title}>
-                <p className="font-mono text-xs uppercase text-primary">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+              <div key={title} className="bg-background/80 p-4">
+                <p className="text-sm font-semibold text-foreground">{title}</p>
+                <p className="mt-2 text-sm leading-5 text-muted-foreground">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <section className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div className="max-w-xl">
           <p className="mb-3 font-mono text-xs uppercase text-primary">{sections.problemTitle}</p>
           <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.problemCopy}</h2>
@@ -95,7 +87,7 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
           <div className="py-6">
             <p className="max-w-2xl text-xl font-semibold text-foreground">
               {locale === "ru"
-                ? "В этот момент AI перестаёт быть фичей и становится платформой."
+                ? "В этот момент ИИ перестаёт быть фичей и становится платформой."
                 : "At that point, AI stops being a feature and becomes a platform."}
             </p>
           </div>
@@ -130,7 +122,7 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
               {(locale === "ru"
                 ? [
                     ["Карта из 12 слоёв", "От продуктового сценария до владельца, стоимости и эксплуатации."],
-                    ["Главы", "AI Gateway, инференс, экономика, кеш, evals, наблюдаемость и ответственность."],
+                    ["Главы", "AI Gateway, инференс, экономика, кеш, оценка качества, наблюдаемость и ответственность."],
                     ["Инструменты", "Prefix Cache Auditor, LLM Cost Calculator и чеклист контроля качества."],
                     ["Шаблоны", "RFC сценария, миграция в self-hosted, разбор стоимости и инциденты."]
                   ]
@@ -150,14 +142,16 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[0.7fr_1.3fr] lg:px-8">
+      <section className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[0.7fr_1.3fr] lg:px-8">
         <div>
           <p className="mb-3 font-mono text-xs uppercase text-primary">{sections.projectsTitle}</p>
-          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.projectsCopy}</h2>
+          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.projectsTitle}</h2>
+          <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{sections.projectsCopy}</p>
         </div>
         <div className="grid gap-0 border-t border-border/80">
-          {projectLinks.map((project) => (
+          {artifactLinks.map((project) => (
             <SmartLink key={project.title} href={project.href} className="group border-b border-border/80 py-6">
+              {"label" in project ? <p className="mb-2 font-mono text-xs uppercase text-primary">{project.label}</p> : null}
               <div className="flex items-start justify-between gap-6">
                 <div>
                   <h3 className="text-xl font-semibold">{project.title}</h3>
@@ -170,10 +164,11 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
+      <section className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
         <div>
           <p className="mb-3 font-mono text-xs uppercase text-primary">{sections.engagementTitle}</p>
-          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.engagementCopy}</h2>
+          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.engagementTitle}</h2>
+          <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{sections.engagementCopy}</p>
         </div>
         <div className="grid gap-4">
           {dictionary.home.engagements.map(([title, description]) => (
@@ -195,32 +190,15 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <p className="mb-3 font-mono text-xs uppercase text-primary">
-              {sections.authorLabel}
-            </p>
-            <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{siteConfig.author}</h2>
-            <p className="mt-4 max-w-2xl text-muted-foreground">{dictionary.home.authorCopy}</p>
-            <div className="mt-6 rounded-lg border border-border bg-card/55 p-5">
-              <p className="font-mono text-xs uppercase text-primary">{sections.centralSentenceLabel}</p>
-              <p className="mt-3 text-xl font-semibold text-foreground">{dictionary.home.centralSentence}</p>
-            </div>
-          </div>
-          <div className="grid gap-0 border-t border-border/80">
-            {mediaLinks.map((item) => (
-              <SmartLink key={item.title} href={item.href} className="group border-b border-border/80 py-5">
-                <p className="font-mono text-xs uppercase text-primary">{item.label}</p>
-                <div className="mt-2 flex items-start justify-between gap-6">
-                  <div>
-                    <h3 className="text-lg font-semibold">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
-                  </div>
-                  <ArrowRight className="mt-1 size-4 shrink-0 text-primary transition-transform group-hover:translate-x-1" />
-                </div>
-              </SmartLink>
-            ))}
-          </div>
+        <div className="max-w-3xl">
+          <p className="mb-3 font-mono text-xs uppercase text-primary">
+            {sections.authorLabel}
+          </p>
+          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{siteConfig.author}</h2>
+          <p className="mt-4 text-base leading-7 text-muted-foreground">{dictionary.home.authorCopy}</p>
+          <p className="mt-6 border-l border-primary/50 pl-4 text-xl font-semibold text-foreground">
+            {dictionary.home.centralSentence}
+          </p>
         </div>
       </section>
       <FinalCta locale={locale} />

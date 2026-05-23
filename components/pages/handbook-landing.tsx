@@ -46,7 +46,7 @@ const copy = {
     title: "Production AI Platform Handbook",
     subtitle: "От API-ключа к платформе.",
     description:
-      "Production AI — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, эмбеддинги и агентов в production: инференс, маршрутизация, кеш, оценка качества, guardrails, наблюдаемость, стоимость и ответственность.",
+      "ИИ в продакшене — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, эмбеддинги и агентов: инференс, маршрутизация, кеш, оценка качества, защитные ограничения, наблюдаемость, стоимость и ответственность.",
     map: "Начать с карты",
     maturity: "Модель зрелости",
     tools: "Инструменты",
@@ -55,7 +55,7 @@ const copy = {
     steps: [
       ["Нужна общая картина?", "Откройте карту платформы и найдите слой, где нет владельца."],
       ["Нужен язык для CTO?", "Начните с модели зрелости и главы про MaaS vs self-hosted."],
-      ["Растёт стоимость или задержка?", "Идите в экономику инференса и prefix cache."],
+      ["Растёт стоимость или задержка?", "Идите в экономику инференса и кеш префикса."],
       ["Плывёт качество?", "Начните с контроля качества, наблюдаемости и ответственности."]
     ],
     layersTitle: "Слои платформы",
@@ -70,7 +70,7 @@ const copy = {
       ["Prefix Cache Auditor", "Ищет нестабильный префикс, динамические поля и дрейф схем.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Оценивает реальную стоимость с кешированными входными токенами.", "/tools/llm-cost-calculator"],
       ["Чеклист контроля качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
-      ["Шаблоны", "RFC миграции сценария, матрица выбора контура и non-prod cost sheet.", "/handbook/templates/scenario-migration-rfc"]
+      ["Шаблоны", "RFC миграции сценария, матрица выбора контура и расчёт непроизводственных контуров.", "/handbook/templates/scenario-migration-rfc"]
     ]
   }
 } as const;
@@ -108,7 +108,7 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
               </Link>
             </Button>
           </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-5">
+          <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-5">
             {stats.map((stat) => (
               <div key={stat.label} className="rounded-lg border border-border bg-card/55 p-3">
                 <p className="text-2xl font-semibold">{stat.value}</p>

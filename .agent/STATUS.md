@@ -213,6 +213,18 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - `pnpm build` passed and generated 92 static/SSG pages.
   - Static export smoke checks confirmed `/` contains the updated Russian personal title and landing sections.
   - Static export smoke checks confirmed `/handbook/gateway/semantic-router/`, `/handbook/templates/scenario-migration-rfc/` and `/tools/llm-cost-calculator/`.
+- Mobile homepage and handbook cleanup:
+  - Fixed the mobile Fumadocs handbook layout so the header and main content use the full viewport width instead of leaving a clipped right-side column.
+  - Reworked the root proof area into a compact facts strip instead of raw-looking uppercase cards.
+  - Simplified the root "Публичные материалы", "Где я полезен" and "Об авторе" sections so explanatory copy no longer appears as oversized headings or duplicate link blocks.
+  - Cleaned additional Russian homepage and handbook landing wording: `guardrails`, `evals`, `production:` and similar avoidable English wording were replaced where they were not needed.
+  - Made the handbook landing counters two-column on mobile instead of a long one-card-per-row stack.
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 92 static/SSG pages.
+  - Mobile Playwright screenshots were captured for `/` and `/handbook/`.
+  - Mobile layout check confirmed `scrollWidth=390`, `innerWidth=390`, `#nd-subnav.width=390`, and handbook main content width `390` at a 390px viewport.
 
 ## Decisions
 
