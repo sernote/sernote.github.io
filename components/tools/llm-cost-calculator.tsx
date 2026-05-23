@@ -16,6 +16,10 @@ export function LlmCostCalculator({ locale = "en" }: { locale?: Locale }) {
   const [cachedInputPricePerMillion, setCachedInputPricePerMillion] = useState(0.3);
   const [outputPricePerMillion, setOutputPricePerMillion] = useState(15);
   const [requestCount, setRequestCount] = useState(100);
+  const [agentSteps, setAgentSteps] = useState(1);
+  const [acceptedResultRate, setAcceptedResultRate] = useState(85);
+  const [retriesRate, setRetriesRate] = useState(5);
+  const [fallbackRate, setFallbackRate] = useState(2);
 
   const result = useMemo(
     () =>
@@ -38,6 +42,30 @@ export function LlmCostCalculator({ locale = "en" }: { locale?: Locale }) {
       requestCount
     ]
   );
+  const agentMultiplier = Math.max(agentSteps, 1) * (1 + Math.max(retriesRate, 0) / 100) * (1 + Math.max(fallbackRate, 0) / 100);
+  const agentSessionCost = result.costWithCache * agentMultiplier;
+  const acceptedResults = requestCount * Math.max(acceptedResultRate, 0) / 100;
+  const costPerAcceptedResult = acceptedResults === 0 ? 0 : agentSessionCost / acceptedResults;
+  const degradedHitRateCost = useMemo(() => {
+    const degradedCachedTokens = Math.round(inputTokens * 0.5);
+    return calculateLlmCost({
+      inputTokens,
+      outputTokens,
+      cachedInputTokens: degradedCachedTokens,
+      inputPricePerMillion,
+      cachedInputPricePerMillion,
+      outputPricePerMillion,
+      requestCount
+    }).costWithCache * agentMultiplier;
+  }, [
+    agentMultiplier,
+    cachedInputPricePerMillion,
+    inputPricePerMillion,
+    inputTokens,
+    outputPricePerMillion,
+    outputTokens,
+    requestCount
+  ]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
@@ -54,6 +82,13 @@ export function LlmCostCalculator({ locale = "en" }: { locale?: Locale }) {
           <NumberField label={dictionary.fields[4]} value={inputPricePerMillion} onChange={setInputPricePerMillion} />
           <NumberField label={dictionary.fields[5]} value={cachedInputPricePerMillion} onChange={setCachedInputPricePerMillion} />
           <NumberField label={dictionary.fields[6]} value={outputPricePerMillion} onChange={setOutputPricePerMillion} />
+          <div className="sm:col-span-2 mt-2 border-t border-border pt-4">
+            <p className="font-mono text-xs uppercase text-primary">{locale === "ru" ? "Режим агента" : "Agent mode"}</p>
+          </div>
+          <NumberField label={locale === "ru" ? "Шагов агента" : "Agent steps"} value={agentSteps} onChange={setAgentSteps} />
+          <NumberField label={locale === "ru" ? "Принятый результат, %" : "Accepted result, %"} value={acceptedResultRate} onChange={setAcceptedResultRate} />
+          <NumberField label={locale === "ru" ? "Повторы, %" : "Retries, %"} value={retriesRate} onChange={setRetriesRate} />
+          <NumberField label={locale === "ru" ? "Резервный маршрут, %" : "Fallback, %"} value={fallbackRate} onChange={setFallbackRate} />
         </CardContent>
       </Card>
       <Card className="border-border/80 bg-card/70">
@@ -66,6 +101,12 @@ export function LlmCostCalculator({ locale = "en" }: { locale?: Locale }) {
           <Metric label={dictionary.metrics[1]} value={`$${result.costWithCache.toFixed(2)}`} />
           <Metric label={dictionary.metrics[2]} value={`$${result.savings.toFixed(2)}`} />
           <Metric label={dictionary.metrics[3]} value={`${result.savingsPercent}%`} />
+          <Metric label={locale === "ru" ? "Стоимость сессии агента" : "Agent session cost"} value={`$${agentSessionCost.toFixed(2)}`} />
+          <Metric label={locale === "ru" ? "Стоимость принятого результата" : "Cost per accepted result"} value={`$${costPerAcceptedResult.toFixed(4)}`} />
+          <Metric
+            label={locale === "ru" ? "Если hit rate падает до 50%" : "If hit rate drops to 50%"}
+            value={`$${degradedHitRateCost.toFixed(2)}`}
+          />
         </CardContent>
       </Card>
     </div>

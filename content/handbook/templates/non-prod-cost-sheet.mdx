@@ -1,0 +1,60 @@
+---
+title: "Non-prod Cost Sheet"
+description: "A template for non-production capacity, reserve and cost per accepted outcome."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - mlops-engineer
+tags:
+  - template
+  - finops
+  - self-hosted
+related:
+  - inference-economics
+  - maas-vs-self-hosted
+  - inference-runtime
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Purpose
+
+Self-hosted cost cannot be counted from production GPUs only. This template captures capacity that does not directly serve user traffic, but still belongs to scenario economics.
+
+<StackDiagram
+  title="Cost sheet"
+  items={[
+    { label: "prod", title: "prod instances", description: "Production boundary and target utilization." },
+    { label: "stage", title: "stage", description: "Release checks, compatibility and canary prep." },
+    { label: "debug", title: "test / debug", description: "Bug reproduction, profiling and flag tuning." },
+    { label: "canary", title: "canary", description: "Dedicated capacity for safe rollout." },
+    { label: "reserve", title: "reserve", description: "Peaks, degradation and fallback." },
+    { label: "evals", title: "eval runs", description: "Quality checks, benchmarks and regressions." },
+    { label: "outcome", title: "accepted result rate", description: "Share of results that are actually accepted." },
+    { label: "owner", title: "owner", description: "Who reviews cost and accepts the trade-off." }
+  ]}
+/>
+
+## Cache-aware Cost
+
+Fields to calculate:
+
+- `S`: stable tokens;
+- `D`: dynamic tokens;
+- `O`: output tokens;
+- `h`: expected and actual hit rate;
+- `agent_steps`;
+- `retries`;
+- `fallback_rate`;
+- `cost_per_accepted_result`;
+- `cache_regression_after_deploy`.
+
+## Related chapters
+
+- [Inference Economics](/en/handbook/economics/inference-economics)
+- [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
+- [Inference Runtime](/en/handbook/inference/inference-runtime)

@@ -54,7 +54,7 @@ export const handbookTracks: Array<{
   {
     id: "mlops",
     label: { en: "MLOps / Inference", ru: "MLOps / инференс" },
-    description: { en: "Serving, STT, embeddings, cache and capacity.", ru: "Развёртывание, STT, embeddings, кеш и мощность." }
+    description: { en: "Serving, STT, embeddings, cache and capacity.", ru: "Развёртывание, STT, эмбеддинги, кеш и мощность." }
   }
 ];
 
@@ -132,6 +132,18 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     }
   },
   {
+    id: "semantic-router",
+    format: "chapter",
+    status: "available",
+    href: "/handbook/gateway/semantic-router",
+    tracks: ["lead", "backend-ai", "cto"],
+    title: { en: "Semantic Router", ru: "Semantic Router" },
+    description: {
+      en: "Route execution path, not only model names: direct, RAG, agentic or human review.",
+      ru: "Маршрутизация пути исполнения: direct, RAG, agentic или ручная проверка."
+    }
+  },
+  {
     id: "inference-runtime",
     format: "chapter",
     status: "available",
@@ -140,7 +152,7 @@ export const handbookCatalog: HandbookCatalogItem[] = [
     title: { en: "Inference Runtime", ru: "Рантайм инференса" },
     description: {
       en: "Serving decisions around LLM, STT, embeddings and rerankers.",
-      ru: "Решения по развёртыванию LLM, STT, embeddings и rerankers."
+      ru: "Решения по развёртыванию LLM, STT, эмбеддингов и rerankers."
     }
   },
   {
@@ -278,12 +290,13 @@ export const handbookCatalog: HandbookCatalogItem[] = [
   {
     id: "ai-scenario-rfc",
     format: "template",
-    status: "planned",
+    status: "available",
+    href: "/handbook/templates/scenario-migration-rfc",
     tracks: ["lead", "backend-ai", "cto"],
-    title: { en: "AI Scenario RFC", ru: "RFC ИИ-сценария" },
+    title: { en: "AI Scenario Migration RFC", ru: "RFC миграции ИИ-сценария" },
     description: {
-      en: "A template for use case, owner, risk, evals, cost and rollout path.",
-      ru: "Шаблон для сценария, владельца, риска, проверок качества, стоимости и выкатки."
+      en: "A template for moving a scenario from MaaS to self-hosted or hybrid.",
+      ru: "Шаблон перехода сценария с MaaS на self-hosted или гибридный контур."
     }
   },
   {
@@ -311,23 +324,25 @@ export const handbookCatalog: HandbookCatalogItem[] = [
   {
     id: "cost-review",
     format: "template",
-    status: "planned",
+    status: "available",
+    href: "/handbook/templates/non-prod-cost-sheet",
     tracks: ["lead", "cto", "mlops"],
-    title: { en: "Cost Review", ru: "Разбор стоимости" },
+    title: { en: "Non-prod Cost Sheet", ru: "Non-prod cost sheet" },
     description: {
-      en: "Scenario cost, cached tokens, retries, GPU utilization and accepted outcomes.",
-      ru: "Стоимость сценария, кешированные токены, повторы, загрузка GPU и принятые результаты."
+      en: "Production, stage, debug, canary, reserve and cost per accepted outcome.",
+      ru: "Prod, stage, debug, canary, резерв и стоимость принятого результата."
     }
   },
   {
     id: "provider-decision-matrix",
     format: "template",
-    status: "planned",
+    status: "available",
+    href: "/handbook/templates/execution-context-matrix",
     tracks: ["lead", "cto"],
-    title: { en: "Provider Decision Matrix", ru: "Матрица выбора провайдера" },
+    title: { en: "Execution Boundary Matrix", ru: "Матрица выбора контура" },
     description: {
-      en: "A reusable matrix for MaaS, self-hosted and hybrid provider decisions.",
-      ru: "Шаблон для выбора между MaaS, self-hosted и гибридным подходом."
+      en: "A reusable matrix for MaaS, de-identified MaaS, self-hosted, batch and hybrid.",
+      ru: "Шаблон для выбора между MaaS, обезличиванием, self-hosted, batch и hybrid."
     }
   },
   {

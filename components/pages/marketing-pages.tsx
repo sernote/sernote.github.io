@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowRight, ExternalLink, FileText, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { FeaturedProjects } from "@/components/marketing/featured-projects";
 import { Hero } from "@/components/marketing/hero";
@@ -13,8 +12,6 @@ import { SectionCard } from "@/components/marketing/section-card";
 import { Button } from "@/components/ui/button";
 import {
   getDictionary,
-  getExpertiseAreas,
-  getPlatformLayers,
   getSiteConfig,
   localizedPath,
   type Locale
@@ -29,8 +26,6 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
   const dictionary = getDictionary(locale);
   const siteConfig = getSiteConfig(locale);
   const sections = dictionary.home.sections;
-  const platformLayers = getPlatformLayers(locale);
-  const expertiseAreas = getExpertiseAreas(locale);
   const projectLinks = dictionary.projects.slice(0, 3).map(([title, description, href]) => ({
     title,
     description,
@@ -64,13 +59,19 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
     <MarketingPage locale={locale} currentPath={currentPath}>
       <Hero locale={locale} />
       <section className="border-y border-border/70">
-        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:px-6 md:grid-cols-4 lg:px-8">
-          {dictionary.home.proof.map(([title, description]) => (
-            <div key={title}>
-              <p className="font-mono text-xs uppercase text-primary">{title}</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-            </div>
-          ))}
+        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mb-7 max-w-3xl">
+            <p className="mb-2 font-mono text-xs uppercase text-primary">{sections.proofTitle}</p>
+            <p className="text-sm leading-6 text-muted-foreground">{sections.proofCopy}</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-5">
+            {dictionary.home.proof.map(([title, description]) => (
+              <div key={title}>
+                <p className="font-mono text-xs uppercase text-primary">{title}</p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -91,6 +92,13 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
               <p className="text-lg text-foreground">{label}</p>
             </div>
           ))}
+          <div className="py-6">
+            <p className="max-w-2xl text-xl font-semibold text-foreground">
+              {locale === "ru"
+                ? "В этот момент AI перестаёт быть фичей и становится платформой."
+                : "At that point, AI stops being a feature and becomes a platform."}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -103,24 +111,39 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
                 Production AI Platform Handbook
               </h2>
               <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">{sections.layersCopy}</p>
-              <Button asChild variant="outline" className="mt-7">
-                <Link href={localizedPath("/handbook/platform-map", locale)}>
-                  {locale === "ru" ? "Открыть карту" : "Open the map"}
-                  <ArrowRight data-icon="inline-end" />
-                </Link>
-              </Button>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Button asChild>
+                  <Link href={localizedPath("/handbook", locale)}>
+                    {locale === "ru" ? "Открыть хэндбук" : "Open handbook"}
+                    <ArrowRight data-icon="inline-end" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href={localizedPath("/handbook/platform-map", locale)}>
+                    {locale === "ru" ? "Карта из 12 слоёв" : "12-layer map"}
+                    <ArrowRight data-icon="inline-end" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <div className="grid gap-0 border-t border-border/80 lg:border-t-0">
-              {platformLayers.slice(0, 6).map((layer, index) => (
-                <Link
-                  key={layer.title}
-                  href={localizedPath("/handbook/platform-map", locale)}
-                  className="grid gap-3 border-b border-border/80 py-4 transition-colors hover:text-primary sm:grid-cols-[72px_0.75fr_1fr]"
-                >
-                  <span className="font-mono text-xs text-primary">L{String(index + 1).padStart(2, "0")}</span>
-                  <span className="font-medium">{layer.title}</span>
-                  <span className="text-sm leading-6 text-muted-foreground">{layer.description}</span>
-                </Link>
+            <div className="grid gap-3 md:grid-cols-2">
+              {(locale === "ru"
+                ? [
+                    ["Карта из 12 слоёв", "От продуктового сценария до владельца, стоимости и эксплуатации."],
+                    ["Главы", "AI Gateway, инференс, экономика, кеш, evals, наблюдаемость и ответственность."],
+                    ["Инструменты", "Prefix Cache Auditor, LLM Cost Calculator и чеклист контроля качества."],
+                    ["Шаблоны", "RFC сценария, миграция в self-hosted, разбор стоимости и инциденты."]
+                  ]
+                : [
+                    ["12-layer map", "From product scenario to owner, cost and operations."],
+                    ["Chapters", "Gateway, inference, economics, cache, evals, observability and ownership."],
+                    ["Tools", "Prefix Cache Auditor, LLM Cost Calculator and quality checklist."],
+                    ["Templates", "Scenario RFC, self-hosted migration, cost review and incidents."]
+                  ]).map(([title, description]) => (
+                <div key={title} className="rounded-md border border-border/80 bg-background/55 p-4">
+                  <h3 className="text-lg font-semibold">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+                </div>
               ))}
             </div>
           </div>
@@ -149,15 +172,8 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
 
       <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
         <div>
-          <p className="mb-3 font-mono text-xs uppercase text-primary">{sections.expertiseTitle}</p>
-          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.expertiseCopy}</h2>
-          <div className="mt-8 flex flex-wrap gap-2">
-            {expertiseAreas.slice(0, 8).map((area) => (
-              <Badge key={area} variant="muted" className="font-normal">
-                {area}
-              </Badge>
-            ))}
-          </div>
+          <p className="mb-3 font-mono text-xs uppercase text-primary">{sections.engagementTitle}</p>
+          <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{sections.engagementCopy}</h2>
         </div>
         <div className="grid gap-4">
           {dictionary.home.engagements.map(([title, description]) => (
@@ -182,10 +198,14 @@ export function HomePageContent({ locale = "en", currentPath }: PageProps) {
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="mb-3 font-mono text-xs uppercase text-primary">
-              {locale === "ru" ? "Публичный контур" : "Public work"}
+              {sections.authorLabel}
             </p>
             <h2 className="text-3xl font-semibold tracking-normal md:text-5xl">{siteConfig.author}</h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">{dictionary.home.authorCopy}</p>
+            <div className="mt-6 rounded-lg border border-border bg-card/55 p-5">
+              <p className="font-mono text-xs uppercase text-primary">{sections.centralSentenceLabel}</p>
+              <p className="mt-3 text-xl font-semibold text-foreground">{dictionary.home.centralSentence}</p>
+            </div>
           </div>
           <div className="grid gap-0 border-t border-border/80">
             {mediaLinks.map((item) => (

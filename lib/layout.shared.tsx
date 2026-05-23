@@ -1,12 +1,13 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { getNavItems, localizedPath, type Locale } from "@/lib/i18n";
+import { getNavItems, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
 
 export function baseOptions(locale: Locale = "en"): BaseLayoutProps {
   const navItems = getNavItems(locale);
+  const siteConfig = getSiteConfig(locale);
 
   return {
     nav: {
-      title: "Sergei Notevskii",
+      title: siteConfig.author,
       url: localizedPath("/", locale)
     },
     links: navItems.map((item) => ({

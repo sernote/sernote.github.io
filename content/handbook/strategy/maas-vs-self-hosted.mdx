@@ -18,7 +18,7 @@ related:
   - inference-economics
   - ai-gateway
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -35,6 +35,24 @@ MaaS vs self-hosted is usually framed as religion: closed API or own GPUs. In pr
 
 Use managed APIs for speed, breadth and research loops. Use self-hosted when control, data boundary, economics, latency or product strategy justify owning inference operations.
 
+The main distinction: MaaS vs self-hosted is not a provider choice. It is an operating-model choice for a specific AI scenario.
+
+## Safe Scenario Migration
+
+Do not start a migration by buying GPUs. First, the product team finds a model where the scenario works at all: through MaaS, OpenRouter or another external provider. Then the platform team starts a rough self-hosted candidate, checks quality reproducibility, builds latency and cost profiles, runs evals and only then starts canary or a dedicated pool.
+
+<FlowDiagram
+  title="Migration playbook"
+  steps={[
+    { label: "01", title: "Discovery", description: "MaaS, OpenRouter or another external provider." },
+    { label: "02", title: "Draft self-hosted", description: "Rough launch without production promises." },
+    { label: "03", title: "Baseline", description: "Quality, latency and cost of the current route." },
+    { label: "04", title: "Evals", description: "Baseline comparison and stop criteria." },
+    { label: "05", title: "Canary", description: "Traffic share, fallback and incident owner." }
+  ]}
+  caption="A good migration is not replacing model_name. It proves that the scenario keeps quality, SLO and economics inside the new boundary."
+/>
+
 ## Architecture
 
 <DecisionMatrix
@@ -45,6 +63,21 @@ Use managed APIs for speed, breadth and research loops. Use self-hosted when con
   ]}
 />
 
+## Scenario-level Decision
+
+The mistake is deciding "we are self-hosted now" or "we are MaaS now." The right level is a concrete AI scenario: data, SLA, volume, model quality, engineering cost and processing mode.
+
+| Condition | Usually better |
+| --- | --- |
+| Spiky demand | MaaS |
+| Frontier model required | MaaS |
+| Data can be de-identified | MaaS or hybrid |
+| Data cannot leave the boundary | self-hosted or on-premise |
+| Stable high-volume workload | self-hosted |
+| Task is not urgent | batch or deferred processing |
+| Model customization is required | self-hosted |
+| No evals and MLOps yet | be careful: self-hosted is early |
+
 ## Metrics
 
 Compare cost per accepted outcome, latency distribution, availability, quality gate pass rate, cache hit rate, utilization, engineering load and incident risk.
@@ -53,9 +86,12 @@ Compare cost per accepted outcome, latency distribution, availability, quality g
 
 Self-hosted can reduce marginal cost but increase fixed cost. MaaS can accelerate evaluation but hide cache and routing behavior. Hybrid can be best but only if the gateway prevents product teams from seeing the complexity.
 
+Moving between MaaS, self-hosted and hybrid changes more than token price. Cache semantics change: TTL, write/read pricing, cache locality, routing affinity, eviction and available observability fields. Count the migration with a new expected hit rate, not only with a new model price.
+
 ## Anti-patterns
 
 - Moving to GPUs because a spreadsheet says tokens are cheaper.
+- Counting only production GPUs and forgetting that staging, test and debug instances cost money while serving no user traffic.
 - Keeping every product team on direct provider integrations.
 - Running self-hosted models without model release notes, evals or rollback.
 
@@ -67,6 +103,7 @@ Self-hosted can reduce marginal cost but increase fixed cost. MaaS can accelerat
     "Quality is measured by scenario, not only model benchmark.",
     "Gateway can route between providers and self-hosted aliases.",
     "Fallback behavior is defined before migration.",
+    "Self-hosted cost includes production, stage, test/debug, canary/rollout capacity and peak reserve.",
     "Cost comparison includes engineering, observability, evals and incidents."
   ]}
 />
@@ -77,7 +114,7 @@ A customer support summarization flow might stay on MaaS during research, move h
 
 ## Decision template
 
-Document scenario, data boundary, demand shape, model candidates, cost model, capacity assumptions, quality gate, fallback and owner.
+Document scenario, data boundary, demand shape, model candidates, cost model, expected cache hit rate, cache TTL, affinity strategy, prefix-aware routing, cache observability fields, capacity assumptions, quality gate, fallback and owner.
 
 ## Related chapters
 

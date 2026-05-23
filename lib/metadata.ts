@@ -53,7 +53,7 @@ export function createPageMetadata({
 
 export function homeMetadata(locale: Locale): Metadata {
   const dictionary = getDictionary(locale);
-  const title = locale === "ru" ? "Sergei Notevskii - AI Platform Lead" : "Sergei Notevskii - AI Platform Lead";
+  const title = locale === "ru" ? "Сергей Нотевский - AI Platform Lead" : "Sergei Notevskii - AI Platform Lead";
 
   return createPageMetadata({
     locale,

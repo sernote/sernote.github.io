@@ -19,7 +19,7 @@ related:
   - llm-observability-checklist
   - ownership
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -41,6 +41,12 @@ Quality Gate is not one score. It is a loop that prevents the platform from degr
 
 Dataset -> eval suite -> error taxonomy -> prompt/model change -> regression -> canary -> production feedback -> dataset update.
 
+## Evals In Self-hosted Migration
+
+When migrating a scenario, evals do not replace initial discovery. First, the team finds a model where the scenario can work at all. Then the platform starts a rough self-hosted version and checks that the success reproduces locally. Only after that do evals become a release gate: comparing quality, latency, cost and regressions against the current route.
+
+Otherwise the team risks buying or renting GPUs for curiosity, not for proven scenario fit.
+
 ## Metrics
 
 Measure scenario pass rate, critical error rate, regression delta, judge agreement, manual review load, canary stop events, feedback acceptance and cost per passed task.
@@ -48,6 +54,41 @@ Measure scenario pass rate, critical error rate, regression delta, judge agreeme
 ## Trade-offs
 
 Strict gates slow releases but prevent invisible degradation. Loose gates preserve speed but push quality risk to users. The right gate depends on scenario risk.
+
+## Smaller Models Require More Engineering
+
+When a team moves from a frontier MaaS model to an open-source or self-hosted model, inference may become cheaper while scenario tuning becomes more expensive. Work that the large model used to absorb moves into prompts, context, validation, post-processing and evals.
+
+The team usually has to strengthen:
+
+- prompt engineering;
+- context engineering;
+- scenario simplification;
+- post-processing;
+- validation;
+- model and quantization selection;
+- eval datasets;
+- sometimes fine-tuning.
+
+<Callout title="Core risk" type="warning">
+  Savings on the model often turn into team work.
+</Callout>
+
+## Long-context And Router Evals
+
+For long context, evaluate not only retrieval but reasoning through noise: conflicting fragments, outdated versions, distractors, multiple relevant documents and synthesis requirements.
+
+For Semantic Router, quality is not only answer quality. It is also whether the selected lane was right: `direct_small` should not answer when an agent is needed, and `agentic` should not run for a simple rewrite or summary.
+
+<BlockDiagram
+  title="Router eval metrics"
+  columns={3}
+  blocks={[
+    { label: "direct", title: "false_direct_rate", description: "Router chose an undersized path." },
+    { label: "agentic", title: "false_agentic_rate", description: "Router started an unnecessary agent loop." },
+    { label: "cost", title: "cost_saved_without_quality_loss", description: "Savings without quality degradation." }
+  ]}
+/>
 
 ## Anti-patterns
 
@@ -64,6 +105,10 @@ Strict gates slow releases but prevent invisible degradation. Loose gates preser
     "Critical failures are separated from cosmetic issues.",
     "Prompt, model and judge versions are tracked.",
     "Canary has stop criteria and rollback path.",
+    "Before self-hosted migration, the current route has a quality baseline.",
+    "A rough local candidate is compared with baseline before canary.",
+    "Semantic Router is checked for false_direct and false_agentic.",
+    "Long-context scenarios are checked for distractors, conflicting facts and stale context.",
     "Production feedback updates the dataset."
   ]}
 />

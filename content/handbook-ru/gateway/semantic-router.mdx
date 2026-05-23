@@ -1,0 +1,108 @@
+---
+title: "Semantic Router"
+description: "Как выбирать путь исполнения: маленькая модель, большая модель, RAG, агент или ручная проверка."
+section: "gateway"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - backend-engineer
+tags:
+  - semantic-router
+  - routing
+  - cost
+  - agents
+related:
+  - ai-gateway
+  - inference-economics
+  - prefix-cache
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Проблема
+
+Многие платформы маршрутизируют только `model_name`: какая модель, какой провайдер, какой резервный путь. Но в production дорогим становится не только выбор модели, а выбор всего пути исполнения.
+
+## Симптомы
+
+- Все запросы уходят в агентный цикл по умолчанию.
+- Простая перепись текста запускает tools, память и длинный контекст.
+- Router выбирает модель, но не решает, нужен ли RAG, reasoning или агент.
+- Экономия от prefix cache теряется, потому что слишком много запросов попадает в дорогой путь.
+
+## Ментальная модель
+
+Semantic Router - это admission control перед дорогим исполнением. Он решает, должен ли запрос идти в `direct_small`, `direct_large`, `rag`, `agentic`, `human_review` или отказ по политике.
+
+<FlowDiagram
+  title="Execution path"
+  steps={[
+    { label: "01", title: "Product request", description: "Сценарий, пользовательский ввод, контекст продукта." },
+    { label: "02", title: "AI Gateway", description: "Контракт, квоты, политики, телеметрия." },
+    { label: "03", title: "Semantic Router", description: "Выбор пути исполнения, а не только модели." },
+    { label: "04", title: "Execution lane", description: "direct_small, direct_large, RAG, agentic или human review." },
+    { label: "05", title: "Runtime", description: "MaaS, self-hosted pool, batch или резервный маршрут." }
+  ]}
+/>
+
+## Архитектура
+
+Route policy должна быть частью контракта сценария: основной путь, self-hosted candidate, резервный маршрут, доля канареечной выкатки, лимиты очереди, SLO, бюджет стоимости и условия остановки.
+
+<BlockDiagram
+  title="Route policy"
+  columns={3}
+  blocks={[
+    { label: "lane", title: "route_lane", description: "direct_small, direct_large, rag, agentic, human_review." },
+    { label: "quality", title: "router evals", description: "Ошибки direct vs agentic и small vs large." },
+    { label: "cost", title: "cost budget", description: "Лимит стоимости, число шагов агента и резервный путь." },
+    { label: "latency", title: "latency class", description: "TTFT-critical, interactive, async или batch." },
+    { label: "cache", title: "prefix policy", description: "Семейство промпта, tools_hash и ожидаемый hit rate." },
+    { label: "safety", title: "tool policy", description: "Разрешённые tools, ручное подтверждение и запрет действий." }
+  ]}
+/>
+
+## Метрики
+
+Смотри `route_lane`, `router_version`, `router_confidence`, `false_direct_rate`, `false_agentic_rate`, `wrong_model_lane_rate`, `cost_saved`, `quality_delta`, `latency_delta`, `fallback_rate_by_lane` и `cache_hit_rate_by_lane`.
+
+## Компромиссы
+
+Semantic Router снижает стоимость, если уверенно отсекает простые запросы от дорогого пути. Но у него есть цена: задержка классификации, ошибки маршрутизации и риск скрыто ухудшить качество.
+
+## Анти-паттерны
+
+- Все запросы идут в agentic lane по умолчанию.
+- Router выбирает модель, но не выбирает путь исполнения.
+- Route metadata вставляется в начало промпта и ломает prefix cache.
+- На каждый intent создаётся новый system prompt.
+- Нет проверок качества на ошибки маршрутизации.
+
+## Чеклист
+
+<Checklist
+  items={[
+    "У сценария описаны route_lane и условия перехода между путями.",
+    "Router не пишет динамические поля в начало промпта.",
+    "Есть проверки false_direct и false_agentic.",
+    "Есть метрики стоимости и качества по каждому lane.",
+    "Для agentic lane есть лимит шагов, tools и бюджета."
+  ]}
+/>
+
+## Пример
+
+Запрос "перепиши письмо короче" не должен запускать агентный цикл с tools и памятью. Он может идти в `direct_small`. Запрос "найди последние действия клиента, сверь с CRM и подготовь follow-up" требует `agentic` или `human_review` из-за внешнего состояния и действий.
+
+## Шаблон решения
+
+Для каждого сценария заполни: `route_policy`, `route_lane`, `canary_share`, `fallback_condition`, `pool_id`, `queue_priority`, `latency_class`, `context_budget`, `tool_policy` и обязательные поля трейса.
+
+## Связанные главы
+
+- [AI Gateway](/handbook/gateway/ai-gateway)
+- [Экономика инференса](/handbook/economics/inference-economics)
+- [Prefix Cache](/handbook/caching/prefix-cache)

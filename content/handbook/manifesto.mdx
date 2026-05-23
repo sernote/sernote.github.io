@@ -18,7 +18,7 @@ related:
   - ownership
   - ai-gateway
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Thesis
@@ -74,10 +74,13 @@ It is about one engineering question: how to make an AI scenario measurable, ope
 - API key is not a platform.
 - Benchmark is not a quality process.
 - Cache is not enabled by one checkbox.
+- Context window is not working context. The ability to put one million tokens into a model does not mean those tokens are useful for quality, latency or cost.
 - Guardrails are policy, telemetry and ownership, not a library.
 - Cost per token is a weak metric. Cost per accepted outcome matters more.
 - An agent in production is a controlled loop with budget, policy, observability and fallback.
 - A platform team should not approve every prompt. It should provide contracts, tools and golden paths.
+
+A mature AI platform treats context as a resource: choose what to load, where to place dynamic data, what to cache and when not to start the expensive path.
 
 ## Minimum Check
 

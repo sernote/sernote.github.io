@@ -5,6 +5,7 @@ import { Callout } from "@/components/handbook/callout";
 import { Checklist } from "@/components/handbook/checklist";
 import { DecisionMatrix } from "@/components/handbook/decision-matrix";
 import { MaturityModel } from "@/components/handbook/maturity-model";
+import { BlockDiagram, FlowDiagram, StackDiagram } from "@/components/handbook/pattern-diagrams";
 import { PlatformMap } from "@/components/handbook/platform-map";
 
 export function getMDXComponents(components?: MDXComponents) {
@@ -13,6 +14,9 @@ export function getMDXComponents(components?: MDXComponents) {
     Callout,
     Checklist,
     DecisionMatrix,
+    FlowDiagram,
+    BlockDiagram,
+    StackDiagram,
     MaturityModel,
     PlatformMap,
     ...components
@@ -24,4 +28,3 @@ export const useMDXComponents = getMDXComponents;
 declare global {
   type MDXProvidedComponents = ReturnType<typeof getMDXComponents>;
 }
-

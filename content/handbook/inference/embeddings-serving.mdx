@@ -18,7 +18,7 @@ related:
   - ai-quality-gate
   - llm-observability-checklist
 published: "2026-05-22"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -47,6 +47,10 @@ Track recall@k, precision@k, reranker lift, index freshness, embedding latency, 
 ## Trade-offs
 
 A stronger embedding model can require reindexing. A reranker improves quality, but adds latency and cost. A small model is faster, but can break long-tail retrieval.
+
+## Semantic Routing As The Next Optimization Layer
+
+Semantic Router can reduce cost when part of the traffic confidently goes to a cheaper model or cached path. But it is not a free optimization: the router adds latency overhead, classification errors and risk of breaking agent flow. Evaluate it as a model: route accuracy, added latency, fallback rate and cost per accepted outcome.
 
 ## Anti-patterns
 

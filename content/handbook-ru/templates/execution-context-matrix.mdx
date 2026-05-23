@@ -1,0 +1,52 @@
+---
+title: "Матрица выбора контура"
+description: "Шаблон для выбора между MaaS, MaaS с обезличиванием, self-hosted, batch и hybrid."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - backend-engineer
+tags:
+  - template
+  - routing
+  - provider-strategy
+related:
+  - maas-vs-self-hosted
+  - semantic-router
+  - platform-map
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Назначение
+
+Матрица помогает не спорить "MaaS или self-hosted", а выбрать контур под конкретный сценарий, данные, SLA и качество.
+
+| Контур | Когда подходит | Что проверить |
+| --- | --- | --- |
+| MaaS | Быстрый эксперимент, frontier-модель, скачущая нагрузка | Границы данных, стоимость, fallback |
+| MaaS + обезличивание | Данные можно очистить до вызова провайдера | Качество обезличивания, trace policy |
+| Self-hosted | Стабильный большой объём, чувствительные данные, кастомизация | Мощность, SLO, evals, эксплуатация |
+| Batch / self-hosted | Задача не срочная, объём большой | Очередь, backlog, ночной capacity plan |
+| Hybrid | Нужны контроль и широта исследования | AI Gateway, route policy, fallback |
+
+## Поля решения
+
+<Checklist
+  items={[
+    "Данные и PII описаны.",
+    "SLA и режим обработки описаны.",
+    "route_lane выбран явно.",
+    "fallback и stop criteria описаны.",
+    "Стоимость считается по принятому результату."
+  ]}
+/>
+
+## Связанные главы
+
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+- [Semantic Router](/handbook/gateway/semantic-router)
+- [Карта Production AI Platform](/handbook/platform-map)

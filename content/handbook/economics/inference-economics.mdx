@@ -19,7 +19,7 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -36,9 +36,44 @@ LLM cost is often reduced to `tokens * price`. That misses cache hits, retries, 
 
 AI Cost is provider cost plus GPU amortization, engineering cost, observability and evals, quality loss, latency impact, incident cost and opportunity cost.
 
+## Larger Models Are Not Always Linearly More Expensive
+
+If a model needs 8x more GPUs, the scenario is not automatically 8x more expensive. Real unit cost depends on throughput, batchability, cache hit rate, answer length, retry count, result quality and accepted outcome rate.
+
+The opposite side matters too: larger models usually need not only production instances, but also test, debug and stage capacity. These resources do not serve user traffic, but they belong to scenario economics.
+
+```txt
+Effective cost =
+  S * ((1 - h) * P_miss + h * P_hit)
+  + D * P_miss
+  + O * P_out
+```
+
+Where `S` is the stable repeated part, `D` is the dynamic tail, `O` is output tokens, `h` is hit rate, `P_miss` is regular input price, `P_hit` is cached input price and `P_out` is output price.
+
+The model price list does not know your hit rate. Comparing models only by input/output price is incomplete math.
+
 ## Architecture
 
 Cost attribution needs gateway metadata, provider pricing, cached token fields, scenario IDs, quality outcomes, retries, fallback events and business acceptance signals.
+
+<Callout title="Production is not the whole fleet" type="warning">
+  In self-hosted inference, production GPUs are not the full cost. Staging,
+  test, debug, canary and reserve capacity do not directly serve user
+  requests, but they still belong to the scenario cost.
+</Callout>
+
+```txt
+Scenario cost =
+  production inference
+  + non-production capacity
+  + reserve
+  + eval and benchmark runs
+  + engineering time
+  + operations
+```
+
+Compare the cost of a successful answer inside the required SLA, not dollars per GPU or dollars per million tokens.
 
 ## Metrics
 
@@ -63,6 +98,8 @@ Optimizing for cost per token can hurt quality. Optimizing for the best model ca
     "Cost reports separate input, cached input and output tokens.",
     "Retries and fallbacks are included in scenario cost.",
     "Quality failures are visible in cost reviews.",
+    "Unit cost is calculated by scenario, not model size or GPU count.",
+    "Non-production boundaries and rollout/canary reserve are included in cost.",
     "The dashboard can show cost per accepted outcome."
   ]}
 />
@@ -80,4 +117,3 @@ Write cost decisions as: scenario, model/provider options, raw token cost, cache
 - [Prefix Cache](/en/handbook/caching/prefix-cache)
 - [AI Quality Gate](/en/handbook/evals/ai-quality-gate)
 - [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
-

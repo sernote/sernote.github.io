@@ -18,7 +18,7 @@ related:
   - inference-economics
   - llm-observability-checklist
 published: "2026-05-22"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -69,6 +69,8 @@ Batch throughput and interactive latency conflict. A stronger model can break th
 ## Example
 
 If a call summary degrades, do not start by rewriting the LLM prompt. First check STT route, language hints, chunking, diarization, realtime factor and transcript quality on failed cases.
+
+Self-hosted STT gives not only data control, but also the ability to add domain signals: extra classes, quality features, emotions or specialized hints. Evaluate such experiments not only by quality, but also by latency regression, realtime factor and downstream LLM impact.
 
 ## Decision template
 

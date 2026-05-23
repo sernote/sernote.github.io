@@ -1,0 +1,108 @@
+---
+title: "Semantic Router"
+description: "How to choose the execution path: small model, large model, RAG, agent or human review."
+section: "gateway"
+type: "chapter"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - backend-engineer
+tags:
+  - semantic-router
+  - routing
+  - cost
+  - agents
+related:
+  - ai-gateway
+  - inference-economics
+  - prefix-cache
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Problem
+
+Many platforms route only by `model_name`: model, provider and fallback. In production, the expensive decision is not only which model to call, but which execution path to allow.
+
+## Symptoms
+
+- Every request goes to the agentic loop by default.
+- A simple rewrite starts tools, memory and long context.
+- The router chooses a model, but not whether RAG, reasoning or agentic execution is needed.
+- Prefix cache savings are lost because too much traffic enters the expensive path.
+
+## Mental model
+
+Semantic Router is admission control before expensive execution. It decides whether a request should go to `direct_small`, `direct_large`, `rag`, `agentic`, `human_review` or policy denial.
+
+<FlowDiagram
+  title="Execution path"
+  steps={[
+    { label: "01", title: "Product request", description: "Scenario, user input and product context." },
+    { label: "02", title: "AI Gateway", description: "Contract, quotas, policy and telemetry." },
+    { label: "03", title: "Semantic Router", description: "Execution path, not only model choice." },
+    { label: "04", title: "Execution lane", description: "direct_small, direct_large, RAG, agentic or human review." },
+    { label: "05", title: "Runtime", description: "MaaS, self-hosted pool, batch or fallback." }
+  ]}
+/>
+
+## Architecture
+
+Route policy should be part of the scenario contract: primary lane, self-hosted candidate, fallback, canary share, queue limits, SLO, cost budget and stop criteria.
+
+<BlockDiagram
+  title="Route policy"
+  columns={3}
+  blocks={[
+    { label: "lane", title: "route_lane", description: "direct_small, direct_large, rag, agentic, human_review." },
+    { label: "quality", title: "router evals", description: "Errors across direct vs agentic and small vs large." },
+    { label: "cost", title: "cost budget", description: "Cost cap, agent step count and fallback path." },
+    { label: "latency", title: "latency class", description: "TTFT-critical, interactive, async or batch." },
+    { label: "cache", title: "prefix policy", description: "Prompt family, tools_hash and expected hit rate." },
+    { label: "safety", title: "tool policy", description: "Allowed tools, human confirmation and action denial." }
+  ]}
+/>
+
+## Metrics
+
+Track `route_lane`, `router_version`, `router_confidence`, `false_direct_rate`, `false_agentic_rate`, `wrong_model_lane_rate`, `cost_saved`, `quality_delta`, `latency_delta`, `fallback_rate_by_lane` and `cache_hit_rate_by_lane`.
+
+## Trade-offs
+
+Semantic Router lowers cost when it confidently keeps simple requests away from expensive execution. But it has its own cost: classification latency, routing mistakes and the risk of silently degrading quality.
+
+## Anti-patterns
+
+- Every request goes to the agentic lane by default.
+- Router chooses the model but not the execution path.
+- Route metadata is inserted into the prompt prefix and breaks prefix cache.
+- Every intent gets a new system prompt.
+- No evals exist for routing mistakes.
+
+## Checklist
+
+<Checklist
+  items={[
+    "Scenario route_lane and lane-switching rules are documented.",
+    "Router does not write dynamic fields into the prompt prefix.",
+    "false_direct and false_agentic are evaluated.",
+    "Cost and quality are measured by lane.",
+    "agentic lane has step, tool and budget limits."
+  ]}
+/>
+
+## Example
+
+"Rewrite this email shorter" should not start an agent loop with tools and memory. It can go to `direct_small`. "Find the latest customer actions, compare them with CRM and prepare follow-up" may require `agentic` or `human_review` because external state and actions are involved.
+
+## Decision template
+
+For each scenario, define `route_policy`, `route_lane`, `canary_share`, `fallback_condition`, `pool_id`, `queue_priority`, `latency_class`, `context_budget`, `tool_policy` and required trace fields.
+
+## Related chapters
+
+- [AI Gateway](/en/handbook/gateway/ai-gateway)
+- [Inference Economics](/en/handbook/economics/inference-economics)
+- [Prefix Cache](/en/handbook/caching/prefix-cache)

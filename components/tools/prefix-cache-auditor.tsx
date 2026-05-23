@@ -17,6 +17,7 @@ export function PrefixCacheAuditor({ locale = "en" }: { locale?: Locale }) {
   const [toolSchemaJson, setToolSchemaJson] = useState(examples.unstable.toolSchemaJson);
   const [exampleRequestOne, setExampleRequestOne] = useState(examples.unstable.exampleRequestOne);
   const [exampleRequestTwo, setExampleRequestTwo] = useState(examples.unstable.exampleRequestTwo);
+  const [agentSession, setAgentSession] = useState(examples.unstable.agentSession);
 
   const result = useMemo(
     () =>
@@ -28,6 +29,7 @@ export function PrefixCacheAuditor({ locale = "en" }: { locale?: Locale }) {
       }),
     [exampleRequestOne, exampleRequestTwo, systemPrompt, toolSchemaJson]
   );
+  const agentDiff = useMemo(() => analyzeAgentSession(agentSession, locale), [agentSession, locale]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
@@ -41,6 +43,11 @@ export function PrefixCacheAuditor({ locale = "en" }: { locale?: Locale }) {
           <Field label={dictionary.fields[1]} value={toolSchemaJson} onChange={setToolSchemaJson} />
           <Field label={dictionary.fields[2]} value={exampleRequestOne} onChange={setExampleRequestOne} />
           <Field label={dictionary.fields[3]} value={exampleRequestTwo} onChange={setExampleRequestTwo} />
+          <Field
+            label={locale === "ru" ? "Diff агентной сессии" : "Agent session diff"}
+            value={agentSession}
+            onChange={setAgentSession}
+          />
           <Button
             type="button"
             variant="outline"
@@ -49,6 +56,7 @@ export function PrefixCacheAuditor({ locale = "en" }: { locale?: Locale }) {
               setToolSchemaJson(examples.stable.toolSchemaJson);
               setExampleRequestOne(examples.stable.exampleRequestOne);
               setExampleRequestTwo(examples.stable.exampleRequestTwo);
+              setAgentSession(examples.stable.agentSession);
             }}
           >
             {dictionary.loadStable}
@@ -76,6 +84,11 @@ export function PrefixCacheAuditor({ locale = "en" }: { locale?: Locale }) {
             noIssue={dictionary.noIssue}
           />
           <ResultGroup title={dictionary.groups[3]} items={translatePrefixItems(result.recommendations, locale)} noIssue={dictionary.noIssue} positive />
+          <ResultGroup
+            title={locale === "ru" ? "Diff шагов агента" : "Agent-step diff"}
+            items={agentDiff}
+            noIssue={dictionary.noIssue}
+          />
         </CardContent>
       </Card>
     </div>
@@ -91,13 +104,15 @@ function getPrefixExamples(locale: Locale) {
         toolSchemaJson:
           "{\"name\":\"search_docs\",\"properties\":{\"query\":{\"type\":\"string\"},\"trace_id\":{\"type\":\"string\"}}}",
         exampleRequestOne: "Суммаризируй аккаунт 123 с текущим timestamp 2026-05-18T10:10:00Z",
-        exampleRequestTwo: "Суммаризируй аккаунт 987 с текущим timestamp 2026-05-18T10:11:00Z"
+        exampleRequestTwo: "Суммаризируй аккаунт 987 с текущим timestamp 2026-05-18T10:11:00Z",
+        agentSession: "step=1 prefix_hash=a tools_hash=t1 timestamp=10:10\nstep=2 prefix_hash=b tools_hash=t2 timestamp=10:11"
       },
       stable: {
         systemPrompt: "Классифицируй запросы по фиксированной таксономии. Стабильные инструкции всегда остаются первыми.",
         toolSchemaJson: "{\"name\":\"classify\",\"properties\":{\"label\":{\"enum\":[\"sales\",\"support\"]}}}",
         exampleRequestOne: "Классифицируй запрос: клиент спрашивает про счёт",
-        exampleRequestTwo: "Классифицируй запрос: клиент спрашивает про экспорт из CRM"
+        exampleRequestTwo: "Классифицируй запрос: клиент спрашивает про экспорт из CRM",
+        agentSession: "step=1 prefix_hash=stable tools_hash=stable\nstep=2 prefix_hash=stable tools_hash=stable"
       }
     };
   }
@@ -108,13 +123,15 @@ function getPrefixExamples(locale: Locale) {
       toolSchemaJson:
         "{\"name\":\"search_docs\",\"properties\":{\"query\":{\"type\":\"string\"},\"trace_id\":{\"type\":\"string\"}}}",
       exampleRequestOne: "Summarize account 123 using the current timestamp 2026-05-18T10:10:00Z",
-      exampleRequestTwo: "Summarize account 987 using the current timestamp 2026-05-18T10:11:00Z"
+      exampleRequestTwo: "Summarize account 987 using the current timestamp 2026-05-18T10:11:00Z",
+      agentSession: "step=1 prefix_hash=a tools_hash=t1 timestamp=10:10\nstep=2 prefix_hash=b tools_hash=t2 timestamp=10:11"
     },
     stable: {
       systemPrompt: "You classify requests using a fixed taxonomy. Stable instructions stay first.",
       toolSchemaJson: "{\"name\":\"classify\",\"properties\":{\"label\":{\"enum\":[\"sales\",\"support\"]}}}",
       exampleRequestOne: "Classify this request: customer asks about invoice",
-      exampleRequestTwo: "Classify this request: customer asks about CRM export"
+      exampleRequestTwo: "Classify this request: customer asks about CRM export",
+      agentSession: "step=1 prefix_hash=stable tools_hash=stable\nstep=2 prefix_hash=stable tools_hash=stable"
     }
   };
 }
@@ -196,4 +213,40 @@ function translatePrefixItems(items: string[], locale: Locale): string[] {
 
     return translations[item] ?? item;
   });
+}
+
+function analyzeAgentSession(value: string, locale: Locale): string[] {
+  const warnings: string[] = [];
+  const prefixHashes = uniqueMatches(value, /prefix_hash\s*[=:]\s*["']?([\w.-]+)/g);
+  const toolsHashes = uniqueMatches(value, /tools_hash\s*[=:]\s*["']?([\w.-]+)/g);
+
+  if (prefixHashes.length > 1) {
+    warnings.push(
+      locale === "ru"
+        ? "prefix_hash меняется между шагами агента."
+        : "prefix_hash changes between agent steps."
+    );
+  }
+
+  if (toolsHashes.length > 1) {
+    warnings.push(
+      locale === "ru"
+        ? "tools_hash меняется между шагами агента."
+        : "tools_hash changes between agent steps."
+    );
+  }
+
+  if (/timestamp|request_id|trace_id|current_date/i.test(value)) {
+    warnings.push(
+      locale === "ru"
+        ? "В trace видны timestamp/request_id/trace_id: проверь, что они не попали в начало prompt."
+        : "Trace includes timestamp/request_id/trace_id: verify they are not in the prompt prefix."
+    );
+  }
+
+  return warnings;
+}
+
+function uniqueMatches(value: string, pattern: RegExp): string[] {
+  return Array.from(new Set(Array.from(value.matchAll(pattern)).map((match) => match[1])));
 }

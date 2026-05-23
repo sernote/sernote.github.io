@@ -18,7 +18,7 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -32,10 +32,31 @@ This page helps you choose the first path. Do not read the handbook linearly.
 - Need the big picture -> [Production AI Platform Map](/en/handbook/platform-map).
 - Need an executive maturity language -> [AI Platform Maturity Model](/en/handbook/maturity-model).
 - Choosing MaaS, self-hosted or hybrid -> [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted).
+- Moving from MaaS to self-hosted -> [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted), [Inference Runtime](/en/handbook/inference/inference-runtime), [AI Quality Gate](/en/handbook/evals/ai-quality-gate), [Inference Economics](/en/handbook/economics/inference-economics), [Observability](/en/handbook/observability/llm-observability-checklist).
 - Cost or latency is drifting -> [Inference Economics](/en/handbook/economics/inference-economics) and [Prefix Cache](/en/handbook/caching/prefix-cache).
+- An agent burns tokens without visible reason -> [Semantic Router](/en/handbook/gateway/semantic-router), [Prefix Cache](/en/handbook/caching/prefix-cache), [Inference Economics](/en/handbook/economics/inference-economics) and [Observability](/en/handbook/observability/llm-observability-checklist).
 - Quality moves after a model or prompt change -> [AI Quality Gate](/en/handbook/evals/ai-quality-gate).
 - Debugging is blind -> [LLM Observability Checklist](/en/handbook/observability/llm-observability-checklist).
 - Ownership is unclear -> [Ownership and Operating Model](/en/handbook/operating-model/ownership).
+
+## Thinking About Moving From MaaS To Self-hosted?
+
+Do not start with model choice or GPU choice. Start with the scenario: what data is involved, which SLA matters, what the traffic shape looks like, how quality will be evaluated and who will own operations.
+
+Use this first review path:
+
+1. Scenario: what exactly is moving?
+2. Data: can the input be de-identified and stay on MaaS?
+3. SLA: is the workload real-time, long-context or batch?
+4. Quality: do evals exist before the migration?
+5. Economics: did you count production, staging, test, debug, on-call and reserve capacity?
+
+If these questions have no answers, self-hosted is not a strategy yet. It is an expensive experiment.
+
+<Callout title="Before GPUs" type="warning">
+  If there are no evals and no cost baseline, start the self-hosted migration
+  with a scenario document, not with GPU selection.
+</Callout>
 
 ## Mental model
 
@@ -45,8 +66,8 @@ Start with the current pain. If cost hurts, go to economics and cache. If qualit
 
 ## Paths By Role
 
-- AI Platform Lead: map, maturity model, gateway, evals, observability, ownership.
-- Staff Engineer: platform map, inference runtime, prefix cache, quality gate.
+- AI Platform Lead: map, Semantic Router, gateway, economics, prefix cache, observability, ownership.
+- Staff Engineer: inference runtime, prefix cache, context budget, tool stability, router evals.
 - CTO / Head of Engineering: maturity model, MaaS vs self-hosted, inference economics, operating model.
 - Product Engineer: start here, gateway, observability checklist, quality gate.
 

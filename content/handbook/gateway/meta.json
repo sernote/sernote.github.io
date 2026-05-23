@@ -1,5 +1,4 @@
 {
   "title": "Gateway",
-  "pages": ["ai-gateway"]
+  "pages": ["ai-gateway", "semantic-router"]
 }
-

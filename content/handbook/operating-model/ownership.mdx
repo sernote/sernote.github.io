@@ -19,7 +19,7 @@ related:
   - ai-quality-gate
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -37,9 +37,45 @@ Production AI fails when ownership is split across model research, product teams
 
 AI Platform should enable product teams without becoming a bottleneck. That requires clear RACI, golden paths and escalation rules.
 
+During self-hosted migration, the product team owns the scenario, success criteria and initial model discovery. The platform owns the self-hosted candidate, capacity, latency profile, eval gate, fallback and operations.
+
+Without this split, migration becomes either research without production responsibility or an infrastructure project without product success criteria.
+
 ## Architecture
 
 Operating model includes scenario intake, architecture review, model release process, quality review, cost review, incident process, hiring profiles, support model, onboarding and platform DevEx.
+
+A production AI scenario needs owners for route policy, context budget, tool policy and cache strategy. Otherwise cost and quality become nobody's job: product sees UX, platform sees GPUs, but nobody owns the full agent trajectory.
+
+<BlockDiagram
+  title="AI scenario RACI"
+  columns={3}
+  blocks={[
+    { label: "quality", title: "Owner: scenario quality", description: "Product success criterion and dataset." },
+    { label: "route", title: "Owner: route policy", description: "direct, RAG, agentic, human review and fallback." },
+    { label: "prompt", title: "Owner: prompt family", description: "Prompt versions and model compatibility." },
+    { label: "tools", title: "Owner: tool registry", description: "Tool stability, allowed tools and audit." },
+    { label: "cache", title: "Owner: cache hit SLO", description: "Prefix stability, route affinity and regression." },
+    { label: "cost", title: "Owner: cost review", description: "Scenario cost and accepted outcome." }
+  ]}
+/>
+
+## What MaaS Used To Hide
+
+MaaS removes part of the operating responsibility: scaling, access to new models, part of guardrails, runtime operations and upgrades. In self-hosted setups, these questions move back into the team.
+
+| MaaS hides | Self-hosted returns |
+| --- | --- |
+| scale-out | capacity planning |
+| runtime updates | vLLM and runtime upgrades |
+| part of guardrails | owned policies |
+| model lifecycle | release process |
+| provider SLA | owned SLO |
+| token bill | people, hardware and process |
+
+<Callout title="Principle" type="decision">
+  Self-hosted gives control, but returns responsibility.
+</Callout>
 
 ## Metrics
 
@@ -64,6 +100,7 @@ Central platform ownership improves consistency but can slow teams. Product owne
     "Model releases have quality and cost review.",
     "Incident process includes prompt/model/tool rollback.",
     "Product teams have SDKs, templates and playgrounds.",
+    "Scenario owners exist for route policy, context budget, tool policy and cache strategy.",
     "Exceptions to the platform path are tracked and reviewed."
   ]}
 />
@@ -81,4 +118,3 @@ For each scenario, document RACI, platform contract, product owner, quality owne
 - [Production AI Platform Map](/en/handbook/platform-map)
 - [AI Quality Gate](/en/handbook/evals/ai-quality-gate)
 - [LLM Observability Checklist](/en/handbook/observability/llm-observability-checklist)
-

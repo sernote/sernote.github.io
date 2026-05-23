@@ -1,0 +1,62 @@
+---
+title: "AI Scenario Migration RFC"
+description: "A template for moving a scenario from MaaS to self-hosted or hybrid execution."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - cto
+tags:
+  - template
+  - self-hosted
+  - migration
+related:
+  - maas-vs-self-hosted
+  - semantic-router
+  - ai-quality-gate
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Purpose
+
+Use this RFC before buying GPUs or moving traffic. The goal is to prove that the scenario keeps quality, SLO and economics in the new boundary.
+
+## Fields
+
+<StackDiagram
+  title="Scenario migration RFC"
+  items={[
+    { label: "scenario", title: "scenario_id", description: "What is moving and which user outcome must hold." },
+    { label: "owner", title: "Product owner", description: "Who accepts scenario quality and product risk." },
+    { label: "current", title: "Current route", description: "Baseline model/provider, cost, latency and quality." },
+    { label: "candidate", title: "Candidate model", description: "How the candidate was found: MaaS, OpenRouter, benchmark or internal eval." },
+    { label: "draft", title: "self-hosted draft status", description: "Whether a rough local version is up and the scenario reproduces." },
+    { label: "evals", title: "quality baseline and eval dataset", description: "What is compared and which errors block rollout." },
+    { label: "slo", title: "Latency SLO", description: "TTFT, TPOT, total latency, p95/p99 and latency class." },
+    { label: "cost", title: "Cost baseline", description: "Current cost, non-production capacity, reserve and expected utilization." },
+    { label: "route", title: "Route policy", description: "route_lane, fallback route, canary plan and stop criteria." },
+    { label: "incident", title: "Owner of incident", description: "Who decides rollback and owns the review." }
+  ]}
+/>
+
+## Readiness Criteria
+
+<Checklist
+  items={[
+    "Current quality and cost baseline is known.",
+    "A rough self-hosted candidate reproduces the scenario.",
+    "Eval dataset and stop criteria exist.",
+    "Fallback route and canary plan exist.",
+    "Non-production capacity is included in economics."
+  ]}
+/>
+
+## Related chapters
+
+- [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
+- [Semantic Router](/en/handbook/gateway/semantic-router)
+- [AI Quality Gate](/en/handbook/evals/ai-quality-gate)

@@ -7,7 +7,18 @@ import { Progress } from "@/components/ui/progress";
 import { summarizeQualityGate, type QualityGateItem } from "@/lib/tools/quality-gate";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
-const itemIds = ["dataset", "taxonomy", "offline", "regression", "canary", "fallback", "observability", "owner"] as const;
+const itemIds = [
+  "dataset",
+  "taxonomy",
+  "offline",
+  "regression",
+  "canary",
+  "fallback",
+  "observability",
+  "router",
+  "long-context",
+  "owner"
+] as const;
 const checkedByDefault = new Set<string>(["dataset", "taxonomy", "fallback", "owner"]);
 
 export function QualityGateChecklist({ locale = "en" }: { locale?: Locale }) {

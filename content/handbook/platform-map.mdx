@@ -18,7 +18,7 @@ related:
   - ai-gateway
   - ownership
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -42,9 +42,31 @@ If a layer is missing from the map, it does not disappear. A product team implem
 
 <PlatformMap />
 
+## Reading The Map Through A Scenario
+
+The map becomes useful when it starts from a concrete AI scenario, not from a model:
+
+```txt
+AI scenario
+  -> data
+  -> SLA and latency budget
+  -> workload profile
+  -> model and execution boundary
+  -> evals and rollout
+  -> owner
+```
+
+| Scenario | Data | SLA | Decision |
+| --- | --- | --- | --- |
+| AI chat | ordinary product data | real-time response | fast pool, MaaS or self-hosted |
+| Call follow-up | may be sensitive | batch or async processing | self-hosted or deferred path |
+| Fast experiment | no sensitive data | flexible | MaaS or OpenRouter |
+| Bulk processing | internal boundary | not urgent | overnight batch |
+| TTFT-critical flow | product-dependent | strict TTFT | dedicated pool |
+
 ## Metrics
 
-Each layer has its own metric: use-case adoption, gateway coverage, provider reliability, routing fallback rate, inference utilization, cache hit rate, eval pass rate, trace completeness, cost per accepted outcome, safety event rate and ownership coverage.
+Each layer has its own metric: use-case adoption, gateway coverage, provider reliability, route quality, false_agentic_rate, false_direct_rate, cost_saved_by_router, inference utilization, cache hit rate by route, eval pass rate, trace completeness, cost per accepted outcome, safety event rate and ownership coverage.
 
 ## Trade-offs
 

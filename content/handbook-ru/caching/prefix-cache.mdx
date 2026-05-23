@@ -19,7 +19,7 @@ related:
   - inference-runtime
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Проблема
@@ -48,6 +48,22 @@ Prefix cache требует три вещи: начало должно совп�
 ## Компромиссы
 
 Большой стабильный список инструментов может быть дешевле маленького динамического списка в агентском цикле. Но большие списки инструментов могут ухудшать качество выбора инструмента моделью, особенно на маленьких моделях.
+
+## Agentic tool surface
+
+В агенте нельзя оптимизировать один запрос в отрыве от всей траектории. Динамический отбор tools выглядит дешевле на одном шаге, но если он меняет ранний prefix, агент начинает платить за cache miss на каждом следующем шаге. Сначала стабилизируйте prefix, потом уменьшайте prompt.
+
+| Паттерн | Риск | Лучше |
+| --- | --- | --- |
+| Dynamic tools на каждом шаге | новый prefix_hash | stable tools + masking |
+| Разный порядок tools | cache miss без смыслового изменения | canonical order |
+| request_id в schema | уникальный prefix | trace metadata вне prompt |
+| route-specific system prompt | fragmentation | prompt families |
+| tool filtering без проверок качества | дешевле, но хуже качество | router eval + cache metrics |
+
+## Self-hosted нюанс
+
+В self-hosted контуре cache hit rate зависит не только от формы промпта, но и от планировщика, sticky routing, числа реплик, разделения prefill/decode и политики прогрева. После scale-out обычный round-robin может снизить кешируемость сильнее, чем изменение промпта.
 
 ## Анти-паттерны
 

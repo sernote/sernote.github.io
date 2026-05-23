@@ -18,7 +18,7 @@ related:
   - ai-gateway
   - llm-observability-checklist
 published: "2026-05-22"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -40,6 +40,10 @@ Guardrails are policies, telemetry, fallback and ownership. A library can help, 
 
 A minimum layer includes input policy, output policy, PII handling, prompt injection checks, tool execution boundaries, audit trail, fallback behavior and human review for high-risk scenarios.
 
+Semantic Router can be the first safety gate: before starting an agent, tool use or external action, it chooses a safe lane, human review or policy denial.
+
+Policy fields: `policy_route`, `allowed_tools`, `blocked_tools`, `requires_human_confirmation`, `tool_budget` and `action_scope`.
+
 ## Metrics
 
 Track safety event rate, blocked requests, false positive rate, fallback rate, manual review load, policy version, audit completeness and incident count.
@@ -51,6 +55,7 @@ Strict policies reduce risk, but can break useful workflows. Weak policies prese
 ## Anti-patterns
 
 - Treating guardrails as one library.
+- Treating open weights as automatically valid for commercial production.
 - Not versioning policy.
 - Not logging safety events.
 - Giving agents tools without budget, scope or audit.
@@ -62,6 +67,7 @@ Strict policies reduce risk, but can break useful workflows. Weak policies prese
     "The scenario has an explicit risk level.",
     "Input and output policies are versioned.",
     "PII handling is defined before rollout.",
+    "Model license is checked before production release: commercial use, limits, fine-tuning, distillation and distribution.",
     "Tool execution has scope, budget and audit trail.",
     "Fallback and human review path are known before an incident."
   ]}

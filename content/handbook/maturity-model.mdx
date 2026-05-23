@@ -18,7 +18,7 @@ related:
   - maas-vs-self-hosted
   - ownership
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -38,6 +38,13 @@ Maturity is not the number of models you run. It is how much of the lifecycle is
 ## Architecture
 
 <MaturityModel />
+
+<Callout title="Self-hosted / Hybrid" type="warning">
+  Self-hosted / Hybrid is not just having GPUs. The level is mature only when
+  gateway, eval gate, observability, fallback and capacity planning exist.
+  Otherwise the organization gets a more expensive way to ship unknown
+  regressions.
+</Callout>
 
 ## Metrics
 
@@ -78,4 +85,3 @@ State current level, target level, missing capabilities, evidence, owners and on
 - [Production AI Platform Map](/en/handbook/platform-map)
 - [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
 - [Ownership and Operating Model](/en/handbook/operating-model/ownership)
-

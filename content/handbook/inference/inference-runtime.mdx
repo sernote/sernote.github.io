@@ -19,7 +19,7 @@ related:
   - inference-economics
   - prefix-cache
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -44,6 +44,30 @@ The runtime layer includes OpenAI-compatible serving, model workers, batching, K
 
 Track TTFT, TPOT, total latency, tokens per second, queue time, batch size, cache hit rate, GPU memory, utilization, error rate, cold starts and cost per accepted outcome.
 
+## Capacity Is Not The Sum Of GPUs
+
+A cluster can look sufficient by throughput and still fail p99 latency if different request profiles share one pool.
+
+<BlockDiagram
+  title="SLO segmentation"
+  columns={4}
+  blocks={[
+    { label: "fast", title: "Fast chat", description: "Stable TTFT and short context." },
+    { label: "long", title: "Long context", description: "Separate prefill, KV-cache memory and quality checks." },
+    { label: "batch", title: "Batch processing", description: "Queue, backlog and cost matter more than interactivity." },
+    { label: "critical", title: "TTFT-critical", description: "Dedicated pool, queue limits and its own SLO." }
+  ]}
+  caption="A shared pool often optimizes average utilization while breaking p99 and TTFT for flows where first-token latency is critical."
+/>
+
+A dedicated pool costs more in infrastructure, but can be cheaper than trying to fix p99 with global settings that conflict with other workload profiles.
+
+## Context Window Is Not Working Context
+
+Advertised max context answers only one question: how many tokens the model can accept. In production, three other questions matter more: how much context fits on the chosen hardware, how much prefill latency it creates and whether quality holds at long lengths.
+
+One million tokens in a spec does not mean one million useful tokens in a scenario. Long windows need separate evals: quality by length, prefill latency, KV-cache memory and cost per accepted outcome. See the public note: [Why one million tokens do not solve context](https://habr.com/ru/companies/bitrix/articles/976528/).
+
 ## Trade-offs
 
 Higher throughput can increase latency. Quantization can reduce memory and cost but may degrade quality. Larger context can reduce truncation but increase prefill and cache pressure.
@@ -62,6 +86,10 @@ Higher throughput can increase latency. Quantization can reduce memory and cost 
     "Model launch includes hardware, flags, expected throughput and latency.",
     "Capacity planning uses real scenario traffic shape.",
     "Cache budget is sized for the working set, not only max context.",
+    "Separate profiles exist for short-context, long-context and agentic workloads.",
+    "Latency-critical flows are not mixed with batch-heavy and long-context work without an explicit decision.",
+    "Maximum context window is not used as the default path.",
+    "Capacity planning includes prefill, KV-cache and expected prefix reuse.",
     "Rollout has fallback and quality comparison against the previous alias."
   ]}
 />
@@ -79,4 +107,3 @@ Record model, hardware, runtime, serving flags, workload, latency SLO, quality g
 - [Inference Economics](/en/handbook/economics/inference-economics)
 - [Prefix Cache](/en/handbook/caching/prefix-cache)
 - [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
-

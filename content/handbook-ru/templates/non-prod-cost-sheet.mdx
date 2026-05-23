@@ -1,0 +1,60 @@
+---
+title: "Non-prod cost sheet"
+description: "Шаблон для расчёта non-prod мощности, резерва и стоимости принятого результата."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - mlops-engineer
+tags:
+  - template
+  - finops
+  - self-hosted
+related:
+  - inference-economics
+  - maas-vs-self-hosted
+  - inference-runtime
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Назначение
+
+Self-hosted стоимость нельзя считать только по продовым GPU. Этот шаблон фиксирует мощности, которые не обслуживают пользовательский трафик напрямую, но входят в экономику сценария.
+
+<StackDiagram
+  title="Cost sheet"
+  items={[
+    { label: "prod", title: "prod instances", description: "Рабочий контур и целевая утилизация." },
+    { label: "stage", title: "stage", description: "Проверка релизов, совместимость и canary prep." },
+    { label: "debug", title: "test / debug", description: "Воспроизведение багов, профилирование и подбор флагов." },
+    { label: "canary", title: "canary", description: "Отдельная мощность под безопасную выкатку." },
+    { label: "reserve", title: "reserve", description: "Пики, деградации и резервный маршрут." },
+    { label: "evals", title: "eval runs", description: "Проверки качества, бенчмарки и регрессии." },
+    { label: "outcome", title: "accepted result rate", description: "Доля результатов, которые реально принимаются." },
+    { label: "owner", title: "owner", description: "Кто ревьюит стоимость и принимает компромисс." }
+  ]}
+/>
+
+## Cache-aware cost
+
+Поля для расчёта:
+
+- `S`: стабильные токены;
+- `D`: динамические токены;
+- `O`: выходные токены;
+- `h`: ожидаемый и фактический hit rate;
+- `agent_steps`;
+- `retries`;
+- `fallback_rate`;
+- `cost_per_accepted_result`;
+- `cache_regression_after_deploy`.
+
+## Связанные главы
+
+- [Экономика инференса](/handbook/economics/inference-economics)
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+- [Инференс-рантайм](/handbook/inference/inference-runtime)

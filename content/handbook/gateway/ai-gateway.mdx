@@ -19,7 +19,7 @@ related:
   - inference-economics
   - observability
 published: "2026-05-18"
-updated: "2026-05-19"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -41,6 +41,18 @@ AI Gateway is not a proxy to a model. It is the control plane for contracts, rou
 
 Core responsibilities: auth, tenants, quotas, rate limits, request normalization, provider abstraction, fallbacks, retries, model aliases, token accounting, cost attribution and policy enforcement.
 
+In a mature platform, the gateway routes not only provider or model, but execution type. Simple requests can go to `direct_small`, complex single-shot tasks to `direct_large`, and requests with actions, external state or multi-step planning to `agentic`.
+
+<FlowDiagram
+  title="Route policy"
+  steps={[
+    { label: "01", title: "Scenario", description: "Scenario and success criterion." },
+    { label: "02", title: "Route policy", description: "lane, SLO, budget, fallback." },
+    { label: "03", title: "Pool / provider", description: "MaaS, self-hosted pool or batch." },
+    { label: "04", title: "Trace", description: "route_lane, pool_id, queue_time, cost." }
+  ]}
+/>
+
 ## Metrics
 
 Gateway coverage, route success rate, fallback rate, quota rejections, cost attribution completeness, cache hit by route, latency by model alias and policy violation rate.
@@ -53,6 +65,9 @@ A gateway adds a hop and a platform dependency. In return it creates a single pl
 
 - SDK wrappers without routing state.
 - Model names exposed directly to product code.
+- Every request goes to the agentic runtime by default.
+- Router chooses `model_name`, but not execution path.
+- Route metadata is inserted into the prompt prefix and breaks prefix cache.
 - Retries that hide quality or cost failures.
 - Quotas enforced only after the provider invoice arrives.
 
@@ -74,11 +89,11 @@ Instead of `gpt-5-mini` in product code, use `crm.summary.fast`. The gateway can
 
 ## Decision template
 
-For each route define: alias, use case, allowed providers, fallback order, quota, token budget, safety policy, trace fields and owner.
+For each route define: alias, use case, `route_policy`, `canary_share`, `fallback_condition`, `pool_id`, `queue_priority`, `latency_class`, allowed providers, quota, token budget, safety policy, trace fields and owner.
 
 ## Related chapters
 
 - [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
+- [Semantic Router](/en/handbook/gateway/semantic-router)
 - [Inference Economics](/en/handbook/economics/inference-economics)
 - [LLM Observability Checklist](/en/handbook/observability/llm-observability-checklist)
-

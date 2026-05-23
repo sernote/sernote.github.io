@@ -197,6 +197,22 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - `pnpm typecheck` passed.
   - `pnpm test` passed: 1 test file, 5 tests.
   - `pnpm build` passed and generated 80 static/SSG pages.
+- Handbook production-pattern and personal-landing polish:
+  - Added reusable handbook diagram components for flow, block and stack schematics inside MDX chapters.
+  - Added a dedicated Semantic Router chapter in both Russian and English.
+  - Added practical self-hosted migration, route policy, context-budget, non-prod economics, SLO-pool, long-context, router-eval and observability-field inserts across the relevant handbook chapters.
+  - Added initial template pages for scenario migration RFC, execution-boundary matrix and non-prod cost sheet.
+  - Expanded Prefix Cache Auditor with agent-session diff checks.
+  - Expanded LLM Cost Calculator with agent mode, retries, fallback rate and cost per accepted result.
+  - Expanded the AI Quality Gate checklist with router and long-context readiness checks.
+  - Polished the personal landing page around `Сергей Нотевский`, `Практика за хэндбуком`, `Флагманский проект`, a tighter after-demo block and a merged "Где я полезен" section.
+  - Updated Russian root metadata and handbook sidebar branding to use `Сергей Нотевский`.
+  - `pnpm lint` passed.
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed: 1 test file, 5 tests.
+  - `pnpm build` passed and generated 92 static/SSG pages.
+  - Static export smoke checks confirmed `/` contains the updated Russian personal title and landing sections.
+  - Static export smoke checks confirmed `/handbook/gateway/semantic-router/`, `/handbook/templates/scenario-migration-rfc/` and `/tools/llm-cost-calculator/`.
 
 ## Decisions
 

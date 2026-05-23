@@ -18,7 +18,7 @@ related:
   - prefix-cache
   - ai-quality-gate
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Проблема
@@ -32,10 +32,31 @@ updated: "2026-05-22"
 - Нужна общая картина -> [Карта Production AI Platform](/handbook/platform-map).
 - Нужно объяснить зрелость руководству -> [Модель зрелости ИИ-платформы](/handbook/maturity-model).
 - Выбираете MaaS, self-hosted или гибридный подход -> [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted).
+- Переезжаете с MaaS на self-hosted -> [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted), [инференс-рантайм](/handbook/inference/inference-runtime), [контроль качества ИИ](/handbook/evals/ai-quality-gate), [экономика инференса](/handbook/economics/inference-economics), [наблюдаемость](/handbook/observability/llm-observability-checklist).
 - Растёт стоимость или задержка -> [Экономика инференса](/handbook/economics/inference-economics) и [Prefix Cache](/handbook/caching/prefix-cache).
+- Агент ест токены без видимой причины -> [Semantic Router](/handbook/gateway/semantic-router), [Prefix Cache](/handbook/caching/prefix-cache), [экономика инференса](/handbook/economics/inference-economics) и [наблюдаемость](/handbook/observability/llm-observability-checklist).
 - Плывёт качество после смены модели или промпта -> [контроль качества ИИ](/handbook/evals/ai-quality-gate).
 - Не хватает логов для разборов -> [Чеклист наблюдаемости LLM](/handbook/observability/llm-observability-checklist).
 - Непонятно, кто отвечает за ИИ-сценарий -> [Ответственность и операционная модель](/handbook/operating-model/ownership).
+
+## Думаете переехать с MaaS на self-hosted?
+
+Не начинайте с выбора модели и GPU. Начните со сценария: какие данные обрабатываются, какой SLA нужен, как выглядит нагрузка, как будет проверяться качество и кто будет владельцем эксплуатации.
+
+Маршрут для первого ревью:
+
+1. Сценарий: что именно переносим?
+2. Данные: можно ли обезличить вход и остаться в MaaS?
+3. SLA: нужен ответ в реальном времени, длинный контекст или пакетная обработка?
+4. Качество: есть проверки до переезда?
+5. Экономика: посчитаны прод, стейджинг, тесты, отладка, дежурства и резерв?
+
+Если на эти вопросы нет ответов, self-hosted пока будет не стратегией, а дорогим экспериментом.
+
+<Callout title="Перед GPU" type="warning">
+  Если нет проверок качества и baseline стоимости, миграцию в self-hosted
+  лучше начинать не с GPU, а с описания сценария.
+</Callout>
 
 ## Ментальная модель
 
@@ -45,8 +66,8 @@ updated: "2026-05-22"
 
 ## Для разных ролей
 
-- AI Platform Lead: карта, модель зрелости, AI Gateway, проверка качества, наблюдаемость, ответственность.
-- Staff Engineer: карта платформы, инференс-рантайм, prefix cache, контроль качества.
+- AI Platform Lead: карта, Semantic Router, AI Gateway, экономика, prefix cache, наблюдаемость, ответственность.
+- Staff Engineer: инференс-рантайм, prefix cache, бюджет контекста, стабильность tools, проверки router.
 - CTO / Head of Engineering: модель зрелости, MaaS vs self-hosted, экономика инференса, операционная модель.
 - Product Engineer: стартовая страница, AI Gateway, чеклист наблюдаемости, контроль качества.
 

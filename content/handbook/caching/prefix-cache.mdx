@@ -19,7 +19,7 @@ related:
   - inference-runtime
   - llm-observability-checklist
 published: "2026-05-18"
-updated: "2026-05-22"
+updated: "2026-05-23"
 ---
 
 ## Problem
@@ -48,6 +48,22 @@ Track cached tokens, cache read input tokens, prefix hash, tools count, schema v
 ## Trade-offs
 
 A large stable tool list can be cheaper than a small dynamic list in an agent loop. But large tool lists can also reduce model tool-choice quality, especially on smaller models.
+
+## Agentic Tool Surface
+
+In an agent, do not optimize one request in isolation from the whole trajectory. Dynamic tool selection can look cheaper on one step, but if it changes the early prefix, the agent pays for cache misses on every following step. Stabilize prefix first, then reduce prompt size.
+
+| Pattern | Risk | Better |
+| --- | --- | --- |
+| Dynamic tools on every step | new prefix_hash | stable tools + masking |
+| Different tool order | cache miss without semantic change | canonical order |
+| request_id in schema | unique prefix | trace metadata outside prompt |
+| route-specific system prompt | fragmentation | prompt families |
+| tool filtering without evals | cheaper but lower quality | router eval + cache metrics |
+
+## Self-hosted Nuance
+
+In a self-hosted boundary, cache hit rate depends not only on prompt shape, but also scheduler behavior, sticky routing, replica count, prefill/decode split and warmup policy. After scale-out, plain round-robin can hurt cacheability more than a prompt change.
 
 ## Anti-patterns
 

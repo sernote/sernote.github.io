@@ -14,6 +14,7 @@
     "evals",
     "observability",
     "guardrails",
-    "operating-model"
+    "operating-model",
+    "templates"
   ]
 }

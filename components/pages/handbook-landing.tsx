@@ -38,7 +38,7 @@ const copy = {
       ["Prefix Cache Auditor", "Find unstable prefixes, dynamic fields and schema drift.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Estimate effective cost with cached input tokens.", "/tools/llm-cost-calculator"],
       ["AI Quality Gate Checklist", "Review readiness before rollout.", "/tools/ai-quality-gate-checklist"],
-      ["Templates", "AI Scenario RFC, model release, eval report and incident postmortem templates are next.", ""]
+      ["Templates", "Scenario migration RFC, execution boundary matrix and non-prod cost sheet.", "/handbook/templates/scenario-migration-rfc"]
     ]
   },
   ru: {
@@ -46,7 +46,7 @@ const copy = {
     title: "Production AI Platform Handbook",
     subtitle: "От API-ключа к платформе.",
     description:
-      "Production AI — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, embeddings и агентов в production: инференс, маршрутизация, кеш, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
+      "Production AI — это не модель. Это платформа. Практическая карта для команд, которые строят LLM, STT, эмбеддинги и агентов в production: инференс, маршрутизация, кеш, оценка качества, guardrails, наблюдаемость, стоимость и ответственность.",
     map: "Начать с карты",
     maturity: "Модель зрелости",
     tools: "Инструменты",
@@ -70,7 +70,7 @@ const copy = {
       ["Prefix Cache Auditor", "Ищет нестабильный префикс, динамические поля и дрейф схем.", "/tools/prefix-cache-auditor"],
       ["LLM Cost Calculator", "Оценивает реальную стоимость с кешированными входными токенами.", "/tools/llm-cost-calculator"],
       ["Чеклист контроля качества", "Проверяет готовность перед выкаткой.", "/tools/ai-quality-gate-checklist"],
-      ["Шаблоны", "Следующие: RFC ИИ-сценария, релиз модели, отчёт по качеству и разбор инцидента.", ""]
+      ["Шаблоны", "RFC миграции сценария, матрица выбора контура и non-prod cost sheet.", "/handbook/templates/scenario-migration-rfc"]
     ]
   }
 } as const;

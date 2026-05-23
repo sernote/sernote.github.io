@@ -38,12 +38,12 @@ const siteUrl =
 export function getSiteConfig(locale: Locale = defaultLocale) {
   return {
     name: "Production AI Platform Handbook",
-    author: "Sergei Notevskii",
+    author: locale === "ru" ? "Сергей Нотевский" : "Sergei Notevskii",
     role: locale === "ru" ? "AI Platform Lead" : "AI Platform Lead",
     url: siteUrl,
     description:
       locale === "ru"
-        ? "Хэндбук про ИИ-платформы в продакшене: инференс, маршрутизация, кеш, проверка качества, защитные контуры, наблюдаемость, стоимость и ответственность."
+        ? "Хэндбук про AI-платформы в production: инференс, маршрутизация, кеш, проверка качества, guardrails, наблюдаемость, стоимость и ответственность."
         : "A field guide for building LLM, STT, embeddings and agent platforms in production: inference, routing, cache, evals, guardrails, observability, cost, incidents and ownership.",
     links: siteLinks
   };
@@ -82,7 +82,7 @@ export function getExpertiseAreas(locale: Locale = defaultLocale) {
         "ИИ-платформы",
         "Свой инференс",
         "vLLM и GPU",
-        "Маршрутизация и резервные пути",
+        "Маршрутизация пути исполнения",
         "Экономика кеша префикса",
         "Оценка качества и релизный контроль",
         "Наблюдаемость LLM",
@@ -92,7 +92,7 @@ export function getExpertiseAreas(locale: Locale = defaultLocale) {
         "AI Platform",
         "Self-hosted inference",
         "vLLM and GPU capacity",
-        "Model routing and fallback",
+        "Execution-path routing",
         "Prefix cache economics",
         "Evals and quality gates",
         "LLM observability",
@@ -116,12 +116,12 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
           description: "MaaS, self-hosted и гибридный подход как стратегия, а не религия."
         },
         {
-          title: "Маршрутизация моделей",
-          description: "Алиасы, резервные пути, канареечные выкатки и версии моделей."
+          title: "Маршрутизация пути исполнения",
+          description: "Выбор пути: маленькая модель, большая модель, RAG, агент, ручная проверка или отказ по политике."
         },
         {
           title: "Среда инференса",
-          description: "Запуск LLM, STT, embeddings и моделей ранжирования с бюджетами задержки и пропускной способности."
+          description: "Запуск LLM, STT, эмбеддингов и моделей ранжирования с бюджетами задержки и пропускной способности."
         },
         {
           title: "Кеширование",
@@ -129,7 +129,7 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
         },
         {
           title: "Жизненный цикл модели",
-          description: "От исследования до теневого теста, канареечной выкатки, продакшена, отката и вывода из эксплуатации."
+          description: "От исследования до теневого теста, канареечной выкатки, production, отката и вывода из эксплуатации."
         },
         {
           title: "Оценка качества и релизный контроль",
@@ -166,8 +166,8 @@ export function getPlatformLayers(locale: Locale = defaultLocale) {
           description: "MaaS, OpenRouter-style research loops, self-hosted and hybrid decisions."
         },
         {
-          title: "Model routing",
-          description: "Aliases, fallback, canary and model versioning."
+          title: "Execution-path routing",
+          description: "Choosing the lane: small model, large model, RAG, agent, human review or policy denial."
         },
         {
           title: "Inference runtime",
@@ -224,6 +224,11 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
             description: "Как выбирать MaaS, self-hosted или гибридный инференс."
           },
           {
+            title: "Semantic Router",
+            href: "/handbook/gateway/semantic-router",
+            description: "Как выбирать путь исполнения: direct, RAG, agentic или ручная проверка."
+          },
+          {
             title: "Prefix Cache",
             href: "/handbook/caching/prefix-cache",
             description: "Как стабильный префикс, схемы инструментов и маршрутизация влияют на реальную стоимость."
@@ -254,6 +259,11 @@ export function getFeaturedChapters(locale: Locale = defaultLocale) {
             title: "MaaS vs Self-hosted",
             href: "/handbook/strategy/maas-vs-self-hosted",
             description: "A strategy chapter for choosing managed, self-hosted or hybrid serving."
+          },
+          {
+            title: "Semantic Router",
+            href: "/handbook/gateway/semantic-router",
+            description: "How to choose direct, RAG, agentic or human-review execution."
           },
           {
             title: "Prefix Cache",
@@ -460,7 +470,7 @@ const enDictionary = {
       badge: "AI Platform Lead",
       title: "Sergei Notevskii",
       copy:
-        "I build production-grade AI platforms for LLM, STT, embeddings and agents: inference, evals, guardrails, observability, cost and ownership.",
+      "I build AI platforms that work in production: LLM, STT, embeddings, agents, inference, evals, observability, cost and ownership. I write Production AI Platform Handbook: a practical map of what starts after the demo.",
       start: "Open handbook",
       map: "Platform map",
       projects: "Contact",
@@ -478,51 +488,52 @@ const enDictionary = {
       proofCopy: "Platform work across inference, quality and operations.",
       problemTitle: "After the demo",
       problemCopy: "The demo works. Platform questions start next.",
-      layersTitle: "Handbook",
-      layersCopy: "A responsibility map: scenarios, gateway, routing, inference, cache, quality, observability, cost and owners.",
+      layersTitle: "Flagship project",
+      layersCopy: "A practical handbook for teams moving from API key and demo to production AI platform. Inside: a 12-layer map, chapters, checklists, tools and templates.",
       expertiseTitle: "Where I am useful",
       expertiseCopy: "Architecture review, platform strategy, quality control and inference economics.",
-      projectsTitle: "What to open",
-      projectsCopy: "The handbook, tools and public artifacts in one compact path.",
+      projectsTitle: "Public artifacts",
+      projectsCopy: "Writing, tools and talks that become handbook chapters, checklists and templates.",
       writingTitle: "Writing",
       writingCopy: "Long-form Habr articles and short Telegram notes.",
       talksTitle: "Talks",
       talksCopy: "Videos and podcasts about model choice, platform strategy and engineering work.",
-      engagementTitle: "Ways to work",
-      engagementCopy: "Architecture review, working session, talk or handbook collaboration.",
+      engagementTitle: "Where I am useful",
+      engagementCopy: "Architecture review, strategy session, talk or collaboration.",
       authorLabel: "About the author",
       centralSentenceLabel: "Central sentence",
       readMore: "Read more"
     },
     proof: [
-      ["Production AI platforms", "LLM · STT · embeddings · agents"],
-      ["Self-hosted inference", "vLLM · GPU capacity · routing"],
-      ["Quality systems", "Evals · regression · feedback loops"],
-      ["Public work", "Habr · Telegram · talks"]
+      ["AI platform", "LLM · STT · embeddings · agents"],
+      ["Self-hosted inference", "vLLM · GPU · routing · cache"],
+      ["Quality", "Evals · regression · feedback loops"],
+      ["Economics", "Scenario cost · prefix cache · tokens"],
+      ["Public artifacts", "Habr · talks · open-source"]
     ],
     metrics: [
       "Latency spikes.",
       "Token cost grows.",
       "Prompts break.",
-      "Agents loop.",
+      "Agents get stuck in loops.",
       "Evals are missing.",
       "Nobody owns quality."
     ],
     authorCopy:
-      "I write Production AI Platform Handbook: a practical field guide for teams turning AI demos into production platforms.",
+      "I am Sergei Notevskii, AI Platform Lead. I work across platform architecture, inference, evals, observability and AI scenario economics. This site is the public layer of that practice: sanitized notes, tools, templates and handbook material.",
     centralSentence:
-      "The materials are public and sanitized: no internal details, but with production taste.",
+      "A model is replaceable. A platform compounds.",
     engagements: [
       [
         "Architecture review",
-        "Review gateway, routing, cache, evals, observability, cost and ownership before they harden into platform debt."
+        "AI Gateway, routing, cache, inference, evals, observability, cost and ownership."
       ],
       [
-        "Executive workshop",
-        "Align MaaS vs self-hosted strategy, maturity, team responsibilities and the first platform roadmap."
+        "Strategy session",
+        "MaaS vs self-hosted, AI platform maturity, ownership boundaries and first roadmap."
       ],
-      ["Talk or podcast", "A practical, non-hype conversation about production AI platform engineering."],
-      ["Handbook collaboration", "Turn public field notes, tools and templates into durable handbook artifacts."]
+      ["Talk or podcast", "A practical conversation about production AI without hype: inference, evals, prefix cache, economics and guardrails."],
+      ["Collaboration", "Handbook, open-source tools, templates and joint public materials."]
     ]
   },
   pages: {
@@ -614,7 +625,7 @@ const enDictionary = {
     },
     cost: {
       title: "LLM Cost Calculator",
-      copy: "Estimate cost with and without cached input tokens. The goal is effective cost, not list-price token math.",
+      copy: "Estimate cost with cached input tokens, agent steps, retries and cost per accepted result. The goal is effective cost, not list-price token math.",
       formTitle: "Cost model",
       formDescription: "Enter token volume, provider prices and request count. Values are per request unless noted.",
       fields: [
@@ -653,6 +664,8 @@ const enDictionary = {
         "Canary rollout has stop criteria",
         "Fallback and rollback path is documented",
         "Traces include tokens, cost, latency and model version",
+        "Semantic router is checked for false direct and false agentic",
+        "Long-context scenarios are checked for distractors, conflicting facts and stale context",
         "Scenario owner and platform owner are explicit"
       ]
     }
@@ -694,9 +707,9 @@ const ruDictionary = {
   home: {
     hero: {
       badge: "AI Platform Lead",
-      title: "Sergei Notevskii",
+      title: "Сергей Нотевский",
       copy:
-        "Строю ИИ-платформы для продакшена: LLM, STT, embeddings, агенты, инференс, оценка качества, защитные контуры, наблюдаемость, стоимость и ответственность.",
+        "Строю AI-платформы, которые работают в production: LLM, STT, эмбеддинги, агенты, инференс, оценка качества, наблюдаемость, стоимость и ответственность. Пишу Production AI Platform Handbook — практическую карту того, что начинается после демо.",
       start: "Открыть хэндбук",
       map: "Карта платформы",
       projects: "Связаться",
@@ -705,68 +718,69 @@ const ruDictionary = {
         "API-ключ / демо",
         "AI Gateway",
         "Маршрутизация / инференс / кеш",
-        "Оценка качества / наблюдаемость / стоимость",
-        "Защитные контуры / ответственность"
+        "Evals / наблюдаемость / стоимость",
+        "Guardrails / ответственность"
       ]
     },
     sections: {
-      proofTitle: "Опыт",
-      proofCopy: "Опыт на стыке платформы, инференса и качества.",
+      proofTitle: "Практика за хэндбуком",
+      proofCopy: "Очищенные заметки из работы с production AI-платформой: без внутренних деталей, но с инженерным вкусом.",
       problemTitle: "После демо",
       problemCopy: "Демо работает. Дальше начинаются платформенные вопросы.",
-      layersTitle: "Хэндбук",
-      layersCopy: "Карта ответственности: сценарии, AI Gateway, маршрутизация, инференс, кеш, качество, наблюдаемость, стоимость и владельцы.",
+      layersTitle: "Флагманский проект",
+      layersCopy: "Практический хэндбук для команд, которые идут от API-ключа и демо к production AI-платформе. Внутри: карта из 12 слоёв, главы, чеклисты, инструменты и шаблоны.",
       expertiseTitle: "Где я полезен",
-      expertiseCopy: "Разбор архитектуры, стратегия платформы, контроль качества и экономика инференса.",
-      projectsTitle: "Что открыть",
-      projectsCopy: "Хэндбук, инструменты и публичные материалы в одном коротком маршруте.",
+      expertiseCopy: "Разбор архитектуры, стратегическая сессия, доклад или коллаборация.",
+      projectsTitle: "Публичные артефакты",
+      projectsCopy: "Тексты, инструменты и доклады превращаются в главы, чеклисты и шаблоны хэндбука.",
       writingTitle: "Тексты",
       writingCopy: "Длинные разборы на Habr и короткие заметки в Telegram.",
       talksTitle: "Выступления",
       talksCopy: "Видео и подкасты про выбор моделей, стратегию платформы и инженерную работу.",
-      engagementTitle: "Форматы работы",
-      engagementCopy: "Разбор архитектуры, рабочая сессия, доклад или коллаборация.",
+      engagementTitle: "Где я полезен",
+      engagementCopy: "Разбор архитектуры, стратегическая сессия, доклад или коллаборация.",
       authorLabel: "Об авторе",
-      centralSentenceLabel: "Центральная фраза",
+      centralSentenceLabel: "Главная мысль",
       readMore: "Подробнее"
     },
     proof: [
-      ["ИИ-платформы", "LLM · STT · embeddings · агенты"],
-      ["Свой инференс", "vLLM · GPU · маршрутизация"],
-      ["Системы качества", "Оценки · регрессии · обратная связь"],
-      ["Публичные материалы", "Habr · Telegram · доклады"]
+      ["AI-платформа", "LLM · STT · эмбеддинги · агенты"],
+      ["Свой инференс", "vLLM · GPU · маршрутизация · кеш"],
+      ["Качество", "Evals · регрессия · обратная связь"],
+      ["Экономика", "Стоимость сценария · prefix cache · токены"],
+      ["Публичные артефакты", "Habr · доклады · open-source"]
     ],
     metrics: [
       "Задержка скачет.",
       "Стоимость токенов растёт.",
       "Промпты ломаются.",
-      "Агенты уходят в цикл.",
+      "Агенты зацикливаются.",
       "Оценки качества нет.",
-      "Владелец качества размыт."
+      "Ответственность за качество размыта."
     ],
     authorCopy:
-      "Я пишу Production AI Platform Handbook: практический хэндбук для команд, которые превращают демо с моделью в ИИ-платформу.",
+      "Я — Сергей Нотевский, AI Platform Lead. Работаю на стыке платформенной архитектуры, инференса, оценки качества, наблюдаемости и экономики AI-сценариев. Этот сайт — публичный слой моей практики: очищенные заметки, инструменты, шаблоны и хэндбук без внутренних деталей.",
     centralSentence:
-      "Материалы публичные и очищенные: без внутренних деталей, но со следами реальной эксплуатации.",
+      "Модель заменяема. Платформа накапливает эффект.",
     engagements: [
       [
         "Разбор архитектуры",
-        "Проверка AI Gateway, маршрутизации, кеша, качества, наблюдаемости, стоимости и ответственности до того, как это станет платформенным долгом."
+        "AI Gateway, маршрутизация, кеш, инференс, качество, наблюдаемость, стоимость и ответственность."
       ],
       [
-        "Рабочая сессия для руководства",
-        "Синхронизация стратегии MaaS vs self-hosted, зрелости платформы, ответственности команды и первого плана развития."
+        "Стратегическая сессия",
+        "MaaS vs self-hosted, зрелость AI-платформы, зоны ответственности и первый roadmap."
       ],
-      ["Доклад или подкаст", "Практичный разговор об ИИ-платформах без хайпа."],
-      ["Коллаборация по хэндбуку", "Превращение публичных заметок, инструментов и шаблонов в устойчивые материалы хэндбука."]
+      ["Доклад или подкаст", "Практичный разговор о production AI без хайпа: инференс, evals, prefix cache, экономика и guardrails."],
+      ["Коллаборация", "Хэндбук, open-source инструменты, шаблоны и совместные публичные материалы."]
     ]
   },
   pages: {
     about: {
       label: "Об авторе",
-      title: "Sergei Notevskii",
+      title: "Сергей Нотевский",
       copy:
-        "AI Platform Lead. Строю ИИ-платформы для продакшена: LLM, STT, embeddings и агенты. Публичная работа здесь про практический опыт: как делать ИИ-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
+        "AI Platform Lead. Строю AI-платформы, которые работают в production: LLM, STT, эмбеддинги и агенты. Публичная работа здесь про практический опыт: как делать AI-системы измеримыми, управляемыми, экономичными и полезными в реальных продуктах.",
       cards: [
         ["Инженерная глубина", "Свой инференс, vLLM, GPU, маршрутизация моделей, кеш и задержка."],
         ["Системы качества", "Проверочные датасеты, обратная связь, регрессионные проверки и контроль релиза моделей."],
@@ -792,13 +806,13 @@ const ruDictionary = {
       label: "Выступления",
       title: "Конференции и технические заметки.",
       copy:
-        "Доклады про трудный переход от демо к продакшену: MaaS vs self-hosted, агенты, экономика кеша, vLLM, контроль качества и операционная модель."
+        "Доклады про трудный переход от демо к production: MaaS vs self-hosted, агенты, экономика кеша, vLLM, контроль качества и операционная модель."
     },
     contact: {
       label: "Контакты",
       title: "Доклады, коллаборации и разговоры про платформы.",
       copy:
-        "Лучшее пересечение: проектирование ИИ-платформ для продакшена, self-hosted инференс, экономика кеша, проверка качества, наблюдаемость, защитные контуры, операционная модель и платформенное лидерство.",
+        "Лучшее пересечение: проектирование AI-платформ для production, self-hosted инференс, экономика кеша, проверка качества, наблюдаемость, guardrails, операционная модель и платформенное лидерство.",
       cards: [
         ["Telegram", "Канал и комментарии про ИИ-платформы."],
         ["Habr", "Большие статьи и серии на русском."]
@@ -850,7 +864,7 @@ const ruDictionary = {
     },
     cost: {
       title: "LLM Cost Calculator",
-      copy: "Оценивает стоимость с кешированными входными токенами и без них. Цель - реальная стоимость, а не цена токенов в прайсе.",
+      copy: "Оценивает стоимость с кешированными входными токенами, шагами агента, повторами и стоимостью принятого результата. Цель - реальная стоимость, а не цена токенов в прайсе.",
       formTitle: "Модель стоимости",
       formDescription: "Укажи объём токенов, цены провайдера и число запросов. Значения считаются на один запрос, если не указано иначе.",
       fields: [
@@ -889,6 +903,8 @@ const ruDictionary = {
         "Канареечная выкатка имеет критерии остановки",
         "Резервный маршрут и путь отката описаны",
         "Трейсы включают токены, стоимость, задержку и версию модели",
+        "Semantic Router проверен на false direct и false agentic",
+        "Long-context сценарии проверены на distractors, conflicting facts и устаревший контекст",
         "Владелец сценария и владелец платформы явно определены"
       ]
     }

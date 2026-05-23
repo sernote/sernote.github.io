@@ -1,0 +1,62 @@
+---
+title: "RFC миграции ИИ-сценария"
+description: "Шаблон для перехода сценария с MaaS на self-hosted или гибридный контур."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - staff-engineer
+  - cto
+tags:
+  - template
+  - self-hosted
+  - migration
+related:
+  - maas-vs-self-hosted
+  - semantic-router
+  - ai-quality-gate
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Назначение
+
+Используйте этот RFC до закупки GPU или переноса трафика. Цель - доказать, что сценарий сохраняет качество, SLO и экономику в новом контуре.
+
+## Поля
+
+<StackDiagram
+  title="Scenario migration RFC"
+  items={[
+    { label: "scenario", title: "scenario_id", description: "Что переносим и какой пользовательский результат должен сохраниться." },
+    { label: "owner", title: "Владелец продукта", description: "Кто принимает качество сценария и продуктовый риск." },
+    { label: "current", title: "Текущий маршрут", description: "Baseline model/provider, стоимость, задержка, качество." },
+    { label: "candidate", title: "Модель-кандидат", description: "Как нашли candidate: MaaS, OpenRouter, benchmark или internal eval." },
+    { label: "draft", title: "self-hosted draft status", description: "Поднята ли черновая локальная версия и воспроизводится ли сценарий." },
+    { label: "evals", title: "quality baseline и eval dataset", description: "С чем сравниваем и какие ошибки считаются блокирующими." },
+    { label: "slo", title: "Latency SLO", description: "TTFT, TPOT, total latency, p95/p99 и класс задержки." },
+    { label: "cost", title: "Cost baseline", description: "Текущая стоимость, non-prod capacity, резерв и expected utilization." },
+    { label: "route", title: "Route policy", description: "route_lane, fallback route, canary plan и stop criteria." },
+    { label: "incident", title: "Owner of incident", description: "Кто принимает решение об откате и кто ведёт разбор." }
+  ]}
+/>
+
+## Критерии готовности
+
+<Checklist
+  items={[
+    "Текущий baseline качества и стоимости известен.",
+    "Черновой self-hosted candidate воспроизводит сценарий.",
+    "Есть eval dataset и критерии остановки.",
+    "Есть fallback route и canary plan.",
+    "Non-prod capacity включена в экономику."
+  ]}
+/>
+
+## Связанные главы
+
+- [MaaS vs Self-hosted](/handbook/strategy/maas-vs-self-hosted)
+- [Semantic Router](/handbook/gateway/semantic-router)
+- [Контроль качества ИИ](/handbook/evals/ai-quality-gate)

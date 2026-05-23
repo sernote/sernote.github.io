@@ -1,0 +1,52 @@
+---
+title: "Execution Boundary Matrix"
+description: "A template for choosing MaaS, de-identified MaaS, self-hosted, batch and hybrid execution."
+section: "tools"
+type: "template"
+level: "intermediate"
+status: "draft"
+audience:
+  - ai-platform-lead
+  - cto
+  - backend-engineer
+tags:
+  - template
+  - routing
+  - provider-strategy
+related:
+  - maas-vs-self-hosted
+  - semantic-router
+  - platform-map
+published: "2026-05-23"
+updated: "2026-05-23"
+---
+
+## Purpose
+
+This matrix helps avoid arguing "MaaS or self-hosted" and choose the execution boundary by scenario, data, SLA and quality.
+
+| Boundary | Use when | Check |
+| --- | --- | --- |
+| MaaS | Fast experiment, frontier model, spiky demand | Data boundary, cost, fallback |
+| MaaS + de-identification | Data can be cleaned before provider call | De-identification quality, trace policy |
+| Self-hosted | Stable high volume, sensitive data, customization | Capacity, SLO, evals, operations |
+| Batch / self-hosted | Task is not urgent, volume is high | Queue, backlog, overnight capacity plan |
+| Hybrid | Control and research breadth both matter | AI Gateway, route policy, fallback |
+
+## Decision Fields
+
+<Checklist
+  items={[
+    "Data and PII are described.",
+    "SLA and processing mode are described.",
+    "route_lane is explicit.",
+    "fallback and stop criteria are documented.",
+    "Cost is calculated per accepted outcome."
+  ]}
+/>
+
+## Related chapters
+
+- [MaaS vs Self-hosted](/en/handbook/strategy/maas-vs-self-hosted)
+- [Semantic Router](/en/handbook/gateway/semantic-router)
+- [Production AI Platform Map](/en/handbook/platform-map)
