@@ -88,12 +88,10 @@ export function SiteFooter({ locale = "en" }: Pick<LocalizedShellProps, "locale"
     <footer className="border-t border-border/70">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <p>
-            {siteConfig.name}: {dictionary.shell.footerLine}.
-          </p>
+          <p>{dictionary.shell.footerLine}.</p>
           <div className="flex flex-wrap gap-4">
-            <Link href={siteConfig.links.telegram}>Telegram</Link>
-            <Link href={siteConfig.links.habr}>Habr</Link>
+            <a href={siteConfig.links.telegram} target="_blank" rel="noreferrer">Telegram</a>
+            <a href={siteConfig.links.habr} target="_blank" rel="noreferrer">Habr</a>
             <Link href={localizedPath("/contact", locale)}>{dictionary.shell.contact}</Link>
           </div>
         </div>
