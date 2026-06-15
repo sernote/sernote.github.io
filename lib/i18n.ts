@@ -25,6 +25,7 @@ export function alternateLocalePath(path: string, locale: Locale): string {
 
 export const siteLinks = {
   telegram: "https://t.me/s/sergeinotevskii",
+  telegramDm: "https://t.me/sergeinotevskii",
   habr: "https://habr.com/ru/users/Ser_no/articles/",
   auditPromptCaching: "https://github.com/sernote/audit-prompt-caching",
   talkUral: "https://www.youtube.com/live/2RvzgMYrX0o?si=TrgfDk2wVLht-I6k&t=11102",
@@ -55,21 +56,19 @@ export function getNavItems(locale: Locale = defaultLocale) {
       ? [
           { href: "/", label: "Главная" },
           { href: "/handbook", label: "Хэндбук" },
-          { href: "/handbook/platform-map", label: "Карта" },
           { href: "/tools", label: "Инструменты" },
-          { href: "/projects", label: "Проекты" },
           { href: "/writing", label: "Тексты" },
           { href: "/talks", label: "Выступления" },
+          { href: "/projects", label: "Проекты" },
           { href: "/about", label: "Обо мне" }
         ]
       : [
           { href: "/", label: "Home" },
           { href: "/handbook", label: "Handbook" },
-          { href: "/handbook/platform-map", label: "Map" },
           { href: "/tools", label: "Tools" },
-          { href: "/projects", label: "Projects" },
           { href: "/writing", label: "Writing" },
           { href: "/talks", label: "Talks" },
+          { href: "/projects", label: "Projects" },
           { href: "/about", label: "About" }
         ];
 
@@ -462,7 +461,7 @@ const enDictionary = {
     startReading: "Start reading",
     openNavigation: "Open navigation",
     navigation: "Navigation",
-    footerLine: "from API key to platform",
+    footerLine: "Production AI Platform Handbook · from API key to platform",
     contact: "Contact"
   },
   home: {
@@ -490,8 +489,6 @@ const enDictionary = {
       problemCopy: "The demo works. Platform questions start next.",
       layersTitle: "Flagship project",
       layersCopy: "A practical handbook for teams moving from API key and demo to production AI platform. Inside: a 12-layer map, chapters, checklists, tools and templates.",
-      expertiseTitle: "Where I am useful",
-      expertiseCopy: "Architecture review, platform strategy, quality control and inference economics.",
       projectsTitle: "Public work",
       projectsCopy: "Handbook pages, tools, articles and talks that make the platform practice reusable.",
       writingTitle: "Writing",
@@ -701,7 +698,7 @@ const ruDictionary = {
     startReading: "Читать",
     openNavigation: "Открыть навигацию",
     navigation: "Навигация",
-    footerLine: "от API-ключа к платформе",
+    footerLine: "Хэндбук ИИ-платформы в продакшене · от API-ключа к платформе",
     contact: "Контакты"
   },
   home: {
@@ -729,8 +726,6 @@ const ruDictionary = {
       problemCopy: "Демо работает. Дальше начинаются платформенные вопросы.",
       layersTitle: "Флагманский проект",
       layersCopy: "Практический хэндбук для команд, которые идут от API-ключа и демо к боевой ИИ-платформе. Внутри: карта из 12 слоёв, главы, чеклисты, инструменты и шаблоны.",
-      expertiseTitle: "Где я полезен",
-      expertiseCopy: "Разбор архитектуры, стратегическая сессия, доклад или коллаборация.",
       projectsTitle: "Публичные материалы",
       projectsCopy: "Хэндбук, инструменты, статьи и доклады, из которых постепенно собирается практическая карта ИИ-платформы.",
       writingTitle: "Тексты",
@@ -903,8 +898,8 @@ const ruDictionary = {
         "Канареечная выкатка имеет критерии остановки",
         "Резервный маршрут и путь отката описаны",
         "Трейсы включают токены, стоимость, задержку и версию модели",
-        "Semantic Router проверен на false direct и false agentic",
-        "Long-context сценарии проверены на distractors, conflicting facts и устаревший контекст",
+        "Семантический роутер проверен на ложный прямой и ложный агентный маршруты",
+        "Сценарии с длинным контекстом проверены на отвлекающие фрагменты, противоречивые факты и устаревший контекст",
         "Владелец сценария и владелец платформы явно определены"
       ]
     }
@@ -918,13 +913,13 @@ const ruDictionary = {
     maturity: {
       headers: ["Уровень", "Состояние", "Типичная боль"],
       levels: [
-        ["0. Demo", "Один API-ключ, один сценарий", "Ничего не измеряется"],
+        ["0. Демо", "Один API-ключ, один сценарий", "Ничего не измеряется"],
         ["1. Продуктовая интеграция", "ИИ встроен в продукт", "Качество и стоимость слабо контролируются"],
-        ["2. Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё хаотичен"],
+        ["2. AI Gateway", "Единый API-слой", "Жизненный цикл модели всё ещё хаотичен"],
         ["3. Контроль качества", "Датасеты, оценки и регрессии", "Релизы моделей замедляются"],
-        ["4. Self-hosted / Hybrid", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
-        ["5. AI Platform", "Жизненный цикл, наблюдаемость и управление", "Ответственность нужно масштабировать"],
-        ["6. AI-native org", "ИИ в продукте и SDLC-процессах", "Меняются роли, процессы и экономика"]
+        ["4. Свой инференс / гибрид", "Свои модели плюс MaaS", "Мощность, стоимость GPU и надёжность"],
+        ["5. ИИ-платформа", "Жизненный цикл, наблюдаемость и управление", "Ответственность нужно масштабировать"],
+        ["6. ИИ-зрелая организация", "ИИ в продукте и процессах разработки", "Меняются роли, процессы и экономика"]
       ]
     }
   }

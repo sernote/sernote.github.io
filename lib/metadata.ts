@@ -10,6 +10,13 @@ function absoluteUrl(locale: Locale, path: string) {
   return `${siteConfig.url}${localizedPath(path, locale) === "/" ? "" : localizedPath(path, locale)}`;
 }
 
+const OG_IMAGE = {
+  url: "https://notevskii.tech/og-image.svg",
+  width: 1200,
+  height: 630,
+  alt: "Production AI Platform Handbook"
+};
+
 export function createPageMetadata({
   locale,
   path,
@@ -41,12 +48,14 @@ export function createPageMetadata({
       url: canonical,
       siteName: siteConfig.name,
       type: "website",
-      locale: locale === "ru" ? "ru_RU" : "en_US"
+      locale: locale === "ru" ? "ru_RU" : "en_US",
+      images: [OG_IMAGE]
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
-      description
+      description,
+      images: [OG_IMAGE.url]
     }
   };
 }
