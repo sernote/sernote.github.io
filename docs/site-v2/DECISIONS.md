@@ -1,43 +1,163 @@
 # notevskii.tech v2 — Decision Register
 
-This file resolves implementation choices that could otherwise remain ambiguous in `SPEC.md`. These decisions are normative and take precedence over illustrative examples.
+This file resolves implementation choices that could otherwise remain ambiguous. These decisions are normative and take precedence over illustrative examples in other specification files.
 
-## D-001 — Product hierarchy
+Depends on: [`PUBLICATION_MODEL.md`](./PUBLICATION_MODEL.md)
 
-**Decision:** the field guide is the primary product. The author is the trust and distribution layer.
+## D-001 — Site-level product model
 
-**Rejected:** equal prominence for portfolio, blog, handbook, tools and talks.
+**Decision:** `notevskii.tech` is the author-led engineering publication and public workbench of Сергей Нотевский.
 
-**Consequence:** homepage and navigation optimize for entering the field guide through an engineering problem. Author evidence and contact remain clearly available but secondary.
+It has four durable surfaces:
 
-## D-002 — Master brand
+- Articles;
+- Production AI Platform Handbook;
+- Projects;
+- Talks and media.
 
-**Decision:** the site-level brand is `Сергей Нотевский` / `Sergei Notevskii`. The field guide is a named product.
+**Rejected:**
 
-**Consequence:** global metadata, header and organization of the site use the author brand. Product pages may use the English product mark `Production AI Platform Field Guide`, while visible Russian descriptive copy remains Russian-first.
+- equal prominence for a generic portfolio, blog, docs and tools with no relationship model;
+- treating the Handbook as the only meaningful product on the domain;
+- treating the Handbook as an incidental menu item.
 
-## D-003 — Navigation
+**Consequence:** the site expresses one professional practice through four distinct formats.
 
-**Decision:** four top-level content destinations:
+## D-002 — Brand hierarchy
 
-- Хэндбук;
-- Инструменты;
-- Материалы;
-- Обо мне.
+**Decision:** the site-level identity is `Сергей Нотевский` / `Sergei Notevskii` on `notevskii.tech`.
 
-Contact is a primary action, not a fifth content category. The logo is the homepage link.
+`Production AI Platform Handbook` is the named flagship knowledge product.
 
-**Change rule:** adding another top-level item requires evidence that users cannot complete a primary job through the existing structure.
+`audit-prompt-caching` and future repositories are named projects.
 
-## D-004 — Discovery model
+**Consequence:** global header, metadata and homepage make the author explicit; Handbook pages foreground the Handbook product name and author line.
 
-**Decision:** primary discovery is by engineering problem and platform layer. Format and audience role are secondary metadata and filters.
+## D-003 — Global navigation
 
-**Rejected:** starting with article/talk/project or role-track grids.
+**Decision:** default top-level destinations:
 
-## D-005 — Signature map
+1. `Статьи`;
+2. `Хэндбук`;
+3. `Проекты`;
+4. `Выступления`;
+5. `Обо мне`.
 
-**Decision:** the 12-layer platform map is one reusable domain model rendered in several contexts, not separate manually maintained drawings.
+Utilities:
+
+- search;
+- locale switch where available;
+- Telegram/contact.
+
+The logo is the homepage link.
+
+**Change rule:** another top-level destination requires a distinct durable user job and enough launch content to justify it.
+
+Small browser tools may live under `/tools/` but do not require a top-level navigation item at launch.
+
+## D-004 — Knowledge relationship model
+
+**Decision:** Articles, Talks, Projects and Handbook are connected by shared topic, problem and platform-layer metadata.
+
+Roles:
+
+- Articles develop arguments;
+- Talks compress and communicate;
+- Projects provide executable evidence;
+- Handbook preserves reviewed synthesis.
+
+**Prohibited:** copying one artifact verbatim into several surfaces and treating duplication as a content strategy.
+
+## D-005 — Handbook role and discovery
+
+**Decision:** the Handbook is the flagship structured reference product inside the publication.
+
+Within the Handbook, primary discovery is by:
+
+- platform maturity/boundary;
+- engineering problem;
+- platform capability.
+
+Format and audience role are secondary metadata.
+
+**Rejected:** organizing the Handbook primarily as a chronological blog, flat format catalogue or role-card wall.
+
+## D-006 — Handbook format and public boundary
+
+**Decision:** the canonical Handbook is open, web-first and living.
+
+At launch:
+
+- reviewed core chapters and map are public;
+- no registration is required to read them;
+- a free versioned map/starter PDF or poster may be generated;
+- the content pipeline must support future PDF/EPUB generation from the same source.
+
+**Rejected at launch:** a free teaser whose purpose is to hide the useful Handbook behind a paywall.
+
+## D-007 — Future paid Handbook derivative
+
+**Decision:** the preferred future commercial format is an implementation edition, not a paywall over basic conclusions.
+
+Eligible paid value:
+
+- curated PDF/EPUB edition;
+- editable ADR/RFC templates;
+- assessment workbooks;
+- cost/capacity models;
+- workshop deck and facilitation notes;
+- print-ready map bundle;
+- defined update entitlement;
+- team-use license.
+
+The public web Handbook remains genuinely useful.
+
+A paid product begins only after the gates in D-025 are met.
+
+## D-008 — Articles
+
+**Decision:** the site hosts original or expanded author editions of technical articles.
+
+Habr and other external publications remain selected distribution surfaces. They are not automatically byte-for-byte mirrored into the site.
+
+Every article may link to related Handbook chapters, projects and talks. It is valid for an article to represent evolving or time-bound reasoning; its relationship to a later Handbook synthesis must be clear.
+
+## D-009 — Talks and media
+
+**Decision:** every listed talk, webinar, podcast or interview gets a useful site page, not only an external link or embed.
+
+Required minimum:
+
+- event and date;
+- abstract;
+- recording/source link;
+- concise takeaways;
+- related articles, projects or Handbook artifacts.
+
+Slides and transcript/edited notes are optional when publicly permitted.
+
+## D-010 — Projects
+
+**Decision:** Projects are first-class software/public-work surfaces distinct from browser tools and content materials.
+
+Initial flagship: `audit-prompt-caching`.
+
+Its site page must explain:
+
+- the problem;
+- target users;
+- installation and workflow;
+- supported environments;
+- evidence/privacy limits;
+- release status;
+- repository;
+- related writing and Handbook guidance.
+
+A project page that only redirects to GitHub fails this decision.
+
+## D-011 — Signature platform map
+
+**Decision:** the Production AI Platform map is one reusable domain model rendered in several contexts, not separate manually maintained drawings.
 
 The model includes for each layer:
 
@@ -51,168 +171,234 @@ The model includes for each layer:
 
 Renderers:
 
-- homepage compact map;
-- handbook full map;
+- homepage excerpt;
+- Handbook full map;
 - mobile ordered disclosure list;
-- print/OG renderer.
+- print/PDF/OG renderer.
 
 No-JS acceptance: all layer names, descriptions and links are present in generated HTML. JavaScript enhances selection and highlighting only.
 
-## D-006 — Content maturity
+## D-012 — Content maturity
 
-**Decision:** `reviewed` is the minimum status for normal public catalogue discovery. `draft` may be public by direct link but is not promoted by default.
+**Decision:** `reviewed` is the minimum status for normal Handbook discovery. `draft` may be public by direct link but is not promoted by default.
 
-A reviewed artifact requires:
+A reviewed Handbook artifact requires:
 
 - human author review;
 - resolved placeholders;
 - valid references for factual external claims;
 - explicit last-reviewed date;
+- applicability boundary;
 - required decision-useful sections or justified not-applicable markers.
 
-## D-007 — Launch breadth
+Articles, talks and project releases use their own lifecycle fields and are not forced into the Handbook review state.
 
-**Decision:** v2 does not wait for the full existing handbook to be rewritten. Launch requires 6–8 reviewed Russian core artifacts. Other content is retained as draft, archived or migrated later.
+## D-013 — Launch breadth
 
-**Rejected:** superficial migration of all pages to claim completeness.
+**Decision:** v2 launches a complete publication structure and a deliberately narrow reviewed Handbook spine.
 
-## D-008 — English scope
+Required:
 
-**Decision:** Russian has full launch depth. English contains a curated evergreen subset.
+- usable Articles, Talks, Projects and Handbook index surfaces;
+- a flagship `audit-prompt-caching` project page;
+- selected existing article migration;
+- selected talk pages with summaries;
+- 6–8 reviewed Russian core Handbook artifacts plus compact bridge artifacts where needed.
+
+**Rejected:** superficial migration of every current page to claim completeness.
+
+## D-014 — English scope
+
+**Decision:** Russian has full launch depth. English contains a curated evergreen subset and project documentation where it serves adoption.
 
 Initial English candidates:
 
-- homepage;
+- homepage/about;
 - platform map;
 - MaaS vs self-hosted;
 - cost per accepted outcome;
 - prefix cache;
-- about;
+- `audit-prompt-caching` project page;
 - contact.
 
-A Russian page without English equivalent is valid. It must not emit an invalid English hreflang.
+A Russian page without an English equivalent is valid and must not emit invalid hreflang.
 
-## D-009 — Existing `/ru` routes
+## D-015 — Existing `/ru` routes
 
-**Decision:** remove the duplicate `/ru` application tree. Preserve public compatibility using generated static redirect pages or the deployment-supported equivalent.
+**Decision:** remove the duplicate `/ru` application tree after a tested migration manifest exists.
 
-The exact redirect implementation is selected during the foundation phase and must be tested against GitHub Pages behavior before route deletion.
+Preserve public compatibility using generated static redirect pages or the deployment-supported equivalent.
 
-## D-010 — Framework
+The exact redirect implementation must be tested against GitHub Pages before route deletion.
 
-**Decision:** keep Next.js, TypeScript, MDX and static export for v2.
+## D-016 — Framework and hosting
+
+**Decision:** keep Next.js, TypeScript, MDX/content collections and static export for v2.
 
 A framework migration requires a blocking capability, measurable reliability issue or unsustainable authoring cost. Aesthetic redesign and code cleanup are not sufficient reasons.
 
-## D-011 — Content source of truth
+No server actions, auth, database or backend persistence at launch.
 
-**Decision:** validated content metadata is authoritative. Catalogues, relationships, featured items, status views, SEO, sitemap, RSS and translations are derived.
+## D-017 — Content source of truth
+
+**Decision:** validated content metadata is authoritative.
+
+One content pipeline derives:
+
+- catalogues;
+- relationships across Articles, Talks, Projects and Handbook;
+- featured selections;
+- translation pairs;
+- SEO, sitemap and RSS;
+- stale-review reports;
+- future PDF/print editions.
 
 **Prohibited:** a second manual catalogue duplicating title, URL, description, status or relationships.
 
-The platform map is structured domain data because it is not an article catalogue; artifact references from the map still use stable content ids.
+The platform map remains structured domain data; its artifact references use stable content ids.
 
-## D-012 — Localization implementation
+## D-018 — Localization implementation
 
 **Decision:** typed small UI dictionaries plus localized content files.
 
-**Rejected:** one monolithic localization file containing site config, all marketing copy, tool copy and domain data.
+**Rejected:** one monolithic localization file containing site config, all marketing copy, article copy, tool copy and domain data.
 
-## D-013 — Tool precision
+## D-019 — Tool precision
 
-**Decision:** tools report explainable dimensions and assumptions. An aggregate score is secondary and optional.
+**Decision:** browser tools report explainable dimensions and assumptions. An aggregate score is secondary and optional.
 
-- cacheability tool cannot claim actual runtime hit rate;
-- cost model separates reusable token share from cross-request hit rate;
-- readiness tool uses blockers and evidence, not a naive equal-weight percentage.
+- cacheability tooling cannot claim actual runtime hit rate without telemetry;
+- cost models separate reusable token share from cross-request hit rate;
+- readiness tooling uses blockers and evidence, not a naive equal-weight percentage;
+- maturity assessment returns capability state, gaps and next justified investments, not a vanity score.
 
-## D-014 — Tool privacy
+## D-020 — Tool privacy
 
-**Decision:** free-text input never leaves the browser. Analytics events contain only predefined ids and coarse completion state.
+**Decision:** free-text input never leaves the browser.
 
-Export is generated locally. No third-party script may capture input values, DOM text from tool workspaces or form replay.
+Analytics events contain only predefined ids and coarse completion state. Export is generated locally.
 
-## D-015 — Analytics
+No third-party script may capture tool input values, DOM text from tool workspaces or session replay.
 
-**Decision:** analytics is not a blocker for visual prototype work, but an event contract and privacy review are required before production launch if analytics is enabled.
+## D-021 — Analytics
 
-Absence of analytics must not delay launch when all functional release gates pass. In that case, conversion targets remain unmeasured hypotheses and this limitation is documented.
+**Decision:** analytics is optional for launch but recommended for validating navigation and future commercial demand.
 
-## D-016 — Materials consolidation
+If enabled, an event contract and privacy review are required.
 
-**Decision:** Writing, Talks and Projects become one Materials library with type filters.
+Allowed event classes:
 
-Tools remain separate because they are interactive product surfaces. Handbook remains separate because it is the core structured knowledge product.
+- artifact opened;
+- related-artifact navigation;
+- tool started/completed;
+- project repository/install opened;
+- talk recording opened;
+- PDF/starter artifact downloaded;
+- contact opened.
 
-## D-017 — Contact model
+Free-text, prompt, trace, schema and evidence fields are forbidden.
 
-**Decision:** one contact surface supports multiple qualified request types. Telegram direct message is the launch channel.
+## D-022 — Contact model
 
-Separate service landing pages are deferred until there is evidence of distinct demand and enough service detail to justify them.
+**Decision:** one contact surface supports:
 
-## D-018 — Visual exploration gate
+- architecture discussion;
+- technical collaboration;
+- conference talk;
+- podcast/interview;
+- editorial contribution.
 
-**Decision:** production UI implementation starts only after three materially different visual directions are compared using the same required screens and one direction is selected.
+Telegram direct message is the launch channel.
 
-Shared screens:
+Separate service pages are deferred until there is evidence of distinct demand and enough detail to describe inputs and outputs honestly.
 
-- desktop homepage;
-- mobile homepage;
-- chapter;
-- tool workspace;
-- platform map.
+## D-023 — Visual identity
 
-A direction is not materially different if it only changes colour, font or card radius.
+**Decision:** the visual family is `Dark Engineering Publication`, defined in [`DESIGN_DIRECTION.md`](./DESIGN_DIRECTION.md).
 
-## D-019 — Publication workflow
+The site combines:
 
-Artifact lifecycle:
+- an editorial author-publication front page;
+- long-form engineering article templates;
+- a technical Handbook reading system;
+- RFC/notebook-like working artifacts and tools;
+- architecture diagrams that answer engineering questions;
+- restrained project and media pages.
+
+**Rejected:** generic AI SaaS landing patterns, dashboard chrome, cyberpunk neon, decorative 3D platform illustrations, gradient CTA buttons, vanity metric strips, testimonial carousels and repeated card walls.
+
+Lenny's Newsletter and The Pragmatic Engineer are references for author-led clarity, archive depth, editorial hierarchy and interface restraint—not templates to clone or reasons to adopt a subscription funnel.
+
+## D-024 — Publication workflow
+
+Each artifact kind has a predictable lifecycle.
+
+### Article
+
+1. draft;
+2. editorial/factual review;
+3. publish site edition;
+4. optionally adapt for Habr/Telegram/other distribution;
+5. connect related work;
+6. update or mark superseded when needed.
+
+### Talk/media
+
+1. create event page;
+2. add abstract and links;
+3. after event, add recording, takeaways and related work;
+4. update if slides/transcript become available.
+
+### Project
+
+1. project page and repository relationship;
+2. release metadata;
+3. public examples/evidence;
+4. release notes and related content updates.
+
+### Handbook
 
 1. draft MDX/data;
 2. schema and content checks;
 3. factual/reference review;
 4. author editorial review;
 5. set `reviewed` and `reviewedAt`;
-6. preview deployment and visual check;
-7. merge;
+6. preview and visual check;
+7. publish;
 8. review-due reporting based on `reviewCycleDays`.
 
-Agent-created content cannot self-promote to `reviewed` without explicit human author review.
+Agent-created content cannot self-promote to reviewed status without explicit human author review.
 
-## D-020 — Specification change control
+## D-025 — Commercial decision gates
 
-Implementation may clarify component-level details without changing the goal. Changes to any of the following require an explicit decision-register update:
+**Decision:** no paid full-Handbook implementation work begins merely because payment infrastructure is available.
 
-- product hierarchy;
+Revisit a paid self-serve edition when several signals exist:
+
+- coherent public reviewed Handbook spine;
+- repeated requests for PDF, print, offline, editable or team versions;
+- named templates/checklists used in real work;
+- inbound team requests that reference specific public artifacts;
+- ability to define an edition and update policy;
+- acceptable payment, invoice, refund, access and support operations;
+- explicit employer/side-project/IP boundary review.
+
+A free email update feed may be added before a paid product. Paid membership/community is not the default monetization path.
+
+## D-026 — Specification change control
+
+Implementation may clarify component details without changing the product model.
+
+Changes to any of the following require an explicit decision-register update:
+
+- four-surface site model;
+- brand hierarchy;
 - top-level navigation;
-- launch artifact count;
+- open core Handbook boundary;
+- paid-product boundary;
+- project and talk content requirements;
 - privacy boundary;
 - tool domain semantics;
 - Russian/English scope;
 - static/backend boundary;
-- reviewed-content standard.
-
-## D-021 — Visual identity: engineering publication, not SaaS
-
-**Decision:** the converged visual family is `Dark Engineering Publication`, defined normatively in [`DESIGN_DIRECTION.md`](./DESIGN_DIRECTION.md).
-
-The site combines:
-
-- an editorial publication front page;
-- a technical handbook reading system;
-- RFC/notebook-like working artifacts and tools;
-- architecture diagrams that answer engineering questions.
-
-**Preserve:** dark identity, restrained accent, strong type hierarchy, diagrams and low-motion behavior.
-
-**Rejected:** generic AI SaaS landing patterns, dashboard chrome, cyberpunk neon, decorative 3D platform illustrations, gradient CTA buttons, vanity metric strips, testimonial carousels and repeated card walls.
-
-**Reference interpretation:** Lenny's Newsletter and The Pragmatic Engineer are references for author-led clarity, archive depth, editorial hierarchy and interface restraint. They are not templates to clone and do not imply adopting their exact light palette, subscription funnel or Substack structure.
-
-**Consequence:** the three visual explorations remain structurally different, but all stay inside the engineering-publication family:
-
-1. Dark Editorial Journal;
-2. Technical Handbook;
-3. Engineering Notebook.
-
-A proposed screen fails this decision when it could be rebranded as an AI startup or consultancy landing page by changing only its text.
+- reviewed-Handbook standard.
