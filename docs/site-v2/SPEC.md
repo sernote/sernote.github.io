@@ -1,452 +1,569 @@
 # notevskii.tech v2 — Product and Technical Specification
 
-Status: **ready for visual exploration and implementation planning**  
-Depends on: [`GOAL.md`](./GOAL.md)
+Status: **ready for content inventory and visual prototyping**  
+Depends on:
+
+- [`GOAL.md`](./GOAL.md)
+- [`PUBLICATION_MODEL.md`](./PUBLICATION_MODEL.md)
+- [`HANDBOOK_STRATEGY.md`](./HANDBOOK_STRATEGY.md)
+- [`DECISIONS.md`](./DECISIONS.md)
+- [`DESIGN_DIRECTION.md`](./DESIGN_DIRECTION.md)
 
 ## 1. Product definition
 
-`notevskii.tech` is an author-led field guide for production AI platforms.
+`notevskii.tech` is the author-led engineering publication and public workbench of Сергей Нотевский.
 
-The hierarchy is:
+The publication covers production AI systems and makes four kinds of public work durable:
 
-1. **Field guide** — maps, reviewed chapters, tools and templates.
-2. **Author** — identity, practice and verifiable evidence that make the guide credible.
-3. **Materials** — articles, talks, podcasts and repositories that extend or support the guide.
-4. **Contact** — architecture review, collaboration, interview, podcast and conference requests.
+1. **Articles** — original technical reasoning and field notes.
+2. **Production AI Platform Handbook** — maintained synthesis, maps, chapters, playbooks, templates and tools.
+3. **Projects** — executable public work, beginning with `audit-prompt-caching`.
+4. **Talks and media** — recordings, slides, abstracts and concise takeaways.
 
-The site must never present these four layers as equally competing products.
+The Handbook is the flagship structured knowledge product. It is not the whole website and not an incidental blog category.
+
+The site-level author brand and the named Handbook product must reinforce rather than compete with each other.
 
 ## 2. Brand architecture
 
-### Master brand
+### Site-level identity
 
 Russian: `Сергей Нотевский`  
 English: `Sergei Notevskii`
 
-### Product name
+Role:
 
-Russian: `Production AI Platform Field Guide` is allowed as a product mark, but descriptive Russian copy is primary: `Практический хэндбук по ИИ-платформам в продакшене`.
+- `AI Platform Lead`.
 
-English: `Production AI Platform Field Guide`.
+Site descriptor:
 
-### Core line
+> Статьи, проекты, выступления и практический хэндбук о том, как ИИ доезжает от демо до надёжной платформы в продакшене.
 
-Russian:
+### Flagship knowledge product
 
-> От симптома в продакшене — к инженерному решению.
+`Production AI Platform Handbook`
 
-English:
+Russian descriptor:
 
-> From a production symptom to an engineering decision.
+> Практический хэндбук по созданию и развитию ИИ-платформы в продакшене.
 
-### Supporting thesis
+### Flagship software project
 
-> Модель заменяема. Платформа накапливает эффект.
+`audit-prompt-caching`
 
-The existing thesis “Production AI is not a model. It is a platform.” remains valid inside the field guide but is not the only homepage message.
+Descriptor:
+
+> Open-source agent skill and local audit workflow for diagnosing prompt, prefix and KV-cache reuse failures.
 
 ## 3. Information architecture
 
-### Primary navigation
+### Global navigation
 
 Desktop and mobile:
 
-1. `Хэндбук` / `Field guide`
-2. `Инструменты` / `Tools`
-3. `Материалы` / `Materials`
-4. `Обо мне` / `About`
+1. `Статьи` / `Articles`
+2. `Хэндбук` / `Handbook`
+3. `Проекты` / `Projects`
+4. `Выступления` / `Talks`
+5. `Обо мне` / `About`
 
-Persistent secondary actions:
+Utilities:
 
-- locale switch;
-- primary CTA: `Обсудить задачу` / `Discuss a problem`.
+- search;
+- locale switch where an equivalent exists;
+- Telegram/contact.
 
-The logo links to the homepage. There is no separate “Главная” item.
+The logo/name links to the homepage. There is no separate Home item.
 
 ### Canonical route tree
 
 ```text
 /
+├── articles/
+│   └── [slug]/
 ├── handbook/
 │   ├── map/
 │   ├── start/
-│   ├── strategy/
-│   │   └── maas-vs-self-hosted/
-│   ├── routing/
-│   │   └── execution-routing/
-│   ├── inference/
-│   │   ├── runtime/
-│   │   ├── stt/
-│   │   └── embeddings/
-│   ├── cache/
-│   │   └── prefix-cache/
-│   ├── quality/
-│   │   └── release-gate/
-│   ├── observability/
-│   │   └── telemetry-contract/
-│   ├── economics/
-│   │   └── cost-per-accepted-outcome/
-│   ├── security/
-│   │   └── guardrails/
-│   └── ownership/
-│       └── operating-model/
+│   ├── [section]/[slug]/
+│   ├── playbooks/[slug]/
+│   └── templates/[slug]/
+├── projects/
+│   └── audit-prompt-caching/
+├── talks/
+│   └── [slug]/
 ├── tools/
-│   ├── cacheability-review/
-│   ├── cost-model/
-│   └── release-readiness-review/
-├── materials/
-│   ├── articles/
-│   ├── talks/
-│   ├── podcasts/
-│   └── open-source/
+│   └── [slug]/
 ├── about/
 ├── contact/
 └── en/
     └── selective equivalent routes
 ```
 
+`/tools` is a valid product route but does not require top-level navigation at launch. Tools are reached from the Handbook, Articles and Projects.
+
 ### Legacy migration
 
-A versioned redirect manifest must map every current public route to a v2 route. The manifest is testable data, not ad hoc configuration.
+A versioned redirect manifest must map every current public route to a v2 decision:
+
+- keep;
+- rename and redirect;
+- merge;
+- archive;
+- remove with documented reason.
 
 Required behavior:
 
-- current Russian root routes redirect or remain canonical;
+- Russian canonical routes remain at root;
 - `/en/...` remains the English prefix;
-- `/ru/...` aliases are removed from the application tree and redirected permanently;
-- renamed handbook paths redirect permanently;
-- no current indexed route returns an unexplained 404 at cutover.
+- `/ru/...` application duplicates are removed only after redirects are proven;
+- no indexed current route returns an unexplained 404 at cutover.
 
 ## 4. Homepage specification
 
 ### Purpose
 
-The homepage must answer in the first viewport:
+The homepage is the front page of an engineering publication.
+
+The first viewport must answer:
 
 1. who Сергей is;
-2. which problem domain he owns;
-3. what useful action the visitor can take.
+2. what professional domain he works in;
+3. which current piece of work is most important;
+4. where a visitor can browse the four product surfaces.
 
-### Section H1 — Hero
+### H1 — Publication masthead
 
-Required content:
+Required:
 
 - author name;
-- role: `AI Platform Lead`;
-- one-sentence product promise;
-- primary CTA: `Открыть карту ИИ-платформы`;
-- secondary CTA: `Обсудить задачу`;
-- one compact authority signal row.
+- role;
+- one-sentence publication promise;
+- one current featured item or editorial statement;
+- at most two actions.
+
+Suggested actions:
+
+- `Читать статьи` or a current featured article;
+- `Открыть хэндбук`.
 
 Prohibited:
 
 - three or more equal CTA buttons;
-- a long list of platform layers;
-- generic claims such as “эксперт в AI”;
-- unverifiable employer metrics;
-- decorative dashboard mockups.
+- generic “AI expert” claims;
+- unverifiable employer scale claims;
+- decorative dashboard mockups;
+- glowing 3D platform illustrations;
+- a subscription or consulting funnel as the dominant first action.
 
-### Section H2 — Evidence
+### H2 — Current featured work
 
-Show 3–5 verified evidence items. Each item must link to a public artifact or explain its source.
+One editorially selected item:
 
-Eligible evidence:
+- recent article;
+- major project release;
+- reviewed Handbook update;
+- new talk recording.
 
-- authored field guide;
-- selected technical articles;
-- conference recordings;
-- open-source diagnostics;
-- current role and public speaker profile.
+It includes:
 
-Ineligible evidence:
+- type;
+- title;
+- one-sentence purpose;
+- publication/review date;
+- direct open action.
 
-- topic labels presented as proof;
-- anonymous testimonials;
-- invented counts;
-- internal confidential scale.
+### H3 — Four-surface orientation
 
-### Section H3 — Signature platform map
+Show the four surfaces with unequal but clear hierarchy:
 
-The map is the main visual and navigational object.
+- Articles;
+- Handbook;
+- Projects;
+- Talks.
 
-It shows 12 platform responsibilities:
+This may be a typographic index or compact list. It must not become a four-card SaaS feature grid.
 
-1. product scenarios;
-2. AI gateway;
-3. provider strategy;
-4. execution routing;
-5. inference runtime;
-6. caching;
-7. model lifecycle;
-8. quality and release control;
-9. observability;
-10. economics / FinOps;
-11. security and guardrails;
-12. operations and ownership.
+### H4 — Handbook flagship block
 
-Each layer exposes on interaction:
+Required:
 
-- purpose;
-- typical symptom;
-- primary metric;
-- expected owner;
-- link to the relevant artifact.
+- short Handbook promise;
+- map excerpt or capability outline;
+- maturity/problem entry explanation;
+- link to Handbook start and map.
 
-Requirements:
+The block is substantial but does not consume the entire homepage.
 
-- usable by keyboard;
-- meaningful without hover;
-- static fallback for no-JS and print;
-- supports deep-linking to a layer using a URL fragment;
-- used consistently in homepage, handbook and OG assets.
+### H5 — Flagship project
 
-### Section H4 — Start from a problem
+Show `audit-prompt-caching` as executable evidence.
 
-Show no more than six problem routes. Launch set:
+Required:
 
-- cost;
-- quality;
-- latency and capacity;
-- routing and agents;
-- cache;
-- ownership.
+- problem solved;
+- current release state;
+- one example use case;
+- repository/project-page actions;
+- related article/Handbook connection.
 
-Each route has:
+### H6 — Selected talks and recent articles
 
-- symptom in user language;
-- one-sentence diagnosis frame;
-- primary artifact;
-- optional tool.
+Use simple editorial lists:
 
-### Section H5 — Selected artifacts
+- selected/latest talk with takeaways;
+- chronological recent article list;
+- links to full indexes.
 
-Show exactly three editorially selected items:
+Avoid thumbnail walls unless an image is content-bearing.
 
-- foundation;
-- practical tool/template;
-- recently updated artifact.
+### H7 — Author and contact
 
-Selection is controlled by frontmatter, not hardcoded in the page component.
+Compact closing block:
 
-### Section H6 — Author and contact
+- current focus;
+- restrained portrait optional;
+- selected public evidence links;
+- one contact action.
 
-Compact author statement with one restrained portrait or speaker image.
+No testimonial carousel.
 
-Actions:
+## 5. Articles specification
 
-- architecture review / technical collaboration;
-- talk, podcast or interview.
+### `/articles`
 
-## 5. Field guide specification
+Purpose:
+
+- browse current, foundational and topical writing;
+- expose one coherent archive under the author's domain.
+
+Required views:
+
+- Featured/current;
+- Foundational;
+- Recent;
+- Topics/platform layers;
+- all articles.
+
+Filters are secondary and visually quiet.
+
+### Article page
+
+Required:
+
+- title;
+- deck/summary;
+- author;
+- published and updated dates;
+- reading time;
+- topics/platform layers;
+- article body;
+- references where factual claims require them;
+- related Handbook chapter/project/talk;
+- external edition link where relevant;
+- superseded/updated note when applicable.
+
+Article kinds:
+
+- deep-dive;
+- field-note;
+- architecture-decision;
+- experiment;
+- opinion;
+- release-note;
+- talk-expansion.
+
+An article may be time-bound. It is not forced into the Handbook's reviewed evergreen standard.
+
+### External publishing
+
+Habr remains a selected distribution channel.
+
+The site version should normally be:
+
+- the canonical original;
+- an expanded author edition;
+- or a related article with a distinct job.
+
+Do not automatically import byte-for-byte duplicates as the publication workflow.
+
+## 6. Talks and media specification
+
+### `/talks`
+
+Purpose:
+
+- preserve public speaking work;
+- help a visitor evaluate a talk without watching every recording;
+- connect talks to the publication's knowledge graph.
+
+Kinds:
+
+- conference talk;
+- webinar;
+- podcast/interview;
+- panel;
+- workshop recording.
+
+### Talk/media page
+
+Required:
+
+- title;
+- event/source;
+- date;
+- format;
+- language;
+- recording/source link;
+- abstract;
+- 5–10 concise takeaways;
+- related articles, projects and Handbook artifacts.
+
+Optional:
+
+- embedded video;
+- slides;
+- transcript;
+- edited notes;
+- cited references.
+
+A page containing only a video embed fails the requirement.
+
+## 7. Projects specification
+
+### `/projects`
+
+Purpose:
+
+- show maintained executable public work;
+- distinguish software artifacts from browser tools and content.
+
+Project index fields:
+
+- name;
+- short problem statement;
+- status;
+- latest release/date;
+- repository;
+- related topic/layer.
+
+### `audit-prompt-caching` project page
+
+Required:
+
+- project purpose;
+- who it is for;
+- why cache reuse fails silently;
+- installation and quick start;
+- supported provider/runtime areas;
+- primary audit workflow;
+- example input/report;
+- evidence and privacy boundaries;
+- latest release state;
+- GitHub repository;
+- releases/changelog;
+- related articles;
+- related Handbook chapter/playbook;
+- contribution route.
+
+Optional accurately sourced adoption signals:
+
+- stars;
+- forks;
+- releases;
+- contributors;
+- usage examples.
+
+Signals must not be stale hardcoded vanity metrics without a review date or build-time source.
+
+## 8. Handbook specification
 
 ### `/handbook`
 
-Purpose: orient a visitor and route them to the correct artifact.
+Purpose:
+
+- orient a visitor;
+- explain the platform boundary;
+- route by maturity state, production symptom or capability;
+- expose a coherent reviewed spine.
 
 Required sequence:
 
-1. concise promise;
-2. platform map;
-3. problem routes;
-4. reviewed core artifacts;
-5. tools and templates;
-6. all-materials link.
+1. concise Handbook premise;
+2. maturity/boundary entry;
+3. platform map;
+4. problem entry;
+5. reviewed core spine;
+6. playbooks/templates/tools;
+7. review/update state;
+8. all-artifacts link.
 
 Excluded from the landing page:
 
 - reading progress;
 - bookmarks;
-- role filter wall;
-- planned items mixed with available items;
-- repeated full platform-layer lists;
-- more than one search control.
+- role-filter wall;
+- planned items mixed with reviewed items;
+- repeated full layer lists;
+- marketing subscription pressure.
 
-### Catalogue
+### Handbook artifact types
 
-A catalogue may exist below the fold or on a dedicated route.
+- map;
+- chapter;
+- playbook;
+- checklist;
+- template/decision record;
+- tool guide.
 
-Filters:
+### Handbook statuses
 
-- problem;
-- platform layer;
-- format;
-- maturity status.
+- `draft`;
+- `reviewed`;
+- `maintained`;
+- `archived`.
 
-Role is metadata and a secondary filter, not the primary entry model.
+Behavior:
 
-Search operates over generated static content metadata. A local client-side index is acceptable. A backend search service is not required for launch.
+- draft: direct URL or explicitly labelled preview;
+- reviewed: normal public discovery;
+- maintained: reviewed and within review interval;
+- archived: historical, not normally recommended.
 
-### Artifact content model
-
-Every artifact has frontmatter validated at build time.
-
-```yaml
-title: string
-shortTitle: string
-description: string
-locale: ru | en
-translationKey: string
-kind: map | chapter | checklist | template | tool-guide | case-note
-status: draft | reviewed | maintained | archived
-platformLayers: string[]
-problems: string[]
-audiences: string[]
-tags: string[]
-publishedAt: YYYY-MM-DD
-reviewedAt: YYYY-MM-DD | null
-updatedAt: YYYY-MM-DD
-reviewCycleDays: number | null
-featured: none | foundation | practical | recent
-related: string[]
-references: boolean
-```
-
-Derived values such as URL, locale counterpart, stale status, catalogue membership and related cards must not be duplicated manually.
-
-### Artifact status behavior
-
-- `draft`: accessible by direct URL only unless explicitly featured for review; clearly labelled;
-- `reviewed`: publicly discoverable;
-- `maintained`: reviewed and inside its review interval;
-- `archived`: retained for history, excluded from normal recommendations.
-
-A stale maintained artifact automatically receives a “review due” indicator in author checks; it does not silently become current.
-
-### Standard reviewed chapter structure
+### Reviewed chapter structure
 
 1. Executive summary
-2. When this applies
+2. Applicability boundary
 3. Symptoms
 4. Mental model
 5. Decision path
-6. Reference architecture or diagram
+6. Reference architecture/diagram
 7. Metrics and telemetry contract
 8. Trade-offs
-9. Failure modes and anti-patterns
-10. Review checklist
-11. Example or sanitized case
-12. Reusable template/tool
-13. Related artifacts
-14. References
-15. Last reviewed
+9. Failure modes/anti-patterns
+10. Ownership boundary
+11. Implementation sequence
+12. Review checklist
+13. Example/sanitized case
+14. Related tool/template/playbook
+15. Related Articles/Talks/Projects
+16. References
+17. Last reviewed
 
-Not every draft must implement every section, but a `reviewed` chapter must either contain them or explicitly mark a section as not applicable.
+A reviewed chapter must contain these sections or mark non-applicable items explicitly.
 
-### Launch core artifacts
+### Launch Handbook spine
 
-Required reviewed Russian launch set:
+Required narrative:
 
-1. Production AI Platform Map
-2. Start from the problem
-3. MaaS vs self-hosted
-4. Cost per accepted outcome
-5. Prefix cache and request shape
-6. AI release quality gate
-7. LLM observability telemetry contract
-8. Ownership and operating model
+1. What an AI platform is and when a company needs one.
+2. Platform boundary and capability map.
+3. MaaS vs self-hosted vs hybrid.
+4. Gateway, contracts, quotas and routing.
+5. Inference and capacity fundamentals.
+6. Evals and release control.
+7. Observability and incident diagnosis.
+8. Cost attribution and unit economics.
+9. Ownership and operating model.
 
-Optional launch additions only if they meet the same review bar:
+Implementation target:
 
-- inference runtime;
-- execution routing;
-- guardrails.
+- 6–8 substantial reviewed Russian artifacts;
+- compact reviewed bridge artifacts where narrative continuity requires them;
+- optional deeper cache/routing/inference material only when it meets the same review bar.
 
-## 6. Tools specification
+### Handbook format and commercial boundary
+
+Launch:
+
+- open web Handbook is canonical;
+- free versioned map/starter guide PDF/poster;
+- no core chapter paywall;
+- no membership requirement;
+- PDF/EPUB generation capability from the same content source.
+
+Future paid derivative:
+
+- Practitioner Edition / Operating Kit;
+- curated PDF/EPUB;
+- editable templates;
+- assessment and cost/capacity workbooks;
+- workshop/facilitation assets;
+- team-use terms;
+- defined update period.
+
+Paid work begins only after the demand and operational gates in `DECISIONS.md` are met.
+
+## 9. Browser tools specification
 
 All tools:
 
 - run locally in the browser;
 - make no network request containing entered data;
-- disclose their assumptions;
+- disclose assumptions;
 - distinguish measurements from heuristics;
-- validate values and impossible combinations;
-- provide a reset action;
-- provide named examples;
-- provide links to explanatory artifacts;
-- expose results accessibly;
-- support copying or exporting a sanitized report;
-- emit only privacy-safe analytics events such as `tool_started` and `tool_completed`.
+- validate impossible combinations;
+- provide reset and named examples;
+- link to explanatory Handbook artifacts;
+- expose dynamic results accessibly;
+- support local copy/export of a sanitized report;
+- emit only privacy-safe analytics events if analytics is enabled.
 
-### T1 — Cacheability Review
+Priority tools:
 
-Inputs:
+1. AI Platform Maturity Assessment;
+2. Cost and Capacity Model;
+3. Release Readiness Review;
+4. Cacheability Review as an advanced companion.
 
-- system/developer prompt;
-- tool schema;
-- two or more representative request prefixes;
-- optional normalized agent-step trace containing hashes and field names.
+### Maturity Assessment
 
-Outputs:
+Output:
 
-- stable-prefix similarity;
-- dynamic-field placement findings;
-- schema volatility findings;
-- agent-step hash drift;
-- risk categories;
-- recommendations tied to exact detected input regions;
-- explicit statement that actual cache hit rate cannot be inferred without runtime telemetry.
+- current capability state;
+- missing evidence;
+- blockers;
+- next justified shared capabilities;
+- capabilities likely premature;
+- related Handbook path.
 
-The tool must not present one opaque score as the primary result. A score may exist only as a secondary summary with documented weights.
+No vanity percentage as the primary result.
 
-### T2 — Cost Model
+### Cost and Capacity Model
 
-The domain model must distinguish:
+The domain model separates:
 
 - total input tokens;
 - reusable prefix tokens;
-- cache hit rate across requests;
-- uncached input price;
-- cached input price;
-- output tokens and price;
+- cross-request cache hit rate;
+- uncached/cached/output prices;
 - request volume;
 - agent steps distribution;
-- retry rate;
-- fallback route and fallback cost;
+- retry and fallback rates/cost;
 - accepted-result rate;
-- optional self-hosted fixed and non-production capacity costs.
+- optional self-hosted fixed, reserve and non-production capacity.
 
 Outputs:
 
-- cost per request;
-- cost per session;
-- cost per accepted result;
+- cost per request/session/accepted result;
 - cache savings;
-- retry overhead;
-- fallback overhead;
+- retry/fallback overhead;
 - scenario comparison;
-- sensitivity to cache hit rate and accepted-result rate;
+- sensitivity analysis;
 - assumptions summary.
 
-Validation:
+### Release Readiness Review
 
-- no negative quantities or prices;
-- percentages are 0–100;
-- reusable prefix tokens cannot exceed input tokens;
-- accepted-result rate zero produces “undefined / no accepted results”, not a misleading zero cost;
-- missing values do not silently convert to zero;
-- all formulas have unit tests and documented equations.
-
-### T3 — Release Readiness Review
-
-Assessment dimensions:
+Dimensions:
 
 - dataset and coverage;
 - error taxonomy;
-- offline evaluation;
+- offline eval;
 - regression thresholds;
-- routing evaluation;
-- long-context evaluation;
-- canary plan;
+- routing/long-context eval;
+- canary;
 - rollback/fallback;
 - observability;
 - ownership and approval.
-
-Each item records:
-
-- state: not assessed / missing / partial / ready / not applicable;
-- evidence note;
-- owner;
-- criticality.
 
 Decision states:
 
@@ -455,40 +572,23 @@ Decision states:
 - Canary ready;
 - Production ready.
 
-Rules:
+Critical blockers override percentage summaries. No item is pre-completed.
 
-- critical blockers override percentage summaries;
-- no item is pre-completed;
-- the recommendation explains which blockers caused the state;
-- export includes evidence and owner fields.
+### Cacheability Review
 
-## 7. Materials specification
+Outputs:
 
-Replace separate top-level Writing, Talks and Projects products with one Materials surface.
+- stable-prefix similarity;
+- dynamic-field placement;
+- tool/schema volatility;
+- agent-step hash drift;
+- risk categories;
+- exact recommendations;
+- statement that runtime hit rate requires real telemetry.
 
-Kinds:
+One opaque score cannot be the primary result.
 
-- article;
-- talk;
-- podcast/interview;
-- open-source project;
-- case note.
-
-Each material includes:
-
-- title;
-- summary written for the site;
-- publication date;
-- external source;
-- format;
-- related platform layers and problems;
-- language;
-- optional recording/slides/repository links;
-- verification status.
-
-The materials page supports format and topic filters. It must not duplicate the full field-guide catalogue.
-
-## 8. About and contact
+## 10. About and contact
 
 ### About
 
@@ -496,9 +596,9 @@ Must answer:
 
 - current professional focus;
 - path into production AI platform work;
-- concrete areas of practice;
-- principles and point of view;
-- selected evidence;
+- areas of practice;
+- engineering principles and point of view;
+- selected evidence across Articles, Talks, Projects and Handbook;
 - speaker/author information.
 
 Avoid:
@@ -510,15 +610,15 @@ Avoid:
 
 ### Contact
 
-Primary request types:
+Request types:
 
-- architecture review;
+- architecture discussion/review;
 - technical collaboration;
 - conference talk;
 - podcast/interview;
 - editorial contribution.
 
-The page explains what context to include:
+Explain useful context:
 
 - problem or audience;
 - expected format;
@@ -526,129 +626,187 @@ The page explains what context to include:
 - time horizon;
 - relevant links.
 
-Primary channel at launch: Telegram direct message. Email may be added only if a public address is intentionally provided.
+Primary launch channel: Telegram direct message.
 
-## 9. Visual and interaction system
+## 11. Content model
 
-### Direction
+All artifacts use validated build-time metadata.
 
-`Editorial control plane`: a restrained technical publication with system diagrams, explicit hierarchy and operational states.
+### Shared fields
 
-### Preserve
+```yaml
+id: string
+title: string
+shortTitle: string
+description: string
+locale: ru | en
+translationKey: string | null
+kind: article | talk | project | map | chapter | playbook | checklist | template | tool-guide
+status: draft | published | reviewed | maintained | archived
+platformLayers: string[]
+problems: string[]
+tags: string[]
+publishedAt: YYYY-MM-DD
+updatedAt: YYYY-MM-DD
+related: string[]
+featured: none | primary | foundational | recent
+```
+
+### Article extensions
+
+```yaml
+articleType: deep-dive | field-note | architecture-decision | experiment | opinion | release-note | talk-expansion
+externalEditions: url[]
+supersedes: string | null
+```
+
+### Talk extensions
+
+```yaml
+event: string
+eventDate: YYYY-MM-DD
+mediaType: conference | webinar | podcast | interview | panel | workshop
+recordingUrl: url | null
+slidesUrl: url | null
+takeaways: string[]
+```
+
+### Project extensions
+
+```yaml
+repositoryUrl: url
+projectStatus: experimental | active | maintained | archived
+latestRelease: string | null
+releaseDate: YYYY-MM-DD | null
+```
+
+### Handbook extensions
+
+```yaml
+reviewedAt: YYYY-MM-DD | null
+reviewCycleDays: number | null
+applicability: string
+referencesRequired: boolean
+```
+
+Derived values such as URL, stale state, catalogue membership, translation counterpart and related cards are never duplicated manually.
+
+## 12. Visual and interaction system
+
+Direction: `Dark Engineering Publication`.
+
+Preserve:
 
 - dark technical identity;
 - thin structural lines;
-- monospace metadata;
-- restrained cyan accent;
-- low-animation character;
-- strong diagram orientation.
+- restrained accent;
+- strong diagrams;
+- low-motion character;
+- monospace for metadata/code only.
 
-### Change
+Change:
 
 - reduce repeated card grids;
-- use typography, spacing and diagrams as primary hierarchy;
-- differentiate marketing, reading and tool workspaces;
-- reserve cyan for actions, links and active system relationships;
-- introduce a semantic warning/risk token;
-- create a real wordmark or platform-map mark instead of relying only on `SN`;
-- use one restrained author portrait where trust benefits.
+- use typography, lists, spacing and diagrams as primary hierarchy;
+- differentiate Article, Handbook, Project, Talk and Tool page archetypes;
+- reserve cyan/teal for actions and active relationships;
+- introduce semantic warning/risk/blocker tokens;
+- use a restrained author portrait where useful;
+- support print-safe light output.
 
-### Surface modes
+Page archetypes:
 
-1. **Marketing:** wider layout, large positioning and signature map.
-2. **Reading:** 680–760px prose column, persistent but non-invasive outline, references and artifact metadata.
-3. **Tool workspace:** wide two-panel layout with input, assumptions, results and export.
-4. **Print/export:** light or print-safe mode with no navigation chrome.
+1. publication homepage;
+2. article/deep dive;
+3. Handbook contents/chapter;
+4. project page;
+5. talk/media page;
+6. tool workbench;
+7. map/print artifact.
 
-### Responsive behavior
+Responsive requirements:
 
 - no horizontal overflow at 320px;
-- platform map has an accessible mobile list/accordion mode;
-- all actions remain reachable with one thumb column;
-- tables receive deliberate mobile transformations, not blind horizontal clipping;
+- target touch size >= 44×44 CSS px;
+- map has meaningful mobile disclosure mode;
+- tables receive deliberate mobile transformations;
 - tool results follow inputs on mobile;
-- target touch size >= 44×44 CSS px.
+- content remains useful without JavaScript.
 
-## 10. Accessibility requirements
+## 13. Accessibility
 
 Release gates:
 
-- exactly one `<main>` landmark;
+- exactly one `<main>`;
 - skip link;
 - labelled navigation;
 - current page uses `aria-current`;
-- filter controls expose state via native radio/checkbox semantics or `aria-pressed`;
-- all inputs have programmatic labels and descriptions;
-- dynamic results use appropriate live/status semantics without excessive announcements;
-- all interactive diagrams are keyboard operable;
+- all inputs have programmatic labels/descriptions;
+- filter/toggle state is exposed semantically;
+- dynamic tool results use appropriate status/live semantics;
+- interactive diagrams are keyboard operable;
 - information is not encoded by colour alone;
 - visible focus meets contrast requirements;
-- reduced-motion preference is respected;
-- heading hierarchy has no unexplained jumps;
-- automated accessibility checks on all core templates;
-- manual keyboard and VoiceOver/NVDA smoke tests on homepage, chapter and each tool.
+- reduced motion is respected;
+- heading hierarchy is valid;
+- automated checks on all page archetypes;
+- manual keyboard and screen-reader smoke tests on homepage, article, chapter, project, talk and each tool.
 
 Target: WCAG 2.2 AA for launch surfaces.
 
-## 11. SEO and distribution
+## 14. SEO and distribution
 
-Required generated artifacts:
+Generated:
 
 - sitemap;
 - robots;
-- RSS/Atom for reviewed updates and materials;
+- RSS/Atom for articles, reviewed Handbook updates, project releases and talk/media updates;
 - canonical URL;
 - hreflang for actual translation pairs only;
 - Open Graph image per page type;
-- JSON-LD:
+- JSON-LD where valid:
   - Person;
   - WebSite;
-  - TechArticle/Article;
+  - BlogPosting/TechArticle/Article;
   - BreadcrumbList;
-  - SoftwareApplication for tools where valid.
+  - SoftwareSourceCode/SoftwareApplication;
+  - VideoObject/PodcastEpisode where source data supports it.
 
 Rules:
 
-- master site name is the author brand;
-- field guide is a named product inside the site;
-- draft content is excluded from sitemap unless explicitly public;
-- archived content remains indexable only when still useful and clearly marked;
-- structured data must match visible page content;
-- pages use meaningful Russian titles rather than unnecessary mixed-language branding.
+- site identity is the author publication;
+- Handbook and Projects are named products inside it;
+- drafts are excluded from sitemap unless explicitly public;
+- structured data matches visible content;
+- stable fragments support diagrams and chapter sections;
+- pages are print/share friendly.
 
-Distribution support:
+## 15. Analytics and privacy
 
-- stable fragment links to diagram layers and chapter sections;
-- copy-link action;
-- share image designed for Telegram and social previews;
-- print/PDF-friendly artifact views;
-- canonical links suitable for talks and articles.
-
-## 12. Analytics and privacy
-
-Analytics is optional but recommended for validating the goal.
+Analytics is optional but useful for validating navigation and commercial demand.
 
 Allowed event examples:
 
-- `home_map_opened` with layer id;
-- `problem_route_opened` with problem id;
-- `artifact_opened` with artifact id;
-- `tool_started` and `tool_completed` with tool id;
-- `contact_opened` with request type;
-- `external_material_opened` with material id.
+- article opened;
+- related artifact opened;
+- Handbook map/problem route opened;
+- project repository/install/release opened;
+- talk recording/slides opened;
+- tool started/completed;
+- starter PDF downloaded;
+- contact opened.
 
 Forbidden:
 
-- prompt, schema, trace, evidence note or any free-text tool input;
-- full URLs containing private query data;
+- prompt, schema, trace, evidence note or free-text tool input;
+- session replay over tool workspaces;
+- private query payloads;
 - fingerprinting;
-- cross-site advertising identifiers.
+- advertising identifiers.
 
-The privacy statement must accurately describe the deployed analytics implementation.
+The privacy statement must describe the deployed implementation accurately.
 
-## 13. Technical architecture
-
-### Stack decision
+## 16. Technical architecture
 
 Keep:
 
@@ -658,31 +816,34 @@ Keep:
 - Tailwind;
 - MDX/content collections;
 - static export;
-- GitHub Actions and GitHub Pages unless deployment needs change for a demonstrated requirement.
+- GitHub Actions and GitHub Pages unless a demonstrated requirement changes hosting.
 
-Do not migrate frameworks as part of v2 without a measured blocking problem.
-
-### Target structure
+Target structure:
 
 ```text
 app/
   (ru-site)/
+    articles/
+    handbook/
+    projects/
+    talks/
+    tools/
+    about/
+    contact/
   en/
 content/
-  handbook/
-    ru/
-    en/
-  materials/
-    ru/
-    en/
+  articles/{ru,en}/
+  handbook/{ru,en}/
+  talks/{ru,en}/
+  projects/{ru,en}/
 features/
   home/
-  platform-map/
+  articles/
   handbook/
+  platform-map/
+  projects/
+  talks/
   tools/
-  materials/
-  about/
-  contact/
 components/
   shell/
   editorial/
@@ -705,85 +866,73 @@ tests/
   visual/
 ```
 
-### Rendering
+Rendering:
 
-- pages and content render statically;
-- JavaScript is limited to map interaction, filters, search and tools;
-- essential content and navigation remain usable without client hydration;
+- pages/content render statically;
+- JavaScript is limited to map interaction, filters/search and tools;
+- non-interactive article/chapter pages do not ship tool code;
 - no server actions, API routes, auth or database at launch.
-
-### Content derivation
 
 One content pipeline generates:
 
-- catalogue entries;
-- routes;
-- related items;
+- per-kind indexes;
+- cross-kind relationships;
 - featured selections;
-- translation relationships;
-- sitemap entries;
-- RSS entries;
+- translation pairs;
+- sitemap/RSS;
 - structured data;
-- stale-review reports.
+- stale Handbook review reports;
+- PDF/print source bundles.
 
-Manual duplicate catalogues are prohibited.
+## 17. Quality and tests
 
-### Localization
+### Unit
 
-- Russian is canonical at root;
-- English is under `/en`;
-- only actual translations receive hreflang counterparts;
-- `translationKey` joins pairs;
-- missing English translation is valid and does not block Russian publication;
-- navigation and common UI copy are typed locale modules;
-- long content stays in MDX/data files, not one monolithic dictionary.
-
-## 14. Quality and test plan
-
-### Unit tests
-
-- tool formulas;
-- validation rules;
+- tool formulas/validation;
 - status derivation;
 - URL localization;
 - redirect manifest;
-- content relationship derivation.
+- relationship derivation.
 
-### Content tests
+### Content
 
 - frontmatter schema;
-- unique translation keys per locale;
+- unique ids and translation keys;
 - valid related ids;
-- no reviewed placeholder content;
-- references required for reviewed factual material;
-- featured-slot constraints;
-- review dates;
-- no orphan reviewed content.
+- no reviewed Handbook placeholders;
+- references required where configured;
+- talk takeaways required;
+- project repository/release validation;
+- no orphan featured artifacts;
+- review dates and staleness.
 
-### Integration tests
+### Integration
 
-- generated catalogue matches MDX;
+- generated indexes match content;
 - route metadata;
-- canonical and hreflang pairs;
-- sitemap and RSS;
-- draft/archived discovery rules;
-- redirect coverage.
+- canonical/hreflang;
+- sitemap/RSS;
+- draft/archived discovery;
+- cross-kind relationships;
+- redirect coverage;
+- PDF source generation.
 
-### End-to-end tests
+### End-to-end
 
-Core flows:
-
-1. homepage → problem route → chapter → tool;
-2. homepage → map layer → artifact;
-3. materials filter → external source;
-4. chapter locale counterpart where available;
-5. each tool input → result → reset → export;
-6. contact request action;
-7. mobile navigation.
+1. homepage → article;
+2. homepage → Handbook → chapter → related tool;
+3. homepage → project → repository/install;
+4. homepage → talk → recording/related article;
+5. article → related Handbook/project/talk;
+6. project → related article/Handbook;
+7. each tool: input → result → reset → export;
+8. mobile navigation;
+9. locale counterpart where available;
+10. contact action.
 
 ### Visual regression
 
-Required viewports:
+Viewports:
 
 - 390×844;
 - 768×1024;
@@ -792,146 +941,139 @@ Required viewports:
 Templates:
 
 - homepage;
-- handbook landing;
-- chapter;
-- catalogue/materials;
+- article index/article;
+- Handbook landing/chapter/map;
+- project index/page;
+- talk index/page;
 - each tool;
 - about/contact.
 
-### Performance budgets
+### Performance
 
-Measured on production-like static output, mobile profile:
+Production-like static output, mobile profile:
 
-- LCP <= 2.5s at p75 target;
+- LCP <= 2.5s p75 target;
 - CLS <= 0.1;
 - INP <= 200ms target;
-- no unbounded layout shift from fonts or diagrams;
-- homepage initial client JS budget defined after the first prototype and enforced thereafter;
-- non-interactive chapter pages should not ship tool code.
+- no unbounded font/diagram layout shift;
+- homepage client JS budget set after first prototype and then enforced;
+- articles and chapters do not ship unrelated project/tool code.
 
-## 15. Content migration
+## 18. Content migration
 
-Create `MIGRATION_MANIFEST.md` with every current route and one decision:
-
-- keep unchanged;
-- rename and redirect;
-- merge;
-- archive;
-- remove with documented reason.
-
-For every current artifact capture:
+Create `MIGRATION_MANIFEST.md` with every current route and:
 
 - route;
 - locale;
-- content owner;
+- artifact kind;
 - current status;
-- target v2 status;
+- target status;
 - target route;
-- editorial work needed;
-- factual verification needed;
-- associated external links.
+- keep/rename/merge/archive/remove decision;
+- editorial work;
+- factual verification;
+- external links;
+- related target artifacts.
 
-No content is deleted merely because it is not in the v2 launch navigation.
+No content is deleted merely because it is not in launch navigation.
 
-## 16. Implementation sequence
+Migration priorities:
 
-### Phase A — Product and content foundation
+1. selected strongest articles;
+2. known talks/podcasts with public recordings;
+3. `audit-prompt-caching` project page;
+4. coherent reviewed Handbook spine;
+5. legacy route redirects;
+6. optional older materials.
 
-- approve this specification;
-- inventory routes and content;
-- define redirect manifest;
-- implement content schema and generated catalogue;
-- select launch core artifacts;
-- create editorial review checklist.
+## 19. Commercial readiness
 
-### Phase B — Visual exploration
+The launch remains open and useful.
 
-Produce exactly three materially different directions:
+Before a paid self-serve Handbook derivative:
 
-1. Technical Field Manual;
-2. Platform Control Plane;
-3. Executive Engineering Publication.
+- public reviewed spine exists;
+- users request PDF/offline/editable/team formats;
+- working artifacts demonstrate use;
+- edition/update/support boundaries are defined;
+- payment, invoice, refund and access operations are acceptable;
+- employer/side-project/IP boundaries are reviewed.
 
-Each direction must show:
+Preferred first paid format:
 
-- desktop homepage;
-- mobile homepage;
-- chapter page;
-- tool workspace;
-- platform-map treatment.
+- one-time/versioned Practitioner Edition or Operating Kit;
+- not a recurring community subscription;
+- not a paywall over core chapters.
 
-Select one before production implementation.
+## 20. Implementation sequence
 
-### Phase C — Application foundation
+### Phase A — Inventory and content model
 
-- new route tree;
-- shell and accessibility foundation;
-- visual tokens;
-- SEO generation;
+- approve product model;
+- inventory current routes/content/public links;
+- build migration manifest;
+- define per-kind schema;
+- implement generated relationships and indexes;
+- select launch article/talk/project/Handbook content.
+
+### Phase B — Visual prototypes
+
+Create three structurally different variants inside the Dark Engineering Publication family:
+
+1. Dark Editorial Journal;
+2. Technical Handbook;
+3. Engineering Notebook.
+
+Each must show:
+
+- desktop/mobile homepage;
+- article;
+- Handbook chapter/map;
+- project page;
+- talk page;
+- tool workspace.
+
+Select one system before production UI implementation.
+
+### Phase C — Foundation
+
+- route tree;
+- shell/accessibility;
+- tokens/components;
 - content pipeline;
-- redirect tests;
-- analytics abstraction.
+- SEO/RSS;
+- redirects;
+- optional analytics abstraction;
+- PDF/print source path.
 
 ### Phase D — Core surfaces
 
 - homepage;
-- handbook landing;
-- platform map;
-- chapter template;
-- materials;
-- about/contact.
+- Articles;
+- Talks;
+- Projects and `audit-prompt-caching`;
+- About/contact.
 
-### Phase E — Tools
+### Phase E — Handbook
 
-- revise domain models;
-- implement validation and export;
-- connect explanations;
-- test accessibility and privacy.
+- landing/map;
+- reviewed spine;
+- chapter/playbook/template templates;
+- related artifact graph;
+- starter guide generation.
 
-### Phase F — Editorial migration
+### Phase F — Tools
 
-- rewrite/review launch artifacts;
-- add references and diagrams;
-- prepare selective English subset;
-- validate all external links.
+- maturity assessment;
+- cost/capacity model;
+- release readiness;
+- corrected cacheability companion;
+- privacy/accessibility/export tests.
 
 ### Phase G — Cutover
 
-- final visual/accessibility/performance checks;
-- production redirect verification;
-- metadata and previews;
-- domain smoke test;
-- analytics verification;
-- launch note and changelog.
-
-## 17. Acceptance criteria
-
-The v2 release is accepted only if:
-
-1. all launch scope in `GOAL.md` is present;
-2. primary navigation has four content destinations plus contact and locale actions;
-3. a target user can enter via a problem and reach a useful artifact in two decisions;
-4. the signature map supports pointer, keyboard, mobile and no-JS access;
-5. 6–8 core Russian artifacts are reviewed, not merely migrated;
-6. all three tools satisfy their revised domain specifications;
-7. content metadata has one source of truth;
-8. `/ru` is no longer a duplicate application tree;
-9. every previous public route is accounted for;
-10. automated link, content, metadata, accessibility and E2E suites pass;
-11. manual keyboard and screen-reader smoke tests pass;
-12. user-entered tool data is not transmitted;
-13. core pages meet agreed performance budgets;
-14. the live domain and `www` behavior are verified after deployment;
-15. the README and architecture decision records describe the actual system.
-
-## 18. Deferred decision triggers
-
-Add an account system only when users demonstrate a cross-device persistence need.
-
-Add a newsletter only when there is a stable editorial cadence and a clear subscriber value proposition.
-
-Add AI search/chat only when static search and problem routes demonstrably fail to answer common navigation needs, and when citation and privacy behavior can be guaranteed.
-
-Migrate hosting only when GitHub Pages blocks a required feature, reliability target or deployment workflow.
-
-Expand full English parity only when English traffic, invitations or backlinks justify the ongoing editorial cost.
+- editorial/factual review;
+- visual/accessibility/performance checks;
+- redirects and DNS validation;
+- production smoke tests;
+- launch and baseline measurement.
