@@ -191,3 +191,28 @@ Implementation may clarify component-level details without changing the goal. Ch
 - Russian/English scope;
 - static/backend boundary;
 - reviewed-content standard.
+
+## D-021 — Visual identity: engineering publication, not SaaS
+
+**Decision:** the converged visual family is `Dark Engineering Publication`, defined normatively in [`DESIGN_DIRECTION.md`](./DESIGN_DIRECTION.md).
+
+The site combines:
+
+- an editorial publication front page;
+- a technical handbook reading system;
+- RFC/notebook-like working artifacts and tools;
+- architecture diagrams that answer engineering questions.
+
+**Preserve:** dark identity, restrained accent, strong type hierarchy, diagrams and low-motion behavior.
+
+**Rejected:** generic AI SaaS landing patterns, dashboard chrome, cyberpunk neon, decorative 3D platform illustrations, gradient CTA buttons, vanity metric strips, testimonial carousels and repeated card walls.
+
+**Reference interpretation:** Lenny's Newsletter and The Pragmatic Engineer are references for author-led clarity, archive depth, editorial hierarchy and interface restraint. They are not templates to clone and do not imply adopting their exact light palette, subscription funnel or Substack structure.
+
+**Consequence:** the three visual explorations remain structurally different, but all stay inside the engineering-publication family:
+
+1. Dark Editorial Journal;
+2. Technical Handbook;
+3. Engineering Notebook.
+
+A proposed screen fails this decision when it could be rebranded as an AI startup or consultancy landing page by changing only its text.
