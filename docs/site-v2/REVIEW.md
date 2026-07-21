@@ -7,6 +7,8 @@ Documents reviewed:
 - `GOAL.md`
 - `SPEC.md`
 - `DECISIONS.md`
+- `HANDBOOK_STRATEGY.md`
+- `DESIGN_DIRECTION.md`
 
 ## Review rubric
 
@@ -160,33 +162,97 @@ Pass accepted. Visual exploration has a bounded brief and the signature map has 
 
 Pass accepted. The design can be implemented within the current deployment model.
 
+## Pass 8 — Handbook category strategy
+
+### Findings
+
+- `Field Guide` understated the original handbook concept.
+- The product needed to serve teams before and after the decision to build an internal AI platform.
+- Migrating existing tools by default could prioritize implementation history over product need.
+
+### Corrections
+
+- Restored `Production AI Platform Handbook` as the master product name.
+- Defined the handbook as a living engineering system rather than a static electronic book.
+- Added two main entry routes: platform maturity/boundary and concrete production symptom.
+- Added the coherent launch spine from platform need through architecture, quality, operations, economics and ownership.
+- Prioritized an AI Platform Maturity Assessment as the category-entry diagnostic.
+- Separated explanatory chapters, execution playbooks, templates/decision records, tools and evidence.
+
+### Result
+
+Pass accepted. The handbook now occupies a clear emerging category and supports the expected increase in company AI-platform demand.
+
+## Pass 9 — Reference-led visual convergence
+
+### Findings
+
+The stated preference for Lenny's Newsletter and The Pragmatic Engineer was initially compatible with several misleading interpretations:
+
+- copying a light Substack layout;
+- treating the product as a newsletter subscription funnel;
+- keeping the first generated AI-dashboard visual because it was dark and polished.
+
+The valuable reference qualities are instead:
+
+- author-led identity;
+- editorial hierarchy;
+- authority established by an archive of useful work;
+- simple lists and predictable templates;
+- restrained interface chrome;
+- content as the dominant surface.
+
+The first generated mockup failed this test through its glowing 3D hero, dashboard rail, gradient CTA, decorative metrics and SaaS-style card system.
+
+### Corrections
+
+- Defined `Dark Engineering Publication` as the normative visual family.
+- Added `DESIGN_DIRECTION.md`.
+- Explicitly rejected generic AI SaaS, consultancy, cyberpunk and dashboard patterns.
+- Reframed the homepage as a publication front page.
+- Reframed handbook contents as a book/diagnostic index.
+- Reframed chapters as engineering deep dives and RFC-like artifacts.
+- Reframed tools as utilitarian workbenches.
+- Narrowed visual exploration to three structural variants inside one family:
+  - Dark Editorial Journal;
+  - Technical Handbook;
+  - Engineering Notebook.
+
+### Result
+
+Pass accepted. The leading system combines an editorial homepage, technical handbook and engineering workbench under one token and publication system.
+
 ## Cross-document consistency check
 
 | Concern | Goal | Spec | Decision | Status |
 |---|---|---|---|---|
-| Primary product | Field guide | Field guide first | D-001 | Consistent |
-| Author role | Trust and authority | Master brand | D-002 | Consistent |
-| Navigation | Problem-oriented | Four destinations | D-003/D-004 | Consistent |
-| Launch breadth | 6–8 core artifacts | Explicit launch set | D-007 | Consistent |
+| Primary product | Handbook | Handbook first | D-001 | Consistent |
+| Author role | Author/editor and trust layer | Visible author identity | D-002 | Consistent |
+| Navigation | Maturity/problem-oriented | Bounded destinations | D-003/D-004 | Consistent |
+| Launch breadth | Coherent core spine | Explicit launch set | D-007 | Consistent |
 | English | Selective | Selective routes | D-008 | Consistent |
 | Static boundary | Required | No backend at launch | D-010 | Consistent |
 | Content metadata | One source | Generated catalogue | D-011 | Consistent |
 | Privacy | Local tools | No input transmission | D-014 | Consistent |
 | Tool precision | No unsupported claims | Revised models | D-013 | Consistent |
-| Visual process | Explore before build | Three directions | D-018 | Consistent |
+| Visual identity | Engineering publication | Editorial/reading/tool modes | D-018/D-021 | Consistent |
 | Publication status | Transparent | Lifecycle defined | D-006/D-019 | Consistent |
 | Migration | Preserve URLs | Manifest and tests | D-009 | Consistent |
 
 ## Remaining unknowns
 
-These are implementation inputs, not specification blockers:
+These are prototype or implementation inputs, not specification blockers:
 
-- final selected visual direction;
+- exact platform-map geometry;
 - exact portrait/photo asset;
 - exact public evidence items used on launch homepage;
 - selected privacy-conscious analytics provider, or decision to launch without analytics;
 - GitHub Pages-compatible implementation of permanent legacy redirects;
-- final editorial readiness of optional inference/routing/guardrails chapters.
+- final editorial readiness of optional inference/routing/guardrails chapters;
+- whether the first homepage CTA is the maturity assessment or full map;
+- whether `Плейбуки` has enough launch volume for a top-level navigation item;
+- English product mark versus Russian descriptive masthead order;
+- sans-only versus restrained serif/sans long-form typography.
 
 They have explicit resolution points in the implementation sequence.
 
@@ -194,14 +260,14 @@ They have explicit resolution points in the implementation sequence.
 
 **Converged for the next stage.**
 
-There are no unresolved product contradictions, privacy ambiguities or unbounded launch requirements that should block visual exploration, content inventory and implementation planning.
+There are no unresolved product contradictions, privacy ambiguities, marketing-versus-engineering visual ambiguities or unbounded launch requirements that should block content inventory, revised visual prototyping and implementation planning.
 
 The specification must be reopened before implementation only if a stakeholder proposes changing:
 
-- the field-guide-first hierarchy;
-- four-item navigation;
+- the handbook-first hierarchy;
+- maturity/problem discovery;
 - static/private tool boundary;
 - reviewed-content quality bar;
 - selective English strategy;
-- launch breadth;
-- problem-oriented discovery model.
+- coherent launch spine;
+- engineering-publication visual identity.
