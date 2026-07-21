@@ -1,236 +1,278 @@
-# Handbook-first strategy — convergence review
+# Publication and Handbook format — convergence review
 
-Status: **passed after corrections**
+Status: **passed after product-model correction**
 
-This review checks the new Handbook-first strategy against the earlier goal, specification, decision register and converged visual direction.
+Reviewed documents:
 
-## 1. Findings that required correction
+- `GOAL.md`
+- `PUBLICATION_MODEL.md`
+- `HANDBOOK_STRATEGY.md`
+- `SPEC.md`
+- `DECISIONS.md`
+- `DESIGN_DIRECTION.md`
 
-### F-01 — “Field guide” was too weak as the master product model
+## 1. Trigger for reopening the strategy
 
-The earlier specification correctly made knowledge the primary product, but `author-led field guide` left too much room for the implementation to remain a personal site with a strong content section.
+The earlier Handbook-first model over-corrected the current site's fragmentation.
 
-**Correction:** the master product is now explicitly `Production AI Platform Handbook`.
+It correctly recognized the Handbook as a strong long-term asset, but it underrepresented four real author goals:
 
-### F-02 — Author brand was previously defined as the site-level master brand
+1. publish original articles under an owned domain;
+2. preserve talks, recordings and concise takeaways;
+3. provide a first-class home for `audit-prompt-caching` and future projects;
+4. develop the Production AI Platform Handbook in a format that may evolve toward a commercial product.
 
-That decision conflicted with the strategic opportunity to build an enduring category product.
+Treating the entire domain as only the Handbook would have hidden valuable career and public-work evidence and forced unrelated artifacts into the Handbook taxonomy.
 
-**Correction:**
+## 2. Findings and corrections
 
-- visible product brand: `Production AI Platform Handbook`;
-- author/editor/trust layer: `Сергей Нотевский`;
-- domain remains personal and preserves accumulated authority;
-- author identity remains explicit on every core surface.
+### F-01 — Handbook-only hierarchy did not match the real public track
 
-### F-03 — Previous navigation underweighted the platform map
+The author's public value is a combination of:
 
-The map was described as the signature artifact but remained nested inside the Handbook.
+- technical writing;
+- platform leadership;
+- public speaking;
+- maintained software;
+- structured Handbook thinking.
 
-**Correction:** `Карта` becomes a top-level destination and the primary category-defining surface.
+**Correction:** define `notevskii.tech` as an author-led engineering publication with four durable surfaces. The Handbook remains the flagship synthesis, not the entire site.
 
-### F-04 — Chapters and operational playbooks were mixed
+### F-02 — “Materials” consolidation erased important user jobs
 
-An explanatory chapter and a step-by-step operational sequence have different reading and maintenance models.
+A reader looking for a conference recording behaves differently from a reader evaluating an open-source project or browsing articles.
 
-**Correction:** `Хэндбук` and `Плейбуки` become distinct product surfaces backed by the same content graph.
+**Correction:** separate Articles, Projects and Talks as first-class surfaces. Shared metadata connects them.
 
-### F-05 — Launch scope over-prioritized existing tools
+### F-03 — Format-first navigation was rejected too broadly
 
-Migrating three current tools would optimize for sunk cost rather than the new primary journey.
+Inside the Handbook, maturity/problem/capability discovery remains superior to format-first navigation. At the global site level, however, Articles, Projects, Talks and Handbook are stable product surfaces with distinct user intent.
 
-**Correction:** the launch tool priority becomes:
+**Correction:** apply problem-first discovery inside the Handbook, not as a rule that prevents clear global surface navigation.
 
-1. AI Platform Maturity Assessment;
-2. Cost and Capacity Model;
-3. Release Readiness Review.
+### F-04 — The commercial question was under-specified
 
-Cacheability Review remains valuable but becomes an advanced artifact rather than a category-entry requirement.
+The earlier strategy allowed future commercial services but did not resolve whether the Handbook itself should be free, paid or hybrid.
 
-### F-06 — The earlier goal started from production symptoms but not from organizational demand
+**Correction:** compare five models and choose an open web core plus future paid implementation edition.
 
-The emerging demand is broader: companies will ask whether they need their own AI platform before they can name a cache, routing or observability problem.
+### F-05 — A free teaser plus paid full Handbook would weaken current strategic goals
 
-**Correction:** add two canonical entry paths:
+At the current stage, the strongest near-term value comes from:
 
-- `Нужна ли нам AI-платформа и что в неё должно входить?`;
-- `У нас уже есть конкретный production symptom.`
+- category authority;
+- search and citation;
+- career proof;
+- open-source adoption;
+- speaking and collaboration demand;
+- building a reusable audience relationship.
 
-### F-07 — Launch artifacts did not form a sufficiently explicit narrative spine
+A full-content paywall would reduce those effects before recurring paid demand is demonstrated.
 
-A set of individually strong articles could still feel fragmented.
+**Correction:** core web Handbook remains public at launch.
 
-**Correction:** require a coherent launch spine from platform need and boundary through architecture, quality, operations, economics and ownership.
+### F-06 — “Free forever” would unnecessarily close future commercial options
 
-### F-08 — Dark visual polish could still become AI marketing
+An open web reference does not prevent paid value.
 
-The first generated visual direction used a dark palette but relied on SaaS/dashboard patterns: glowing 3D illustration, gradient CTA, decorative charts, card walls and vanity metrics.
+**Correction:** define future paid value as implementation compression and operationalization:
 
-**Correction:** define `Dark Engineering Publication` as the normative visual family.
+- curated edition;
+- editable templates;
+- workbooks;
+- workshop/facilitation assets;
+- team usage;
+- versioned updates.
 
-The visual references Lenny's Newsletter and The Pragmatic Engineer contribute:
+### F-07 — Blog, talk, project and Handbook content could duplicate each other
 
-- author-led identity;
-- editorial hierarchy;
-- archive depth;
-- predictable article templates;
-- restrained interface chrome.
+Four surfaces without explicit roles could become maintenance-heavy silos.
 
-They do not imply cloning Substack, adopting a subscription-first funnel or replacing engineering information architecture with a chronological feed.
+**Correction:** define the knowledge lifecycle:
 
-Target modes:
+```text
+practice → note → article/talk → project/tool/template → Handbook synthesis
+```
 
-1. Dark Editorial Journal;
-2. Technical Handbook;
-3. Engineering Notebook.
+Each artifact has a distinct job and shared relationships.
 
-The authoritative visual rules are recorded in `DESIGN_DIRECTION.md` and D-021 of `DECISIONS.md`.
+### F-08 — The homepage visual model needed another correction
 
-## 2. Decisions retained unchanged
+A Handbook-cover homepage would no longer represent the full publication model.
 
-The following earlier decisions remain valid:
+**Correction:** homepage becomes the author publication front page, with current work first and Handbook/project/talk blocks below.
 
-- keep Next.js, TypeScript, MDX and static export;
-- Russian-first, selective English;
-- static and private by default;
-- no accounts, comments or backend persistence at launch;
-- content metadata is the source of truth;
-- reviewed/draft/archived states are explicit;
-- tools must be explainable and must not imply unsupported precision;
-- materials consolidate articles, talks, podcasts and repositories;
-- production implementation follows comparison of materially different visual directions inside the engineering-publication family;
-- existing URLs require an explicit migration manifest;
-- agent-produced content cannot self-promote to reviewed.
+## 3. Handbook format option review
 
-## 3. Updated normative decisions
+### Option A — Open living web Handbook
 
-### H-001 — Master product
+Evaluation:
 
-The site is the home of `Production AI Platform Handbook`.
+- authority: very high;
+- career signal: very high;
+- search/distribution: very high;
+- direct revenue: low;
+- implementation complexity: moderate;
+- fit now: high.
 
-### H-002 — Author relationship
+### Option B — Free overview, full Handbook paid
 
-`Сергей Нотевский` is the named author, editor and trust layer. The author is not a separate competing product.
+Evaluation:
 
-### H-003 — Category boundary
+- authority: medium;
+- career signal: reduced by access friction;
+- search/distribution: low;
+- direct revenue: uncertain;
+- operational complexity: high relative to current maturity;
+- fit now: low.
 
-The Handbook covers the organizational and technical capability between product AI scenarios and underlying models/providers. It does not claim to describe the whole AI organization.
+### Option C — Open Handbook plus paid implementation edition
 
-### H-004 — Dual entry model
+Evaluation:
 
-Users enter by maturity state or production symptom. Both resolve into the same canonical content graph.
+- authority: very high;
+- career signal: very high;
+- search/distribution: very high;
+- future direct revenue: meaningful;
+- operational complexity: manageable when demand exists;
+- fit: highest staged option.
 
-### H-005 — Product primitives
+### Option D — Paid newsletter/community
 
-The canonical artifact types are:
+Evaluation:
 
-- map;
-- chapter;
-- playbook;
-- template/decision record;
-- tool;
-- evidence/extension.
+- recurring revenue potential: high;
+- cadence and customer-operation burden: high;
+- conflict with a full-time leadership role: material;
+- fit now: low.
 
-### H-006 — Navigation
+### Option E — Open publication plus selective team work
 
-Default top-level product navigation:
+Evaluation:
 
-- Карта;
-- Хэндбук;
-- Плейбуки;
-- Инструменты;
-- Материалы.
+- revenue per engagement: high;
+- scalability: low;
+- career/authority alignment: high;
+- employer/conflict-boundary requirement: high;
+- fit: optional later path, not site organizing model.
 
-Author, search, locale and contact are persistent utilities.
+## 4. Selected model
 
-### H-007 — Launch narrative
+### Site
 
-The launch must explain, as one coherent sequence:
+`notevskii.tech` is the engineering publication of Сергей Нотевский.
 
-- when an AI platform becomes necessary;
-- what belongs inside it;
-- which execution strategy to choose;
-- how gateway/routing/inference fit together;
-- how quality and release control work;
-- how the system is observed and operated;
-- how cost and capacity are attributed;
-- who owns each responsibility.
+Top-level surfaces:
 
-### H-008 — First diagnostic product
+- Articles;
+- Handbook;
+- Projects;
+- Talks;
+- About.
 
-The first broad-audience tool is an AI Platform Maturity Assessment. It gives an explainable state, gaps and next capabilities; it must not return a vanity score without evidence.
+### Handbook
 
-### H-009 — Public value boundary
+- open web source of truth;
+- public reviewed spine;
+- free versioned map/starter PDF or poster;
+- no core chapter paywall at launch;
+- future generation of PDF/EPUB from the same source.
 
-The Handbook delivers complete basic decision value without registration or mandatory contact. Contact is a qualified next step, not the withheld answer.
+### Future paid product
 
-### H-010 — Living handbook model
+Preferred:
 
-Every reviewed artifact has a review date, applicability boundary and maintenance state. Staleness is visible and reportable.
+- `Production AI Platform Practitioner Edition`;
+- or `Production AI Platform Operating Kit`.
 
-### H-011 — Engineering-publication visual identity
+Paid value:
 
-The site must look like a maintained engineering publication, handbook and RFC/tool workspace.
+- curated offline edition;
+- editable decision records and templates;
+- assessment and cost/capacity workbooks;
+- facilitation assets;
+- team-use terms;
+- versioned update policy.
 
-It must not look like an AI SaaS, consultancy landing page, cyberpunk dashboard or decorative platform visualization.
+## 5. Career and public-capital consistency
 
-## 4. Consistency checks
+### Technical depth
 
-### Brand consistency
+Represented by Articles, Handbook and Project internals.
 
-Passed. The product and author now reinforce rather than compete with each other.
+### Systems/platform thinking
 
-### Audience consistency
+Represented by platform map, maturity model, decision models and operating model.
 
-Passed. The maturity model supports both teams just discovering a platform need and experienced platform engineers diagnosing a subsystem.
+### Execution
 
-### Content consistency
+Represented by maintained project releases, tools, playbooks and templates.
 
-Passed. The launch spine, map, chapters, playbooks, templates and tools form one content graph rather than parallel libraries.
+### Leadership and communication
 
-### Conversion consistency
+Represented by talks, summaries, editorial judgment, review standards and ownership models.
 
-Passed. The product can produce authority and qualified inbound without weakening public usefulness.
+Passed: the publication now supports future engineering leadership, Staff+/Principal authority, speaking, open-source, authorship and optional commercial paths without choosing one prematurely.
 
-### Maintenance consistency
+## 6. Distribution consistency
 
-Passed. The design remains compatible with a single primary author, agent assistance, static deployment and selective translation.
+Passed.
 
-### Technical consistency
+- site: canonical archive and relationship graph;
+- Telegram: frequent notes and distribution;
+- Habr: selected long-form distribution;
+- GitHub: code/releases/collaboration;
+- video/event platforms: recording distribution;
+- LinkedIn: selective professional distribution.
 
-Passed. No new strategy requirement forces authentication, server persistence or a framework migration.
+The site does not attempt to replace the external channel's strongest role.
 
-### Scope consistency
+## 7. Maintenance consistency
 
-Passed with correction. Not every listed launch-spine topic requires a full long chapter; some may be a compact reviewed chapter plus template. Coherence is mandatory, equal depth is not.
+Passed with controls:
 
-### Visual consistency
+- per-kind validated metadata;
+- generated cross-surface relationships;
+- no manual duplicate catalogue;
+- selective English;
+- no membership/community operation at launch;
+- no second manually maintained PDF source;
+- clear artifact lifecycle by kind.
 
-Passed after correction. The dark theme supports an engineering publication instead of carrying SaaS/dashboard visual grammar.
+## 8. Commercial-boundary consistency
 
-## 5. Remaining hypotheses, not blockers
+Passed.
 
-These should be tested during visual/content prototyping rather than debated abstractly:
+Public value is real and complete enough for decisions. Future paid value is not “the missing conclusion”; it is packaging, editable implementation assets, offline editions, update guarantees and team workflows.
 
-1. Whether the visible master title should always be English or use a Russian short label in navigation.
-2. Whether `Плейбуки` deserves a top-level item at launch or can initially be a Handbook view while content count is low.
-3. Whether the first CTA converts better as `Понять, нужна ли вам AI-платформа` or `Оценить зрелость AI-платформы`.
-4. Whether the 12-layer map is best rendered as a layered system, capability matrix, dependency graph or annotated operating model.
-5. Whether `notevskii.tech` should later gain a product-specific alias domain. This is explicitly deferred and does not block v2.
-6. Whether long-form typography should remain sans-only or use a restrained Cyrillic-capable serif pairing.
+Monetization remains gated by:
 
-These hypotheses have bounded alternatives and test methods. They do not reopen the product hierarchy or visual family.
+- reviewed spine;
+- observed reader/team demand;
+- edition/update capacity;
+- payment/support operations;
+- employer/side-project/IP review.
 
-## 6. Final convergence result
+## 9. Remaining hypotheses, not blockers
 
-The strategy is converged at the product and visual-system level.
+1. Exact homepage featured-item balance among Article, Handbook and Project.
+2. Whether the navigation label is `Статьи` or `Блог`; test `Статьи` first for engineering directness.
+3. Whether the free downloadable artifact is called `Starter Guide`, `Platform Map` or `Executive Guide`.
+4. Final future paid-product name: `Practitioner Edition` vs `Operating Kit`.
+5. Whether a voluntary free email update feed is worth adding at launch or immediately after.
+6. Exact selected articles and talks for launch migration.
+7. Payment/provider implementation if and when commercial gates are met.
 
-The stable core is:
+These do not reopen the stable product hierarchy or public/paid boundary.
 
-> Production AI Platform Handbook is a living, authored engineering product for teams deciding whether they need their own AI platform, defining its boundary and developing it into a reliable internal product.
+## 10. Final convergence result
 
-The required visual impression is:
+The product model is converged:
 
-> This is maintained engineering work I can read, cite and apply.
+> `notevskii.tech` is the author-led engineering publication of Сергей Нотевский. Articles develop technical arguments, talks communicate them, projects make the practice executable, and Production AI Platform Handbook maintains the reviewed reference model.
 
-Further work should now change evidence, copy, map geometry, typography and implementation details—not the primary product definition or engineering-publication identity.
+The Handbook format is converged:
+
+> Open and web-first as the canonical living reference; a free versioned map/starter artifact supports internal sharing and distribution; a future paid implementation edition packages offline reading, editable working artifacts and team workflows only after demand and operational readiness are demonstrated.
+
+Further work should now refine evidence, content inventory, visual prototypes and implementation—not reopen the site/Handbook relationship without new evidence.
