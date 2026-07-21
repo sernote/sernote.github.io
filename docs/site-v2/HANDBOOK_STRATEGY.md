@@ -1,76 +1,59 @@
-# Production AI Platform Handbook — Product Strategy
+# Production AI Platform Handbook — Product and Format Strategy
 
 Status: **normative, converged**  
-Supersedes any interpretation of v2 as a personal site with a handbook section.
+Depends on: [`PUBLICATION_MODEL.md`](./PUBLICATION_MODEL.md), [`GOAL.md`](./GOAL.md)
 
-## 1. Strategic thesis
+## 1. Role inside notevskii.tech
 
-The primary product is **Production AI Platform Handbook**.
+`Production AI Platform Handbook` is the flagship structured knowledge product of Сергей Нотевский's engineering publication.
 
-The site exists because the number of companies that need an internal AI platform will grow faster than the number of teams that already know how to design, operate and govern one. The gap is not mainly about choosing a model. It is about turning a changing set of models, runtimes, gateways, caches, evaluation systems, observability, security controls and ownership boundaries into a reliable production capability.
+It is not:
 
-The Handbook is a living engineering system for that gap.
+- the entire site;
+- a chronological blog;
+- a renamed collection of every article;
+- a static one-time ebook;
+- a teaser built only to collect leads;
+- a documentation shell around unrelated tools.
 
-It should help a team answer:
-
-- do we need an AI platform at all;
-- what belongs inside the platform boundary;
-- which capabilities should be centralized and which should remain with product teams;
-- how to move from direct model calls to a managed production architecture;
-- how to measure quality, latency, capacity, cost and risk;
-- how to choose MaaS, self-hosted or hybrid execution;
-- how to structure ownership, lifecycle and release control;
-- what to build next at the team's current maturity level.
-
-## 2. Brand architecture
-
-### Product brand
-
-**Production AI Platform Handbook**
-
-Russian descriptor:
-
-> Практический хэндбук по созданию и развитию AI-платформы в продакшене.
-
-Core promise:
-
-> От запроса на свою AI-платформу — к работающей архитектуре, эксплуатационной модели и последовательному плану развития.
-
-Problem-level promise:
-
-> От симптома в продакшене — к инженерному решению.
-
-### Author brand
-
-**Сергей Нотевский — автор и практик.**
-
-The author is not a parallel product and not a decorative byline. He is the Handbook's trust layer:
-
-- real platform-building experience;
-- public technical reasoning;
-- talks, articles and open-source artifacts;
-- explicit editorial judgment;
-- accountability for what is marked reviewed.
-
-Preferred hierarchy in product surfaces:
+The publication relationship is:
 
 ```text
-Production AI Platform Handbook
-by Сергей Нотевский
+Articles develop ideas.
+Talks compress and communicate them.
+Projects make parts of the practice executable.
+The Handbook preserves reviewed synthesis.
 ```
 
-The domain may remain `notevskii.tech`; the visible product brand is the Handbook.
+The Handbook should become the canonical reference layer for Production AI Platform concepts while the broader site continues to show the author's current work, communication and software artifacts.
 
-## 3. Category definition
+## 2. Strategic thesis
 
-The Handbook defines **AI Platform** as an organizational and technical capability that gives product teams a controlled way to build and operate AI scenarios.
+The number of companies that need shared AI-platform capabilities is likely to grow faster than the number of teams that already know how to design, operate and govern them.
 
-It is broader than inference serving and narrower than the entire AI organization.
+The gap is not mainly model selection. It is the work of turning changing models, runtimes, gateways, caches, eval systems, observability, security controls, costs and ownership boundaries into a reliable internal product.
 
-The platform boundary may include:
+The Handbook helps teams answer:
+
+- do we need an AI platform at all;
+- what belongs inside its boundary;
+- what should remain with product teams;
+- which capability should be centralized next;
+- which capability is premature;
+- how to choose MaaS, self-hosted or hybrid execution;
+- how to measure quality, latency, capacity, cost and risk;
+- how to structure release control, lifecycle, incidents and ownership.
+
+## 3. Category boundary
+
+The Handbook defines an **AI Platform** as an organizational and technical capability that gives product teams a controlled way to build and operate AI scenarios.
+
+It is broader than model serving and narrower than the whole AI organization.
+
+The reference boundary may include:
 
 1. scenario intake and platform contracts;
-2. model and provider access;
+2. model/provider access;
 3. gateway, policy and quotas;
 4. execution routing;
 5. inference runtimes for LLM, STT, embeddings and multimodal models;
@@ -82,75 +65,54 @@ The platform boundary may include:
 11. security, guardrails and audit;
 12. operating model, ownership and support.
 
-The Handbook must make this boundary explicit because “we need our own AI platform” is otherwise too vague to guide investment.
+## 4. Canonical format decision
 
-## 4. Primary audience and maturity states
+The canonical Handbook is:
 
-The product serves teams at four maturity states.
+> **Open, web-first, linked and continuously maintained.**
 
-### M0 — Direct integration
+The web version is the source of truth because it supports:
 
-Product teams call external or local models directly. There is no unified telemetry, quality gate, quota model or owner.
+- incremental publication;
+- stable links;
+- cross-linking to articles, talks and projects;
+- search and SEO;
+- corrections and review dates;
+- multiple artifact types;
+- selective English translation;
+- generated PDF/EPUB/print editions from one source.
 
-Primary question:
+The Handbook is not required to wait for “book completion.” It may launch with a coherent reviewed spine and expand in public.
 
-> Do we already have a platform problem?
+## 5. Product primitives
 
-### M1 — Shared access layer
-
-A gateway or shared inference service exists, but it is mainly a transport and credential layer.
-
-Primary question:
-
-> What should become a real platform capability next?
-
-### M2 — Managed platform
-
-Routing, observability, evals, quotas, model lifecycle and operating responsibilities are becoming explicit.
-
-Primary question:
-
-> How do we make the platform predictable and scalable?
-
-### M3 — Productized platform
-
-The platform has internal customers, contracts, lifecycle, cost allocation, release control, SLOs and a roadmap.
-
-Primary question:
-
-> How do we optimize the platform as a business-critical internal product?
-
-The site must support both entry modes:
-
-- **maturity-first:** “where are we and what is next?”;
-- **symptom-first:** “we have a concrete production problem.”
-
-## 5. Product model
-
-The Handbook is not one long book and not a flat documentation portal. It is a linked system of six artifact types.
+The Handbook is a linked system of six artifact types.
 
 ### 5.1 Map
 
-A stable map of platform responsibilities and relationships.
+A stable model of platform responsibilities, dependencies and ownership.
 
 Purpose:
 
 - define the category;
-- provide orientation;
-- act as the canonical navigation model;
-- expose gaps and ownership boundaries.
+- orient teams;
+- expose missing capabilities;
+- connect symptoms to artifacts;
+- support talks, PDF, print and workshops.
 
 ### 5.2 Chapters
 
-Durable explanations of one platform capability or decision.
+Durable explanations of a platform capability or decision.
 
-A reviewed chapter should normally contain:
+A reviewed chapter normally contains:
 
 - executive summary;
-- when this problem appears;
-- decision model;
+- applicability boundary;
+- symptoms;
+- mental/decision model;
 - reference architecture;
 - metrics and telemetry;
+- trade-offs;
 - failure modes;
 - ownership boundary;
 - implementation sequence;
@@ -163,137 +125,97 @@ Operational sequences for recurring work.
 
 Examples:
 
-- introduce a gateway without breaking product teams;
-- migrate traffic to self-hosted inference;
+- introduce a gateway;
+- migrate a scenario to self-hosted inference;
 - investigate low prefix-cache reuse;
 - establish an eval release gate;
 - plan GPU capacity;
-- onboard a new product scenario;
+- onboard a new scenario;
 - respond to an AI-platform incident.
 
-### 5.4 Decision records and templates
+Chapters explain. Playbooks direct action.
 
-Reusable working documents rather than explanatory prose.
+### 5.4 Templates and decision records
 
-Examples:
+Reusable working artifacts:
 
-- MaaS vs self-hosted decision record;
+- MaaS vs self-hosted ADR;
+- scenario intake form;
 - model onboarding checklist;
 - telemetry contract;
-- quota request template;
+- quota request;
 - eval plan;
 - incident review;
-- ownership/RACI template;
-- platform capability scorecard.
+- ownership matrix;
+- capability scorecard.
 
 ### 5.5 Tools
 
-Local, explainable diagnostics and calculators tied to chapters.
+Local explainable diagnostics tied to a real decision.
 
-Tools are not a separate unrelated mini-product. Every tool must have:
+Examples:
 
-- a clearly named decision it supports;
-- linked Handbook concepts;
-- explicit assumptions;
-- explainable output;
-- a next action;
-- local-only handling of user data where possible.
+- AI Platform Maturity Assessment;
+- Cost and Capacity Model;
+- Release Readiness Review;
+- Cacheability Review.
 
-### 5.6 Evidence and extensions
+A tool must disclose assumptions and never replace the chapter explaining its model.
 
-Articles, talks, podcasts, repositories and sanitized cases extend or substantiate the Handbook.
+### 5.6 Editions
 
-They do not define the primary information architecture.
+Versioned snapshots generated from the same source:
 
-## 6. Canonical product journey
+- free starter guide;
+- print/PDF map;
+- future curated practitioner edition;
+- future team operating kit.
 
-The preferred journey is:
+Edition files do not become a separate manually maintained content source.
 
-```text
-Need / symptom
-  → maturity or platform layer
-  → decision model
-  → chapter or playbook
-  → template / tool
-  → implementation action
-  → related capability
-```
+## 6. Entry modes
 
-The product fails when the visitor ends on “interesting content” without knowing what to inspect, decide or do next.
+The Handbook supports two primary entry paths.
 
-## 7. Homepage role
+### Maturity and boundary
 
-The homepage is the Handbook cover, orientation layer and main entry point.
+- direct model integrations;
+- shared access/gateway;
+- self-hosted or hybrid execution;
+- routing, quotas and model lifecycle;
+- evals and observability;
+- cost/capacity and operating model;
+- productized internal platform.
 
-First viewport:
+Core questions:
 
-- product name;
-- concise category definition;
-- author attribution;
-- primary CTA: `Понять, нужна ли вам AI-платформа`;
-- secondary CTA: `Открыть карту платформы`;
-- compact, verifiable author evidence.
+- do we already have a platform problem;
+- what should become shared next;
+- what should remain decentralized;
+- what should not be built yet.
 
-The first major interactive choice should be:
+### Production symptom
 
-### “Где вы сейчас?”
-
-- модели вызываются напрямую;
-- появился общий gateway;
-- разворачиваем локальные модели;
-- строим evals и release control;
-- не понимаем стоимость и GPU capacity;
-- платформа уже есть, но плохо управляется.
-
-The second entry should be:
-
-### “Что болит?”
-
-- стоимость;
-- качество;
-- задержка;
+- cost;
+- quality;
+- latency;
 - GPU capacity;
-- routing and agents;
+- routing and agent loops;
 - cache;
 - observability;
 - security;
 - ownership.
 
-The platform map follows these entry points and becomes the long-term signature visual.
+Both entry paths resolve into the same content graph.
 
-## 8. Top-level information architecture
+## 7. Launch spine
 
-Recommended global navigation:
+The launch should feel coherent even while the Handbook remains intentionally incomplete.
 
-1. **Карта**
-2. **Хэндбук**
-3. **Плейбуки**
-4. **Инструменты**
-5. **Материалы**
-
-Persistent utility:
-
-- search;
-- locale switch;
-- `Об авторе`;
-- CTA `Обсудить AI-платформу`.
-
-Rationale:
-
-- the map deserves top-level status because it defines the category and is a primary entry point;
-- chapters and playbooks solve different jobs: understanding vs execution;
-- tools are retained as explicit product surfaces;
-- materials remain secondary evidence/distribution;
-- author information is always reachable but does not consume a primary product slot.
-
-## 9. Launch product, not launch archive
-
-The initial release should feel complete even if the full knowledge base is not.
-
-### Required launch spine
+Required narrative:
 
 1. What an AI platform is and when a company needs one.
-2. Platform map and capability boundaries.
+2. Platform boundary and capability map.
 3. MaaS vs self-hosted vs hybrid.
 4. Gateway, contracts, quotas and routing.
 5. Inference and capacity fundamentals.
@@ -302,207 +224,214 @@ The initial release should feel complete even if the full knowledge base is not.
 8. Cost attribution and unit economics.
 9. Ownership and operating model.
 
-This is the minimum coherent narrative.
+This may be implemented as 6–8 substantial reviewed artifacts plus compact bridge artifacts. Equal depth is not required; narrative continuity is.
 
-A narrower set of high-quality supporting artifacts is acceptable. A launch without this spine is not.
+## 8. Relationship to the other publication surfaces
 
-### Required launch tools/templates
+### Articles
 
-- AI Platform Maturity Assessment;
-- Cost and capacity model;
-- Release readiness review;
-- MaaS/self-hosted decision template;
-- telemetry contract template;
-- platform ownership checklist.
+An article may:
 
-The current cacheability tool may launch as an advanced companion if its semantics are corrected, but it is less central to the category-entry journey than the maturity assessment.
+- explore one experiment or anti-pattern deeply;
+- express a time-bound view;
+- compare vendors or current behavior;
+- show the reasoning history that led to a Handbook conclusion.
 
-## 10. Growth loops
+The Handbook links to the article as evidence or further reading. It does not copy it verbatim.
 
-The Handbook grows through four reinforcing loops.
+### Talks
 
-### Practice loop
+A talk may synthesize several Handbook capabilities into one narrative.
 
-Real platform work produces sanitized patterns, failures, metrics and decisions. These become reviewed Handbook artifacts.
+The talk page links to relevant Handbook sections; the Handbook may link to the talk as an accessible explanation or public evidence.
 
-### Content loop
+### Projects
 
-A chapter produces:
+A project implements or audits one part of the Handbook model.
 
-- a Telegram post;
-- a Habr article;
-- a conference segment;
-- a diagram;
-- a checklist or tool;
-- links back to the canonical Handbook page.
+`audit-prompt-caching` connects to:
 
-External channels distribute; the Handbook accumulates.
+- cache/request-shape chapter;
+- cache audit playbook;
+- inference economics;
+- observability fields;
+- provider/runtime references.
 
-### Search loop
+The project remains independently usable and open source.
 
-Evergreen problem pages answer specific high-intent queries and lead into the broader platform model.
+## 9. Free distribution artifacts
 
-Examples:
+### Production AI Platform Map
 
-- when do you need an AI platform;
-- LLM gateway architecture;
-- MaaS vs self-hosted LLM;
-- LLM cost attribution;
-- AI platform maturity model;
-- production LLM evals;
-- prefix cache hit rate;
-- GPU capacity planning for LLM inference.
+Formats:
 
-### Authority loop
+- interactive web;
+- static SVG/PNG;
+- print-safe PDF/poster;
+- slide-ready version.
 
-The growing Handbook makes talks, interviews, advisory discussions and career opportunities more credible. Those interactions generate new questions and evidence for the Handbook.
+### Production AI Platform Map & Starter Guide
 
-## 11. Commercial boundary
+A free versioned artifact, approximately one concise managerial/technical reading session rather than a superficial advertisement.
 
-The public Handbook should remain genuinely useful and not degrade into a lead-generation shell.
+Suggested contents:
 
-Possible qualified outcomes:
+1. category definition;
+2. 12-capability map;
+3. maturity path;
+4. signs that a platform is needed;
+5. what to centralize and what not to centralize;
+6. first decision checklist;
+7. links into the public web Handbook.
 
-- architecture review;
-- platform maturity assessment;
-- workshop or internal lecture;
-- conference or podcast request;
-- collaboration on an engineering artifact;
-- relevant leadership opportunity.
+It should be directly useful and easy to forward internally.
 
-The public product must not hide basic decision value behind contact forms.
+No email gate is required at launch. A voluntary update subscription may be added later.
 
-A commercial service is introduced only when its scope, inputs, output and evidence are concrete enough to deserve a dedicated surface.
+## 10. Commercial format options
 
-## 12. Editorial governance
-
-The product is author-led, not anonymously community-edited.
-
-Every reviewed artifact has:
-
-- an explicit author/editor;
-- reviewed date;
-- maturity status;
-- evidence and references;
-- applicability boundaries;
-- known uncertainty where appropriate.
-
-External contributions may be accepted later, but the Handbook must preserve a coherent editorial position rather than becoming a link wiki.
-
-## 13. Visual identity
-
-The desired identity is a **living engineering handbook and control-plane atlas**.
-
-It should feel:
-
-- authoritative but not institutional;
-- technical but readable;
-- dense where useful, not card-heavy everywhere;
-- diagram-led;
-- maintained and versioned;
-- clearly authored.
-
-Avoid:
-
-- generic AI gradients and glowing brains;
-- fake dashboards;
-- portfolio hero patterns;
-- visual imitation of vendor documentation;
-- an “online course” aesthetic;
-- excessive terminal cosplay.
-
-The signature visual system should derive from:
-
-- the platform map;
-- system boundaries;
-- flows and dependencies;
-- maturity states;
-- operational signals;
-- editorial annotations.
-
-## 14. Naming decisions
-
-### Selected
-
-**Production AI Platform Handbook**
+### Rejected launch option — free summary, paid useful Handbook
 
 Reasons:
 
-- “Production” sets the quality and operational boundary;
-- “AI Platform” defines the emerging category;
-- “Handbook” supports chapters, playbooks, tools, templates and continuous updates;
-- the name is understandable internationally;
-- it can outgrow a personal portfolio without severing the author connection.
+- reduces category reach and search visibility;
+- hides the strongest career and authority evidence;
+- makes the open-source and talk ecosystem less connected;
+- creates payment/support obligations before demand is proven;
+- creates pressure to imply completeness;
+- increases employer/IP and conflict-boundary complexity.
 
-### Rejected as master product names
+### Preferred future option — Practitioner Edition / Operating Kit
 
-- `Field Guide` — useful tone, but sounds narrower and less canonical;
-- `Playbook` — too execution-only for architecture and conceptual material;
-- `Manual` — implies product documentation;
-- `Knowledge Base` — generic and weakly authored;
-- `AI Platform Engineering` — category name, not product identity;
-- Russian-only translated master name — reduces international continuity.
+The future paid product should reduce implementation work, not merely reveal more paragraphs.
 
-“Field guide” and “playbook” remain valid artifact labels inside the Handbook.
+Possible components:
 
-## 15. Revised product hierarchy
+- curated PDF/EPUB edition;
+- editable ADR/RFC templates;
+- maturity assessment workbook;
+- cost/capacity workbook;
+- telemetry contract;
+- ownership matrix;
+- release-readiness pack;
+- workshop deck and facilitation notes;
+- implementation sequences;
+- print-ready map bundle;
+- defined edition update period;
+- individual and team terms.
 
-```text
-Production AI Platform Handbook
-│
-├── Platform Map
-├── Handbook Chapters
-├── Playbooks
-├── Templates and Decision Records
-├── Tools
-├── Cases and Evidence
-└── Materials
+Working names:
 
-Authored and edited by Сергей Нотевский
-```
+- `Production AI Platform Practitioner Edition`;
+- `Production AI Platform Operating Kit`.
 
-The personal site is therefore not removed. It is absorbed into a stronger authored product.
+The paid bundle may contain denser packaging and advanced working artifacts while the public web Handbook remains complete enough to support real decisions.
 
-## 16. Convergence review
+### Optional high-touch layer
 
-### Tension: product brand vs personal authority
+Possible later offerings:
 
-Resolution: the Handbook is the visible product; Сергей is the named author, editor and trust layer. Neither is hidden.
+- facilitated maturity assessment;
+- architecture review;
+- internal workshop;
+- implementation planning session.
 
-### Tension: broad category vs practical usefulness
+These remain selective and must not turn the public site into a consultancy funnel.
 
-Resolution: the map and maturity model define the broad system; every chapter must terminate in a decision, checklist, template or next action.
+## 11. Monetization sequence
 
-### Tension: book structure vs problem-oriented navigation
+### Phase 1 — public authority and product proof
 
-Resolution: canonical chapters provide durable structure; maturity and symptom routes provide entry paths into the same content graph.
+- public web Handbook;
+- free map/starter guide;
+- reviewed launch spine;
+- connection to articles, talks and `audit-prompt-caching`;
+- privacy-conscious analytics if enabled;
+- collect qualitative demand signals.
 
-### Tension: launch completeness vs author capacity
+### Phase 2 — paid self-serve artifact
 
-Resolution: launch a coherent nine-part spine with a small reviewed artifact set; retain explicit maturity states for everything else.
+Only after demand signals:
 
-### Tension: Russian depth vs international name
+- release a one-time/versioned Practitioner Edition or Operating Kit;
+- define exactly what purchasers receive;
+- define update duration;
+- support invoices/receipts/refunds/access appropriately;
+- keep the web Handbook public.
 
-Resolution: keep the master product name in English; Russian explanatory copy and content remain primary; English is a selective maintained subset.
+### Phase 3 — team formats
 
-### Tension: public utility vs conversion
+Only after real team usage:
 
-Resolution: public artifacts deliver real value without registration; qualified contact appears after or alongside useful work, not instead of it.
+- team license;
+- workshop pack;
+- facilitated assessment;
+- corporate learning or implementation edition.
 
-### Tension: living resource vs content decay
+### Not the default path
 
-Resolution: reviewed status, last-reviewed dates, review cycles, archived states and generated stale-content reports are part of the product model.
+- recurring paid newsletter;
+- paid community;
+- frequent members-only publishing;
+- mandatory account system.
 
-## 17. Final normative statement
+These require a reliable editorial cadence and customer/community operations that may conflict with a full-time leadership role.
 
-`notevskii.tech` v2 must be designed and implemented as the home of **Production AI Platform Handbook**, authored by Сергей Нотевский.
+## 12. Commercial decision gates
 
-It must not regress into:
+Do not build a paid Handbook product until several signals exist:
 
-- a generic personal portfolio;
-- a chronological technical blog;
-- a flat collection of unrelated tools;
-- a huge unfinished documentation tree;
-- a sales landing page disguised as a knowledge product.
+- coherent reviewed public spine;
+- repeated requests for PDF, print, offline, editable or team formats;
+- named templates/checklists used in real work;
+- inbound team requests referencing specific public artifacts;
+- ability to commit to an edition and update policy;
+- acceptable payment, invoice, refund, access and support operations;
+- explicit review of employer/side-project/IP boundaries.
 
-The product wins when a team that has started asking “do we need our own AI platform, and what exactly should it be?” can use the Handbook to understand its current state, choose the next capability and act with less architectural uncertainty.
+Analytics should first establish a baseline before hard numeric thresholds are adopted.
+
+## 13. Editorial governance
+
+Every reviewed Handbook artifact has:
+
+- explicit author/editor;
+- reviewed date;
+- applicability boundary;
+- references/evidence;
+- known uncertainty where appropriate;
+- review cycle;
+- relationships to relevant articles, talks, projects and other Handbook artifacts.
+
+Agent-created content cannot self-promote to reviewed status without explicit author review.
+
+The Handbook remains author-led rather than becoming an uncurated link wiki.
+
+## 14. Visual identity
+
+The Handbook should feel like:
+
+- a maintained engineering book;
+- an architecture atlas;
+- an RFC/playbook library;
+- a calm technical publication.
+
+Avoid:
+
+- AI SaaS marketing;
+- fake dashboards;
+- cyberpunk neon;
+- course-platform visuals;
+- excessive terminal cosplay;
+- identical rounded cards for every artifact;
+- hiding prose behind interface chrome.
+
+The map should look usable in an architecture review, technical article, conference slide and printout.
+
+## 15. Converged decision
+
+The stable Handbook strategy is:
+
+> Production AI Platform Handbook is the open, living and reviewed synthesis layer of Сергей Нотевский's engineering publication. The web version remains canonical and public; a free versioned map/starter artifact supports distribution; future paid value comes from curated editions, editable implementation assets and team workflows rather than withholding the basic reference model.
+
+This format maximizes present career and category authority while preserving a credible path to a paid product when demand and operational readiness are real.
