@@ -2,7 +2,7 @@
 
 Status: **passed after corrections**
 
-This review checks the new Handbook-first strategy against the earlier goal, specification and decision register.
+This review checks the new Handbook-first strategy against the earlier goal, specification, decision register and converged visual direction.
 
 ## 1. Findings that required correction
 
@@ -62,6 +62,30 @@ A set of individually strong articles could still feel fragmented.
 
 **Correction:** require a coherent launch spine from platform need and boundary through architecture, quality, operations, economics and ownership.
 
+### F-08 — Dark visual polish could still become AI marketing
+
+The first generated visual direction used a dark palette but relied on SaaS/dashboard patterns: glowing 3D illustration, gradient CTA, decorative charts, card walls and vanity metrics.
+
+**Correction:** define `Dark Engineering Publication` as the normative visual family.
+
+The visual references Lenny's Newsletter and The Pragmatic Engineer contribute:
+
+- author-led identity;
+- editorial hierarchy;
+- archive depth;
+- predictable article templates;
+- restrained interface chrome.
+
+They do not imply cloning Substack, adopting a subscription-first funnel or replacing engineering information architecture with a chronological feed.
+
+Target modes:
+
+1. Dark Editorial Journal;
+2. Technical Handbook;
+3. Engineering Notebook.
+
+The authoritative visual rules are recorded in `DESIGN_DIRECTION.md` and D-021 of `DECISIONS.md`.
+
 ## 2. Decisions retained unchanged
 
 The following earlier decisions remain valid:
@@ -74,7 +98,7 @@ The following earlier decisions remain valid:
 - reviewed/draft/archived states are explicit;
 - tools must be explainable and must not imply unsupported precision;
 - materials consolidate articles, talks, podcasts and repositories;
-- production implementation follows comparison of materially different visual directions;
+- production implementation follows comparison of materially different visual directions inside the engineering-publication family;
 - existing URLs require an explicit migration manifest;
 - agent-produced content cannot self-promote to reviewed.
 
@@ -144,6 +168,12 @@ The Handbook delivers complete basic decision value without registration or mand
 
 Every reviewed artifact has a review date, applicability boundary and maintenance state. Staleness is visible and reportable.
 
+### H-011 — Engineering-publication visual identity
+
+The site must look like a maintained engineering publication, handbook and RFC/tool workspace.
+
+It must not look like an AI SaaS, consultancy landing page, cyberpunk dashboard or decorative platform visualization.
+
 ## 4. Consistency checks
 
 ### Brand consistency
@@ -174,6 +204,10 @@ Passed. No new strategy requirement forces authentication, server persistence or
 
 Passed with correction. Not every listed launch-spine topic requires a full long chapter; some may be a compact reviewed chapter plus template. Coherence is mandatory, equal depth is not.
 
+### Visual consistency
+
+Passed after correction. The dark theme supports an engineering publication instead of carrying SaaS/dashboard visual grammar.
+
 ## 5. Remaining hypotheses, not blockers
 
 These should be tested during visual/content prototyping rather than debated abstractly:
@@ -181,17 +215,22 @@ These should be tested during visual/content prototyping rather than debated abs
 1. Whether the visible master title should always be English or use a Russian short label in navigation.
 2. Whether `Плейбуки` deserves a top-level item at launch or can initially be a Handbook view while content count is low.
 3. Whether the first CTA converts better as `Понять, нужна ли вам AI-платформа` or `Оценить зрелость AI-платформы`.
-4. Whether the 12-layer map is best rendered as a control-plane topology, layered system, capability matrix or annotated operating model.
+4. Whether the 12-layer map is best rendered as a layered system, capability matrix, dependency graph or annotated operating model.
 5. Whether `notevskii.tech` should later gain a product-specific alias domain. This is explicitly deferred and does not block v2.
+6. Whether long-form typography should remain sans-only or use a restrained Cyrillic-capable serif pairing.
 
-These hypotheses have bounded alternatives and test methods. They do not reopen the product hierarchy.
+These hypotheses have bounded alternatives and test methods. They do not reopen the product hierarchy or visual family.
 
 ## 6. Final convergence result
 
-The strategy is converged at the product level.
+The strategy is converged at the product and visual-system level.
 
 The stable core is:
 
 > Production AI Platform Handbook is a living, authored engineering product for teams deciding whether they need their own AI platform, defining its boundary and developing it into a reliable internal product.
 
-Further work should now change evidence, copy, visual expression and implementation details—not the primary product definition.
+The required visual impression is:
+
+> This is maintained engineering work I can read, cite and apply.
+
+Further work should now change evidence, copy, map geometry, typography and implementation details—not the primary product definition or engineering-publication identity.
