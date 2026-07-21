@@ -1,400 +1,509 @@
 # notevskii.tech v2 — Converged Design Direction
 
 Status: **normative visual direction**  
-Depends on: [`GOAL.md`](./GOAL.md), [`SPEC.md`](./SPEC.md), [`HANDBOOK_STRATEGY.md`](./HANDBOOK_STRATEGY.md)
+Depends on: [`GOAL.md`](./GOAL.md), [`PUBLICATION_MODEL.md`](./PUBLICATION_MODEL.md), [`SPEC.md`](./SPEC.md)
 
 ## 1. Decision
 
 The visual direction is **Dark Engineering Publication**.
 
-`notevskii.tech` must look like a serious author-led engineering publication and working handbook, not:
+`notevskii.tech` must look like a serious author-led engineering publication, maintained Handbook and public workbench—not:
 
 - an AI startup landing page;
 - a SaaS dashboard;
 - a portfolio template;
 - a cyberpunk visualization demo;
 - a marketplace of cards;
-- a marketing funnel decorated with technical vocabulary.
+- a consultancy funnel decorated with technical vocabulary;
+- a generic documentation theme.
 
-The closest mental model is the editorial directness of high-quality author publications such as Lenny's Newsletter and The Pragmatic Engineer, combined with the information density and precision of an engineering handbook, RFC library and architecture review workspace.
+The closest mental model is the editorial directness of strong author publications such as Lenny's Newsletter and The Pragmatic Engineer, combined with the precision of an engineering handbook, RFC library, open-source project page and architecture review workspace.
+
+Borrow the product behavior, not the exact appearance or subscription model.
 
 The dark theme is retained, but darkness is not used as a substitute for technical credibility.
 
 ## 2. Design thesis
 
-> Content creates authority. Structure makes it usable. Diagrams make the system legible. Interface chrome stays quiet.
+> Content creates authority. Relationships create a body of work. Diagrams make systems legible. Interface chrome stays quiet.
 
 The design should communicate:
 
 - one identifiable author;
-- one coherent body of work;
-- strong editorial judgement;
-- engineering depth;
-- long-term maintenance;
+- one coherent engineering practice;
+- four distinct public surfaces;
+- editorial judgement;
+- technical depth;
+- active software maintenance;
 - explicit models, assumptions and states;
 - usefulness before conversion.
 
-## 3. What to borrow from the reference publications
+The author must not disappear behind the Handbook brand. The Handbook must not disappear inside a generic blog.
 
-Borrow the underlying product behaviours, not their exact styling.
+## 3. Reference behavior
 
-### Author-led clarity
+### From author-led publications
 
-- publication name and author are immediately clear;
-- the author's point of view is visible without a long biography;
-- credibility comes from the archive and quality of work;
-- the interface does not compete with the writing.
+Borrow:
 
-### Editorial hierarchy
+- immediate clarity about who writes and what the publication covers;
+- strong title/deck hierarchy;
+- a small number of current and foundational selections;
+- simple chronological archives;
+- predictable article templates;
+- quiet search and navigation;
+- credibility created by the work itself.
 
-- strong title and deck;
-- visible publication date, update date and content type;
-- clear distinction between current, foundational and recent work;
-- simple lists of important pieces instead of equal card walls;
-- archive and search are first-class but visually quiet.
+Do not borrow by default:
 
-### Repeatable publication rhythm
+- subscription-first homepage funnels;
+- social-proof counters as the first argument;
+- popup capture;
+- community sales blocks;
+- a Substack-like single-feed limitation.
 
-- recognizable chapter and material templates;
-- predictable metadata;
-- stable URLs;
-- clear series and topic relationships;
-- obvious next reading step.
+### From engineering documentation and RFC systems
 
-### Restraint
+Borrow:
 
-- few accents;
-- limited button hierarchy;
-- no decorative metrics;
-- no invented social proof;
-- no oversized product screenshots without explanatory value;
-- no gratuitous animations.
+- explicit status and dates;
+- clear contents navigation;
+- architecture figures and tables;
+- stable links;
+- code/equation readability;
+- reference and change history;
+- print-friendly artifacts.
 
-## 4. Explicit rejection of the first visual mockup
+Do not borrow:
 
-The first generated mockup is useful as an inventory of possible blocks, but it is not the target visual system.
+- anonymous institutional tone;
+- visually heavy docs chrome;
+- a sidebar that dominates every page;
+- identical treatment of articles, projects, talks and Handbook chapters.
+
+## 4. Explicit rejection of the first generated mockup
+
+The first generated mockup is useful as a block inventory but not as the target visual system.
 
 Remove or substantially redesign:
 
-- the large glowing isometric AI-platform illustration;
-- dashboard-like right rail with many boxed widgets;
+- large glowing isometric AI-platform illustration;
+- dashboard-like right rail with boxed widgets;
 - bright gradient primary CTA;
-- radar chart used as decoration;
+- decorative radar chart;
 - white SaaS-style tool-card strip;
-- vanity counts such as years, material counts or platform scale without a direct evidentiary purpose;
+- vanity counts without direct evidentiary purpose;
 - repeated rounded cards for every content type;
-- neon system-map styling;
-- labels that make the page resemble a product-marketing site;
-- simultaneous presentation of too many destinations above the fold.
+- neon radial maps;
+- simultaneous presentation of too many destinations above the fold;
+- labels that make the page resemble a B2B product-marketing site.
 
-The signature map remains important, but it must resemble an architecture artifact rather than a promotional illustration.
+The platform map remains important, but it must resemble an architecture artifact rather than a promotional illustration.
 
 ## 5. Page archetypes
 
-The site has five deliberate page archetypes.
+The design system must deliberately support seven archetypes.
 
 ### 5.1 Publication front page
 
-The homepage behaves like the front page of an engineering publication.
+The homepage is an editorial index of the author's current practice.
 
 Required order:
 
-1. publication identity and concise premise;
-2. author line;
-3. two practical entry routes;
-4. signature map excerpt;
-5. current recommended reading;
-6. latest reviewed updates;
-7. tools and working artifacts;
-8. compact author/contact footer.
+1. author identity and concise publication premise;
+2. current featured work;
+3. four-surface index;
+4. Handbook flagship block;
+5. flagship project;
+6. selected talk and recent articles;
+7. compact author/contact footer.
 
-The page should be shorter and calmer than the first mockup. It is an editorial index, not a complete product catalogue.
+The page is shorter and calmer than the first mockup. It is not a complete catalogue.
 
-### 5.2 Handbook contents
+### 5.2 Article / engineering essay
 
-The handbook landing behaves like a book contents page plus a diagnostic index.
+A technical article resembles a carefully edited engineering deep dive.
+
+Required:
+
+- narrow readable column;
+- title, deck and concise metadata;
+- published/updated state;
+- diagrams at the point of explanation;
+- code, equations, tables and semantic callouts;
+- references;
+- related Handbook/project/talk links;
+- visible external edition when relevant;
+- print-friendly rendering.
+
+The article body is dominant. Sharing and navigation remain secondary.
+
+### 5.3 Handbook contents and chapter
+
+The landing behaves like a book contents page plus diagnostic index.
 
 Primary elements:
 
-- handbook premise;
-- maturity path;
+- Handbook premise;
+- maturity/boundary path;
 - platform map;
-- coherent chapter spine;
+- coherent reviewed spine;
 - problem index;
-- playbooks and templates;
+- playbooks/templates/tools;
 - revision state.
 
-Avoid large promotional hero blocks inside the handbook.
+A chapter is visually more reference-like than an article:
 
-### 5.3 Chapter / engineering essay
+- applicability and review state are prominent;
+- decision path, metrics and checklist have stable patterns;
+- related Articles/Talks/Projects are clearly separated from normative Handbook content.
 
-A chapter resembles a carefully edited engineering deep dive or RFC.
+Avoid a promotional hero inside the Handbook.
 
-Required visual features:
+### 5.4 Project page
 
-- narrow readable column;
-- title, deck and concise executive summary;
-- visible reviewed/updated state;
-- restrained contents navigation;
-- diagrams embedded at the point of explanation;
-- code, equations, tables and callouts with distinct semantics;
-- references and related work at the end;
-- print-friendly rendering.
+A project page resembles a maintained open-source product README edited for the web.
 
-The article body is the dominant surface. Navigation and sharing controls remain secondary.
+Required visual sections:
 
-### 5.4 Architecture map
+- problem and target user;
+- current status/release;
+- installation/quick start;
+- workflow diagram;
+- example output;
+- evidence/privacy boundaries;
+- repository, releases and contribution actions;
+- related writing and Handbook model.
 
-The map is a technical model, not a hero illustration.
+Avoid startup-style feature blocks, pricing-like cards and decorative GitHub vanity counters.
 
-Visual language:
+### 5.5 Talk/media page
 
-- orthogonal relationships, layers or dependency graph;
-- restrained line weights;
-- labelled boundaries;
-- explicit ownership and telemetry annotations;
-- monochrome/off-white base with one active accent;
-- no glow required for comprehension;
-- printable in light mode;
-- keyboard and no-JS fallback.
+A talk page behaves like a durable conference artifact.
 
-The map can support interaction, but every interaction must expose useful engineering information.
+Required:
 
-### 5.5 Tool workbench
+- event/date/format;
+- title and abstract;
+- recording/source;
+- key takeaways shown as an editorial list;
+- slides when available;
+- related work.
+
+The video is important but not the only content. Do not place a giant empty media frame above all context when a recording is unavailable.
+
+### 5.6 Tool workbench
 
 Tools look like small internal engineering utilities.
 
 Visual language:
 
 - labelled inputs;
-- assumptions visible before results;
+- assumptions before results;
 - strong validation;
-- plain tables and charts;
-- no gamified scores as primary output;
-- result explanations tied to handbook sections;
+- plain tables/charts;
+- no gamified score as primary output;
+- result explanations tied to Handbook sections;
 - local/privacy statement;
-- export and reset actions;
+- export and reset;
 - minimal decorative framing.
+
+### 5.7 Architecture map / print artifact
+
+The map is a technical model, not a hero illustration.
+
+Visual language:
+
+- orthogonal relationships, layers or capability matrix;
+- restrained line weights;
+- labelled boundaries;
+- ownership and telemetry annotations;
+- monochrome/off-white base with one active accent;
+- no glow required for comprehension;
+- printable in light mode;
+- keyboard and no-JS fallback;
+- slide- and poster-ready composition.
 
 ## 6. Homepage block specification
 
-### Block A — Publication masthead
+### Block A — Author masthead
 
 Left-aligned, text-first.
 
 Content:
 
-- `Production AI Platform Handbook`;
-- Russian explanatory line;
-- `Сергей Нотевский · AI Platform Lead`;
-- one short thesis;
+- `Сергей Нотевский`;
+- `AI Platform Lead`;
+- one concise publication line;
+- one current editorial thesis;
 - at most two actions.
 
-No illustration is required in the first viewport. A small map fragment or typographic diagram may appear only if it adds orientation.
+Example hierarchy:
 
-### Block B — Two entry paths
+```text
+Сергей Нотевский
+AI Platform Lead
 
-Two text-led columns, not oversized marketing cards.
+Пишу и строю про то, что начинается после первого успешного вызова модели:
+инференс, маршрутизация, кеш, качество, наблюдаемость, стоимость и ответственность.
 
-1. **Нужна ли нам AI-платформа?**
-   - maturity and boundary route;
-   - starts with an assessment or chapter.
-2. **У нас уже есть проблема в продакшене**
-   - symptom route;
-   - starts with a compact problem index.
+[Последняя статья]  [Production AI Platform Handbook]
+```
 
-Each column has one clear link and 3–5 example prompts.
+No large illustration is required in the first viewport.
 
-### Block C — Platform map excerpt
+### Block B — Current featured work
 
-A wide editorial figure with caption, legend and link to the full map.
+One strong editorial selection, not a carousel.
 
-The figure should look publishable inside a technical article or conference deck.
+Possible type:
 
-### Block D — Start with these
+- article;
+- project release;
+- Handbook update;
+- talk.
 
-Three editorial selections shown as a ranked list:
-
-- foundational chapter;
-- practical playbook/tool;
-- recently reviewed update.
-
-Each row includes:
+Show:
 
 - type;
 - title;
 - one-line purpose;
-- reviewed date;
-- reading/use time where meaningful.
+- date;
+- direct open action.
 
-### Block E — Latest reviewed updates
+### Block C — Four-surface index
 
-Simple chronological list, similar to a strong publication archive.
+Use a calm typographic list or columns:
 
-Do not use image thumbnails unless the image is content-bearing.
+- Articles — developed technical arguments;
+- Handbook — reviewed platform reference;
+- Projects — executable public work;
+- Talks — recordings and distilled takeaways.
 
-### Block F — Tools and templates
+Avoid equal marketing feature cards. The block explains the publication model, not product benefits.
 
-Compact table or list:
+### Block D — Handbook flagship
 
-- name;
-- decision supported;
-- maturity/status;
-- input privacy;
-- open action.
+A wide editorial figure or structured text block:
 
-Avoid a pricing-card visual pattern.
+- Handbook name;
+- one-paragraph purpose;
+- compact map excerpt;
+- current reviewed spine;
+- start/map actions.
 
-### Block G — Author and contact
+The map should be publishable inside an article or slide deck.
 
-Compact closing block:
+### Block E — Flagship project
+
+`audit-prompt-caching` receives a project-specific block:
+
+- problem;
+- current release/status;
+- quick usage example;
+- related article/Handbook link;
+- project and repository actions.
+
+Do not render it as a generic portfolio tile.
+
+### Block F — Selected talk and recent articles
+
+Talk:
+
+- title;
+- event/date;
+- one sentence;
+- recording and takeaways links.
+
+Articles:
+
+- simple chronological list;
+- type/topic;
+- title;
+- date and reading time.
+
+No thumbnails unless content-bearing.
+
+### Block G — Author/contact
+
+Compact closing section:
 
 - small portrait optional;
 - current focus;
-- selected public evidence links;
+- public evidence links;
 - one contact action.
 
-No testimonial carousel.
+No testimonials, logos or service-package cards.
 
 ## 7. Navigation
 
-Desktop header should feel like a publication header.
+Desktop header:
 
-Recommended structure:
-
-- wordmark/publication title;
-- `Карта`;
-- `Хэндбук`;
-- `Плейбуки` when launch volume justifies it;
-- `Инструменты`;
-- `Материалы`;
+- author/site name;
+- Articles;
+- Handbook;
+- Projects;
+- Talks;
+- About;
 - search;
 - locale;
-- quiet contact link/button.
+- compact contact/Telegram utility.
 
 Rules:
 
-- no oversized CTA in the header;
-- no pill around every item;
-- active state is typographic or underline-based;
-- mobile navigation is a plain, fast contents menu;
-- author/about is available but does not dominate the header.
+- no oversized CTA button dominating the header;
+- active state is visible and uses `aria-current`;
+- header can become non-sticky on long reading pages if testing shows less distraction;
+- mobile navigation uses one clear menu and no duplicated destinations.
 
-## 8. Visual tokens
+Handbook may have secondary local navigation that does not replace global publication navigation.
 
-### Palette
+## 8. Typography
 
-Dark is the default publication mode.
+### Roles
 
-- background: near-black with a slight cool tone;
-- primary text: warm off-white, not pure white;
-- secondary text: neutral grey with AA contrast;
-- structural lines: low-contrast neutral;
-- active accent: one restrained cyan/teal;
-- warning: muted amber;
-- critical: muted red;
-- success: restrained green used only for state.
+- sans-serif: interface, headings and most prose;
+- monospace: code, identifiers, equations, dates/status metadata and diagram labels;
+- optional serif experiment: long-form prose only, provided Cyrillic quality and code/table integration remain strong.
 
-Avoid multi-colour gradients and decorative neon.
+### Principles
 
-### Typography
+- prose is comfortable at 680–760px;
+- headings are strong but not landing-page oversized;
+- metadata is smaller but not low-contrast;
+- uppercase monospace is used sparingly;
+- line height supports long technical reading;
+- bold is reserved for argument hierarchy, not every label.
 
-- editorial sans or highly legible grotesk for navigation and body;
-- optional serif only if it improves long-form editorial character and Cyrillic quality;
-- monospace reserved for metadata, identifiers, code and diagram labels;
-- no uppercase monospace label before every section;
-- headline scale is strong but not startup-landing oversized;
-- body line-height and measure take precedence over visual compression.
+Initial type candidates:
 
-### Shape and depth
+- Geist / Inter / IBM Plex Sans;
+- Geist Mono / IBM Plex Mono.
 
-- square or lightly rounded corners;
+Final selection requires Cyrillic, equation, code and long-reading tests.
+
+## 9. Colour
+
+Base:
+
+- near-black cool background;
+- warm off-white primary text;
+- neutral secondary text;
+- subtle structural borders.
+
+Accent:
+
+- one restrained cyan/teal for links, active states and system relationships.
+
+Semantic:
+
+- muted amber for warning/risk;
+- muted red for blocker/error;
+- muted green for verified/ready;
+- neutral blue/grey for informational state.
+
+Rules:
+
+- no broad gradients;
+- no information encoded only by colour;
+- cyan is not applied to every label;
+- text contrast meets WCAG 2.2 AA;
+- print mode uses a white background and dark ink without losing semantics.
+
+## 10. Geometry and surfaces
+
+- low or moderate corner radius;
 - minimal shadows;
-- borders used for structure, not to turn every item into a card;
-- sections separated primarily by spacing, rules and headings;
-- content-bearing figures may use framed surfaces;
-- buttons look like controls, not promotional objects.
+- separation through rules, whitespace and typography;
+- cards only when objects are genuinely independent;
+- lists for archives and related work;
+- tables for comparisons and tools;
+- diagrams for relationships;
+- callouts have semantic types, not decorative colour variants;
+- avoid nested containers that create dashboard density.
 
-### Motion
+## 11. Motion
 
-- near-zero by default;
-- map selection and disclosure only;
-- no scroll spectacle;
-- no pulsing/glowing system nodes;
-- respect reduced-motion preferences.
+Allowed:
 
-## 9. Content density rules
+- restrained focus/hover transitions;
+- map selection/highlighting;
+- small disclosure transitions;
+- progress feedback for explicit tool operations.
 
-- above the fold: one promise, one author line, two entry actions;
-- no more than three editorial priorities in one block;
-- default to lists over grids when items are comparable;
-- default to a table when the comparison dimension matters;
-- default to a diagram only when relationships matter;
-- use cards only for truly independent interactive objects;
-- never use a metric solely to fill visual space;
-- each icon must communicate type or state, not decorate a title.
+Rejected:
 
-## 10. Engineering credibility checks
+- autoplay background motion;
+- floating particles;
+- scroll spectacle;
+- glowing pulses;
+- animated counters;
+- motion used to simulate technical depth.
 
-A screen fails the direction if:
+Respect `prefers-reduced-motion`.
 
-- it could be mistaken for an AI SaaS homepage after replacing the copy;
-- diagrams are decorative and cannot answer an engineering question;
-- visual hierarchy depends on many boxed cards;
-- marketing language is stronger than the evidence below it;
-- an assessment implies unsupported numerical precision;
-- the author is hidden behind an anonymous product brand;
-- the interface makes long-form reading feel secondary;
-- a screenshot looks impressive but the page is slower to scan than a plain document.
+## 12. Responsive behavior
 
-## 11. Revised visual exploration gate
+- no horizontal overflow at 320px;
+- target touch size >= 44×44 CSS px;
+- one-thumb action column where needed;
+- map becomes a meaningful ordered disclosure/list on mobile;
+- tables get deliberate responsive transformations;
+- article/chapter outline becomes a popover or collapsible index;
+- project quick start and talk takeaways remain above secondary metadata;
+- tool results follow inputs on mobile;
+- no desktop right rail is required to understand the page.
 
-The previous three-direction exploration is narrowed by this decision.
+## 13. Visual exploration variants
 
-Do not explore generic SaaS, cyberpunk or dashboard directions.
+Production implementation still requires comparison of three structurally different variants inside this family.
 
-Produce three variants inside the same engineering-publication family:
+### A — Dark Editorial Journal
 
-1. **Dark Editorial Journal**
-   - strongest publication/newsletter influence;
-   - typography and lists dominate;
-   - map appears as an editorial figure.
-2. **Technical Handbook**
-   - strongest book/manual influence;
-   - contents, annotations and diagrams dominate;
-   - denser but highly structured.
-3. **Engineering Notebook**
-   - strongest RFC/research-notebook influence;
-   - marginalia, decision records and working artifacts dominate;
-   - most utilitarian tool treatment.
+- strongest article/archive orientation;
+- large typography and restrained rules;
+- minimal permanent sidebar;
+- Handbook appears as a flagship publication series.
 
-Each variant must render the same five screens:
+### B — Technical Handbook
 
-- desktop homepage;
-- mobile homepage;
-- handbook contents;
-- chapter;
-- tool workbench;
-- full platform map.
+- stronger map and reference navigation;
+- more visible metadata and chapter structure;
+- homepage still author-led, not documentation-led.
 
-Differences must be structural and typographic, not merely colour changes.
+### C — Engineering Notebook
 
-## 12. Current recommendation
+- RFC, diagrams, code and working artifacts more prominent;
+- project and tool surfaces especially strong;
+- handwritten/sketch cues only if restrained and reproducible.
 
-The leading direction is a combination of:
+A direction is not materially different if it only changes colour, font or radius.
 
-- **Dark Editorial Journal** for the homepage and materials;
-- **Technical Handbook** for handbook contents and chapters;
-- **Engineering Notebook** for tools, templates and decision records.
+Each variant must show:
 
-They share one token system and publication identity. They are page modes, not separate brands.
+- desktop and mobile homepage;
+- article;
+- Handbook landing/chapter/map;
+- `audit-prompt-caching` project page;
+- talk page;
+- tool workbench.
 
-## 13. Acceptance sentence
+## 14. Acceptance criteria
 
-The final design should make a senior engineer think:
+A visual direction passes when:
 
-> This is a maintained body of engineering work I can read, cite and use.
+- a target reader identifies the author and domain in five seconds;
+- Articles, Handbook, Projects and Talks look distinct but related;
+- the page cannot be rebranded as an AI startup merely by replacing text;
+- long-form reading remains the dominant chapter/article experience;
+- the map communicates without glow or hover;
+- project quick start is immediately usable;
+- talk takeaways are visible before secondary chrome;
+- mobile retains the same content hierarchy;
+- print/PDF output remains credible;
+- accessibility requirements are met;
+- no section exists only to make the page look more “premium.”
 
-It should not primarily make them think:
+## 15. Converged visual definition
 
-> This is a polished landing page for an AI consultancy or software product.
+> `notevskii.tech` is a dark author-led engineering publication: editorial when presenting articles and talks, reference-like inside the Handbook, README/RFC-like for projects, and utilitarian inside tools. Technical credibility comes from content, structure, diagrams, evidence and maintenance—not from marketing chrome.
