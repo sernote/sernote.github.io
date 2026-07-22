@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { SiteHeader } from "../../components/marketing/site-shell";
 import { getSiteConfig, getNavItems } from "../../lib/i18n";
-import { createPageMetadata } from "../../lib/metadata";
+import { createPageMetadata, v3MarketingMetadata } from "../../lib/metadata";
 import {
   RU_PRIMARY_NAV,
   getActualAlternate,
@@ -192,6 +192,27 @@ describe("personal master brand and metadata alternates", () => {
         description: "Description"
       })
     ).not.toThrow();
+  });
+
+  it("keeps Materials canonical-only while pairing only real v3 translations", () => {
+    expect(v3MarketingMetadata("work").alternates).toEqual({
+      canonical: "https://notevskii.tech/work"
+    });
+    expect(v3MarketingMetadata("home").alternates).toEqual({
+      canonical: "https://notevskii.tech",
+      languages: {
+        ru: "https://notevskii.tech",
+        en: "https://notevskii.tech/en"
+      }
+    });
+    expect(v3MarketingMetadata("about").alternates).toMatchObject({
+      canonical: "https://notevskii.tech/about",
+      languages: { en: "https://notevskii.tech/en/about" }
+    });
+    expect(v3MarketingMetadata("contact").alternates).toMatchObject({
+      canonical: "https://notevskii.tech/contact",
+      languages: { en: "https://notevskii.tech/en/contact" }
+    });
   });
 });
 

@@ -5,6 +5,7 @@ import { getActualAlternate } from "@/lib/site-routes";
 
 type PageKey = keyof ReturnType<typeof getDictionary>["pages"];
 type ToolKey = "prefix" | "cost" | "quality";
+type V3MarketingPageKey = "home" | "work" | "about" | "contact";
 
 function absoluteUrl(locale: Locale, path: string) {
   const siteConfig = getSiteConfig(locale);
@@ -17,6 +18,40 @@ const OG_IMAGE = {
   height: 630,
   alt: "Сергей Нотевский — production AI platforms"
 };
+
+const V3_RU_MARKETING_PAGES = {
+  home: {
+    path: "/",
+    alternatePath: "/en",
+    title: "Сергей Нотевский — AI Platform Lead",
+    description:
+      "Личный сайт Сергея Нотевского: статьи, выступления, открытые проекты и практический reference по production AI platform."
+  },
+  work: {
+    path: "/work",
+    alternatePath: null,
+    title: "Материалы — Сергей Нотевский",
+    description:
+      "Выступления, открытые инженерные проекты и внешние публикации Сергея Нотевского о production AI platforms."
+  },
+  about: {
+    path: "/about",
+    alternatePath: "/en/about",
+    title: "Обо мне — Сергей Нотевский",
+    description:
+      "Профессиональный контекст Сергея Нотевского: AI Platform Lead, инженерная практика и публичные материалы."
+  },
+  contact: {
+    path: "/contact",
+    alternatePath: "/en/contact",
+    title: "Контакт — Сергей Нотевский",
+    description:
+      "Связаться с Сергеем Нотевским по вопросам AI-platform architecture, выступлений и открытых проектов."
+  }
+} as const satisfies Record<
+  V3MarketingPageKey,
+  { path: string; alternatePath: string | null; title: string; description: string }
+>;
 
 export function createPageMetadata({
   locale,
@@ -79,6 +114,15 @@ export function createPageMetadata({
       images: [OG_IMAGE.url]
     }
   };
+}
+
+export function v3MarketingMetadata(key: V3MarketingPageKey): Metadata {
+  const page = V3_RU_MARKETING_PAGES[key];
+  if (page === undefined) {
+    throw new Error(`Unknown v3 marketing page: ${String(key)}`);
+  }
+
+  return createPageMetadata({ locale: "ru", ...page });
 }
 
 export function homeMetadata(locale: Locale): Metadata {

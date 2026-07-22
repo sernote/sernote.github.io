@@ -1,8 +1,8 @@
-import { ContactPageContent } from "@/components/pages/marketing-pages";
-import { marketingMetadata } from "@/lib/metadata";
+import { ContactPageContent } from "@/components/pages/v3-marketing-pages";
+import { v3MarketingMetadata } from "@/lib/metadata";
 
-export const metadata = marketingMetadata("ru", "contact");
+export const metadata = v3MarketingMetadata("contact");
 
 export default function ContactPage() {
-  return <ContactPageContent locale="ru" currentPath="/contact" />;
+  return <ContactPageContent />;
 }

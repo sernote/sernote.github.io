@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The personal master-brand shell and its semantic route policy are complete; v3 route/page composition is the next milestone.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page implementation checkpoint is complete; autonomous browser/design inspection and independent reviews remain open before the milestone can be closed.
 
 ## Completed
 
@@ -11,6 +11,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Completed the reviewed v3 pilot vertical as 13 Russian MDX records: seven public records, including three reviewed reference exemplars, plus six draft map-only areas. Both mandatory content reviewers passed after correction rounds; the auditable review record is `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
 - Added a body-preserving v3 source adapter over the generated Fumadocs collection, deterministic draft-area planning, a verified public talk thumbnail, and synthetic stable/drift prompt-cache evidence produced with the tagged public `audit-prompt-caching` linter.
 - Replaced the handbook-first global identity with the Сергей Нотевский personal master brand, an exact four-item Russian primary navigation, allowlisted locale equivalence, canonical-only metadata by default, and a shared accessible shell with one skip link and one main landmark across marketing, tools, handbook pages, and `/ru` compatibility pages.
+- Built the v3 Russian Home, Materials, About, and Contact compositions around the accepted author-index direction. Explicit content selections are resolved through a pure injected view model, Materials links its external article directly to Habr, and the four pages use final direct metadata rather than the frozen legacy copy.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -145,6 +146,12 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Direct Fumadocs generation, TypeScript, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 92 static/SSG pages.
   - The post-build shell audit passed for a marketing page, tool page, handbook landing, handbook chapter, and `/ru` compatibility chapter; every sample has exactly one skip link and one `main#main-content`.
   - The production static mobile menu was manually verified separately by the root task; the automated shell tests do not claim mobile-menu runtime coverage.
+- v3 personal-page implementation checkpoint:
+  - TDD RED confirmed that `lib/content-v3/view-models.ts`, `v3MarketingMetadata`, and the new editorial page components did not exist before production code was added.
+  - Explicit Home and Materials selections fail closed on missing, draft, stale, or wrong-kind records; permutation tests confirm that generated-entry order cannot change the result, and normalized list items omit MDX bodies and source paths.
+  - Focused content, metadata, and page-composition validation passed: 3 files, 41 tests. The full suite passed: 7 files, 112 tests.
+  - Fumadocs generation, direct TypeScript validation, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 93 static/SSG pages including `/work`.
+  - The post-build shell audit again passed for all five representative exports. Browser hierarchy, responsive, focus-order, and same-viewport screenshot comparison are intentionally pending the root design checkpoint and are not claimed here.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

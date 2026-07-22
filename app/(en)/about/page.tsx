@@ -1,8 +1,8 @@
-import { AboutPageContent } from "@/components/pages/marketing-pages";
-import { marketingMetadata } from "@/lib/metadata";
+import { AboutPageContent } from "@/components/pages/v3-marketing-pages";
+import { v3MarketingMetadata } from "@/lib/metadata";
 
-export const metadata = marketingMetadata("ru", "about");
+export const metadata = v3MarketingMetadata("about");
 
 export default function AboutPage() {
-  return <AboutPageContent locale="ru" currentPath="/about" />;
+  return <AboutPageContent />;
 }
