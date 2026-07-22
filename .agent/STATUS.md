@@ -6,6 +6,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 ## Completed
 
+- Established the typed v3 content contract as a parallel Fumadocs collection without changing the legacy `docs` or `docsRu` collection behavior.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -101,6 +102,11 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 ## Validation results
 
+- v3 content contract milestone:
+  - TDD RED confirmed the schema module was absent before implementation.
+  - Focused schema suite passed: 34 tests.
+  - Full suite passed: 2 files, 39 tests.
+  - Fumadocs generation, ESLint, TypeScript, static production build, and `git diff --check` passed.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

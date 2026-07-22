@@ -1,6 +1,8 @@
-import { defineConfig, defineDocs } from "fumadocs-mdx/config";
+import { defineCollections, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { pageSchema } from "fumadocs-core/source/schema";
 import { z } from "zod";
+
+import { v3FrontmatterSchema } from "./lib/content-v3/schema";
 
 const handbookPageSchema = pageSchema.extend({
   section: z.enum([
@@ -52,6 +54,12 @@ export const docsRu = defineDocs({
   docs: {
     schema: handbookPageSchema
   }
+});
+
+export const v3Content = defineCollections({
+  type: "doc",
+  dir: "content/v3",
+  schema: v3FrontmatterSchema
 });
 
 export default defineConfig();
