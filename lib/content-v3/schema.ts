@@ -90,6 +90,7 @@ const articleSchema = z
     kind: z.enum(["native", "external-note"]),
     slug: kebabCaseId.nullable(),
     excerpt: nonEmptyText,
+    sourceName: nonEmptyText.nullable(),
     sourceUrl: httpsUrl.nullable(),
     supersedes: kebabCaseId.nullable(),
     supersededBy: kebabCaseId.nullable()
@@ -129,7 +130,7 @@ const talkSchema = z
     slug: kebabCaseId,
     venue: nonEmptyText,
     eventDate: calendarDate,
-    format: nonEmptyText,
+    format: z.enum(["talk", "webinar", "podcast", "interview"]),
     recordingUrl: httpsUrl.nullable(),
     recordingUploadedAt: calendarDate.nullable(),
     abstract: nonEmptyText,
@@ -274,6 +275,13 @@ export const v3FrontmatterSchema = z
             code: "custom",
             path: ["sourceUrl"],
             message: "External notes require sourceUrl"
+          });
+        }
+        if (record.sourceName === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["sourceName"],
+            message: "External notes require sourceName"
           });
         }
       } else if (record.slug === null) {

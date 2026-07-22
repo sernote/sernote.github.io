@@ -40,6 +40,7 @@ const article = {
   kind: "native",
   slug: "prefix-cache",
   excerpt: "Краткое объяснение работы prefix cache в производственной системе.",
+  sourceName: null,
   sourceUrl: null,
   supersedes: null,
   supersededBy: null
@@ -52,7 +53,7 @@ const talk = {
   slug: "platform-observability",
   venue: "Production AI Meetup",
   eventDate: today,
-  format: "conference-talk",
+  format: "talk",
   recordingUrl: "https://example.com/talk",
   recordingUploadedAt: today,
   abstract: "Как строить наблюдаемую и управляемую AI-платформу.",
@@ -173,14 +174,52 @@ describe("v3 lifecycle and relation invariants", () => {
       ...article,
       kind: "external-note",
       slug: null,
+      sourceName: "Habr",
       sourceUrl: null
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects a reviewed component without reviewedAt", () => {
-    const result = v3FrontmatterSchema.safeParse({ ...platformComponent, reviewedAt: null });
+  it("rejects an external note without sourceName", () => {
+    const result = v3FrontmatterSchema.safeParse({
+      ...article,
+      kind: "external-note",
+      slug: null,
+      sourceUrl: "https://example.com/notes/prefix-cache"
+    });
     expect(result.success).toBe(false);
+  });
+
+  it("accepts an external note with sourceName and an HTTPS sourceUrl", () => {
+    const result = v3FrontmatterSchema.safeParse({
+      ...article,
+      kind: "external-note",
+      slug: null,
+      sourceName: "Habr",
+      sourceUrl: "https://example.com/notes/prefix-cache"
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an unsupported talk format", () => {
+    expect(v3FrontmatterSchema.safeParse({ ...talk, format: "conference-talk" }).success).toBe(
+      false
+    );
+  });
+
+  it.each([
+    ["sources", []],
+    ["applicability", null],
+    ["limitations", null],
+    ["reviewedAt", null],
+    ["reviewCycleDays", null]
+  ])("rejects a reviewed reference with invalid %s and reports its path", (field, value) => {
+    const result = v3FrontmatterSchema.safeParse({ ...platformComponent, [field]: value });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((issue) => issue.path[0] === field)).toBe(true);
+    }
   });
 
   it.each([
@@ -240,6 +279,7 @@ describe("v3 navigated path and URL safety", () => {
           ...article,
           kind: "external-note",
           slug: null,
+          sourceName: "Habr",
           sourceUrl
         }).success
       ).toBe(false);
@@ -252,6 +292,7 @@ describe("v3 navigated path and URL safety", () => {
         ...article,
         kind: "external-note",
         slug: null,
+        sourceName: "Habr",
         sourceUrl: "https://example.com/notes/prefix-cache"
       }).success
     ).toBe(true);
