@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Talks and Projects implementation is complete and validated; independent review and responsive browser/design QA are the remaining Task 7 checkpoints.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Talks and Projects implementation, review hardening, independent rereviews, and responsive browser/design QA have converged; the AI Platform landing and seven-area map are the next implementation milestone.
 
 ## Completed
 
@@ -184,7 +184,10 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - No local route was created for unavailable content, and no Talks/Projects RU/EN locale pair is advertised. The project copy remains diagnostic rather than promissory, and the self-hosted talk keeps workload, runtime, ownership, and data-boundary caveats explicit.
   - Review-hardening RED reproduced two contract defects: Task 7 had replaced the organizer's official mixed-script `ROИИ` spelling with Cyrillic `РОИИ`, and the reusable detail-page type allowed only one publication date even though runtime rejected it. The public talk surfaces and fixtures now retain `ROИИ`, while `ContentDetailPageProps` exposes an explicit dates-present/dates-absent union and preserves the runtime guard.
   - Review-hardening focused GREEN passed: 3 files, 76 tests, plus direct TypeScript validation of both rejected single-date states. Full Vitest passed: 7 files, 147 tests. Fumadocs generation, TypeScript, ESLint, `git diff --check`, the 97-page webpack build, five-surface landmark audit, and 24-check Talks/Projects export audit passed.
-  - Independent spec/editorial/code review and responsive browser/design QA are pending the root Task 7 checkpoints and are not claimed by this implementation checkpoint.
+  - Final independent rereviews returned `SPEC COMPLIANT`, editorial `PASS`, and quality `READY`. The only remaining P3 debt is the shared source-text route-contract pattern already assigned to Task 14.
+  - Production-static browser QA passed all four routes at 390 × 844, 768 × 900, and 1440 × 900. Each route keeps one main and one H1, active Materials navigation, no false language switch, and no horizontal overflow. The Talk thumbnail remains exactly 16:9; the Project code blocks scroll internally and the immutable SHA stays within the viewport.
+  - Keyboard and interaction QA confirmed the five timestamp links, 44 px primary/continuation actions, mobile-dialog scroll lock, Escape close with focus return, and an empty final console. The Talk and Project AI Platform/Contact endings remain usable on mobile.
+  - Final root verification on `c7ad951` passed Fumadocs generation, 7 Vitest files / 147 tests, TypeScript, ESLint, `git diff --check`, the 97-page webpack static build, the five-surface landmark audit, and a 32-check Talks/Projects export audit. The same-viewport mobile and desktop comparisons and final `passed` design result are recorded in `design-qa.md`.
   - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
@@ -347,9 +350,9 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - `tests/seo/site-routes.test.ts` currently inspects React `forwardRef`'s internal `.render` shape for one close-label leakage assertion; replace it with a hydrated DOM regression when the Task 14 browser-component harness is available.
-- Task 14 test debt: replace the Task 6 Blog route source-text assertions with imported or runtime route-contract coverage when the browser-component harness is available.
+- Task 14 test debt: replace the Task 6–7 route source-text assertions with imported or runtime route-contract coverage when the browser-component harness is available.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
-- Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
+- The legacy MVP smoke checks used local headless Chrome; current v3 checkpoints use the in-app browser and production static export at explicit responsive viewports.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
 - GitHub repository exists at `https://github.com/sernote/sernote.github.io`; pushes to `main` have worked in this environment.
 - DNS for `notevskii.tech` was configured by the user in REG.RU with GitHub Pages apex records and `www` CNAME; GitHub Pages now resolves the apex domain over HTTPS and redirects `www` to the apex.
