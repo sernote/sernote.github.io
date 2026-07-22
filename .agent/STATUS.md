@@ -282,7 +282,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 ## Known issues
 
 - The v3 pilot vertical is intentionally a draft checkpoint. It requires independent content review and correction before any review or publication status can change.
-- Release step for v3 evidence: once all three case evidence files are reachable on `main`, replace the prospective sentence in the case with the timeless wording `Исходные файлы опубликованы в репозитории сайта` before launch. Do not claim current availability while those URLs return 404.
+- Release gate for v3 evidence: before launch, check the three canonical `main` URLs. If all resolve, they may replace the truthful source-tree paths in the case; otherwise keep the code paths. Do not claim current URL availability while any link returns 404.
 - The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
