@@ -175,6 +175,7 @@ function buildAliasHtml(plan) {
     `<link rel="canonical" href="${plan.canonical}">`,
     '<meta name="robots" content="noindex, follow">',
     `<meta http-equiv="refresh" content="0; url=${plan.localPath}">`,
+    "<style>.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}.skip-link:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.5rem 1rem;background:#050608;color:#f4f7f8;z-index:50}</style>",
     "</head>",
     "<body>",
     `<a href="#main-content" class="skip-link">${copy.skip}</a>`,
@@ -302,9 +303,12 @@ try {
   for (const plan of plans) {
     const html = buildAliasHtml(plan);
     assertAliasStructure(html, `alias ${plan.source}`);
+    // Read the original bytes before writing the temp sibling so a failed read
+    // cannot leave an orphaned temp file behind.
+    const original = readFileSync(plan.srcAbs);
     const tmp = `${plan.srcAbs}.alias-tmp`;
     writeFileSync(tmp, html);
-    staged.push({ ...plan, tmp, original: readFileSync(plan.srcAbs) });
+    staged.push({ ...plan, tmp, original });
   }
 } catch (error) {
   for (const item of staged) {

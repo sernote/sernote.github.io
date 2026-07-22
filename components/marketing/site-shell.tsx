@@ -42,7 +42,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
           </span>
           <span className="text-sm font-semibold tracking-normal max-sm:hidden">{siteConfig.author}</span>
         </Link>
-        <nav className="flex items-center gap-5 max-md:hidden">
+        <nav aria-label={dictionary.shell.primaryNavigation} className="flex items-center gap-5 max-md:hidden">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -81,7 +81,7 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
                 {dictionary.shell.navigationDescription}
               </SheetDescription>
             </SheetHeader>
-            <nav className="mt-8 flex flex-col gap-4">
+            <nav aria-label={dictionary.shell.mobileNavigation} className="mt-8 flex flex-col gap-4">
               {navItems.map((item) => (
                 <Link
                   key={item.href}

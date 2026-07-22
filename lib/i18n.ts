@@ -455,6 +455,8 @@ const enDictionary = {
     navigation: "Navigation",
     navigationDescription: "Primary site sections and contact options.",
     closeNavigation: "Close navigation",
+    primaryNavigation: "Primary",
+    mobileNavigation: "Mobile",
     footerLine: "Sergei Notevskii · production AI platforms",
     contact: "Contact"
   },
@@ -694,6 +696,8 @@ const ruDictionary = {
     navigation: "Навигация",
     navigationDescription: "Основные разделы сайта и контакты.",
     closeNavigation: "Закрыть навигацию",
+    primaryNavigation: "Основная навигация",
+    mobileNavigation: "Мобильная навигация",
     footerLine: "Сергей Нотевский · production AI platforms",
     contact: "Контакты"
   },

@@ -22,32 +22,47 @@ Node.js 22 or newer is recommended.
 
 ## Routes
 
-- `/` - personal executive landing
+Russian is served at the root; English under `/en`.
+
+Primary v3 sections (Russian, root):
+
+- `/` - personal landing
+- `/blog` - blog index (native articles and external notes)
+- `/work` - materials (talks, projects, external publications)
+- `/talks` - talks index
+- `/projects` - projects index
+- `/ai-platform` - AI Platform reference entrance
+- `/ai-platform/map` - the seven-area responsibility map
 - `/about` - bio and positioning
-- `/projects` - flagship projects and tools
-- `/talks` - conference and webinar topics
-- `/writing` - Habr, Telegram and essays
 - `/contact` - public contact links
-- `/handbook` - Production AI Platform Handbook landing
-- `/handbook/...` - MDX handbook chapters
-- `/en` - English personal executive landing
-- `/en/handbook` - English handbook landing
-- `/en/handbook/...` - English MDX handbook chapters
-- `/tools/prefix-cache-auditor` - client-side prefix cache audit
-- `/tools/llm-cost-calculator` - client-side LLM cost model
-- `/tools/ai-quality-gate-checklist` - client-side rollout quality checklist
-- `/en/tools/...` - English tool pages
-- `/ru/...` - legacy Russian routes kept for compatibility
+- `/tools/prefix-cache-auditor`, `/tools/llm-cost-calculator`, `/tools/ai-quality-gate-checklist` - client-side tools
+
+Detail routes: `/blog/<slug>`, `/talks/<slug>`, `/projects/<slug>`, and the reviewed vertical `/ai-platform/areas/<area>`, `/ai-platform/components/<component>`, `/ai-platform/cases/<case>`.
+
+English set: `/en`, `/en/about`, `/en/contact`, `/en/tools/...`, plus the kept `/en/handbook` chapters. Kept Russian handbook chapters remain at `/handbook/...`.
+
+Compatibility aliases are honest `noindex,follow` pages that point at the canonical destination:
+
+- `/writing` -> `/blog`
+- `/handbook` -> `/ai-platform`
+- `/handbook/platform-map` -> `/ai-platform/map`
+- `/handbook/caching/prefix-cache` -> `/ai-platform/components/prefix-cache`
+- `/ru` and every `/ru/...` -> the matching root canonical
+
+See `config/v3-route-manifest.json` for the exact keep/alias decision per exported route.
 
 ## Localization
 
 Russian is the default route set and is served from the root. English pages are served under `/en`.
 
-The language switcher maps equivalent static routes:
+The language switcher pairs only routes whose meaning is identical in both locales (the allowlist in `lib/site-routes.ts`):
 
-- `/handbook/platform-map` -> `/en/handbook/platform-map`
-- `/tools/prefix-cache-auditor` -> `/en/tools/prefix-cache-auditor`
-- `/writing` -> `/en/writing`
+- `/` <-> `/en`
+- `/about` <-> `/en/about`
+- `/contact` <-> `/en/contact`
+- `/tools/...` <-> `/en/tools/...`
+
+Routes whose meaning diverged between locales - notably the legacy `/writing` and `/handbook*` aliases - intentionally advertise no alternate.
 
 Marketing and tool UI copy lives in `lib/i18n.ts`. English handbook content lives in `content/handbook`, and Russian handbook content lives in `content/handbook-ru`.
 
@@ -129,7 +144,7 @@ The v3 personal surfaces (Blog, Materials, Talks, Projects, AI Platform) are dri
 ### Permitted statuses
 
 - `publicationStatus`: `draft`, `published`, `archived`. A non-draft record must set `publishedAt`.
-- `reviewStatus`: `unreviewed`, `reviewed`, `stale`. Any non-`unreviewed` status must set `reviewedAt`. Reference records (`platform-area`, `platform-component`, `case`) are only publicly discoverable while `reviewed` or `stale`.
+- `reviewStatus`: `unreviewed`, `reviewed`, `stale`. Any non-`unreviewed` status must set both `reviewedAt` and `reviewCycleDays`, and reference records (`platform-area`, `platform-component`, `case`) additionally require `sources`, `applicability`, and `limitations`. Reference records are only publicly discoverable while `reviewed` or `stale`.
 
 ### Relation syntax
 
@@ -145,7 +160,7 @@ relations:
 
 ### External notes have no local route
 
-An article with `kind: external-note` must set `sourceUrl` (HTTPS) and must not set a `slug`. External notes are surfaced in the Blog/Materials indexes as links straight to their source and never receive a local detail page — the canonical location of that content is the external site, so minting a local URL would duplicate it and split its authority.
+An article with `kind: external-note` must set `sourceUrl` (HTTPS) and `sourceName`, and must not set a `slug`. External notes are surfaced in the Blog/Materials indexes as links straight to their source and never receive a local detail page — the canonical location of that content is the external site, so minting a local URL would duplicate it and split its authority.
 
 ### Validation and the review gate
 

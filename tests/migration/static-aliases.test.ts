@@ -146,6 +146,10 @@ describe("apply-static-aliases.mjs — materialization", () => {
       const localPath = alias.destination === "/" ? "/" : `${alias.destination}/`;
 
       expect(countMatches(html, SKIP_LINK), `skip link for ${alias.source}`).toBe(1);
+      // The self-contained alias ships its own visually-hidden skip-link CSS.
+      expect(html, `skip-link CSS for ${alias.source}`).toMatch(
+        /\.skip-link\s*\{[^}]*position\s*:\s*absolute/i
+      );
       expect(countMatches(html, MAIN_CONTENT), `main for ${alias.source}`).toBe(1);
       expect(html).toContain(`<link rel="canonical" href="${canonical}">`);
       expect(html).toMatch(/name=["']robots["'][^>]*content=["']noindex,\s*follow["']/i);

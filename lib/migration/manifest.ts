@@ -32,8 +32,12 @@ export interface RouteAlias extends RouteRecord {
 }
 
 /**
- * The four legacy routes that Next itself renders as honest alias bodies. Every
- * other alias (the `/ru` compatibility set) is materialized only after export.
+ * The four legacy routes that Next renders as honest alias bodies (in the
+ * marketing/handbook shells) so the dev server and the pre-materialization
+ * export show an honest page. The final exported form of every alias — these
+ * four included — is the self-contained page written by
+ * `scripts/apply-static-aliases.mjs`, which materializes all `static-alias`
+ * sources uniformly.
  */
 export const SELECTED_STATIC_ALIASES = [
   { source: "/writing", destination: "/blog" },

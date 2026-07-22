@@ -395,6 +395,42 @@ describe("static export audit — JSON-LD", () => {
     expect(run(buildExport(files)).status).toBe(0);
   });
 
+  it("accepts an array @context that contains schema.org", () => {
+    const files = validFiles();
+    files["index.html"] = page({
+      canonical: `${ORIGIN}/`,
+      head: jsonLdScript({ "@context": ["https://schema.org"], "@type": "WebSite", url: `${ORIGIN}/` }),
+      body: `<a href="/blog/">b</a><a href="/work/">w</a>`
+    });
+    expect(run(buildExport(files)).status).toBe(0);
+  });
+
+  it("flags an array @context missing schema.org", () => {
+    const files = validFiles();
+    files["index.html"] = page({
+      canonical: `${ORIGIN}/`,
+      head: jsonLdScript({ "@context": ["http://schema.org"], "@type": "WebSite", url: `${ORIGIN}/` }),
+      body: `<a href="/blog/">b</a><a href="/work/">w</a>`
+    });
+    expect(run(buildExport(files)).stderr).toMatch(/context/i);
+  });
+
+  it("accepts an array sameAs backing a YouTube embed", () => {
+    const files = validFiles();
+    files["index.html"] = page({
+      canonical: `${ORIGIN}/`,
+      head: jsonLdScript({
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        url: `${ORIGIN}/`,
+        embedUrl: "https://www.youtube.com/embed/RHbbeHKGh6I",
+        sameAs: ["https://www.youtube.com/watch?v=RHbbeHKGh6I", "https://example.com/profile"]
+      }),
+      body: `<a href="/blog/">b</a><a href="/work/">w</a><a href="https://www.youtube.com/watch?v=RHbbeHKGh6I">watch</a><a href="https://example.com/profile">p</a>`
+    });
+    expect(run(buildExport(files)).status).toBe(0);
+  });
+
   it("flags a raw closing script sequence inside a JSON-LD payload", () => {
     const files = validFiles();
     files["index.html"] =
@@ -476,6 +512,18 @@ describe("static export audit — production integration", () => {
       const path = new URL(loc).pathname.replace(/\/$/, "") || "/";
       expect(keeps.has(path), `${path} should be a keep`).toBe(true);
     }
+  });
+
+  it.runIf(hasExport)("materializes a selected legacy alias to the uniform self-contained contract", () => {
+    // Locks the intended behavior: the four selected aliases ship the same
+    // materialized self-contained page as the /ru set, not a nav shell.
+    const html = readFileSync(join(outDir, "writing/index.html"), "utf8");
+    expect((html.match(/<a\b[^>]*href=["']#main-content["']/gi) ?? []).length).toBe(1);
+    expect((html.match(/<main\b[^>]*id=["']main-content["']/gi) ?? []).length).toBe(1);
+    expect(html).toContain('<link rel="canonical" href="https://notevskii.tech/blog/">');
+    expect(html).toMatch(/name=["']robots["'][^>]*content=["']noindex,\s*follow["']/i);
+    expect(html).toMatch(/http-equiv=["']refresh["'][^>]*url=\/blog\//i);
+    expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
   it.runIf(hasExport)("has exactly two RSS items", () => {

@@ -1,7 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 
 /**
  * Focused static-export contract audit.
@@ -50,10 +49,6 @@ function loadJson(file, label) {
 function normalizeRoute(route) {
   if (route === "/") return "/";
   return route.replace(/\/+$/, "");
-}
-
-function routeToFile(route) {
-  return route === "/" ? "index.html" : `${route.slice(1)}/index.html`;
 }
 
 function pathToLocalFile(pathname) {
@@ -309,9 +304,21 @@ function validateJsonLd(route, node, visibleExternals, visibleYouTube) {
   }
   if (!node || typeof node !== "object") return;
 
-  if (Object.prototype.hasOwnProperty.call(node, "@context") && node["@context"] !== "https://schema.org") {
-    report(route, "jsonld", String(node["@context"]), "@context must be https://schema.org");
+  if (Object.prototype.hasOwnProperty.call(node, "@context")) {
+    // @context may be a string or an array of contexts (both valid JSON-LD).
+    const contexts = Array.isArray(node["@context"]) ? node["@context"] : [node["@context"]];
+    if (!contexts.every((context) => context === "https://schema.org")) {
+      report(route, "jsonld", String(node["@context"]), "@context must be https://schema.org");
+    }
   }
+
+  // sameAs may be a string or an array; collect its YouTube ids for the embed allowance.
+  const sameAsIds = new Set(
+    (Array.isArray(node.sameAs) ? node.sameAs : [node.sameAs])
+      .filter((value) => typeof value === "string")
+      .map((value) => youtubeId(value))
+      .filter((id) => id !== null)
+  );
 
   for (const [key, value] of Object.entries(node)) {
     if (key === "@context") continue;
@@ -327,9 +334,8 @@ function validateJsonLd(route, node, visibleExternals, visibleYouTube) {
         // with a narrow allowance for a YouTube embedUrl backed by its sameAs.
         if (!visibleExternals.has(value)) {
           const id = youtubeId(value);
-          const sameAsId = typeof node.sameAs === "string" ? youtubeId(node.sameAs) : null;
           const embedAllowed =
-            key === "embedUrl" && id !== null && id === sameAsId && visibleYouTube.has(id);
+            key === "embedUrl" && id !== null && sameAsIds.has(id) && visibleYouTube.has(id);
           if (!embedAllowed) {
             report(route, "jsonld", value, "external JSON-LD URL is not visible on the page");
           }
@@ -457,6 +463,3 @@ if (diagnostics.length > 0) {
     `Static export audit passed: ${exportedRoutes.size} routes, ${aliasBySource.size} aliases, ${sitemapRoutes.size} sitemap URLs.`
   );
 }
-
-// Keep a stable reference to the module's own path for potential tooling.
-void fileURLToPath(import.meta.url);
