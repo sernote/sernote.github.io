@@ -116,6 +116,58 @@ Chapter pages should follow the handbook pattern:
 
 Use public, sanitized, production-like examples only. Do not include confidential company architecture, internal numbers, vendor contracts or security-sensitive details.
 
+## v3 Content Model and Authoring
+
+The v3 personal surfaces (Blog, Materials, Talks, Projects, AI Platform) are driven by the typed content registry in `content/v3` (schema in `lib/content-v3/schema.ts`). This is the authoritative content path; the legacy handbook workflow above remains only for the kept `/handbook` chapters.
+
+### Add one v3 record
+
+1. Create one `.mdx` file under the matching directory: `content/v3/blog`, `content/v3/talks`, `content/v3/projects`, or `content/v3/ai-platform/{areas,components,cases}`.
+2. Fill the frontmatter required by the record `type`. Shared fields: `entityId` (kebab-case), `locale` (`ru`/`en`), `title`, `description`, `publicationStatus`, `reviewStatus`, `publishedAt`, `updatedAt`, `reviewedAt`, `reviewCycleDays`, `topics` (max 8), and `relations`.
+3. Run `pnpm verify` and fix any registry, route, or export-contract failure before committing.
+
+### Permitted statuses
+
+- `publicationStatus`: `draft`, `published`, `archived`. A non-draft record must set `publishedAt`.
+- `reviewStatus`: `unreviewed`, `reviewed`, `stale`. Any non-`unreviewed` status must set `reviewedAt`. Reference records (`platform-area`, `platform-component`, `case`) are only publicly discoverable while `reviewed` or `stale`.
+
+### Relation syntax
+
+`relations` is an object of id arrays — `articleIds`, `talkIds`, `projectIds`, `platformEntityIds` — referencing other records by `entityId`. A record may reference **at most four** related entities in total. Use `{}` for none.
+
+```yaml
+relations:
+  projectIds:
+    - audit-prompt-caching
+  platformEntityIds:
+    - prefix-cache
+```
+
+### External notes have no local route
+
+An article with `kind: external-note` must set `sourceUrl` (HTTPS) and must not set a `slug`. External notes are surfaced in the Blog/Materials indexes as links straight to their source and never receive a local detail page — the canonical location of that content is the external site, so minting a local URL would duplicate it and split its authority.
+
+### Validation and the review gate
+
+Run the full gate before shipping any content or code change:
+
+```bash
+pnpm verify
+```
+
+`pnpm verify` runs lint, typecheck, tests, the aliased static build, the reference-path audit, and the static-export contract audit. Expanding the reviewed reference vertical (new area, component, or case) additionally requires passing the pilot content-review gate recorded under `docs/superpowers/reviews/`; do not publish a reference record as `reviewed` without that artifact.
+
+### Operating ceiling
+
+This is a maintained pilot, not a content factory. Hold to:
+
+- at most one substantial new or revised artifact per month;
+- a quarterly review of the AI Platform map and every `reviewed` reference record (refresh or mark `stale`);
+- small metadata and link fixes as needed;
+- no more than one support hour per week.
+
+Translation is selective and intentional: a Russian record does not imply an English one, and no locale parity is assumed or advertised.
+
 ## Tools
 
 All v0 tools are client-side only:

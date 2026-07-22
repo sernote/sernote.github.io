@@ -1,5 +1,7 @@
 # Content Model
 
+> **Superseded (historical context):** The product direction in this file is superseded by the accepted v3 spec (`docs/superpowers/specs/2026-07-22-notevskii-tech-v3-design.md`) and implementation plan (`docs/superpowers/plans/2026-07-22-notevskii-tech-v3-implementation.md`). It is kept for historical context; the current content model is the typed v3 registry in `lib/content-v3/schema.ts` and `content/v3`.
+
 ## Handbook frontmatter schema
 
 Every handbook MDX page must include:
