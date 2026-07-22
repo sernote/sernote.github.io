@@ -4,7 +4,7 @@ type: case
 locale: ru
 slug: agent-session-cache-reuse
 title: "Agent session cache reuse"
-description: "Source-controlled synthetic case: иначе эквивалентные agent requests различаются порядком tools, и pinned linter фиксирует AP-2."
+description: "Синтетический пример: два одинаковых агентных запроса различаются только порядком инструментов, а закреплённая версия анализатора обнаруживает это изменение."
 publicationStatus: draft
 reviewStatus: unreviewed
 publishedAt: null
@@ -28,8 +28,8 @@ sources:
   - title: "vLLM Automatic Prefix Caching"
     url: "https://docs.vllm.ai/en/stable/design/prefix_caching/"
     verifiedAt: "2026-07-22"
-applicability: "Для source-controlled проверки rendered agent requests, когда ранний tool/schema layout должен оставаться детерминированным между иначе эквивалентными шагами."
-limitations: "Кейс проверяет только правило linter о порядке tools; он не запускает модель, provider cache или production traffic и не измеряет hit rate, latency, стоимость либо качество."
+applicability: "Для проверки сохранённых агентных запросов, когда порядок инструментов и схем в начале запроса должен совпадать между эквивалентными шагами."
+limitations: "Кейс проверяет только порядок инструментов в двух JSON-файлах; он не запускает модель или кэш, не использует рабочий трафик и не измеряет попадания в кэш, задержку, стоимость или качество."
 caseKind: synthetic
 componentIds:
   - prefix-cache
@@ -39,11 +39,11 @@ evidence:
   - "evidence/v3/agent-session-cache-reuse/layout-linter-output.json"
 ---
 
-> **Synthetic case.** Оба запроса созданы специально для этой публичной демонстрации. В них нет production logs, customer data, внутренней topology или измерений реальной системы.
+> **Синтетический кейс.** Оба запроса созданы специально для этой публичной демонстрации. В них нет журналов рабочей системы, пользовательских данных, внутренней архитектуры или измерений реальной системы.
 
-Кейс проверяет один маленький участок agent request path. System message, user message, модель, tool definitions и response schema одинаковы. Во втором JSON меняется только порядок двух tools. Pinned `layout_linter.py` должен принять стабильный алфавитный порядок и вернуть AP-2 для перестановки.
+Кейс проверяет небольшой участок пути агентного запроса. Системное и пользовательское сообщения, модель, определения инструментов и схема ответа одинаковы. Во втором JSON меняется только порядок двух инструментов. Закреплённая версия `layout_linter.py` должна принять стабильный алфавитный порядок и вернуть AP-2 для перестановки.
 
-Это source-level evidence. Модель не вызывается, сеть провайдера не используется, cache state не создаётся. Такой узкий тест полезен именно честной границей: он воспроизводимо доказывает один факт о форме входа и не притворяется end-to-end benchmark.
+Это доказательство на уровне входных файлов. Модель не вызывается, сеть провайдера не используется, состояние кэша не создаётся. Узкий тест воспроизводимо доказывает один факт о форме входа и не выдаёт себя за сквозное измерение.
 
 ## Контекст
 
@@ -60,7 +60,7 @@ Agent runtime часто собирает tools из registry на каждом 
 - `evidence/v3/agent-session-cache-reuse/step-stable.json` перечисляет `lookup_policy`, затем `write_file`;
 - `evidence/v3/agent-session-cache-reuse/step-drift.json` перечисляет `write_file`, затем `lookup_policy`.
 
-Все остальные поля эквивалентны. Оба payload используют Chat-style `messages`, одну model string, одинаковые описания функций и одну JSON Schema. В ранних messages нет timestamp, request id или другого намеренно volatile поля.
+Все остальные поля эквивалентны. Оба набора данных используют Chat-style `messages`, одно и то же имя модели, одинаковые описания функций и одну JSON Schema. В ранних сообщениях нет метки времени, идентификатора запроса или другого намеренно изменчивого поля.
 
 Симптом здесь — не падение hit rate. Наблюдаемое различие состоит только в order массива `tools`. Его можно увидеть обычным diff и затем проверить правилом AP-2.
 
@@ -70,18 +70,26 @@ Agent runtime часто собирает tools из registry на каждом 
 
 Запросы намеренно не содержат credentials, tenant identifiers и текст пользователей. Названия функций описывают чтение публичной policy и запись синтетического audit artifact. Evidence хранится рядом с контентом и проходит обычный code review.
 
-Analyzer закреплён за публичным release `v0.1.3`, commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Latest Release API и checkout проверены 22 июля 2026 года. Такая фиксация защищает кейс от незаметного изменения правила после обновления проекта.
+Анализатор закреплён за публичным релизом `v0.1.3` и коммитом `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Данные GitHub Latest Release API и копия репозитория проверены 22 июля 2026 года. Такая фиксация защищает кейс от незаметного изменения правила после обновления проекта.
 
-## Pinned команды
+## Закреплённые команды
 
-Репозиторий был клонирован в отдельный временный каталог по тегу. Перед запуском проверены `origin`, exact tag и `HEAD`. Linter лежит внутри каталога skill:
+Запускайте команды из корня локальной копии этого сайта. Сначала клонируйте закреплённый релиз анализатора в относительный каталог:
 
 ```bash
-python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
+git clone --depth 1 --branch v0.1.3 \
+  https://github.com/sernote/audit-prompt-caching.git \
+  .evidence-tools/audit-prompt-caching-v0.1.3
+```
+
+Затем проверьте стабильный файл из репозитория сайта:
+
+```bash
+python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
   evidence/v3/agent-session-cache-reuse/step-stable.json
 ```
 
-Стабильный input завершился с exit code `0`. Parsed JSON содержит:
+Проверка стабильного файла завершилась с кодом `0`. JSON-результат содержит:
 
 ```json
 {
@@ -91,14 +99,14 @@ python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layo
 }
 ```
 
-Drift input запускался тем же commit и скриптом:
+Файл с перестановкой проверяется той же версией скрипта:
 
 ```bash
-python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
+python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
   evidence/v3/agent-session-cache-reuse/step-drift.json
 ```
 
-Этот запуск ожидаемо завершился с exit code `1`. Для linter это найденное нарушение, а не ошибка чтения файла. Parsed finding:
+Этот запуск ожидаемо завершился с кодом `1`. Для анализатора это найденное нарушение, а не ошибка чтения файла. JSON-результат:
 
 ```json
 {
@@ -110,7 +118,7 @@ python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layo
 }
 ```
 
-Полный машинный snapshot, включая команды, expected/observed exit codes и оба output objects, хранится в `evidence/v3/agent-session-cache-reuse/layout-linter-output.json`.
+После слияния черновика в `main` канонические ссылки будут вести на [стабильный запрос](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-stable.json), [запрос с перестановкой инструментов](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-drift.json) и [машинный снимок двух запусков](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/layout-linter-output.json). В снимке сохранены исходные команды, отдельный переносимый рецепт, ожидаемые и полученные коды завершения и оба JSON-результата.
 
 ## Гипотезы после finding
 
@@ -120,7 +128,7 @@ AP-2 подтверждает layout drift, но оставляет нескол
 
 ## Изменение
 
-Минимальное изменение для такого input — формировать tool array детерминированно до сериализации и покрыть его snapshot-тестом. Stable fixture показывает ожидаемый порядок. CI запускает pinned linter и останавливает изменение, если AP-2 появляется снова.
+Минимальное изменение для такого входа — формировать массив инструментов детерминированно до сериализации и покрыть его snapshot-тестом. Стабильный fixture показывает ожидаемый порядок. Следующий защитный шаг — добавить закреплённую версию анализатора в CI, чтобы будущая проверка останавливала изменение при повторном появлении AP-2.
 
 В production code одного сортировщика мало. Нужно закрепить источник identity, schema revision и permissions profile. Если tool становится недоступен по политике, это осознанное изменение префикса, а не drift. Лог или trace должен отличать эти события.
 
@@ -155,6 +163,6 @@ AP-2 подтверждает layout drift, но оставляет нескол
 
 ## Следующее проверочное действие
 
-В реальном расследовании после AP-2 сохраните два редактированных rendered requests из одного scenario, сравните byte/token prefix и добавьте documented cache-read field вместе с route identity. Затем повторите cold и warm paths на pinned конфигурации. До появления этих данных честный вывод остаётся прежним: drift найден, влияние на runtime не измерено.
+В реальном расследовании после AP-2 сохраните два запроса из одного сценария, очищенных от чувствительных данных, сравните их байтовые или токенные префиксы и добавьте документированное поле чтения кэша вместе с идентификатором маршрута. Затем повторите холодный и прогретый запуски на закреплённой конфигурации. До появления этих данных честный вывод остаётся прежним: изменение найдено, влияние на среду исполнения не измерено.
 
 Связанные материалы: [Prefix Cache](/ai-platform/components/prefix-cache), [audit-prompt-caching](/projects/audit-prompt-caching) и каноническая статья [«Короткий промпт не значит дешёвый»](https://habr.com/ru/companies/bitrix/articles/1033822/).

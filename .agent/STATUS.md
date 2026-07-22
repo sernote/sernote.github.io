@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot vertical is awaiting independent content review.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the corrected v3 pilot vertical is awaiting content re-review.
 
 ## Completed
 
@@ -122,6 +122,9 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Fumadocs generation, full direct ESLint, direct TypeScript validation, targeted ESLint, `git diff --check`, and a direct `next build --webpack` passed; the build generated 92 static/SSG pages.
   - Content invariants confirmed 13/13 records are `draft`, 13/13 are `unreviewed`, 13/13 have `publishedAt: null`, and no published v3 record exists.
   - `pnpm lint` and `pnpm typecheck` could not reach their scripts because this environment's pnpm wrapper tried to recreate `node_modules`; equivalent repository binaries were run successfully, and the wrapper's generated `pnpm-workspace.yaml` side effect was removed.
+  - The first independent content reviews returned no critical finding and requested corrections. The draft-only pass clarified the talk's source date and organizer role, simplified Russian descriptions, removed translated fragments, made the synthetic evidence recipe portable, and changed the CI statement from current enforcement to a prospective guardrail.
+  - Portable evidence commands were reproduced from an isolated checkout at tag `v0.1.3` / commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`: the stable fixture returned exit `0`, while the drift fixture returned the expected AP-2 finding and exit `1`. The machine snapshot keeps the originally observed commands separate from the portable reproduction recipe.
+  - Correction-pass validation passed: the review checklist and lifecycle invariants, Fumadocs generation, focused source suite (6 tests), full suite (4 files, 75 tests), direct TypeScript, targeted and full ESLint, `git diff --check`, and a direct static build (92 pages).
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.
@@ -279,7 +282,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 ## Known issues
 
 - The v3 pilot vertical is intentionally a draft checkpoint. It requires independent content review and correction before any review or publication status can change.
-- YouTube exposes the MaaS vs self-hosted recording timestamp in Pacific time; the v3 record uses the corresponding public/UTC calendar date, 2026-02-23.
+- The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.

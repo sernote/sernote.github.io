@@ -5,13 +5,15 @@
     "repository": "https://github.com/sernote/audit-prompt-caching.git",
     "release": "v0.1.3",
     "commit": "cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23",
-    "script": "audit-prompt-caching/scripts/layout_linter.py"
+    "script": "audit-prompt-caching/scripts/layout_linter.py",
+    "portableCheckoutCommand": "git clone --depth 1 --branch v0.1.3 https://github.com/sernote/audit-prompt-caching.git .evidence-tools/audit-prompt-caching-v0.1.3"
   },
   "runs": [
     {
       "name": "stable",
       "input": "evidence/v3/agent-session-cache-reuse/step-stable.json",
       "command": "python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py evidence/v3/agent-session-cache-reuse/step-stable.json",
+      "reproductionCommand": "python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts/layout_linter.py evidence/v3/agent-session-cache-reuse/step-stable.json",
       "expectedExitCode": 0,
       "observedExitCode": 0,
       "output": {
@@ -36,6 +38,7 @@
       "name": "tool-order-drift",
       "input": "evidence/v3/agent-session-cache-reuse/step-drift.json",
       "command": "python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py evidence/v3/agent-session-cache-reuse/step-drift.json",
+      "reproductionCommand": "python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts/layout_linter.py evidence/v3/agent-session-cache-reuse/step-drift.json",
       "expectedExitCode": 1,
       "observedExitCode": 1,
       "output": {

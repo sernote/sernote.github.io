@@ -22,7 +22,7 @@ Author-hours measure planned human author/reviewer effort. Agent runtime is trac
 | --- | ---: | ---: | --- | --- | --- |
 | Task 1 | 1 | 0 | About 13 minutes total; tracked separately | Complete | Typed schema, parallel collection, editorial metadata, and reference review invariants validated. |
 | Task 2 | 2 | 0 | About 12 minutes total; tracked separately | Complete | Pure validated content registry, immutable records, lifecycle checks, bounded graph queries, canonical URLs, and deterministic public views validated. |
-| Task 3 | 2 | 0 | About 30 minutes total; tracked separately | Awaiting content review | Draft pilot vertical, public fact freeze, synthetic evidence, and body-preserving v3 source adapter validated; no publication or review status was promoted. |
+| Task 3 | 2 | 0 | About 45 minutes total; tracked separately | Awaiting content re-review | Draft pilot vertical, public fact freeze, synthetic evidence, source adapter, and first content-review correction pass validated; no publication or review status was promoted. |
 | Task 4 | 2 | 0 | Not started | Not started | — |
 | Task 5 | 2 | 0 | Not started | Not started | — |
 | Task 6 | 2 | 0 | Not started | Not started | — |
