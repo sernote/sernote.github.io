@@ -123,7 +123,7 @@ export function HomePageContent({ model }: HomePageContentProps) {
       <section className="mx-auto grid w-full max-w-7xl gap-14 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,7fr)_minmax(22rem,5fr)] lg:gap-[4.5rem] lg:px-8 lg:py-24">
         <div className="max-w-3xl self-center">
           <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-primary">
-            AI PLATFORM LEAD · БИТРИКС24
+            AI Platform Lead в Битрикс24
           </p>
           <h1 className="mt-5 text-[2.75rem] font-semibold leading-[3rem] tracking-[-0.045em] text-foreground sm:text-[3.5rem] sm:leading-[3.75rem] lg:text-[4.5rem] lg:leading-[4.875rem]">
             Сергей Нотевский

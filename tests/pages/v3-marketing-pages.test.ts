@@ -134,7 +134,8 @@ describe("v3 complete top-level personal pages", () => {
 
     expect(count(html, /<main\b/g)).toBe(1);
     expect(count(html, /<h1\b/g)).toBe(1);
-    expect(html).toContain("AI PLATFORM LEAD · БИТРИКС24");
+    expect(html).toContain("AI Platform Lead в Битрикс24");
+    expect(html).not.toContain("AI PLATFORM LEAD · БИТРИКС24");
     expect(html).toContain("Сергей Нотевский");
     expect(html).toContain(
       "Проектирую production AI-платформы: от выбора пути исполнения и собственного инференса до качества, стоимости и эксплуатации."

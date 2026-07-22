@@ -156,6 +156,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Review-hardening RED reproduced nine concrete regressions: missing localized dialog semantics, a leaked close-label prop, incomplete external-link guidance, and stale Russian page/metadata copy.
   - Focused GREEN passed: 2 files, 28 tests. Full Vitest passed: 7 files, 116 tests.
   - Fumadocs generation, direct TypeScript validation, full ESLint, `git diff --check`, the five-surface landmark audit, and the direct webpack static build passed; the build generated 93 static/SSG pages.
+  - A final editorial RED caught the decorative hero source text diverging from the public role formulation. The source now reads `AI Platform Lead в Битрикс24`; CSS retains the uppercase visual treatment.
   - The Next.js build still reports the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
