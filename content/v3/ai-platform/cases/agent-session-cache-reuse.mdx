@@ -4,7 +4,7 @@ type: case
 locale: ru
 slug: agent-session-cache-reuse
 title: "Agent session cache reuse"
-description: "Синтетический пример: два одинаковых агентных запроса различаются только порядком инструментов, а закреплённая версия анализатора обнаруживает это изменение."
+description: "Синтетический пример: два эквивалентных по содержанию агентных запроса различаются только порядком инструментов, а закреплённая версия анализатора обнаруживает это изменение."
 publicationStatus: draft
 reviewStatus: unreviewed
 publishedAt: null
@@ -118,7 +118,7 @@ python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts
 }
 ```
 
-Исходные файлы опубликованы в репозитории сайта: [стабильный запрос](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-stable.json), [запрос с перестановкой инструментов](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-drift.json) и [машинный снимок двух запусков](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/layout-linter-output.json). Машинный снимок сохраняет исходные команды, отдельный переносимый рецепт, ожидаемые и полученные коды завершения и оба JSON-результата.
+После публикации этой версии в `main` ссылки будут вести на [стабильный запрос](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-stable.json), [запрос с перестановкой инструментов](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/step-drift.json) и [машинный снимок двух запусков](https://github.com/sernote/sernote.github.io/blob/main/evidence/v3/agent-session-cache-reuse/layout-linter-output.json). Машинный снимок сохраняет исходные команды, отдельный переносимый рецепт, ожидаемые и полученные коды завершения и оба JSON-результата.
 
 ## Гипотезы после finding
 
