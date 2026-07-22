@@ -8,6 +8,8 @@ import { siteLinks } from "@/lib/i18n";
 import type {
   BlogViewModel,
   HomeViewModel,
+  ProjectsViewModel,
+  TalksViewModel,
   WorkViewModel
 } from "@/lib/content-v3/view-models";
 
@@ -21,6 +23,14 @@ type WorkPageContentProps = {
 
 type BlogPageContentProps = {
   model: BlogViewModel;
+};
+
+type TalksPageContentProps = {
+  model: TalksViewModel;
+};
+
+type ProjectsPageContentProps = {
+  model: ProjectsViewModel;
 };
 
 const professionalContext = [
@@ -289,6 +299,59 @@ export function BlogPageContent({ model }: BlogPageContentProps) {
               item={item}
               eyebrow={`${item.meta} · ${item.publishedLabel}`}
             />
+          ))}
+        </section>
+      </div>
+    </MarketingPage>
+  );
+}
+
+export function TalksPageContent({ model }: TalksPageContentProps) {
+  return (
+    <MarketingPage locale="ru" currentPath="/talks">
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <PageIntro
+          overline="Выступления"
+          title="Доклады и разговоры"
+          lead="Записи выступлений о production AI-платформах с краткими выжимками, таймкодами и ссылками на связанные материалы."
+        />
+
+        <section
+          aria-label="Записи выступлений"
+          className="mt-16 border-t border-border/80 sm:mt-20 lg:mt-24"
+        >
+          {model.items.map((item) => (
+            <ContentListItem key={item.entityId} item={item} eyebrow={item.eyebrow} />
+          ))}
+        </section>
+
+        <aside className="mt-12 flex flex-col gap-4 border-y border-border/80 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+            Новые выступления и короткие заметки о production AI-платформах публикую в Telegram.
+          </p>
+          <ExternalChannel href={siteLinks.telegram}>Открыть Telegram-канал</ExternalChannel>
+        </aside>
+      </div>
+    </MarketingPage>
+  );
+}
+
+export function ProjectsPageContent({ model }: ProjectsPageContentProps) {
+  return (
+    <MarketingPage locale="ru" currentPath="/projects">
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <PageIntro
+          overline="Projects"
+          title="Открытые инженерные проекты"
+          lead="Открытые инструменты для production AI-платформ: назначение, быстрый старт, ограничения и проверенные публичные источники."
+        />
+
+        <section
+          aria-label="Открытые инженерные проекты"
+          className="mt-16 border-t border-border/80 sm:mt-20 lg:mt-24"
+        >
+          {model.items.map((item) => (
+            <ContentListItem key={item.entityId} item={item} eyebrow={item.eyebrow} />
           ))}
         </section>
       </div>

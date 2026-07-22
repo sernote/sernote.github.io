@@ -16,10 +16,14 @@ import {
   BlogPageContent,
   ContactPageContent,
   HomePageContent,
+  ProjectsPageContent,
+  TalksPageContent,
   WorkPageContent
 } from "../../components/pages/v3-marketing-pages";
 import type {
   HomeViewModel,
+  ProjectsViewModel,
+  TalksViewModel,
   V3ListItemViewModel,
   WorkViewModel
 } from "../../lib/content-v3/view-models";
@@ -120,6 +124,28 @@ const workModel: WorkViewModel = Object.freeze({
     Object.freeze({ id: "talks", index: "01", title: "Выступление", description: "Запись и выжимка.", item: talk, indexHref: "/talks", indexLabel: "Все выступления" }),
     Object.freeze({ id: "projects", index: "02", title: "Открытый проект", description: "Инженерный артефакт.", item: project, indexHref: "/projects", indexLabel: "Все проекты" }),
     Object.freeze({ id: "writing", index: "03", title: "Внешняя публикация", description: "Исходная площадка.", item: externalArticle, indexHref: null, indexLabel: null })
+  ])
+});
+
+const talksModel: TalksViewModel = Object.freeze({
+  items: Object.freeze([
+    Object.freeze({
+      ...talk,
+      description:
+        "Как разложить выбор между внешним API и собственной моделью на требования к качеству, SLO, загрузке, инженерной поддержке, контексту и лицензии.",
+      eyebrow: "РОИИ 2026 · 19 февраля 2026 года"
+    })
+  ])
+});
+
+const projectsModel: ProjectsViewModel = Object.freeze({
+  items: Object.freeze([
+    Object.freeze({
+      ...project,
+      description:
+        "Открытый Codex skill и набор локальных скриптов, которые помогают искать вероятные причины промахов prompt, prefix и KV cache и собирать доказательства.",
+      eyebrow: "Открытый проект · v0.1.3"
+    })
   ])
 });
 
@@ -248,6 +274,51 @@ describe("v3 complete top-level personal pages", () => {
       "Выступления, открытые проекты и внешние публикации о production AI-платформах — по одному выбранному материалу в каждом формате."
     );
     expect(html).not.toContain('href="/writing"');
+  });
+
+  it("renders Talks as one ruled source-backed row with a quiet Telegram continuation", () => {
+    const html = renderToStaticMarkup(
+      createElement(TalksPageContent, { model: talksModel })
+    );
+
+    expect(count(html, /<main\b/g)).toBe(1);
+    expect(count(html, /<h1\b/g)).toBe(1);
+    expect(count(html, /data-entity-id=/g)).toBe(1);
+    expect(html).toContain("Выступления");
+    expect(html).toContain("Доклады и разговоры");
+    expect(html).toContain(
+      "Записи выступлений о production AI-платформах с краткими выжимками, таймкодами и ссылками на связанные материалы."
+    );
+    expect(html).toContain("РОИИ 2026 · 19 февраля 2026 года");
+    expect(html).toContain("Свои ИИ-модели или API по подписке?");
+    expect(html).toContain(talksModel.items[0].description);
+    expect(html).toMatch(
+      /<a(?=[^>]*href="\/work")(?=[^>]*aria-current="page")[^>]*>/
+    );
+    expect(html).toMatch(
+      /<a(?=[^>]*href="https:\/\/t\.me\/s\/sergeinotevskii")(?=[^>]*target="_blank")(?=[^>]*rel="noreferrer")[^>]*>/
+    );
+    expect(html).not.toContain("2RvzgMYrX0o");
+    expect(html).not.toContain("NrvGciRm8Ps");
+  });
+
+  it("renders Projects as one ruled source-backed row without live popularity metrics", () => {
+    const html = renderToStaticMarkup(
+      createElement(ProjectsPageContent, { model: projectsModel })
+    );
+
+    expect(count(html, /<main\b/g)).toBe(1);
+    expect(count(html, /<h1\b/g)).toBe(1);
+    expect(count(html, /data-entity-id=/g)).toBe(1);
+    expect(html).toContain("Projects");
+    expect(html).toContain("Открытые инженерные проекты");
+    expect(html).toContain("audit-prompt-caching");
+    expect(html).toContain("Открытый проект · v0.1.3");
+    expect(html).toContain(projectsModel.items[0].description);
+    expect(html).toMatch(
+      /<a(?=[^>]*href="\/work")(?=[^>]*aria-current="page")[^>]*>/
+    );
+    expect(html).not.toMatch(/\b(?:stars?|forks?)\b/i);
   });
 
   it("renders About with three work areas and compact public channels", () => {
@@ -379,6 +450,52 @@ describe("v3 reusable content detail page", () => {
     expect(html).toContain('<time dateTime="2026-08-03">3 августа 2026 года</time>');
   });
 
+  it("renders type-specific facts without relabeling event or release dates as publication", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        TestableContentDetailPage,
+        {
+          currentPath: "/talks/maas-vs-self-hosted",
+          overline: "Доклад",
+          title: "Свои ИИ-модели или API по подписке?",
+          deck: "Как сравнить внешнее API и собственную модель.",
+          author: { name: "Сергей Нотевский", href: "/about" },
+          facts: [
+            { label: "Площадка", value: "РОИИ 2026 · день 1" },
+            {
+              label: "Дата выступления",
+              value: "19 февраля 2026 года",
+              dateTime: "2026-02-19"
+            },
+            {
+              label: "Видео опубликовано",
+              value: "22 февраля 2026 года",
+              dateTime: "2026-02-22"
+            }
+          ],
+          contact: {
+            context: "Обсудить тему доклада",
+            label: "Связаться с Сергеем"
+          }
+        },
+        createElement("p", null, "Тело доклада")
+      )
+    );
+    const visibleText = html.replace(/<[^>]+>/g, "");
+
+    expect(visibleText).toContain("Площадка — РОИИ 2026 · день 1");
+    expect(visibleText).toContain("Дата выступления — 19 февраля 2026 года");
+    expect(visibleText).toContain("Видео опубликовано — 22 февраля 2026 года");
+    expect(html).toContain(
+      '<time dateTime="2026-02-19">19 февраля 2026 года</time>'
+    );
+    expect(html).toContain(
+      '<time dateTime="2026-02-22">22 февраля 2026 года</time>'
+    );
+    expect(visibleText).not.toContain("Опубликовано 19 февраля");
+    expect(visibleText).not.toContain("Опубликовано 20 июля");
+  });
+
   it("marks external MDX links visibly and accessibly without changing internal links", () => {
     const externalHtml = renderToStaticMarkup(
       createElement(
@@ -452,4 +569,65 @@ describe("v3 Blog route contract", () => {
     expect(routeText).not.toContain("short-prompt-not-cheap");
     expect(routeText).not.toContain("habr.com/ru/companies/bitrix/articles/1033822");
   });
+});
+
+describe("v3 Talks and Projects route contract", () => {
+  it.each([
+    ["talks", "TalksPageContent", "getTalksViewModel", 'v3MarketingMetadata("talks")'],
+    [
+      "projects",
+      "ProjectsPageContent",
+      "getProjectsViewModel",
+      'v3MarketingMetadata("projects")'
+    ]
+  ] as const)("keeps the %s index source-backed", (segment, component, builder, metadata) => {
+    const routePath = join(process.cwd(), `app/(en)/${segment}/page.tsx`);
+    const routeText = readFileSync(routePath, "utf8");
+
+    expect(routeText).toContain(component);
+    expect(routeText).toContain(`${builder}(v3Source)`);
+    expect(routeText).toContain(metadata);
+    expect(routeText).not.toContain("getDictionary");
+  });
+
+  it.each([
+    [
+      "talks",
+      "maas-vs-self-hosted",
+      "talk",
+      "talkMetadata",
+      "Смотреть запись",
+      "/ai-platform/map"
+    ],
+    [
+      "projects",
+      "audit-prompt-caching",
+      "project",
+      "projectMetadata",
+      "Открыть на GitHub",
+      "/ai-platform/components/prefix-cache"
+    ]
+  ] as const)(
+    "builds the %s exemplar from source-generated params",
+    (segment, slug, contentType, metadataBuilder, primaryAction, relatedHref) => {
+      const routePath = join(process.cwd(), `app/(en)/${segment}/[slug]/page.tsx`);
+
+      expect(existsSync(routePath)).toBe(true);
+      if (!existsSync(routePath)) return;
+
+      const routeText = readFileSync(routePath, "utf8");
+      expect(routeText).toContain("export const dynamicParams = false");
+      expect(routeText).toContain(`v3Source.generateParams("${contentType}", "ru")`);
+      expect(routeText).toContain(`v3Source.getBySlug("${contentType}", slug, "ru")`);
+      expect(routeText).toContain("notFound()");
+      expect(routeText).toContain(metadataBuilder);
+      expect(routeText).toContain("ContentDetailPage");
+      expect(routeText).toContain("DocsBody");
+      expect(routeText).toContain("EditorialMdxLink");
+      expect(routeText).toContain(primaryAction);
+      expect(routeText).toContain(relatedHref);
+      expect(routeText).toContain('name: "Сергей Нотевский"');
+      expect(routeText).toContain('href: "/about"');
+    }
+  );
 });

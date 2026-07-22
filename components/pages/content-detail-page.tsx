@@ -12,6 +12,12 @@ type DetailAction = Readonly<{
   external?: boolean;
 }>;
 
+export type ContentDetailFact = Readonly<{
+  label: string;
+  value: string;
+  dateTime?: string;
+}>;
+
 export type ContentDetailPageProps = {
   currentPath: string;
   overline: string;
@@ -21,8 +27,9 @@ export type ContentDetailPageProps = {
     name: string;
     href: string;
   }>;
-  publishedAt: string;
-  updatedAt: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  facts?: readonly ContentDetailFact[];
   media?: ReactNode;
   primaryAction?: DetailAction;
   afterContent?: ReactNode;
@@ -103,13 +110,19 @@ export function ContentDetailPage({
   author,
   publishedAt,
   updatedAt,
+  facts = [],
   media,
   primaryAction,
   afterContent,
   contact,
   children
 }: ContentDetailPageProps) {
-  const showUpdated = updatedAt !== publishedAt;
+  if ((publishedAt === undefined) !== (updatedAt === undefined)) {
+    throw new Error("Content detail publication dates must be supplied together");
+  }
+
+  const showPublication = publishedAt !== undefined && updatedAt !== undefined;
+  const showUpdated = showPublication && updatedAt !== publishedAt;
 
   return (
     <MarketingPage locale="ru" currentPath={currentPath}>
@@ -138,15 +151,27 @@ export function ContentDetailPage({
                 {author.name}
               </Link>
             </p>
-            <p>
-              Опубликовано{" "}
-              <time dateTime={publishedAt}>{formatRussianDate(publishedAt)}</time>
-            </p>
-            {showUpdated ? (
+            {showPublication ? (
               <p>
-                Обновлено <time dateTime={updatedAt}>{formatRussianDate(updatedAt)}</time>
+                Опубликовано{" "}
+                <time dateTime={publishedAt}>{formatRussianDate(publishedAt)}</time>
               </p>
             ) : null}
+            {showUpdated ? (
+              <p>
+                Обновлено <time dateTime={updatedAt}>{formatRussianDate(updatedAt!)}</time>
+              </p>
+            ) : null}
+            {facts.map((fact) => (
+              <p key={fact.label}>
+                {fact.label} —{" "}
+                {fact.dateTime ? (
+                  <time dateTime={fact.dateTime}>{fact.value}</time>
+                ) : (
+                  fact.value
+                )}
+              </p>
+            ))}
           </div>
 
           {media ? <div className="mt-10">{media}</div> : null}
@@ -157,7 +182,7 @@ export function ContentDetailPage({
           ) : null}
         </header>
 
-        <div className="mt-12 sm:mt-14">{children}</div>
+        <div className="mt-12 min-w-0 [overflow-wrap:anywhere] sm:mt-14">{children}</div>
 
         {afterContent ? <div className="mt-16 sm:mt-20">{afterContent}</div> : null}
 

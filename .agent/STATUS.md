@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Blog implementation, independent reviews, and responsive browser/design QA have converged; Talks and Projects are the next implementation milestone.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Talks and Projects implementation is complete and validated; independent review and responsive browser/design QA are the remaining Task 7 checkpoints.
 
 ## Completed
 
@@ -14,6 +14,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Built the v3 Russian Home, Materials, About, and Contact compositions around the accepted author-index direction. Explicit content selections are resolved through a pure injected view model, Materials links its external article directly to Habr, and the four pages use final direct metadata rather than the frozen legacy copy.
 - Hardened the reviewed v3 personal pages with a real localized description and close name for the mobile navigation dialog, explicit new-tab guidance for assistive technology, and the converged Russian page and metadata copy.
 - Built the v3 Blog as a two-row editorial index: one native article and one metadata-only external Habr note. Added the source-backed native detail route, reusable author-led detail shell, semantic publication metadata, safe MDX link treatment, and the reviewed Russian article corrections without creating a local route for the external note.
+- Built the v3 Talks and Projects as complete one-row editorial indexes with one source-backed detail exemplar each. The talk separates event and recording dates, uses the verified recording thumbnail and CTA, and links into the AI Platform map; the project exposes its quick start, privacy boundary, limitations, license, verified release snapshot, GitHub CTA, and related Prefix Cache component without live popularity metrics.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -174,6 +175,14 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Production-static browser QA passed at 390 × 844, 768 × 900, and 1440 × 900. Both Blog routes keep one main and one H1, no horizontal overflow, active Blog navigation, no false language switch, safe external-link cues, and a clean console. The native article keeps a 720 px long-form column, and its AI Platform and Contact ending remains usable on mobile.
   - The Home/Blog same-input visual-system comparison, responsive captures, and final `passed` result are recorded in `design-qa.md`.
   - Final root verification on `e1120f2` passed Fumadocs generation, 7 Vitest files / 133 tests, TypeScript, ESLint, `git diff --check`, the 95-page webpack static build, the five-surface landmark audit, and a 20-check Blog export audit.
+  - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
+- v3 Talks and Projects implementation checkpoint:
+  - TDD RED produced 14 expected failures for the missing Talks/Projects view models and compositions, detail routes and type-specific facts, canonical metadata, route policy, and final content safeguards.
+  - Focused GREEN passed: 3 files, 75 tests. Full Vitest passed: 7 files, 146 tests.
+  - Direct Fumadocs generation, TypeScript validation, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 97 static/SSG pages.
+  - The five-surface shell landmark audit passed. A separate export audit confirmed all four new routes, exactly one main and one H1 per route, one index row per index, canonical-only metadata, the recording preview and two recording links, separate event/upload dates, the visible quick-start command, pinned release commit, and MIT license.
+  - No local route was created for unavailable content, and no Talks/Projects RU/EN locale pair is advertised. The project copy remains diagnostic rather than promissory, and the self-hosted talk keeps workload, runtime, ownership, and data-boundary caveats explicit.
+  - Independent spec/editorial/code review and responsive browser/design QA are pending the root Task 7 checkpoints and are not claimed by this implementation checkpoint.
   - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.

@@ -9,6 +9,8 @@ import {
   formatRussianDate,
   getBlogViewModel,
   getHomeViewModel,
+  getProjectsViewModel,
+  getTalksViewModel,
   getWorkViewModel
 } from "../../lib/content-v3/view-models";
 
@@ -140,7 +142,7 @@ function talk(entityId: string, overrides: Record<string, unknown> = {}) {
       entityId,
       type: "talk",
       slug: entityId === "maas-vs-self-hosted-roii" ? "maas-vs-self-hosted" : entityId,
-      venue: "ROИИ 2026, день 1",
+      venue: "РОИИ 2026 · день 1",
       eventDate: "2026-02-19",
       format: "talk",
       recordingUrl: "https://youtu.be/RHbbeHKGh6I",
@@ -200,7 +202,16 @@ const fixtures = [
     relations: { platformEntityIds: ["prefix-cache"] }
   }),
   talk("maas-vs-self-hosted-roii"),
-  project("audit-prompt-caching"),
+  project("audit-prompt-caching", {
+    verifiedRelease: {
+      version: "v0.1.3",
+      publishedAt: "2026-07-20",
+      url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3",
+      verifiedAt: "2026-07-22"
+    },
+    quickStart:
+      "npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching"
+  }),
   area("inference-plane", 3),
   component("prefix-cache", "inference-plane"),
   ...[
@@ -283,6 +294,12 @@ describe("v3 generated-entry source adapter", () => {
     expect(source.getBySlug("article", "ai-platform-before-gpu", "ru")?.entityId).toBe(
       "ai-platform-before-gpu"
     );
+    expect(source.generateParams("talk", "ru")).toEqual([
+      { slug: "maas-vs-self-hosted" }
+    ]);
+    expect(source.generateParams("project", "ru")).toEqual([
+      { slug: "audit-prompt-caching" }
+    ]);
   });
 
   it("keeps the six non-pilot draft areas available only to the explicit map query", () => {
@@ -406,6 +423,39 @@ describe("v3 personal-site view models", () => {
     expect(formatRussianDate("2026-05-12")).toBe("12 мая 2026 года");
     expect(formatRussianDate("2026-01-01")).toBe("1 января 2026 года");
     expect(() => formatRussianDate("2026-02-30")).toThrow(/calendar date/i);
+  });
+
+  it("builds immutable Talks and Projects indexes from public source records", () => {
+    const source = createV3Source(fixtures);
+    const talks = getTalksViewModel(source);
+    const projects = getProjectsViewModel(source);
+
+    expect(talks.items).toEqual([
+      expect.objectContaining({
+        entityId: "maas-vs-self-hosted-roii",
+        href: "/talks/maas-vs-self-hosted",
+        description: "Как сравнить MaaS и self-hosted по качеству, SLO и ответственности.",
+        eyebrow: "РОИИ 2026 · 19 февраля 2026 года"
+      })
+    ]);
+    expect(projects.items).toEqual([
+      expect.objectContaining({
+        entityId: "audit-prompt-caching",
+        href: "/projects/audit-prompt-caching",
+        eyebrow: "Открытый проект · v0.1.3"
+      })
+    ]);
+
+    for (const model of [talks, projects]) {
+      expect(Object.isFrozen(model)).toBe(true);
+      expect(Object.isFrozen(model.items)).toBe(true);
+      expect(Object.isFrozen(model.items[0])).toBe(true);
+      expect(model.items[0]).not.toHaveProperty("body");
+      expect(model.items[0]).not.toHaveProperty("sourcePath");
+    }
+
+    expect(getTalksViewModel(createV3Source([...fixtures].reverse()))).toEqual(talks);
+    expect(getProjectsViewModel(createV3Source([...fixtures].reverse()))).toEqual(projects);
   });
 
   it("builds the exact home entrances and explicit selected artifacts", () => {
@@ -607,5 +657,49 @@ describe("native Blog article editorial contract", () => {
       "Теперь выбираем execution path",
       "Карта вместо списка покупок"
     ]);
+  });
+});
+
+describe("Talk and project exemplar editorial contract", () => {
+  it("keeps the talk dates, venue, recording, and five timestamped takeaways distinct", () => {
+    const talkText = readFileSync(
+      join(process.cwd(), "content/v3/talks/maas-vs-self-hosted.mdx"),
+      "utf8"
+    );
+
+    expect(talkText).toContain('venue: "РОИИ 2026 · день 1"');
+    expect(talkText).toContain('eventDate: "2026-02-19"');
+    expect(talkText).toContain('recordingUploadedAt: "2026-02-22"');
+    expect(talkText).toContain(
+      'recordingUrl: "https://www.youtube.com/watch?v=RHbbeHKGh6I"'
+    );
+    expect(talkText).toContain('path: "/media/talks/maas-vs-self-hosted.jpg"');
+    expect(talkText.match(/timestampSeconds:/g)).toHaveLength(5);
+    expect(talkText).toContain("Публичную ссылку на слайды подтвердить не удалось.");
+    expect(talkText).not.toMatch(/слайдов (?:нет|не было)/i);
+  });
+
+  it("keeps the project quick start, release evidence, data boundary, and safe claim strength", () => {
+    const projectText = readFileSync(
+      join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"),
+      "utf8"
+    );
+    const quickStart =
+      "npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching";
+
+    expect(projectText).toContain(quickStart);
+    expect(projectText).toContain('version: "v0.1.3"');
+    expect(projectText).toContain('publishedAt: "2026-07-20"');
+    expect(projectText).toContain('verifiedAt: "2026-07-22"');
+    expect(projectText).toContain("cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23");
+    expect(projectText).toContain("лицензии MIT");
+    expect(projectText).toContain("## Локальность и границы данных");
+    expect(projectText).toContain("## Проверенный снимок релиза");
+    expect(projectText).toContain("помогает искать вероятные причины");
+    expect(projectText).toContain("собирать доказательства");
+    expect(projectText).toContain(
+      "границу данных определяют его runtime, разрешения инструментов и подключённые сервисы"
+    );
+    expect(projectText).not.toMatch(/гарант(?:ирует|ирован)|всегда находит|данные никогда не/i);
   });
 });

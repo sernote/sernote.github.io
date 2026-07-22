@@ -53,8 +53,6 @@ const ACTUAL_LOCALE_PAIRS: readonly ActualLocalePair[] = [
   { ru: "/", en: "/en" },
   { ru: "/about", en: "/en/about" },
   { ru: "/contact", en: "/en/contact" },
-  { ru: "/projects", en: "/en/projects" },
-  { ru: "/talks", en: "/en/talks" },
   { ru: "/tools", en: "/en/tools" },
   {
     ru: "/tools/prefix-cache-auditor",

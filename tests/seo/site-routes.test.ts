@@ -5,10 +5,12 @@ import { describe, expect, it } from "vitest";
 import { SiteHeader } from "../../components/marketing/site-shell";
 import { SheetContent, SheetDescription } from "../../components/ui/sheet";
 import { getDictionary, getSiteConfig, getNavItems, type Locale } from "../../lib/i18n";
-import type { V3Article } from "../../lib/content-v3/schema";
+import type { V3Article, V3Project, V3Talk } from "../../lib/content-v3/schema";
 import {
   articleMetadata,
   createPageMetadata,
+  projectMetadata,
+  talkMetadata,
   v3MarketingMetadata
 } from "../../lib/metadata";
 import {
@@ -84,6 +86,10 @@ describe("v3 site route policy", () => {
       "/blog",
       "/blog/fumadocs-runtime-shape",
       "/work",
+      "/talks",
+      "/talks/maas-vs-self-hosted",
+      "/projects",
+      "/projects/audit-prompt-caching",
       "/ai-platform",
       "/ai-platform/map",
       "/ai-platform/components/prefix-cache",
@@ -96,6 +102,8 @@ describe("v3 site route policy", () => {
 
     for (const path of [
       "/en/writing",
+      "/en/talks",
+      "/en/projects",
       "/en/handbook",
       "/en/handbook/platform-map",
       "/en/handbook/caching/prefix-cache"
@@ -143,6 +151,8 @@ describe("personal master brand and metadata alternates", () => {
     ["home", "Сергей Нотевский — AI Platform Lead"],
     ["blog", "Блог — Сергей Нотевский"],
     ["work", "Материалы — Сергей Нотевский"],
+    ["talks", "Выступления — Сергей Нотевский"],
+    ["projects", "Проекты — Сергей Нотевский"],
     ["about", "Обо мне — Сергей Нотевский"],
     ["contact", "Контакт — Сергей Нотевский"]
   ] as const)(
@@ -201,6 +211,78 @@ describe("personal master brand and metadata alternates", () => {
       }
     ]);
     expect(metadata.alternates).not.toHaveProperty("languages");
+  });
+
+  it("emits canonical-only talk and project metadata from published local records", () => {
+    const shared = {
+      locale: "ru" as const,
+      publicationStatus: "published" as const,
+      reviewStatus: "unreviewed" as const,
+      publishedAt: "2026-07-22",
+      updatedAt: "2026-07-22",
+      reviewedAt: null,
+      reviewCycleDays: null,
+      topics: ["ai-platform"],
+      relations: {}
+    };
+    const talk: V3Talk = {
+      ...shared,
+      entityId: "maas-vs-self-hosted-roii",
+      type: "talk",
+      slug: "maas-vs-self-hosted",
+      title: "Свои ИИ-модели или API по подписке?",
+      description:
+        "Доклад о выборе между внешним API и собственной моделью по качеству, SLO и ответственности.",
+      venue: "РОИИ 2026 · день 1",
+      eventDate: "2026-02-19",
+      format: "talk",
+      recordingUrl: "https://www.youtube.com/watch?v=RHbbeHKGh6I",
+      recordingUploadedAt: "2026-02-22",
+      abstract:
+        "Как сравнить внешнее API и собственную модель по качеству, SLO и ответственности.",
+      takeaways: [
+        { label: "Качество", text: "Проверить качество.", timestampSeconds: 120 },
+        { label: "SLO", text: "Задать SLO.", timestampSeconds: 240 },
+        { label: "Ответственность", text: "Назначить владельца.", timestampSeconds: 360 }
+      ],
+      slidesUrl: null,
+      thumbnail: null
+    };
+    const project: V3Project = {
+      ...shared,
+      entityId: "audit-prompt-caching",
+      type: "project",
+      slug: "audit-prompt-caching",
+      title: "audit-prompt-caching",
+      description:
+        "Открытый skill и локальные скрипты для аудита prompt, prefix и KV cache.",
+      repositoryUrl: "https://github.com/sernote/audit-prompt-caching",
+      verifiedRelease: {
+        version: "v0.1.3",
+        publishedAt: "2026-07-20",
+        url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3",
+        verifiedAt: "2026-07-22"
+      },
+      audience: ["AI-инженеры"],
+      quickStart:
+        "npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching",
+      privacyBoundary: "Использовать очищенные или синтетические данные.",
+      evidence: ["Публичный репозиторий"],
+      supportBoundary: "Без заявленного support SLA."
+    };
+
+    expect(talkMetadata(talk).alternates).toEqual({
+      canonical: "https://notevskii.tech/talks/maas-vs-self-hosted"
+    });
+    expect(projectMetadata(project).alternates).toEqual({
+      canonical: "https://notevskii.tech/projects/audit-prompt-caching"
+    });
+    expect(talkMetadata(talk).authors).toEqual([
+      { name: "Сергей Нотевский", url: "https://notevskii.tech/about" }
+    ]);
+    expect(projectMetadata(project).authors).toEqual([
+      { name: "Сергей Нотевский", url: "https://notevskii.tech/about" }
+    ]);
   });
 
   it("uses the personal master brand in both locales", () => {

@@ -50,6 +50,19 @@ export type BlogViewModel = Readonly<{
   items: readonly BlogListItemViewModel[];
 }>;
 
+export type ContentIndexItemViewModel = V3ListItemViewModel &
+  Readonly<{
+    eyebrow: string;
+  }>;
+
+export type TalksViewModel = Readonly<{
+  items: readonly ContentIndexItemViewModel[];
+}>;
+
+export type ProjectsViewModel = Readonly<{
+  items: readonly ContentIndexItemViewModel[];
+}>;
+
 const RUSSIAN_MONTHS = [
   "января",
   "февраля",
@@ -239,6 +252,40 @@ export function getBlogViewModel(source: V3Source): BlogViewModel {
         publishedAt: record.publishedAt,
         publishedLabel: formatRussianDate(record.publishedAt)
       });
+    })
+  );
+
+  return Object.freeze({ items });
+}
+
+export function getTalksViewModel(source: V3Source): TalksViewModel {
+  const items = Object.freeze(
+    source.listPublic("talk", "ru").map((record): ContentIndexItemViewModel => {
+      if (record.type !== "talk") {
+        throw new Error(`Talks index received a ${record.type} record: ${record.entityId}`);
+      }
+
+      const venue = record.venue.split(/\s*[·,]\s*/, 1)[0];
+      return Object.freeze({
+        ...normalizeListItem(record),
+        description: record.abstract,
+        eyebrow: `${venue} · ${formatRussianDate(record.eventDate)}`
+      });
+    })
+  );
+
+  return Object.freeze({ items });
+}
+
+export function getProjectsViewModel(source: V3Source): ProjectsViewModel {
+  const items = Object.freeze(
+    source.listPublic("project", "ru").map((record): ContentIndexItemViewModel => {
+      if (record.type !== "project") {
+        throw new Error(`Projects index received a ${record.type} record: ${record.entityId}`);
+      }
+
+      const item = normalizeListItem(record);
+      return Object.freeze({ ...item, eyebrow: item.meta });
     })
   );
 

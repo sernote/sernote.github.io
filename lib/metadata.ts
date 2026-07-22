@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
 
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
-import type { V3Article } from "@/lib/content-v3/schema";
+import type { V3Article, V3Project, V3Talk } from "@/lib/content-v3/schema";
 import { getDictionary, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
 import { getActualAlternate } from "@/lib/site-routes";
 
 type PageKey = keyof ReturnType<typeof getDictionary>["pages"];
 type ToolKey = "prefix" | "cost" | "quality";
-type V3MarketingPageKey = "home" | "blog" | "work" | "about" | "contact";
+type V3MarketingPageKey =
+  | "home"
+  | "blog"
+  | "work"
+  | "talks"
+  | "projects"
+  | "about"
+  | "contact";
 
 function absoluteUrl(locale: Locale, path: string) {
   const siteConfig = getSiteConfig(locale);
@@ -42,6 +49,20 @@ const V3_RU_MARKETING_PAGES = {
     title: "Материалы — Сергей Нотевский",
     description:
       "Выступления, открытые инженерные проекты и внешние публикации Сергея Нотевского о production AI-платформах."
+  },
+  talks: {
+    path: "/talks",
+    alternatePath: null,
+    title: "Выступления — Сергей Нотевский",
+    description:
+      "Записи выступлений Сергея Нотевского о production AI-платформах с краткими выжимками, таймкодами и связанными материалами."
+  },
+  projects: {
+    path: "/projects",
+    alternatePath: null,
+    title: "Проекты — Сергей Нотевский",
+    description:
+      "Открытые инженерные проекты Сергея Нотевского для диагностики и эксплуатации production AI-платформ."
   },
   about: {
     path: "/about",
@@ -172,6 +193,53 @@ export function articleMetadata(article: V3Article): Metadata {
       tags: article.topics
     }
   };
+}
+
+function localEditorialMetadata(
+  record: V3Talk | V3Project,
+  expectedType: "talk" | "project"
+): Metadata {
+  if (
+    record.type !== expectedType ||
+    record.publicationStatus !== "published" ||
+    record.publishedAt === null
+  ) {
+    throw new Error(
+      `${expectedType} metadata requires a published local record: ${record.entityId}`
+    );
+  }
+
+  const canonicalPath = getCanonicalUrl(record);
+  const unprefixedPath =
+    record.locale === "en"
+      ? canonicalPath.replace(/^\/en(?=\/|$)/, "") || "/"
+      : canonicalPath;
+  const metadata = createPageMetadata({
+    locale: record.locale,
+    path: unprefixedPath,
+    alternatePath: null,
+    title: record.title,
+    description: record.description
+  });
+
+  return {
+    ...metadata,
+    authors: [
+      {
+        name: "Сергей Нотевский",
+        url: absoluteUrl(record.locale, "/about")
+      }
+    ],
+    keywords: record.topics
+  };
+}
+
+export function talkMetadata(talk: V3Talk): Metadata {
+  return localEditorialMetadata(talk, "talk");
+}
+
+export function projectMetadata(project: V3Project): Metadata {
+  return localEditorialMetadata(project, "project");
 }
 
 export function homeMetadata(locale: Locale): Metadata {
