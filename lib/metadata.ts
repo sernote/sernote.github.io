@@ -34,9 +34,20 @@ export function createPageMetadata({
   const siteConfig = getSiteConfig(locale);
   const canonical = absoluteUrl(locale, path);
   const alternateLocale = locale === "ru" ? "en" : "ru";
-  const alternateUrl = alternatePath
-    ? `${siteConfig.url}${alternatePath === "/" ? "" : alternatePath}`
-    : null;
+  let alternateUrl: string | null = null;
+
+  if (alternatePath !== null && alternatePath !== undefined) {
+    const currentPath = localizedPath(path, locale);
+    const expectedAlternate = getActualAlternate(currentPath, locale);
+
+    if (alternatePath !== expectedAlternate) {
+      throw new Error(
+        `alternatePath ${JSON.stringify(alternatePath)} does not match the locale route policy for ${currentPath}`
+      );
+    }
+
+    alternateUrl = `${siteConfig.url}${alternatePath === "/" ? "" : alternatePath}`;
+  }
 
   return {
     title,

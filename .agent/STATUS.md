@@ -140,9 +140,11 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - The pre-change export audit also failed all five representative surfaces: marketing and tool pages had two main landmarks, handbook chapters had none, and none had a skip link.
   - A self-review regression RED showed that Contact, although a utility action, lacked `aria-current="page"`; both desktop and mobile Contact links now share the same tested active-state decision.
   - Spec-review regression RED showed that the localized `/en` home target was also active on `/en/about`, producing two current-page links. Localized home targets are now exact-only while `/ru/**` compatibility normalization still feeds the canonical RU navigation.
-  - Focused route/metadata/shell tests passed: 1 file, 9 tests. The full suite passed: 6 files, 88 tests.
+  - The metadata invariant is hardened: an explicitly supplied locale alternate must exactly match the authoritative allowlist, while `null`/`undefined` remain canonical-only and never auto-add an alternate.
+  - Focused route/metadata/shell tests passed: 1 file, 17 tests. The full suite passed: 6 files, 96 tests.
   - Direct Fumadocs generation, TypeScript, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 92 static/SSG pages.
   - The post-build shell audit passed for a marketing page, tool page, handbook landing, handbook chapter, and `/ru` compatibility chapter; every sample has exactly one skip link and one `main#main-content`.
+  - The production static mobile menu was manually verified separately by the root task; the automated shell tests do not claim mobile-menu runtime coverage.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

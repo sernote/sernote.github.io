@@ -138,6 +138,61 @@ describe("personal master brand and metadata alternates", () => {
       }
     });
   });
+
+  it("rejects supplied alternates that do not exactly match the route policy", () => {
+    for (const [path, alternatePath] of [
+      ["/blog", "/en/about"],
+      ["/blog", ""],
+      ["/about", "/en/about/"]
+    ] as const) {
+      expect(
+        () =>
+          createPageMetadata({
+            locale: "ru",
+            path,
+            alternatePath,
+            title: "Блог",
+            description: "Инженерные заметки"
+          }),
+        alternatePath || "empty alternate"
+      ).toThrow(/alternatePath.*does not match the locale route policy/i);
+    }
+  });
+
+  it("treats null and undefined alternates as omitted", () => {
+    for (const alternatePath of [null, undefined]) {
+      const metadata = createPageMetadata({
+        locale: "ru",
+        path: "/about",
+        alternatePath,
+        title: "Обо мне",
+        description: "Профессиональный контекст"
+      });
+
+      expect(metadata.alternates).toEqual({
+        canonical: "https://notevskii.tech/about"
+      });
+    }
+  });
+
+  it.each([
+    ["ru", "/", "/en"],
+    ["en", "/", "/"],
+    ["ru", "/about", "/en/about"],
+    ["en", "/about", "/about"],
+    ["ru", "/tools", "/en/tools"],
+    ["en", "/tools", "/tools"]
+  ] as const)("accepts the actual %s alternate for %s", (locale, path, alternatePath) => {
+    expect(() =>
+      createPageMetadata({
+        locale,
+        path,
+        alternatePath,
+        title: "Title",
+        description: "Description"
+      })
+    ).not.toThrow();
+  });
 });
 
 describe("site header active state", () => {
