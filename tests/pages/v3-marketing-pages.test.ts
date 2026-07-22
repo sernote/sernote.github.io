@@ -1,11 +1,19 @@
-import { createElement } from "react";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ContentListItem } from "../../components/marketing/content-list-item";
 import { PageIntro } from "../../components/marketing/page-intro";
 import {
+  ContentDetailPage,
+  EditorialMdxLink,
+  type ContentDetailPageProps
+} from "../../components/pages/content-detail-page";
+import {
   AboutPageContent,
+  BlogPageContent,
   ContactPageContent,
   HomePageContent,
   WorkPageContent
@@ -65,6 +73,34 @@ const externalArticle: V3ListItemViewModel = Object.freeze({
   href: "https://habr.com/ru/companies/bitrix/articles/1033822/",
   linkKind: "external"
 });
+
+const nativeBlogArticle = Object.freeze({
+  ...nativeArticle,
+  description:
+    "Покупка ускорителей не превращает AI-демо в платформу. Сначала зафиксируйте сценарий, правила работы с данными, критерии качества, SLO и владельцев — затем выбирайте способ исполнения.",
+  articleKind: "native" as const,
+  sourceName: null,
+  publishedAt: "2026-07-22",
+  publishedLabel: "22 июля 2026 года"
+});
+
+const externalBlogArticle = Object.freeze({
+  ...externalArticle,
+  description:
+    "Короткий запрос иногда обходится дороже длинного: в агентном цикле важны стабильность префикса, порядок tools и фактические cache-read сигналы.",
+  articleKind: "external-note" as const,
+  sourceName: "Хабр",
+  publishedAt: "2026-05-12",
+  publishedLabel: "12 мая 2026 года"
+});
+
+const blogModel = Object.freeze({
+  items: Object.freeze([nativeBlogArticle, externalBlogArticle])
+});
+
+const TestableContentDetailPage = ContentDetailPage as ComponentType<
+  Omit<ContentDetailPageProps, "children">
+>;
 
 const homeModel: HomeViewModel = Object.freeze({
   entrances: Object.freeze([
@@ -127,6 +163,33 @@ describe("v3 editorial primitives", () => {
 });
 
 describe("v3 complete top-level personal pages", () => {
+  it("renders the exact Blog index as two dated editorial rows in one active Blog main", () => {
+    const html = renderToStaticMarkup(createElement(BlogPageContent, { model: blogModel }));
+
+    expect(count(html, /<main\b/g)).toBe(1);
+    expect(count(html, /<h1\b/g)).toBe(1);
+    expect(count(html, /data-entity-id=/g)).toBe(2);
+    expect(html).toContain("Блог");
+    expect(html).toContain("Статьи и заметки");
+    expect(html).toContain(
+      "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
+    );
+    expect(html).toContain("Авторская статья");
+    expect(html).toContain("22 июля 2026 года");
+    expect(html).toContain("Хабр · внешний материал");
+    expect(html).toContain("12 мая 2026 года");
+    expect(html).toContain(nativeBlogArticle.description);
+    expect(html).toContain(externalBlogArticle.description);
+    expect(html).toMatch(
+      /<a(?=[^>]*href="\/blog")(?=[^>]*aria-current="page")[^>]*>/
+    );
+    expect(html).toMatch(
+      /<a(?=[^>]*href="https:\/\/habr\.com\/ru\/companies\/bitrix\/articles\/1033822\/")(?=[^>]*target="_blank")(?=[^>]*rel="noreferrer")[^>]*>/
+    );
+    expect(html).toContain("Внешняя ссылка, откроется в новой вкладке");
+    expect(html).not.toContain('href="/blog/short-prompt-not-cheap"');
+  });
+
   it("renders the author first and all three entrances in one main", () => {
     const html = renderToStaticMarkup(
       createElement(HomePageContent, { model: homeModel })
@@ -230,5 +293,158 @@ describe("v3 complete top-level personal pages", () => {
     }
     expect(html).not.toMatch(/<form\b/);
     expect(html).not.toMatch(/availability|отвечу в течение/i);
+  });
+});
+
+describe("v3 reusable content detail page", () => {
+  it("renders one author-led article with media, actions, next step, and quiet contact", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        TestableContentDetailPage,
+        {
+          currentPath: "/blog/ai-platform-before-gpu",
+          overline: "Авторская статья",
+          title: "ИИ-платформа начинается не с GPU",
+          deck:
+            "Почему для production-сценария сначала нужно определить правила работы с данными, критерии качества, SLO и владельцев, а уже потом выбирать модель и инфраструктуру.",
+          author: { name: "Сергей Нотевский", href: "/about" },
+          publishedAt: "2026-07-22",
+          updatedAt: "2026-07-22",
+          media: createElement("figure", { "data-detail-media": true }, "Превью материала"),
+          primaryAction: {
+            label: "Открыть запись",
+            href: "https://example.com/recording",
+            external: true
+          },
+          afterContent: createElement(
+            "section",
+            { "data-after-content": true },
+            createElement("p", null, "AI Platform"),
+            createElement("h2", null, "Продолжить в AI Platform"),
+            createElement("a", { href: "/ai-platform" }, "Открыть AI Platform")
+          ),
+          contact: {
+            context: "Вопрос или предложение по материалу",
+            label: "Связаться с Сергеем"
+          }
+        },
+        createElement("p", null, "Тело материала")
+      )
+    );
+    const visibleText = html.replace(/<[^>]+>/g, "");
+
+    expect(count(html, /<main\b/g)).toBe(1);
+    expect(count(html, /<article\b/g)).toBe(1);
+    expect(count(html, /<h1\b/g)).toBe(1);
+    expect(visibleText).toContain("Автор — Сергей Нотевский");
+    expect(html).toContain('href="/about"');
+    expect(visibleText).toContain("Опубликовано 22 июля 2026 года");
+    expect(html).toContain('<time dateTime="2026-07-22">22 июля 2026 года</time>');
+    expect(visibleText).not.toContain("Обновлено");
+    expect(html).toContain("Превью материала");
+    expect(html).toMatch(
+      /<a(?=[^>]*href="https:\/\/example\.com\/recording")(?=[^>]*target="_blank")(?=[^>]*rel="noreferrer")[^>]*>/
+    );
+    expect(html).toContain("Продолжить в AI Platform");
+    expect(html).toContain('href="/ai-platform"');
+    expect(html).toContain("Вопрос или предложение по материалу");
+    expect(html).toContain('href="/contact"');
+    expect(html).toContain("Связаться с Сергеем");
+    expect(html).toContain("Тело материала");
+  });
+
+  it("shows a semantic updated date only when it differs from publication", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        TestableContentDetailPage,
+        {
+          currentPath: "/blog/ai-platform-before-gpu",
+          overline: "Авторская статья",
+          title: "ИИ-платформа начинается не с GPU",
+          deck: "Проверяемая редакционная вводная для материала.",
+          author: { name: "Сергей Нотевский", href: "/about" },
+          publishedAt: "2026-07-22",
+          updatedAt: "2026-08-03",
+          contact: {
+            context: "Вопрос или предложение по материалу",
+            label: "Связаться с Сергеем"
+          }
+        },
+        createElement("p", null, "Тело материала")
+      )
+    );
+    const visibleText = html.replace(/<[^>]+>/g, "");
+
+    expect(visibleText).toContain("Обновлено 3 августа 2026 года");
+    expect(html).toContain('<time dateTime="2026-08-03">3 августа 2026 года</time>');
+  });
+
+  it("marks external MDX links visibly and accessibly without changing internal links", () => {
+    const externalHtml = renderToStaticMarkup(
+      createElement(
+        EditorialMdxLink,
+        { href: "https://www.nist.gov/itl/ai-risk-management-framework" },
+        "NIST AI Risk Management Framework"
+      )
+    );
+    const internalHtml = renderToStaticMarkup(
+      createElement(EditorialMdxLink, { href: "/ai-platform/map" }, "Карта AI Platform")
+    );
+
+    expect(externalHtml).toContain('target="_blank"');
+    expect(externalHtml).toContain('rel="noreferrer"');
+    expect(externalHtml).toContain('data-external-cue="true"');
+    expect(externalHtml).toContain("↗");
+    expect(externalHtml).toContain("Внешняя ссылка, откроется в новой вкладке");
+    expect(internalHtml).not.toContain('target="_blank"');
+    expect(internalHtml).not.toContain("Внешняя ссылка, откроется в новой вкладке");
+  });
+});
+
+describe("v3 Blog route contract", () => {
+  it("keeps the Blog index as a thin source-backed server composition", () => {
+    const routePath = join(process.cwd(), "app/(en)/blog/page.tsx");
+
+    expect(existsSync(routePath)).toBe(true);
+    if (!existsSync(routePath)) return;
+
+    const routeText = readFileSync(routePath, "utf8");
+    expect(routeText).toContain("BlogPageContent");
+    expect(routeText).toContain("getBlogViewModel(v3Source)");
+    expect(routeText).toContain('v3MarketingMetadata("blog")');
+    expect(routeText).not.toContain("short-prompt-not-cheap");
+  });
+
+  it("keeps static params source-backed and rejects non-native local detail routes", () => {
+    const routePath = join(process.cwd(), "app/(en)/blog/[slug]/page.tsx");
+
+    expect(existsSync(routePath)).toBe(true);
+    if (!existsSync(routePath)) return;
+
+    const routeText = readFileSync(routePath, "utf8");
+    expect(routeText).toMatch(/export const dynamicParams = false/);
+    expect(routeText).toContain('v3Source.generateParams("article", "ru")');
+    expect(routeText).toContain('v3Source.getBySlug("article", slug, "ru")');
+    expect(routeText).toMatch(
+      /record === null \|\| record\.type !== "article" \|\| record\.kind !== "native"/
+    );
+    expect(routeText).toContain("notFound()");
+    expect(routeText).toContain("DocsBody");
+    expect(routeText).toContain("EditorialMdxLink");
+    expect(routeText).toContain('overline="Авторская статья"');
+    expect(routeText).toContain('name: "Сергей Нотевский"');
+    expect(routeText).toContain('href: "/about"');
+    expect(routeText).toContain("Продолжить в AI Platform");
+    expect(routeText).toContain(
+      "Карта областей и практический reference по построению production AI platform: от стратегии и control plane до инференса, качества, стоимости и эксплуатации."
+    );
+    expect(routeText).toContain('href="/ai-platform"');
+    expect(routeText).toContain("Открыть AI Platform");
+    expect(routeText).toContain("Вопрос или предложение по материалу");
+    expect(routeText).toContain("Связаться с Сергеем");
+    expect(routeText).not.toContain("DocsPage");
+    expect(routeText).not.toContain("dangerouslySetInnerHTML");
+    expect(routeText).not.toContain("short-prompt-not-cheap");
+    expect(routeText).not.toContain("habr.com/ru/companies/bitrix/articles/1033822");
   });
 });

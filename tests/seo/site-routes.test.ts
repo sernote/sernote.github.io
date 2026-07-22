@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 import { SiteHeader } from "../../components/marketing/site-shell";
 import { SheetContent, SheetDescription } from "../../components/ui/sheet";
 import { getDictionary, getSiteConfig, getNavItems, type Locale } from "../../lib/i18n";
-import { createPageMetadata, v3MarketingMetadata } from "../../lib/metadata";
+import type { V3Article } from "../../lib/content-v3/schema";
+import {
+  articleMetadata,
+  createPageMetadata,
+  v3MarketingMetadata
+} from "../../lib/metadata";
 import {
   RU_PRIMARY_NAV,
   getActualAlternate,
@@ -123,6 +128,64 @@ describe("v3 site route policy", () => {
 });
 
 describe("personal master brand and metadata alternates", () => {
+  it("keeps the Blog index canonical-only", () => {
+    const metadata = v3MarketingMetadata("blog");
+    expect(metadata.title).toBe("Блог — Сергей Нотевский");
+    expect(metadata.description).toBe(
+      "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
+    );
+    expect(metadata.alternates).toEqual({
+      canonical: "https://notevskii.tech/blog"
+    });
+  });
+
+  it("emits native article canonical, timestamps, and author metadata without hreflang", () => {
+    const article: V3Article = {
+      entityId: "ai-platform-before-gpu",
+      type: "article",
+      locale: "ru",
+      kind: "native",
+      slug: "ai-platform-before-gpu",
+      title: "ИИ-платформа начинается не с GPU",
+      description:
+        "Почему для production-сценария сначала нужно определить правила работы с данными, критерии качества, SLO и владельцев, а уже потом выбирать модель и инфраструктуру.",
+      excerpt:
+        "Покупка ускорителей не превращает AI-демо в платформу. Сначала зафиксируйте сценарий, правила работы с данными, критерии качества, SLO и владельцев — затем выбирайте способ исполнения.",
+      publicationStatus: "published",
+      reviewStatus: "unreviewed",
+      publishedAt: "2026-07-22",
+      updatedAt: "2026-07-22",
+      reviewedAt: null,
+      reviewCycleDays: null,
+      topics: ["ai-platform", "architecture", "ownership", "slo"],
+      relations: {},
+      sourceName: null,
+      sourceUrl: null,
+      supersedes: null,
+      supersededBy: null
+    };
+
+    const metadata = articleMetadata(article);
+    expect(metadata.alternates).toEqual({
+      canonical: "https://notevskii.tech/blog/ai-platform-before-gpu"
+    });
+    expect(metadata.openGraph).toMatchObject({
+      type: "article",
+      url: "https://notevskii.tech/blog/ai-platform-before-gpu",
+      publishedTime: "2026-07-22",
+      modifiedTime: "2026-07-22",
+      authors: ["https://notevskii.tech/about"],
+      tags: ["ai-platform", "architecture", "ownership", "slo"]
+    });
+    expect(metadata.authors).toEqual([
+      {
+        name: "Сергей Нотевский",
+        url: "https://notevskii.tech/about"
+      }
+    ]);
+    expect(metadata.alternates).not.toHaveProperty("languages");
+  });
+
   it("uses the personal master brand in both locales", () => {
     expect(getSiteConfig("ru").name).toBe("Сергей Нотевский");
     expect(getSiteConfig("en").name).toBe("Sergei Notevskii");

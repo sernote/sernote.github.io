@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page milestone is closed after independent spec, quality, editorial, browser, accessibility, and design QA; Blog is the next implementation milestone.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Blog implementation is complete and technically validated; Talks and Projects are the next implementation milestone. Browser/design QA and independent review are not claimed for Task 6.
 
 ## Completed
 
@@ -13,6 +13,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Replaced the handbook-first global identity with the Сергей Нотевский personal master brand, an exact four-item Russian primary navigation, allowlisted locale equivalence, canonical-only metadata by default, and a shared accessible shell with one skip link and one main landmark across marketing, tools, handbook pages, and `/ru` compatibility pages.
 - Built the v3 Russian Home, Materials, About, and Contact compositions around the accepted author-index direction. Explicit content selections are resolved through a pure injected view model, Materials links its external article directly to Habr, and the four pages use final direct metadata rather than the frozen legacy copy.
 - Hardened the reviewed v3 personal pages with a real localized description and close name for the mobile navigation dialog, explicit new-tab guidance for assistive technology, and the converged Russian page and metadata copy.
+- Built the v3 Blog as a two-row editorial index: one native article and one metadata-only external Habr note. Added the source-backed native detail route, reusable author-led detail shell, semantic publication metadata, safe MDX link treatment, and the reviewed Russian article corrections without creating a local route for the external note.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -162,6 +163,13 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Mobile-menu runtime QA confirmed a localized description and close name, initial focus on Close, Tab movement to Blog, Escape close with focus return, body-scroll lock, exact navigation links, and an empty final browser console log.
   - The same-input before/after comparison, responsive captures, finding history, and final `passed` result are recorded in `design-qa.md`.
   - The Next.js build still reports the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
+- v3 Blog implementation checkpoint:
+  - TDD RED produced 12 expected failures for the missing Blog view model and date formatter, missing Blog/detail compositions and routes, missing article metadata, and unapplied editorial corrections.
+  - Focused GREEN passed: 3 files, 57 tests. Full Vitest passed: 7 files, 128 tests.
+  - Direct Fumadocs generation, TypeScript validation, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 95 static/SSG pages.
+  - Static export checks confirmed `/blog/` and `/blog/ai-platform-before-gpu/`, one main landmark on both pages, the native author/body/AI Platform/Contact content, article Open Graph timestamps, and the direct Habr link. No `/blog/short-prompt-not-cheap/` export or local link exists.
+  - The five-surface shell landmark audit passed. Browser/design QA and independent review were not run or claimed for this implementation checkpoint.
+  - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

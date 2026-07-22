@@ -38,6 +38,52 @@ export type WorkViewModel = Readonly<{
   }>[];
 }>;
 
+export type BlogListItemViewModel = V3ListItemViewModel &
+  Readonly<{
+    articleKind: "native" | "external-note";
+    sourceName: string | null;
+    publishedAt: string;
+    publishedLabel: string;
+  }>;
+
+export type BlogViewModel = Readonly<{
+  items: readonly BlogListItemViewModel[];
+}>;
+
+const RUSSIAN_MONTHS = [
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря"
+] as const;
+
+export function formatRussianDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (match === null) {
+    throw new Error(`Expected a valid calendar date, received ${JSON.stringify(value)}`);
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
+    throw new Error(`Expected a valid calendar date, received ${JSON.stringify(value)}`);
+  }
+
+  return `${day} ${RUSSIAN_MONTHS[month - 1]} ${year} года`;
+}
+
 const HOME_ENTRANCES: HomeViewModel["entrances"] = Object.freeze([
   Object.freeze({
     id: "blog",
@@ -176,4 +222,25 @@ export function getWorkViewModel(source: V3Source): WorkViewModel {
   ]);
 
   return Object.freeze({ groups });
+}
+
+export function getBlogViewModel(source: V3Source): BlogViewModel {
+  const items = Object.freeze(
+    source.listPublic("article", "ru").map((record): BlogListItemViewModel => {
+      if (record.type !== "article" || record.publishedAt === null) {
+        throw new Error(`Blog record ${record.entityId} is not a published article`);
+      }
+
+      return Object.freeze({
+        ...normalizeListItem(record),
+        description: record.excerpt,
+        articleKind: record.kind,
+        sourceName: record.sourceName,
+        publishedAt: record.publishedAt,
+        publishedLabel: formatRussianDate(record.publishedAt)
+      });
+    })
+  );
+
+  return Object.freeze({ items });
 }

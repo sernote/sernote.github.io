@@ -5,7 +5,11 @@ import { ContentListItem } from "@/components/marketing/content-list-item";
 import { PageIntro } from "@/components/marketing/page-intro";
 import { MarketingPage } from "@/components/marketing/site-shell";
 import { siteLinks } from "@/lib/i18n";
-import type { HomeViewModel, WorkViewModel } from "@/lib/content-v3/view-models";
+import type {
+  BlogViewModel,
+  HomeViewModel,
+  WorkViewModel
+} from "@/lib/content-v3/view-models";
 
 type HomePageContentProps = {
   model: HomeViewModel;
@@ -13,6 +17,10 @@ type HomePageContentProps = {
 
 type WorkPageContentProps = {
   model: WorkViewModel;
+};
+
+type BlogPageContentProps = {
+  model: BlogViewModel;
 };
 
 const professionalContext = [
@@ -259,6 +267,30 @@ export function WorkPageContent({ model }: WorkPageContentProps) {
             </section>
           ))}
         </div>
+      </div>
+    </MarketingPage>
+  );
+}
+
+export function BlogPageContent({ model }: BlogPageContentProps) {
+  return (
+    <MarketingPage locale="ru" currentPath="/blog">
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <PageIntro
+          overline="Блог"
+          title="Статьи и заметки"
+          lead="Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
+        />
+
+        <section aria-label="Статьи и заметки" className="mt-16 border-t border-border/80 sm:mt-20 lg:mt-24">
+          {model.items.map((item) => (
+            <ContentListItem
+              key={item.entityId}
+              item={item}
+              eyebrow={`${item.meta} · ${item.publishedLabel}`}
+            />
+          ))}
+        </section>
       </div>
     </MarketingPage>
   );

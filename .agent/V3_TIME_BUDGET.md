@@ -25,7 +25,7 @@ Author-hours measure planned human author/reviewer effort. Agent runtime is trac
 | Task 3 | 2 | 0 | About 1 hour total; tracked separately | Complete | Content freeze, two converged independent reviews, synthetic evidence, source adapter, atomic lifecycle promotion, and review artifact completed. |
 | Task 4 | 2 | 0 | About 16 minutes total; tracked separately | Complete | Personal master brand, canonical route policy, explicit locale pairs, semantic shell, and static landmark audit validated. |
 | Task 5 | 2 | 0 | 17 minutes to implementation, about 9 minutes of review hardening, plus autonomous browser/design QA; tracked separately | Complete | Pure view models, four complete RU pages, localized mobile-dialog semantics, converged role and page copy, metadata, tests, static build, landmark audit, responsive browser QA, and design QA passed. |
-| Task 6 | 2 | 0 | Not started | Not started | — |
+| Task 6 | 2 | 0 | About 12 minutes total; tracked separately | Implementation complete | Native Blog index/detail, metadata-only Habr routing, reusable detail shell, article metadata, Russian copy corrections, tests, and static export validated; browser/design QA and independent review are not claimed. |
 | Task 7 | 2 | 0 | Not started | Not started | — |
 | Task 8 | 2 | 0 | Not started | Not started | — |
 | Task 9 | 2 | 0 | Not started | Not started | — |

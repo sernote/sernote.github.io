@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 
 import { createV3Source } from "../../lib/content-v3/source-core";
 import {
+  formatRussianDate,
+  getBlogViewModel,
   getHomeViewModel,
   getWorkViewModel
 } from "../../lib/content-v3/view-models";
@@ -177,14 +179,24 @@ function project(entityId: string, overrides: Record<string, unknown> = {}) {
   );
 }
 
+const nativeArticleExcerpt =
+  "Покупка ускорителей не превращает AI-демо в платформу. Сначала зафиксируйте сценарий, правила работы с данными, критерии качества, SLO и владельцев — затем выбирайте способ исполнения.";
+
+const externalArticleExcerpt =
+  "Короткий запрос иногда обходится дороже длинного: в агентном цикле важны стабильность префикса, порядок tools и фактические cache-read сигналы.";
+
 const fixtures = [
-  article("ai-platform-before-gpu", { publishedAt: "2026-07-22" }),
+  article("ai-platform-before-gpu", {
+    publishedAt: "2026-07-22",
+    excerpt: nativeArticleExcerpt
+  }),
   article("short-prompt-not-cheap", {
     kind: "external-note",
     slug: null,
     sourceName: "Хабр",
     sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
-    publishedAt: "2026-07-21",
+    publishedAt: "2026-05-12",
+    excerpt: externalArticleExcerpt,
     relations: { platformEntityIds: ["prefix-cache"] }
   }),
   talk("maas-vs-self-hosted-roii"),
@@ -322,6 +334,80 @@ describe("v3 generated-entry source adapter", () => {
 });
 
 describe("v3 personal-site view models", () => {
+  it("builds the Blog in deterministic source order with explicit article provenance and dates", () => {
+    const model = getBlogViewModel(createV3Source(fixtures));
+
+    expect(
+      model.items.map(
+        ({
+          entityId,
+          href,
+          linkKind,
+          articleKind,
+          sourceName,
+          publishedAt,
+          publishedLabel,
+          meta
+        }) => [
+          entityId,
+          href,
+          linkKind,
+          articleKind,
+          sourceName,
+          publishedAt,
+          publishedLabel,
+          meta
+        ]
+      )
+    ).toEqual([
+      [
+        "ai-platform-before-gpu",
+        "/blog/ai-platform-before-gpu",
+        "internal",
+        "native",
+        null,
+        "2026-07-22",
+        "22 июля 2026 года",
+        "Авторская статья"
+      ],
+      [
+        "short-prompt-not-cheap",
+        "https://habr.com/ru/companies/bitrix/articles/1033822/",
+        "external",
+        "external-note",
+        "Хабр",
+        "2026-05-12",
+        "12 мая 2026 года",
+        "Хабр · внешний материал"
+      ]
+    ]);
+    expect(model.items.map(({ description }) => description)).toEqual([
+      nativeArticleExcerpt,
+      externalArticleExcerpt
+    ]);
+  });
+
+  it("keeps the Blog view model immutable, body-free, and independent of generated-entry order", () => {
+    const normal = getBlogViewModel(createV3Source(fixtures));
+    const reversed = getBlogViewModel(createV3Source([...fixtures].reverse()));
+
+    expect(reversed).toEqual(normal);
+    expect(Object.isFrozen(normal)).toBe(true);
+    expect(Object.isFrozen(normal.items)).toBe(true);
+    for (const item of normal.items) {
+      expect(Object.isFrozen(item)).toBe(true);
+      expect(item).not.toHaveProperty("body");
+      expect(item).not.toHaveProperty("sourcePath");
+    }
+  });
+
+  it("formats Russian publication dates deterministically from calendar-date strings", () => {
+    expect(formatRussianDate("2026-07-22")).toBe("22 июля 2026 года");
+    expect(formatRussianDate("2026-05-12")).toBe("12 мая 2026 года");
+    expect(formatRussianDate("2026-01-01")).toBe("1 января 2026 года");
+    expect(() => formatRussianDate("2026-02-30")).toThrow(/calendar date/i);
+  });
+
   it("builds the exact home entrances and explicit selected artifacts", () => {
     const model = getHomeViewModel(createV3Source(fixtures));
 
@@ -452,5 +538,74 @@ describe("v3 personal-site view models", () => {
     expect(moduleText).not.toMatch(/collections\/server|from ["'].\/source["']/);
     expect(moduleText).toMatch(/import type .*source-core/);
     expect(moduleText).toMatch(/getCanonicalUrl.*\.\/registry/);
+  });
+});
+
+describe("native Blog article editorial contract", () => {
+  it("keeps the required lifecycle, structure, links, and corrected Russian copy", () => {
+    const articleText = readFileSync(
+      join(process.cwd(), "content/v3/blog/ai-platform-before-gpu.mdx"),
+      "utf8"
+    );
+    const requiredDescription =
+      "Почему для production-сценария сначала нужно определить правила работы с данными, критерии качества, SLO и владельцев, а уже потом выбирать модель и инфраструктуру.";
+
+    expect(articleText).toContain(`description: "${requiredDescription}"`);
+    expect(articleText).toContain(`excerpt: "${nativeArticleExcerpt}"`);
+    expect(articleText).toMatch(/publicationStatus: published/);
+    expect(articleText).toMatch(/reviewStatus: unreviewed/);
+    expect(articleText).toMatch(/publishedAt: "2026-07-22"/);
+    expect(articleText).toMatch(/updatedAt: "2026-07-22"/);
+    expect(articleText).toMatch(/relations: \{\}/);
+
+    for (const copy of [
+      "Коллегам нравится демо.",
+      "Один ассистент находит фрагмент в публичной базе знаний.",
+      "Другой предлагает изменить запись в рабочей системе.",
+      "Третий вызывает инструмент, который записывает данные.",
+      "Локальное размещение модели само по себе не защищает систему: сервис может получить чрезмерные права, чувствительные данные — попасть в лог, а вредная инструкция из документа — дойти до исполнения.",
+      "лучше выдерживать стиль",
+      "корректность выбора инструмента",
+      "трижды вызывает инструмент",
+      "доля успешных вызовов инструментов",
+      "правила реакции на сбой",
+      "Security задаёт обязательные меры контроля и процесс оценки остаточного риска. Остаточный риск принимает назначенный владелец.",
+      "назначенный владелец с полномочиями",
+      "Одних спецификаций устройства без профиля запросов недостаточно для расчёта. Среднюю утилизацию тоже нужно сопоставлять с очередью и SLO.",
+      "к компонентам и проверяемым данным"
+    ]) {
+      expect(articleText).toContain(copy);
+    }
+
+    for (const outdatedCopy of [
+      "Демо нравится.",
+      "лучше писать стиль",
+      "корректность tool choice",
+      "трижды повторяет инструмент",
+      "успех инструментов",
+      "политика ошибки",
+      "человек или роль, которые вправе",
+      "к компонентам и evidence"
+    ]) {
+      expect(articleText).not.toContain(outdatedCopy);
+    }
+
+    expect(articleText).toContain(
+      "[NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)"
+    );
+    expect(articleText).toContain(
+      "[Implementing SLOs](https://sre.google/workbook/implementing-slos/)"
+    );
+
+    const headings = [...articleText.matchAll(/^## (.+)$/gm)].map((match) => match[1]);
+    expect(headings).toEqual([
+      "Сценарий задаёт границу системы",
+      "Сначала данные и безопасность",
+      "Качество должно пережить демо",
+      "SLO описывает пользовательский результат",
+      "Ownership нельзя отдать платформе целиком",
+      "Теперь выбираем execution path",
+      "Карта вместо списка покупок"
+    ]);
   });
 });

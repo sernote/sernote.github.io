@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
+import { getCanonicalUrl } from "@/lib/content-v3/registry";
+import type { V3Article } from "@/lib/content-v3/schema";
 import { getDictionary, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
 import { getActualAlternate } from "@/lib/site-routes";
 
 type PageKey = keyof ReturnType<typeof getDictionary>["pages"];
 type ToolKey = "prefix" | "cost" | "quality";
-type V3MarketingPageKey = "home" | "work" | "about" | "contact";
+type V3MarketingPageKey = "home" | "blog" | "work" | "about" | "contact";
 
 function absoluteUrl(locale: Locale, path: string) {
   const siteConfig = getSiteConfig(locale);
@@ -26,6 +28,13 @@ const V3_RU_MARKETING_PAGES = {
     title: "Сергей Нотевский — AI Platform Lead",
     description:
       "Личный сайт Сергея Нотевского: статьи, выступления, открытые проекты и практический справочник по production AI-платформам."
+  },
+  blog: {
+    path: "/blog",
+    alternatePath: null,
+    title: "Блог — Сергей Нотевский",
+    description:
+      "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
   },
   work: {
     path: "/work",
@@ -123,6 +132,43 @@ export function v3MarketingMetadata(key: V3MarketingPageKey): Metadata {
   }
 
   return createPageMetadata({ locale: "ru", ...page });
+}
+
+export function articleMetadata(article: V3Article): Metadata {
+  if (
+    article.kind !== "native" ||
+    article.slug === null ||
+    article.publicationStatus !== "published" ||
+    article.publishedAt === null
+  ) {
+    throw new Error(`Article metadata requires a published native article: ${article.entityId}`);
+  }
+
+  const canonicalPath = getCanonicalUrl(article);
+  const unprefixedPath =
+    article.locale === "en" ? canonicalPath.replace(/^\/en(?=\/|$)/, "") || "/" : canonicalPath;
+  const baseMetadata = createPageMetadata({
+    locale: article.locale,
+    path: unprefixedPath,
+    alternatePath: null,
+    title: article.title,
+    description: article.description
+  });
+  const authorUrl = absoluteUrl(article.locale, "/about");
+
+  return {
+    ...baseMetadata,
+    authors: [{ name: "Сергей Нотевский", url: authorUrl }],
+    keywords: article.topics,
+    openGraph: {
+      ...baseMetadata.openGraph,
+      type: "article",
+      publishedTime: article.publishedAt,
+      modifiedTime: article.updatedAt,
+      authors: [authorUrl],
+      tags: article.topics
+    }
+  };
 }
 
 export function homeMetadata(locale: Locale): Metadata {
