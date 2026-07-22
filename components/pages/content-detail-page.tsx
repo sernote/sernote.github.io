@@ -18,7 +18,7 @@ export type ContentDetailFact = Readonly<{
   dateTime?: string;
 }>;
 
-export type ContentDetailPageProps = {
+type ContentDetailPageBaseProps = {
   currentPath: string;
   overline: string;
   title: string;
@@ -27,8 +27,6 @@ export type ContentDetailPageProps = {
     name: string;
     href: string;
   }>;
-  publishedAt?: string;
-  updatedAt?: string;
   facts?: readonly ContentDetailFact[];
   media?: ReactNode;
   primaryAction?: DetailAction;
@@ -39,6 +37,19 @@ export type ContentDetailPageProps = {
   }>;
   children: ReactNode;
 };
+
+type ContentDetailPublicationProps =
+  | Readonly<{
+      publishedAt: string;
+      updatedAt: string;
+    }>
+  | Readonly<{
+      publishedAt?: never;
+      updatedAt?: never;
+    }>;
+
+export type ContentDetailPageProps = ContentDetailPageBaseProps &
+  ContentDetailPublicationProps;
 
 function PrimaryAction({ action }: { action: DetailAction }) {
   const contents = (

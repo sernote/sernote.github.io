@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { ContentListItem } from "../../components/marketing/content-list-item";
 import { PageIntro } from "../../components/marketing/page-intro";
@@ -133,7 +133,7 @@ const talksModel: TalksViewModel = Object.freeze({
       ...talk,
       description:
         "Как разложить выбор между внешним API и собственной моделью на требования к качеству, SLO, загрузке, инженерной поддержке, контексту и лицензии.",
-      eyebrow: "РОИИ 2026 · 19 февраля 2026 года"
+      eyebrow: "ROИИ 2026 · 19 февраля 2026 года"
     })
   ])
 });
@@ -289,7 +289,7 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).toContain(
       "Записи выступлений о production AI-платформах с краткими выжимками, таймкодами и ссылками на связанные материалы."
     );
-    expect(html).toContain("РОИИ 2026 · 19 февраля 2026 года");
+    expect(html).toContain("ROИИ 2026 · 19 февраля 2026 года");
     expect(html).toContain("Свои ИИ-модели или API по подписке?");
     expect(html).toContain(talksModel.items[0].description);
     expect(html).toMatch(
@@ -461,7 +461,7 @@ describe("v3 reusable content detail page", () => {
           deck: "Как сравнить внешнее API и собственную модель.",
           author: { name: "Сергей Нотевский", href: "/about" },
           facts: [
-            { label: "Площадка", value: "РОИИ 2026 · день 1" },
+            { label: "Площадка", value: "ROИИ 2026 · день 1" },
             {
               label: "Дата выступления",
               value: "19 февраля 2026 года",
@@ -483,7 +483,7 @@ describe("v3 reusable content detail page", () => {
     );
     const visibleText = html.replace(/<[^>]+>/g, "");
 
-    expect(visibleText).toContain("Площадка — РОИИ 2026 · день 1");
+    expect(visibleText).toContain("Площадка — ROИИ 2026 · день 1");
     expect(visibleText).toContain("Дата выступления — 19 февраля 2026 года");
     expect(visibleText).toContain("Видео опубликовано — 22 февраля 2026 года");
     expect(html).toContain(
@@ -494,6 +494,45 @@ describe("v3 reusable content detail page", () => {
     );
     expect(visibleText).not.toContain("Опубликовано 19 февраля");
     expect(visibleText).not.toContain("Опубликовано 20 июля");
+  });
+
+  it("requires publication dates as a compile-time pair and defends the invariant at runtime", () => {
+    const baseProps = {
+      currentPath: "/talks/maas-vs-self-hosted",
+      overline: "Доклад",
+      title: "Свои ИИ-модели или API по подписке?",
+      deck: "Как сравнить внешнее API и собственную модель.",
+      author: { name: "Сергей Нотевский", href: "/about" },
+      contact: {
+        context: "Обсудить тему доклада",
+        label: "Связаться с Сергеем"
+      },
+      children: createElement("p", null, "Тело доклада")
+    };
+
+    expectTypeOf(baseProps).toMatchTypeOf<ContentDetailPageProps>();
+    expectTypeOf({
+      ...baseProps,
+      publishedAt: "2026-07-22",
+      updatedAt: "2026-08-03"
+    }).toMatchTypeOf<ContentDetailPageProps>();
+    expectTypeOf({
+      ...baseProps,
+      publishedAt: "2026-07-22"
+    }).not.toMatchTypeOf<ContentDetailPageProps>();
+    expectTypeOf({
+      ...baseProps,
+      updatedAt: "2026-08-03"
+    }).not.toMatchTypeOf<ContentDetailPageProps>();
+
+    const invalidRuntimeProps = {
+      ...baseProps,
+      publishedAt: "2026-07-22"
+    } as unknown as ContentDetailPageProps;
+
+    expect(() => ContentDetailPage(invalidRuntimeProps)).toThrow(
+      "Content detail publication dates must be supplied together"
+    );
   });
 
   it("marks external MDX links visibly and accessibly without changing internal links", () => {

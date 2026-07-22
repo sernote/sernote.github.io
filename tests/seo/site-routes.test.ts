@@ -233,7 +233,7 @@ describe("personal master brand and metadata alternates", () => {
       title: "Свои ИИ-модели или API по подписке?",
       description:
         "Доклад о выборе между внешним API и собственной моделью по качеству, SLO и ответственности.",
-      venue: "РОИИ 2026 · день 1",
+      venue: "ROИИ 2026 · день 1",
       eventDate: "2026-02-19",
       format: "talk",
       recordingUrl: "https://www.youtube.com/watch?v=RHbbeHKGh6I",

@@ -142,7 +142,7 @@ function talk(entityId: string, overrides: Record<string, unknown> = {}) {
       entityId,
       type: "talk",
       slug: entityId === "maas-vs-self-hosted-roii" ? "maas-vs-self-hosted" : entityId,
-      venue: "РОИИ 2026 · день 1",
+      venue: "ROИИ 2026 · день 1",
       eventDate: "2026-02-19",
       format: "talk",
       recordingUrl: "https://youtu.be/RHbbeHKGh6I",
@@ -435,7 +435,7 @@ describe("v3 personal-site view models", () => {
         entityId: "maas-vs-self-hosted-roii",
         href: "/talks/maas-vs-self-hosted",
         description: "Как сравнить MaaS и self-hosted по качеству, SLO и ответственности.",
-        eyebrow: "РОИИ 2026 · 19 февраля 2026 года"
+        eyebrow: "ROИИ 2026 · 19 февраля 2026 года"
       })
     ]);
     expect(projects.items).toEqual([
@@ -667,13 +667,18 @@ describe("Talk and project exemplar editorial contract", () => {
       "utf8"
     );
 
-    expect(talkText).toContain('venue: "РОИИ 2026 · день 1"');
+    expect(talkText).toContain('description: "Доклад ROИИ');
+    expect(talkText).toContain('venue: "ROИИ 2026 · день 1"');
     expect(talkText).toContain('eventDate: "2026-02-19"');
     expect(talkText).toContain('recordingUploadedAt: "2026-02-22"');
     expect(talkText).toContain(
       'recordingUrl: "https://www.youtube.com/watch?v=RHbbeHKGh6I"'
     );
     expect(talkText).toContain('path: "/media/talks/maas-vs-self-hosted.jpg"');
+    expect(talkText).toContain("слайде доклада ROИИ");
+    expect(talkText).toContain("[ROИИ 2026]");
+    expect(talkText).toContain("публичные роли ROИИ 2026");
+    expect(talkText).not.toContain("РОИИ");
     expect(talkText.match(/timestampSeconds:/g)).toHaveLength(5);
     expect(talkText).toContain("Публичную ссылку на слайды подтвердить не удалось.");
     expect(talkText).not.toMatch(/слайдов (?:нет|не было)/i);
