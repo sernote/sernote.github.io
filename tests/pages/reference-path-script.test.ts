@@ -101,4 +101,16 @@ describe("v3 static reference-path audit", () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toMatch(/missing transition.*prefix-cache/i);
   });
+
+  // Portability regression: containment now uses path.relative/isAbsolute rather
+  // than a POSIX-only string prefix, so a valid export root passed with a trailing
+  // separator must not be misread as an unsafe path.
+  it("accepts an export root passed with a trailing separator", () => {
+    const root = createFixture();
+    const result = run(`${root}/`);
+
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout).toContain("6 files");
+    expect(result.stderr).not.toMatch(/unsafe export path/i);
+  });
 });

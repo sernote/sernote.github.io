@@ -63,6 +63,12 @@ jobs:
       - name: Build static site
         run: pnpm build
 
+      - name: Verify reference path contract
+        run: pnpm verify:reference
+
+      - name: Verify static export contract
+        run: pnpm verify:export
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

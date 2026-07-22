@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:reference": "node scripts/check-v3-reference-path.mjs out",
+    "verify:export": "node scripts/check-static-export.mjs out",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm verify:reference && pnpm verify:export"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

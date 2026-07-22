@@ -1,7 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 
 const exportRoot = resolve(process.argv[2] ?? "out");
+
+function isWithinExportRoot(absolutePath) {
+  const relativePath = relative(exportRoot, absolutePath);
+  return relativePath === "" || (!relativePath.startsWith("..") && !isAbsolute(relativePath));
+}
 
 const pages = Object.freeze({
   landing: "ai-platform/index.html",
@@ -48,7 +53,7 @@ const htmlByPage = new Map();
 
 for (const [page, relativePath] of Object.entries(pages)) {
   const absolutePath = resolve(exportRoot, relativePath);
-  if (!absolutePath.startsWith(`${exportRoot}/`)) {
+  if (!isWithinExportRoot(absolutePath)) {
     failures.push(`unsafe export path: ${relativePath}`);
     continue;
   }
