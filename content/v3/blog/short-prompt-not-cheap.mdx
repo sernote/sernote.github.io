@@ -1,0 +1,35 @@
+---
+entityId: short-prompt-not-cheap
+type: article
+locale: ru
+kind: external-note
+slug: null
+title: "Короткий промпт не значит дешёвый"
+description: "Аннотация к статье о том, почему динамический набор tools способен разрушить повторное использование префикса в агентном цикле."
+publicationStatus: draft
+reviewStatus: unreviewed
+publishedAt: null
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: null
+topics:
+  - prefix-cache
+  - agents
+  - prompt-caching
+relations:
+  projectIds:
+    - audit-prompt-caching
+  platformEntityIds:
+    - prefix-cache
+excerpt: "Короткий запрос иногда обходится дороже длинного: в агентном цикле важны стабильность префикса, порядок tools и фактические cache-read сигналы."
+sourceName: "Хабр"
+sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/"
+supersedes: null
+supersededBy: null
+---
+
+Статья разбирает контринтуитивный сбой в агентных запросах. Команда сокращает список tools на каждом шаге, но вместе с длиной меняются ранние байты запроса. Для prefix cache это новый префикс, даже если задача и история диалога кажутся прежними. Поэтому локальная экономия входных токенов ещё ничего не говорит об эффективной стоимости всей сессии.
+
+Практическая часть материала сводит аудит к проверяемым вещам: форме сериализованного запроса, стабильности system-инструкций и tool schemas, cache-read полям провайдера, маршруту и границе доверия. Приведённые примеры нужно переносить на свой API-контракт и свою телеметрию, а не принимать за обещание результата.
+
+Каноническая версия опубликована на [Хабре 12 мая 2026 года](https://habr.com/ru/companies/bitrix/articles/1033822/). Здесь хранится только оригинальная редакционная аннотация и связи с [Prefix Cache](/ai-platform/components/prefix-cache) и проектом [audit-prompt-caching](/projects/audit-prompt-caching).

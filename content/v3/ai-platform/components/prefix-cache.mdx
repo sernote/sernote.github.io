@@ -1,0 +1,193 @@
+---
+entityId: prefix-cache
+type: platform-component
+locale: ru
+slug: prefix-cache
+title: "Prefix Cache"
+description: "Компонент повторного использования prefill для совпадающих префиксов: контракт запроса, locality, сигналы, failure modes и trade-offs."
+publicationStatus: draft
+reviewStatus: unreviewed
+publishedAt: null
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: 90
+topics:
+  - prefix-cache
+  - kv-cache
+  - inference
+  - agents
+relations: {}
+sources:
+  - title: "vLLM Automatic Prefix Caching"
+    url: "https://docs.vllm.ai/en/stable/design/prefix_caching/"
+    verifiedAt: "2026-07-22"
+  - title: "OpenAI Prompt Caching"
+    url: "https://developers.openai.com/api/docs/guides/prompt-caching"
+    verifiedAt: "2026-07-22"
+  - title: "Claude Prompt Caching"
+    url: "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+    verifiedAt: "2026-07-22"
+  - title: "SGLang HiCache Best Practices"
+    url: "https://docs.sglang.io/docs/advanced_features/hicache_best_practices"
+    verifiedAt: "2026-07-22"
+applicability: "Для повторяющихся LLM-запросов с длинной общей начальной частью и доступным evidence о cache reads, route locality или runtime KV state."
+limitations: "Кэш не ускоряет decode, не исправляет качество и не гарантирует reuse при изменении токенов, порядка, runtime extras, маршрута, eviction или isolation boundary."
+primaryAreaId: inference-plane
+relatedAreaIds: []
+decisionQuestions:
+  - "Какая часть сериализованного входа действительно совпадает между запросами?"
+  - "Где живёт cache state и сохраняет ли маршрут locality?"
+  - "Какие поля доказывают cache read, miss, eviction и объём подходящих токенов?"
+  - "Какая trust boundary разрешает совместное повторное использование?"
+metrics:
+  - "Cache-eligible и reused prompt tokens в определённом scope"
+  - "Cache read/write или runtime block reuse signals"
+  - "Queue, prefill, time to first token и end-to-end latency"
+  - "Route/replica locality и KV pressure/eviction evidence"
+failureModes:
+  - "Ранние динамические поля меняют токены префикса"
+  - "Tool definitions или schemas сериализуются в разном порядке"
+  - "Повторный запрос уходит на другой cache domain или cold replica"
+  - "KV blocks вытесняются под memory pressure"
+  - "Tenant isolation настроен слишком широко или слишком узко"
+---
+
+Prefix cache хранит результат prefill для общей начальной части LLM-запроса и повторно использует его, когда следующий запрос начинается теми же токенами в совместимом cache domain. Для self-hosted runtime это обычно KV state. Managed API способен показывать ту же идею через prompt-caching contract и usage fields, не раскрывая внутреннюю реализацию.
+
+Компонент экономит повторное вычисление входа. Decode нового ответа всё равно выполняется. Кэш также не сокращает сам payload, не улучшает фактическую точность и не исправляет очередь. Если продукт ждёт долгую генерацию, а общий префикс мал, Prefix Cache может оказаться второстепенным рычагом.
+
+## Проблема и контекст
+
+Повторяемый префикс появляется во многих сценариях: длинная system policy, одинаковые few-shot examples, общий документ с разными вопросами, стабильный tool registry или растущая append-only история агента. Без reuse runtime снова обрабатывает уже виденную начальную часть. Чем больше доля prefill в операции и чем чаще повторяется начало, тем заметнее потенциальный эффект.
+
+«Похожий текст» недостаточен. Cache key строится по токенизированной форме и дополнительным полям реализации. Переставленные tools, иной whitespace после шаблонизации, другая картинка, LoRA identity, cache salt или ранний timestamp способны создать новый путь. Два JSON выглядят одинаково при беглом просмотре, но расходятся раньше полезной динамической части.
+
+У агентов ловушка особенно неприятна. На каждом шаге хочется оставить только релевантные tools. Запрос становится короче, зато набор и порядок tool schemas меняются. Вся растущая история после этого сдвига уже не продолжает прежний префикс. Локальная экономия токенов конфликтует с reuse по сессии.
+
+## Ответственность и граница
+
+Prefix Cache отвечает за три вещи: определить совместимый префикс, найти доступное cached state и безопасно передать его execution path. Компонент также должен дать evidence о reuse или miss в понятном scope.
+
+Он не владеет содержанием system prompt, порядком инструментов или compaction policy. Это контракт вызывающего приложения и Context & Agent Runtime. Не выбирает product route и tenant policy: их задаёт Control Plane. Не обещает SLO сам по себе; Operations & Economics оценивает end-to-end результат. Не решает, допустимо ли делить state между пользователями. Security & Ownership задаёт trust boundary.
+
+Такое разделение защищает от удобного, но пустого диагноза «кэш сломан». Если hash расходится из-за tools, исправление находится в request builder. Если совпадающий запрос попадает на cold replica, нужен routing/locality change. Если blocks вытеснены, расследуют KV pressure и admission. Если provider не возвращает documented cache-read field, сначала проверяют API contract и фактический endpoint.
+
+## Контракт запроса и основной поток
+
+Упрощённый self-hosted flow выглядит так:
+
+1. Приложение строит messages, tools и остальные входные поля.
+2. Adapter сериализует их и применяет chat template/tokenizer выбранной model revision.
+3. Router выбирает pool и worker либо cache domain.
+4. Runtime вычисляет идентификаторы последовательных prefix blocks и ищет доступное state.
+5. Совпавшую полную часть он использует повторно, остаток проходит prefill.
+6. Decode создаёт новый ответ и новое KV state в пределах runtime policy.
+7. Телеметрия связывает запрос, route, eligible/reused input и latency phases.
+
+В [текущем design document vLLM](https://docs.vllm.ai/en/stable/design/prefix_caching/) block hash включает parent hash, токены блока и дополнительные значения, необходимые для уникальности. Документация подчёркивает, что кэшируются полные blocks. Exact tokens и их порядок существенны. В extra hashes способны входить LoRA identity, multimodal input hash и cache salt.
+
+Из этого следуют два практических правила. Стабильное кладут раньше динамического. А сравнивают rendered/tokenized request, а не только исходные строки. Если разные SDK или gateways меняют template, одинаковый объект приложения ещё не доказывает общий префикс.
+
+Managed API скрывает шаги runtime. Команда опирается на официальную семантику, documented request layout и usage fields. [OpenAI Prompt Caching](https://developers.openai.com/api/docs/guides/prompt-caching) и [Claude Prompt Caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) описывают собственные контракты. Их параметры, минимальные размеры и retention нельзя переносить друг на друга или считать вечными; перед внедрением нужно перечитать актуальную страницу.
+
+## Варианты реализации
+
+Самый простой вариант — cache state внутри одного model server. У него короткий data path и ясная failure boundary. Минус: reuse зависит от того, попадёт ли повторный запрос в тот же домен и не будет ли state вытеснен.
+
+Replica-local cache сочетают со sticky routing по стабильному session или prefix key. Это повышает шанс locality, но создаёт hotspots, усложняет rebalance и recovery. Sticky key не должен раскрывать sensitive identity, а политика маршрута обязана объяснять поведение после сбоя replica.
+
+Distributed или hierarchical cache добавляет общий уровень вне device memory. Он способен расширить reuse между workers и tier state на CPU или storage. Цена — сеть, сериализация, отдельная capacity model, consistency semantics и новая область отказа. [SGLang HiCache best practices](https://docs.sglang.io/docs/advanced_features/hicache_best_practices) полезны как пример такой реализации, а не как универсальная рекомендация.
+
+Managed provider cache снимает эксплуатацию внутреннего KV layer. Приложение всё равно отвечает за стабильность layout, identity route, data policy и проверку response usage. Provider contract способен измениться; snapshot документации входит в review материала и rollout decision.
+
+Наконец, explicit cache control позволяет приложению обозначить boundary или policy там, где API это поддерживает. Automatic caching уменьшает интеграцию, но оставляет меньше явного контроля. Выбор зависит от documented semantics. Нельзя отправлять параметр одного API через совместимый wrapper и предполагать, что downstream его понял.
+
+## Метрики и evidence
+
+Первый denominator — cache-eligible input. Если общий префикс короче требуемой реализацией границы или запросы почти не повторяются, низкий reuse ожидаем. Второй сигнал — фактически reused tokens, blocks либо provider cache-read field. Его scope должен включать model revision, route/pool и период.
+
+Рядом нужны queue time, prefill duration, time to first token, decode duration и end-to-end latency. Тогда видно, какую фазу изменил кэш. Уменьшившийся prefill не гарантирует улучшение tail latency, если очередь или decode доминируют.
+
+Для self-hosted path полезны KV pressure, eviction/preemption evidence, block residency и route locality. Для managed API — documented read/write usage и billing export. Имена метрик зависят от версии; reference не объявляет конкретный label обязательным для всех систем.
+
+Hit rate без контекста слаб. Число запросов, доля подходящих токенов, cold starts и распределение reuse gaps дают больше. Для агента анализируют по шагам сессии: совпадает ли ранний tool/schema prefix, где случился первый drift и продолжилась ли append-only history после него.
+
+## Failure modes
+
+### Ранний volatile block
+
+Timestamp, request id, user-specific header или случайный nonce попадает перед общей policy. Cache path расходится в начале. Исправление: перенести динамику после стабильной части, если это совместимо с модельным и security contract.
+
+### Tool/schema drift
+
+Набор tools тот же, порядок разный из-за обхода map, асинхронной загрузки plugins или фильтра на каждом шаге. JSON Schema содержит динамический `requestId`. Исправление начинается с deterministic rendering и byte/token comparison. Сортировка безопасна только тогда, когда порядок tools не несёт отдельной семантики.
+
+### Route drift
+
+Payload стабилен, но соседние шаги идут к разным providers, regions или replicas. Cache state локален другому домену. Нужны route labels и policy. Слепой sticky routing способен улучшить reuse и ухудшить балансировку либо доступность.
+
+### Eviction и cold lifecycle
+
+Совпадающий prefix найден слишком поздно: blocks вытеснены, worker перезапущен, model revision сменилась или pool scale-to-zero очистил state. Увеличение cache memory — один вариант, не готовый ответ. Сначала измеряют reuse gap, pressure и цену резерва.
+
+### Неверная isolation boundary
+
+Слишком общий cache domain создаёт риск side channel или недопустимого совместного state. Слишком узкий лишает безопасного reuse. vLLM документирует `cache_salt` как способ ограничить sharing запросами одной trust group. Salt не заменяет auth, network policy и аудит.
+
+### Оптимизация не той фазы
+
+Команда добивается высокого cache read, а пользователь ждёт длинный decode или tool execution. Метрика красивая, SLO прежний. Решение: снова разложить end-to-end path и найти доминирующий участок.
+
+## Trade-offs и анти-паттерны
+
+Стабильный большой tool registry способен давать больше reuse, чем динамический короткий. Но лишние tools занимают контекст, способны ухудшать tool selection и расширять permission surface. Сравнивайте cost per accepted result, качество выбора и безопасность, а не только cached tokens.
+
+Canonical JSON уменьшает случайный key-order drift. Он не должен скрывать семантическое изменение. Если provider tokenization зависит от chat template, нормализация до adapter ещё не доказывает одинаковый token prefix.
+
+Aggressive sticky routing улучшает locality, но горячая сессия перегружает replica. Distributed cache сглаживает locality и добавляет network tail. Большой KV budget сохраняет blocks и уменьшает доступную память для concurrency или иных buffers. Любой выигрыш оплачивается другой частью runtime.
+
+Анти-паттерны:
+
+- измерять только длину prompt и считать короткий автоматически дешёвым;
+- менять tools между шагами без rendered diff;
+- рекомендовать prefix cache без повторяемого длинного начала;
+- считать provider field доказательством экономии без billing scope;
+- смешивать tenants ради hit rate без принятой trust boundary;
+- объявлять success по средней latency, скрывая cold и tail paths;
+- переносить настройки, thresholds и метрики между runtime versions без проверки.
+
+## Практический checklist
+
+- Зафиксируйте один scenario и cache hypothesis.
+- Сохраните два иначе эквивалентных rendered requests.
+- Найдите первый различающийся block, byte range или token position.
+- Проверьте system instructions, tools, schemas, images и compaction.
+- Закрепите model, tokenizer, chat template, SDK и gateway revisions.
+- Добавьте route/pool/replica evidence в допустимом privacy scope.
+- Определите cache trust group и isolation mechanism.
+- Снимите eligible/reused input вместе с queue, prefill, decode и E2E.
+- Воспроизведите cold, warm, eviction и worker-loss paths.
+- Проверьте качество и permissions после layout change.
+- Сравните результат по SLO и cost per accepted result.
+- Запишите rollback и владельца следующей проверки.
+
+## Роль продуктов и OSS
+
+vLLM показывает hash-block design и управление KV state в self-hosted runtime. SGLang документирует собственные cache-механизмы, включая hierarchical варианты. OpenAI и Claude предоставляют managed contracts с provider-specific request и usage semantics. Gateways и observability systems связывают route и evidence, но не создают cache locality автоматически.
+
+Этот список объясняет роли, а не ранжирует продукты. Реализации меняются. Архитектурное решение начинается с workload, trust boundary и проверяемого сигнала, затем выбирает совместимый инструмент.
+
+## Связанные артефакты
+
+- [Agent session cache reuse](/ai-platform/cases/agent-session-cache-reuse) показывает AP-2 warning на синтетической паре запросов.
+- [audit-prompt-caching](/projects/audit-prompt-caching) содержит pinned layout linter и локальный audit workflow.
+- [Короткий промпт не значит дешёвый](https://habr.com/ru/companies/bitrix/articles/1033822/) разбирает конфликт короткого tool set и стабильного агентного префикса.
+- [Inference Plane](/ai-platform/areas/inference-plane) помещает компонент в runtime, scheduling и capacity context.
+
+## Применимость и ограничения
+
+Компонент применим, если запросы имеют длинную повторяемую начальную часть, а команда способна наблюдать reuse или хотя бы provider-documented cache reads. Для уникальных коротких запросов, decode-heavy генерации или постоянно меняющегося контекста отдача способна быть низкой.
+
+Страница не обещает hit rate, latency или экономию. Не задаёт provider thresholds, retention и metric names. Не подтверждает, что конкретная production-система использует описанную архитектуру. Перед rollout нужно проверить текущую документацию, pinned versions и свою трассу.
+
+Источники, applicability и ограничения проверены 22 июля 2026 года. Материал остаётся `draft + unreviewed`; `reviewCycleDays: 90` задаёт будущий цикл только после независимой профильной проверки и заполнения `reviewedAt`.

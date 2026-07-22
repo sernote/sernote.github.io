@@ -1,0 +1,126 @@
+---
+entityId: inference-plane
+type: platform-area
+locale: ru
+slug: inference-plane
+title: "Inference Plane"
+description: "Область исполнения AI-workloads: serving runtimes, pools, scheduling, batching, cache, STT, embeddings и hardware boundaries."
+publicationStatus: draft
+reviewStatus: unreviewed
+publishedAt: null
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: 90
+topics:
+  - inference
+  - serving
+  - scheduling
+  - capacity
+relations: {}
+sources:
+  - title: "vLLM Architecture Overview"
+    url: "https://docs.vllm.ai/en/stable/design/arch_overview/"
+    verifiedAt: "2026-07-22"
+  - title: "vLLM Production Metrics"
+    url: "https://docs.vllm.ai/en/stable/usage/metrics/"
+    verifiedAt: "2026-07-22"
+  - title: "Kubernetes Scheduler"
+    url: "https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/"
+    verifiedAt: "2026-07-22"
+applicability: "Для команд, которые эксплуатируют или проектируют собственный либо гибридный inference runtime для LLM, embeddings, reranking, STT и связанных AI-workloads."
+limitations: "Страница не задаёт универсальную topology, sizing или продуктовый выбор; capacity и SLO проверяются на целевой модели, runtime, hardware и распределении запросов."
+order: 3
+included:
+  - "Serving runtimes и model workers"
+  - "Resource pools, placement и scheduling"
+  - "Batching, KV memory и prefix cache"
+  - "Execution boundaries для LLM, embeddings, reranking и STT"
+excluded:
+  - "Выбор бизнес-сценария и инвестиционной стратегии"
+  - "Product-level routing policies и quotas"
+  - "Agent orchestration, retrieval и tool execution"
+  - "Обучение моделей и release gates качества"
+signals:
+  - "Очередь и время ожидания до исполнения"
+  - "Time to first token и полная длительность запроса"
+  - "Prefill/decode профиль и токены по классу workload"
+  - "KV-cache pressure, reuse и eviction evidence"
+  - "Ошибки, preemption, retries и saturation по worker/pool"
+---
+
+Inference Plane исполняет запрос после того, как Control Plane разрешил маршрут. Здесь модель загружается в runtime, scheduler принимает работу, KV memory хранит состояние вычисления, batch объединяет совместимые запросы, а worker возвращает токены, embedding vector, reranking score или распознанный текст.
+
+Область существует, чтобы отделить обещание сервиса от физики исполнения. Gateway способен принять запрос за миллисекунды, но это не означает, что worker сразу начнёт prefill. Между входом и результатом стоят очередь, размещение, память, модельный процесс, сеть и политика деградации. Если они остаются «деталями GPU-кластера», продукт не видит причину задержки и не умеет управлять дефицитом.
+
+## Что входит в область
+
+Внутри Inference Plane находятся serving runtimes и model workers, resource pools, placement, batching, scheduling, KV cache, prefix reuse и hardware-specific execution. Сюда же относятся границы разных workloads: генерация LLM, embeddings, reranking и STT используют ускорители по-разному и не должны автоматически делить одну очередь или SLO.
+
+Runtime переводит API-запрос в работу модели. Scheduler решает, когда и вместе с чем её исполнить. Pool связывает класс запросов с доступным набором workers. Memory manager распределяет веса, KV state и временные буферы. Cache component ищет повторно используемую часть вычисления. Эти ответственности способны жить в одном процессе, но в модели платформы остаются раздельными: иначе невозможно объяснить сигнал или заменить реализацию.
+
+Публичный [architecture overview vLLM](https://docs.vllm.ai/en/stable/design/arch_overview/) показывает конкретный пример такого разделения: engine core содержит scheduler, управляет KV cache и координирует model execution. Это описание vLLM, а не обязательная topology для любой платформы.
+
+## Что остаётся снаружи
+
+Inference Plane не решает, зачем компании сценарий и приемлема ли инвестиция. Это Strategy & Boundaries. Он также не определяет product-level policy: кто имеет доступ, какое имя модели стабильно для потребителя, какие quotas и fallback разрешены. Эти решения принадлежат Control Plane, хотя inference сообщает ему доступность и pressure.
+
+Agent loop, retrieval, tool registry и session state живут в Context & Agent Runtime. Inference получает уже собранный вызов и не должен угадывать, почему tools переставились между шагами. Quality & Lifecycle решает, прошла ли версия модели или runtime release gate. Operations & Economics переводит технические сигналы в SLO, capacity и стоимость. Security & Ownership задаёт data boundary, tenant isolation и владельца реакции.
+
+Граница не запрещает совместную реализацию. Она запрещает смешивать причины. Если tools изменили префикс, это upstream input drift; если blocks вытеснены из-за pressure, это runtime state; если запрос ушёл на cold replica, это routing/locality interaction. Симптом похож, а исправления разные.
+
+## Workload shape важнее названия модели
+
+Генеративный запрос имеет как минимум две разные фазы. Prefill обрабатывает входной контекст, decode последовательно выпускает новые токены. Длинный вход с коротким ответом и короткий чат с длинной генерацией нагружают систему неодинаково. Одна агрегированная «tokens per second» способна спрятать очередь первой фазы или медленный decode.
+
+Embeddings обычно дают фиксированный по форме результат, но входы различаются длиной и batching profile. Reranking работает с группами пар «запрос — документ». STT добавляет длительность аудио, preprocessing и иногда streaming deadline. Смешивание этих workloads в одном pool допустимо только после измерения interference и понятной политики приоритета.
+
+Interactive и batch traffic тоже требуют разных решений. Пользователь ждёт первый токен, фоновая задача ждёт завершение пакета к deadline. Scheduler, оптимальный для throughput, способен ухудшить tail latency интерактивного класса. Жёсткое разделение pools снижает interference, но оставляет резерв простаивающим. Общий pool повышает шанс утилизации и усложняет isolation. Выбор проверяют нагрузкой, а не общей рекомендацией.
+
+## Компоненты пилота
+
+В пилотном срезе детально описан один компонент: [Prefix Cache](/ai-platform/components/prefix-cache). Он повторно использует KV blocks только при совпадающем префиксе по правилам runtime. Компонент уменьшает повторный prefill для подходящего workload, но не ускоряет decode и не создаёт locality сам.
+
+Остальные узлы пока остаются на уровне области: runtime adapter, model worker, scheduler, batch admission, pool placement, capacity guard и workload isolation. Карта не выдаёт их за опубликованные reference-страницы. Это сознательное ограничение пилота: один компонент должен пройти полный путь от границы до evidence.
+
+## Наблюдаемые сигналы
+
+Начинайте с последовательности запроса. На входе фиксируются workload class, model route и ожидаемый SLO. Затем нужны время в очереди, время prefill, time to first token, decode duration и итоговый статус. Для non-token workloads сохраняют эквивалентные фазы: ожидание, preprocessing, execution, postprocessing.
+
+Состояние pool раскрывают число waiting/running requests, admission failures, saturation и причины недоступности worker. Memory path требует KV usage, eviction или preemption evidence и признаков повторного использования. Cache сигнал полезен только рядом с объёмом подходящих токенов и маршрутом; один hit ratio без denominator и scope легко вводит в заблуждение.
+
+[Документация production metrics vLLM](https://docs.vllm.ai/en/stable/usage/metrics/) служит примером runtime-level поверхности. Имена и набор метрик меняются между версиями, поэтому страница не закрепляет их как универсальный контракт. Платформа нормализует только те поля, для которых определены смысл, scope и владелец.
+
+GPU utilization остаётся диагностическим сигналом устройства. Capacity decision требует больше: калиброванный профиль запроса, очередь, latency distribution, concurrency, error budget и запас на сбой. Высокая утилизация способна означать полезную работу или saturation; низкая — резерв, фрагментацию либо отсутствие спроса. Без workload context проценты не отвечают на вопрос о мощности.
+
+## Trade-offs и отказоустойчивость
+
+Большой batch повышает throughput, но задерживает отдельный запрос. Chunked prefill способен дать scheduler больше свободы, одновременно меняя latency profile. Больше KV memory поддерживает длинные контексты или concurrency, но конкурирует с weights и рабочими буферами. Квантование снижает memory pressure ценой отдельной проверки качества и совместимости.
+
+Несколько replicas дают резерв и масштабирование. Prefix cache при этом обычно локален конкретному runtime state, поэтому случайное распределение повторяющейся сессии может терять reuse. Sticky routing улучшает locality и создаёт риск hotspot. Общий внешний KV tier расширяет область отказа, добавляет сеть и operational cost. Выбирать архитектуру следует после измерения повторяемости и цены cold path.
+
+Отказ worker не должен превращаться в бесконечный retry storm. Admission и gateway договариваются о deadline, retry budget и fallback semantics. Повтор разрешён только там, где операция идемпотентна или защищена ключом. Для streaming ответа нужно отдельно определить поведение после выдачи части результата.
+
+Kubernetes решает размещение Pod на Node через filtering и scoring, что описано в [документации kube-scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/). Model-level scheduler решает другую задачу: admission и исполнение запросов внутри runtime. Одинаковое слово не означает общую очередь или один control loop.
+
+## Пересечения с соседними областями
+
+Control Plane передаёт route intent, quota и priority class, а получает availability и pressure. Quality & Lifecycle приносит совместимую model/runtime revision и забирает результаты smoke/load checks. Operations & Economics определяет SLO windows и attribution. Security & Ownership задаёт network и data isolation, cache trust groups, audit и on-call boundary.
+
+Context & Agent Runtime особенно важен для cache locality. Стабильные system instructions, tools и append-only history создают повторяемый префикс. Compaction, динамический tool registry и меняющиеся ранние поля создают новый. Inference Plane обязан показать факт reuse или miss, но причина способна находиться выше по request path.
+
+## Связанные артефакты
+
+- [Prefix Cache](/ai-platform/components/prefix-cache) — ответственность, request flow, failure modes и checklist.
+- [Agent session cache reuse](/ai-platform/cases/agent-session-cache-reuse) — source-controlled synthetic case о порядке tools.
+- [audit-prompt-caching](/projects/audit-prompt-caching) — локальный audit skill и stdlib-скрипты.
+- [Короткий промпт не значит дешёвый](https://habr.com/ru/companies/bitrix/articles/1033822/) — внешняя статья об агентном префиксе.
+
+## Применимость, ограничения и следующая проверка
+
+Материал подходит для проектирования собственного или гибридного inference path, когда команда владеет хотя бы частью runtime, pools или routing. Он помогает разделить responsibilities и составить measurement plan. Для полностью managed API часть внутренних сигналов недоступна; тогда контракт строится по provider usage, latency, errors и documented limits.
+
+Страница не задаёт topology, размер pool, hardware choice или пороги алертов. Она не подтверждает production capacity и не сравнивает vendors. Все численные решения требуют benchmark на целевой модели, версии runtime, hardware и реальном распределении запросов с очищенными данными.
+
+Следующее проверочное действие: выбрать один workload class, сохранить его входное распределение и прогнать повторяемый load test на pinned конфигурации. Отчёт должен разделить queue, prefill и decode, показать error budget, KV pressure и поведение при потере worker. Только после этого решайте, объединять ли pools, менять scheduler или добавлять capacity.
+
+Источники и границы проверены 22 июля 2026 года. Запись остаётся `draft + unreviewed`; дата следующего review начнёт отсчитываться только после независимой предметной проверки.

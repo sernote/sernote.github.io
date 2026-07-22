@@ -1,0 +1,106 @@
+---
+entityId: audit-prompt-caching
+type: project
+locale: ru
+slug: audit-prompt-caching
+title: "audit-prompt-caching"
+description: "Открытый Codex skill и набор локальных stdlib-скриптов для аудита prompt, prefix и KV cache по форме запроса и телеметрии."
+publicationStatus: draft
+reviewStatus: unreviewed
+publishedAt: null
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: null
+topics:
+  - prompt-caching
+  - prefix-cache
+  - observability
+  - agents
+relations:
+  platformEntityIds:
+    - prefix-cache
+repositoryUrl: "https://github.com/sernote/audit-prompt-caching"
+verifiedRelease:
+  version: "v0.1.3"
+  publishedAt: "2026-07-20"
+  url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3"
+  verifiedAt: "2026-07-22"
+audience:
+  - "AI- и backend-инженеры, которые разбирают cache misses и длинный TTFT"
+  - "Разработчики агентов с tools, MCP, compaction и многошаговыми сессиями"
+  - "Platform- и SRE-инженеры, отвечающие за gateway и self-hosted inference"
+quickStart: "npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching"
+privacyBoundary: "Проект сам не захватывает live traffic; экспортируйте и редактируйте репрезентативные записи, а для публичной демонстрации используйте synthetic fixtures."
+evidence:
+  - "Публичный репозиторий и MIT license"
+  - "Dependency-free Python scripts и source-controlled fixtures"
+  - "Проверенный release v0.1.3 и pinned commit для synthetic case"
+supportBoundary: "Открытый проект без заявленного support SLA; результаты аудита проверяются по runtime telemetry и billing источникам команды."
+---
+
+`audit-prompt-caching` помогает ответить на узкий вопрос: почему повторяющиеся LLM-запросы не получают ожидаемого повторного использования кэша. Проблема часто прячется за общим симптомом: выросла стоимость, удлинился time to first token, cached-token поле остаётся нулевым или одинаковая агентная сессия ведёт себя по-разному на соседних шагах.
+
+Репозиторий содержит переносимый Codex skill и небольшие Python-скрипты на стандартной библиотеке. Они проверяют артефакты проекта: построители промптов, сериализованные payloads, tool schemas, usage logs и конфигурацию маршрутизации. Проект дополняет runtime observability и gateway, но не заменяет их.
+
+## Для кого
+
+Инструмент рассчитан на инженера, у которого уже есть проверяемая поверхность. Это может быть код сборки запроса, два rendered JSON, экспорт usage, фрагмент billing-данных или deployment config. Если доступно только ощущение «кэш не работает», skill сначала помогает составить план сбора evidence.
+
+AI- и backend-инженеры используют аудит, когда system prompt или tools незаметно меняются. Разработчикам агентов полезны проверки порядка инструментов, compaction и стабильности ранней истории. Platform/SRE-командам ближе маршрут, replica locality, KV pressure и различия provider telemetry.
+
+## Что проверяет аудит
+
+Основная поверхность начинается в исходниках. Skill ищет динамические timestamp и request identifiers в раннем префиксе, недетерминированную сериализацию tools, изменение schema между шагами, перестановку system и user blocks, truncation и compaction. Для provider API он отделяет документированную семантику cache read/write от предположений приложения.
+
+Вторая поверхность — маршрут запроса. Стабильный payload способен попадать на разные provider paths или self-hosted replicas. Тогда форма запроса совпадает, а локальность кэша теряется. Это требует route evidence, а не очередного переписывания промпта.
+
+Третья поверхность — измерение. Скрипты читают явные cache fields, токены и latency только из переданных файлов. Provider usage и billing export остаются авторитетными. Локальный расчёт ROI работает с заданными допущениями; bundled fixture показывает формат, но не обещает production-экономию.
+
+Аудит строится как цепочка доказательств. Сначала инженер находит место, где приложение собирает запрос. Затем сохраняет rendered payloads для двух повторов, сопоставляет их с route и usage, формулирует наиболее ранний drift и только после этого предлагает изменение. Такой порядок удерживает расследование от популярной ошибки: сразу переставить блоки промпта, не выяснив, теряется ли reuse из-за layout, маршрута, eviction или неподходящего workload.
+
+## Быстрый старт
+
+Установите публичный skill командой из [README](https://github.com/sernote/audit-prompt-caching#quick-start):
+
+```bash
+npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching
+```
+
+После установки начните новую сессию Codex, чтобы skill появился в доступном наборе. Затем вызовите его явно:
+
+```text
+Use $audit-prompt-caching to audit this repo for prompt-cache misses,
+unstable prompt prefixes, dynamic tools/schemas, routing issues,
+and deployment cache-locality problems.
+```
+
+Для точечной локальной проверки клонируйте release и запустите один из stdlib-скриптов. Например, layout linter принимает Chat-style `messages` и Responses-style `input` payloads:
+
+```bash
+python3 audit-prompt-caching/scripts/layout_linter.py \
+  fixtures/layout/good_openai_request.json
+```
+
+Команда возвращает JSON. Нулевой exit code означает, что реализованные правила не нашли нарушения; это не сертификат cache hit. Ненулевой код при findings пригоден для CI или source-controlled evidence, если команда заранее согласовала ожидаемые правила.
+
+## Локальность и privacy boundary
+
+Проект не захватывает live traffic и не подключается к провайдеру сам. Пользователь экспортирует входные данные отдельно. Перед аудитом нужно удалить customer content, credentials, идентификаторы и закрытые URL либо заменить их эквивалентной синтетикой.
+
+Bundled fixtures в репозитории синтетические и предназначены для демонстрации формы. Для реального расследования подготовьте редактированные репрезентативные записи: rendered requests, provider usage, prefix hashes, route labels или deployment config. Храните их по правилам своей организации. Публичный репозиторий не становится допустимым местом для production logs только потому, что скрипт работает локально.
+
+Скрипты не отправляют содержимое в внешний сервис, но установка skill и получение репозитория требуют обычного сетевого доступа к источнику. Перед использованием в закрытой среде проверьте pinned version и код по внутреннему process.
+
+## Ограничения
+
+Статический аудит видит форму и известные анти-паттерны. Он не доказывает, что провайдер записал кэш, что запрос попал на нужную replica или что KV blocks не были вытеснены. Эти выводы подтверждаются runtime telemetry, provider response fields, traces и billing export.
+
+Правила зависят от API и версии. Исправление, полезное для одного провайдера, способно быть бессмысленным для другого. Перед изменением layout сверяйте текущую официальную документацию и проверяйте результат на повторяемой выборке.
+
+Fixture ROI в README — демонстрационный расчёт, а не production guarantee. Проект распространяется по [лицензии MIT](https://github.com/sernote/audit-prompt-caching/blob/v0.1.3/LICENSE) и предоставляется без заявленного support SLA. Вопросы эксплуатации, обновления и интерпретации результатов остаются у пользователя.
+
+## Проверенный snapshot
+
+22 июля 2026 года [официальный GitHub Latest Release API](https://api.github.com/repos/sernote/audit-prompt-caching/releases/latest) возвращал [v0.1.3](https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3), опубликованный 20 июля 2026 года в UTC. Тег указывает на commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Synthetic case на этом сайте закреплён за тем же commit, чтобы следующая версия linter не изменила evidence задним числом.
+
+Связанный reference-компонент: [Prefix Cache](/ai-platform/components/prefix-cache). Он объясняет ответственность и runtime signals, а проект даёт локальные проверки части request path.

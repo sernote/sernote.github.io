@@ -1,0 +1,160 @@
+---
+entityId: agent-session-cache-reuse
+type: case
+locale: ru
+slug: agent-session-cache-reuse
+title: "Agent session cache reuse"
+description: "Source-controlled synthetic case: иначе эквивалентные agent requests различаются порядком tools, и pinned linter фиксирует AP-2."
+publicationStatus: draft
+reviewStatus: unreviewed
+publishedAt: null
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: 90
+topics:
+  - agents
+  - prefix-cache
+  - tool-schemas
+  - synthetic-evidence
+relations:
+  articleIds:
+    - short-prompt-not-cheap
+  projectIds:
+    - audit-prompt-caching
+sources:
+  - title: "audit-prompt-caching v0.1.3"
+    url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3"
+    verifiedAt: "2026-07-22"
+  - title: "vLLM Automatic Prefix Caching"
+    url: "https://docs.vllm.ai/en/stable/design/prefix_caching/"
+    verifiedAt: "2026-07-22"
+applicability: "Для source-controlled проверки rendered agent requests, когда ранний tool/schema layout должен оставаться детерминированным между иначе эквивалентными шагами."
+limitations: "Кейс проверяет только правило linter о порядке tools; он не запускает модель, provider cache или production traffic и не измеряет hit rate, latency, стоимость либо качество."
+caseKind: synthetic
+componentIds:
+  - prefix-cache
+evidence:
+  - "evidence/v3/agent-session-cache-reuse/step-stable.json"
+  - "evidence/v3/agent-session-cache-reuse/step-drift.json"
+  - "evidence/v3/agent-session-cache-reuse/layout-linter-output.json"
+---
+
+> **Synthetic case.** Оба запроса созданы специально для этой публичной демонстрации. В них нет production logs, customer data, внутренней topology или измерений реальной системы.
+
+Кейс проверяет один маленький участок agent request path. System message, user message, модель, tool definitions и response schema одинаковы. Во втором JSON меняется только порядок двух tools. Pinned `layout_linter.py` должен принять стабильный алфавитный порядок и вернуть AP-2 для перестановки.
+
+Это source-level evidence. Модель не вызывается, сеть провайдера не используется, cache state не создаётся. Такой узкий тест полезен именно честной границей: он воспроизводимо доказывает один факт о форме входа и не притворяется end-to-end benchmark.
+
+## Контекст
+
+Agent runtime часто собирает tools из registry на каждом шаге. Плагины загружаются асинхронно, permissions фильтруют действия, а язык программирования не всегда обещает нужный порядок после объединения нескольких источников. В результате одинаковый смысловой набор способен сериализоваться по-разному.
+
+Для prefix cache порядок существенен. Runtime сравнивает токенизированный префикс или его block hashes, а не множество tools как математический set. Если tool schemas расположены раньше пользовательской динамики, перестановка меняет префикс до всей последующей истории.
+
+Это техническая гипотеза, а не утверждение о конкретном provider hit. Чтобы проверить реальный cache path, понадобились бы documented usage fields, route evidence и повторный вызов в одном cache domain. В кейсе такой информации нет.
+
+## Наблюдаемый симптом
+
+Репозиторий содержит два файла:
+
+- `evidence/v3/agent-session-cache-reuse/step-stable.json` перечисляет `lookup_policy`, затем `write_file`;
+- `evidence/v3/agent-session-cache-reuse/step-drift.json` перечисляет `write_file`, затем `lookup_policy`.
+
+Все остальные поля эквивалентны. Оба payload используют Chat-style `messages`, одну model string, одинаковые описания функций и одну JSON Schema. В ранних messages нет timestamp, request id или другого намеренно volatile поля.
+
+Симптом здесь — не падение hit rate. Наблюдаемое различие состоит только в order массива `tools`. Его можно увидеть обычным diff и затем проверить правилом AP-2.
+
+## Решение и ограничения
+
+Для демонстрации выбран deterministic order по имени функции. Это подходит нашим синтетическим tools, потому что порядок не несёт отдельной семантики. В реальном агенте сортировать автоматически безопасно не всегда: некоторые adapters или prompts способны придавать первому инструменту значение. Перед изменением команда проверяет API contract и качество tool selection.
+
+Запросы намеренно не содержат credentials, tenant identifiers и текст пользователей. Названия функций описывают чтение публичной policy и запись синтетического audit artifact. Evidence хранится рядом с контентом и проходит обычный code review.
+
+Analyzer закреплён за публичным release `v0.1.3`, commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Latest Release API и checkout проверены 22 июля 2026 года. Такая фиксация защищает кейс от незаметного изменения правила после обновления проекта.
+
+## Pinned команды
+
+Репозиторий был клонирован в отдельный временный каталог по тегу. Перед запуском проверены `origin`, exact tag и `HEAD`. Linter лежит внутри каталога skill:
+
+```bash
+python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
+  evidence/v3/agent-session-cache-reuse/step-stable.json
+```
+
+Стабильный input завершился с exit code `0`. Parsed JSON содержит:
+
+```json
+{
+  "status": "ok",
+  "findings": [],
+  "clean_checks": ["AP-1", "AP-2"]
+}
+```
+
+Drift input запускался тем же commit и скриптом:
+
+```bash
+python3 /private/tmp/notevskii-v3-audit-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
+  evidence/v3/agent-session-cache-reuse/step-drift.json
+```
+
+Этот запуск ожидаемо завершился с exit code `1`. Для linter это найденное нарушение, а не ошибка чтения файла. Parsed finding:
+
+```json
+{
+  "rule_id": "AP-2",
+  "severity": "high",
+  "category": "tool-schema-stability",
+  "issue": "tool definitions are not sorted by stable name",
+  "evidence": "tools order is ['write_file', 'lookup_policy']"
+}
+```
+
+Полный машинный snapshot, включая команды, expected/observed exit codes и оба output objects, хранится в `evidence/v3/agent-session-cache-reuse/layout-linter-output.json`.
+
+## Гипотезы после finding
+
+AP-2 подтверждает layout drift, но оставляет несколько следующих гипотез. Первая: tool registry выдаёт элементы в недетерминированном порядке. Вторая: permissions меняют состав tools между шагами. Третья: разные adapters сериализуют один объект по-разному. Четвёртая: route drift или eviction мешают reuse даже после стабилизации payload.
+
+Этот кейс проверяет только первую наблюдаемую форму: порядок двух известных tools. Состав не меняется. Adapter и tokenizer не запускаются. Route, cache residency и provider usage отсутствуют. Остальные гипотезы требуют новых evidence artifacts.
+
+## Изменение
+
+Минимальное изменение для такого input — формировать tool array детерминированно до сериализации и покрыть его snapshot-тестом. Stable fixture показывает ожидаемый порядок. CI запускает pinned linter и останавливает изменение, если AP-2 появляется снова.
+
+В production code одного сортировщика мало. Нужно закрепить источник identity, schema revision и permissions profile. Если tool становится недоступен по политике, это осознанное изменение префикса, а не drift. Лог или trace должен отличать эти события.
+
+## Валидация
+
+Успех локальной проверки определяется узко:
+
+1. stable input возвращает exit `0`, status `ok`, AP-1/AP-2 в `clean_checks`;
+2. otherwise-equivalent drift input возвращает exit `1`, status `findings`;
+3. finding имеет `rule_id: AP-2` и `category: tool-schema-stability`;
+4. evidence сообщает observed order `write_file`, `lookup_policy`;
+5. оба запуска используют один commit и один script path.
+
+Все пять условий зафиксированы 22 июля 2026 года. Если release, fixture или правило изменятся, evidence нужно получить заново; редактировать только prose недостаточно.
+
+## Что этот кейс доказывает
+
+- Два source-controlled JSON различаются порядком tools при одинаковых остальных полях.
+- `layout_linter.py` из commit `cbf216e…` принимает стабильный порядок без AP-1/AP-2 findings.
+- Тот же linter воспроизводимо возвращает AP-2 для переставленных tools.
+- Finding относится к категории `tool-schema-stability` и содержит фактический observed order.
+- Такой тест пригоден как регрессионный guard для rendered request layout.
+
+## Чего не доказывает
+
+- Кейс не доказывает cache hit или miss у OpenAI, Claude, vLLM, SGLang либо другого runtime.
+- Не измеряет cached tokens, time to first token, end-to-end latency, throughput и стоимость.
+- Не показывает production incident, production outcome или реальный агентный traffic.
+- Не подтверждает, что сортировка улучшит качество tool selection либо безопасна для любого API.
+- Не проверяет route locality, replica affinity, KV pressure, eviction и tenant isolation.
+- Не сравнивает модели, providers и продукты.
+
+## Следующее проверочное действие
+
+В реальном расследовании после AP-2 сохраните два редактированных rendered requests из одного scenario, сравните byte/token prefix и добавьте documented cache-read field вместе с route identity. Затем повторите cold и warm paths на pinned конфигурации. До появления этих данных честный вывод остаётся прежним: drift найден, влияние на runtime не измерено.
+
+Связанные материалы: [Prefix Cache](/ai-platform/components/prefix-cache), [audit-prompt-caching](/projects/audit-prompt-caching) и каноническая статья [«Короткий промпт не значит дешёвый»](https://habr.com/ru/companies/bitrix/articles/1033822/).

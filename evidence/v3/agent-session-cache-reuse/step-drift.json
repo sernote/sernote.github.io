@@ -1,0 +1,43 @@
+{
+  "model": "synthetic-chat-model",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Stable reusable policy: use the same tool contract and output taxonomy for every step in this synthetic agent session."
+    },
+    {
+      "role": "user",
+      "content": "Inspect the synthetic cache-layout example. Request metadata is attached after the reusable prefix."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "write_file",
+        "description": "Write a synthetic audit artifact."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup_policy",
+        "description": "Read a public policy reference."
+      }
+    }
+  ],
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "audit_result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

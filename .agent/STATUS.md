@@ -2,12 +2,14 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, and default-root Russian routing complete.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot vertical is awaiting independent content review.
 
 ## Completed
 
 - Established the typed v3 content contract as a parallel Fumadocs collection without changing the legacy `docs` or `docsRu` collection behavior; review evidence fields are scoped to reference records, external notes identify their source, and talk formats use a closed vocabulary.
 - Added a pure v3 content registry that validates identities, canonical URLs, editorial and structural relations, public visibility, bilingual alternates, and reference review deadlines before route code consumes deeply frozen records; visible related results use deterministic per-bucket ordering and a hard four-item cap.
+- Drafted the v3 pilot vertical as 13 Russian MDX records: two articles, one talk, one project, seven platform areas, one platform component, and one synthetic case. All records remain `draft`, all reference exemplars remain `unreviewed`, and every `publishedAt` remains `null` pending independent review.
+- Added a body-preserving v3 source adapter over the generated Fumadocs collection, deterministic draft-area planning, a verified public talk thumbnail, and synthetic stable/drift prompt-cache evidence produced with the tagged public `audit-prompt-caching` linter.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -114,6 +116,12 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused registry suite passed: 18 tests.
   - Full suite passed: 3 files, 69 tests.
   - Targeted ESLint, direct TypeScript validation with `tsc --noEmit`, and `git diff --check` passed.
+- v3 draft pilot vertical checkpoint:
+  - TDD RED confirmed the source adapter module was absent; a second RED confirmed that an early adapter discarded MDX bodies and inferred planned areas too narrowly.
+  - Focused source-adapter suite passed: 1 file, 6 tests. Full suite passed: 4 files, 75 tests.
+  - Fumadocs generation, full direct ESLint, direct TypeScript validation, targeted ESLint, `git diff --check`, and a direct `next build --webpack` passed; the build generated 92 static/SSG pages.
+  - Content invariants confirmed 13/13 records are `draft`, 13/13 are `unreviewed`, 13/13 have `publishedAt: null`, and no published v3 record exists.
+  - `pnpm lint` and `pnpm typecheck` could not reach their scripts because this environment's pnpm wrapper tried to recreate `node_modules`; equivalent repository binaries were run successfully, and the wrapper's generated `pnpm-workspace.yaml` side effect was removed.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.
@@ -270,6 +278,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 ## Known issues
 
+- The v3 pilot vertical is intentionally a draft checkpoint. It requires independent content review and correction before any review or publication status can change.
+- YouTube exposes the MaaS vs self-hosted recording timestamp in Pacific time; the v3 record uses the corresponding public/UTC calendar date, 2026-02-23.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
