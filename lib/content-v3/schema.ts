@@ -171,6 +171,7 @@ const platformAreaSchema = z
     type: z.literal("platform-area"),
     slug: kebabCaseId,
     order: z.number().int(),
+    mapBoundary: nonEmptyText,
     included: z.array(nonEmptyText),
     excluded: z.array(nonEmptyText),
     signals: z.array(nonEmptyText)

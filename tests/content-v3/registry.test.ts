@@ -101,6 +101,7 @@ function area(entityId: string, overrides: Record<string, unknown> = {}) {
     type: "platform-area",
     slug: entityId,
     order: 1,
+    mapBoundary: `Граница области ${entityId} для карты ответственности.`,
     included: ["Production responsibilities"],
     excluded: ["Confidential implementation details"],
     signals: ["Latency"],

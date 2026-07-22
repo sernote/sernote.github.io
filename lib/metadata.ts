@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
-import type { V3Article, V3Project, V3Talk } from "@/lib/content-v3/schema";
+import type {
+  V3Article,
+  V3Case,
+  V3PlatformArea,
+  V3PlatformComponent,
+  V3Project,
+  V3Talk
+} from "@/lib/content-v3/schema";
 import { getDictionary, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
 import { getActualAlternate } from "@/lib/site-routes";
 
@@ -13,6 +20,8 @@ type V3MarketingPageKey =
   | "work"
   | "talks"
   | "projects"
+  | "aiPlatform"
+  | "aiPlatformMap"
   | "about"
   | "contact";
 
@@ -63,6 +72,20 @@ const V3_RU_MARKETING_PAGES = {
     title: "Проекты — Сергей Нотевский",
     description:
       "Открытые инженерные проекты Сергея Нотевского для диагностики и эксплуатации production AI-платформ."
+  },
+  aiPlatform: {
+    path: "/ai-platform",
+    alternatePath: null,
+    title: "AI Platform — Сергей Нотевский",
+    description:
+      "Карта ответственности и практический reference Сергея Нотевского по построению production AI-платформ."
+  },
+  aiPlatformMap: {
+    path: "/ai-platform/map",
+    alternatePath: null,
+    title: "Карта AI Platform — Сергей Нотевский",
+    description:
+      "Семь областей ответственности production AI-платформы: назначение, границы, связи и честный статус материалов."
   },
   about: {
     path: "/about",
@@ -240,6 +263,45 @@ export function talkMetadata(talk: V3Talk): Metadata {
 
 export function projectMetadata(project: V3Project): Metadata {
   return localEditorialMetadata(project, "project");
+}
+
+type V3Reference = V3PlatformArea | V3PlatformComponent | V3Case;
+
+export function referenceMetadata(record: V3Reference): Metadata {
+  if (
+    record.publicationStatus !== "published" ||
+    (record.reviewStatus !== "reviewed" && record.reviewStatus !== "stale") ||
+    record.publishedAt === null ||
+    record.reviewedAt === null
+  ) {
+    throw new Error(`Reference metadata requires a published reviewed record: ${record.entityId}`);
+  }
+
+  const canonicalPath = getCanonicalUrl(record);
+  const unprefixedPath =
+    record.locale === "en"
+      ? canonicalPath.replace(/^\/en(?=\/|$)/, "") || "/"
+      : canonicalPath;
+  const title = `${record.title} — AI Platform`;
+  const metadata = createPageMetadata({
+    locale: record.locale,
+    path: unprefixedPath,
+    alternatePath: null,
+    title,
+    description: record.description
+  });
+
+  return {
+    ...metadata,
+    title: { absolute: title },
+    authors: [
+      {
+        name: "Сергей Нотевский",
+        url: absoluteUrl(record.locale, "/about")
+      }
+    ],
+    keywords: record.topics
+  };
 }
 
 export function homeMetadata(locale: Locale): Metadata {

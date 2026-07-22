@@ -96,6 +96,8 @@ const platformArea = {
   type: "platform-area",
   slug: "inference-runtime",
   order: 3,
+  mapBoundary:
+    "Исполняет model workloads и управляет runtime-ресурсами; не выбирает бизнес-сценарий.",
   included: ["Serving runtimes", "Capacity controls"],
   excluded: ["Model training"],
   signals: ["Queue depth", "Time to first token"]
@@ -154,6 +156,25 @@ describe("v3 frontmatter record variants", () => {
 });
 
 describe("v3 lifecycle and relation invariants", () => {
+  it.each([undefined, "", "   "])(
+    "rejects a platform area with an invalid mapBoundary %s",
+    (mapBoundary) => {
+      const candidate: Record<string, unknown> = { ...platformArea };
+      if (mapBoundary === undefined) {
+        delete candidate.mapBoundary;
+      } else {
+        candidate.mapBoundary = mapBoundary;
+      }
+
+      const result = v3FrontmatterSchema.safeParse(candidate);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some((issue) => issue.path[0] === "mapBoundary")).toBe(true);
+      }
+    }
+  );
+
   it.each([
     ["article", article],
     ["talk", talk],

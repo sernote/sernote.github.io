@@ -9,7 +9,10 @@ import {
   formatRussianDate,
   getBlogViewModel,
   getHomeViewModel,
+  getPlatformLandingViewModel,
+  getPlatformMapViewModel,
   getProjectsViewModel,
+  getReferenceDetailViewModel,
   getTalksViewModel,
   getWorkViewModel
 } from "../../lib/content-v3/view-models";
@@ -100,6 +103,16 @@ function article(
 }
 
 function area(entityId: string, order: number, overrides: Record<string, unknown> = {}) {
+  const titleByEntityId: Record<string, string> = {
+    "strategy-boundaries": "Стратегия и границы",
+    "control-plane": "Control Plane",
+    "inference-plane": "Inference Plane",
+    "context-agent-runtime": "Context & Agent Runtime",
+    "quality-lifecycle": "Качество и lifecycle",
+    "operations-economics": "Эксплуатация и экономика",
+    "security-ownership": "Безопасность и ownership"
+  };
+
   return entry(
     {
       ...published,
@@ -107,7 +120,9 @@ function area(entityId: string, order: number, overrides: Record<string, unknown
       entityId,
       type: "platform-area",
       slug: entityId,
+      title: titleByEntityId[entityId] ?? `Область ${entityId}`,
       order,
+      mapBoundary: `Граница области ${entityId}: проверяемая ответственность без привязки к topology.`,
       included: ["Платформенные решения"],
       excluded: ["Закрытые детали реализации"],
       signals: ["Проверяемый сигнал"],
@@ -117,7 +132,11 @@ function area(entityId: string, order: number, overrides: Record<string, unknown
   );
 }
 
-function component(entityId: string, primaryAreaId: string) {
+function component(
+  entityId: string,
+  primaryAreaId: string,
+  overrides: Record<string, unknown> = {}
+) {
   return entry(
     {
       ...published,
@@ -129,9 +148,38 @@ function component(entityId: string, primaryAreaId: string) {
       relatedAreaIds: [],
       decisionQuestions: ["Какой контракт проверяет компонент?"],
       metrics: ["Cache hit signal"],
-      failureModes: ["Нестабильный префикс"]
+      failureModes: ["Нестабильный префикс"],
+      ...overrides
     },
     `components/${entityId}.mdx`
+  );
+}
+
+function syntheticCase(
+  entityId: string,
+  componentId: string,
+  overrides: Record<string, unknown> = {}
+) {
+  return entry(
+    {
+      ...published,
+      ...reviewed,
+      entityId,
+      type: "case",
+      slug: entityId,
+      title: "Синтетический кейс: Agent session cache reuse",
+      description:
+        "Синтетический кейс о проверке порядка инструментов в двух эквивалентных запросах.",
+      caseKind: "synthetic",
+      componentIds: [componentId],
+      evidence: ["Синтетические JSON fixtures"],
+      relations: {
+        articleIds: ["short-prompt-not-cheap"],
+        projectIds: ["audit-prompt-caching"]
+      },
+      ...overrides
+    },
+    `cases/${entityId}.mdx`
   );
 }
 
@@ -203,6 +251,7 @@ const fixtures = [
   }),
   talk("maas-vs-self-hosted-roii"),
   project("audit-prompt-caching", {
+    relations: { platformEntityIds: ["prefix-cache"] },
     verifiedRelease: {
       version: "v0.1.3",
       publishedAt: "2026-07-20",
@@ -214,6 +263,7 @@ const fixtures = [
   }),
   area("inference-plane", 3),
   component("prefix-cache", "inference-plane"),
+  syntheticCase("agent-session-cache-reuse", "prefix-cache"),
   ...[
     ["strategy-boundaries", 1],
     ["control-plane", 2],
@@ -300,6 +350,18 @@ describe("v3 generated-entry source adapter", () => {
     expect(source.generateParams("project", "ru")).toEqual([
       { slug: "audit-prompt-caching" }
     ]);
+    expect(source.generateParams("platform-area", "ru")).toEqual([
+      { slug: "inference-plane" }
+    ]);
+    expect(source.generateParams("platform-component", "ru")).toEqual([
+      { slug: "prefix-cache" }
+    ]);
+    expect(source.generateParams("case", "ru")).toEqual([
+      { slug: "agent-session-cache-reuse" }
+    ]);
+    expect(source.getBySlug("platform-area", "unknown-area", "ru")).toBeNull();
+    expect(source.getBySlug("platform-component", "unknown-component", "ru")).toBeNull();
+    expect(source.getBySlug("case", "unknown-case", "ru")).toBeNull();
   });
 
   it("keeps the six non-pilot draft areas available only to the explicit map query", () => {
@@ -334,7 +396,8 @@ describe("v3 generated-entry source adapter", () => {
       "short-prompt-not-cheap"
     ]);
     expect(source.getRelatedForPage(external).map((item) => item.entityId)).toEqual([
-      "prefix-cache"
+      "prefix-cache",
+      "agent-session-cache-reuse"
     ]);
   });
 
@@ -538,14 +601,16 @@ describe("v3 personal-site view models", () => {
   });
 
   it("fails closed when an explicit selection is a draft", () => {
-    const withDraftProject = fixtures.map((item) =>
-      item.entityId === "audit-prompt-caching"
-        ? project("audit-prompt-caching", {
-            publicationStatus: "draft",
-            publishedAt: null
-          })
-        : item
-    );
+    const withDraftProject = fixtures
+      .filter((item) => item.entityId !== "agent-session-cache-reuse")
+      .map((item) =>
+        item.entityId === "audit-prompt-caching"
+          ? project("audit-prompt-caching", {
+              publicationStatus: "draft",
+              publishedAt: null
+            })
+          : item
+      );
 
     expect(() => getHomeViewModel(createV3Source(withDraftProject))).toThrow(
       /audit-prompt-caching.*not available/i
@@ -589,6 +654,255 @@ describe("v3 personal-site view models", () => {
     expect(moduleText).toMatch(/import type .*source-core/);
     expect(moduleText).toMatch(/getCanonicalUrl.*\.\/registry/);
   });
+});
+
+describe("AI Platform map and reference view models", () => {
+  it("builds the exact seven-area map with one source-driven public link", () => {
+    const model = getPlatformMapViewModel(createV3Source(fixtures));
+
+    expect(model.areas.map(({ index, entityId }) => [index, entityId])).toEqual([
+      ["01", "strategy-boundaries"],
+      ["02", "control-plane"],
+      ["03", "inference-plane"],
+      ["04", "context-agent-runtime"],
+      ["05", "quality-lifecycle"],
+      ["06", "operations-economics"],
+      ["07", "security-ownership"]
+    ]);
+    expect(model.areas.map(({ title }) => title)).toEqual([
+      "Стратегия и границы",
+      "Control Plane",
+      "Inference Plane",
+      "Context & Agent Runtime",
+      "Качество и lifecycle",
+      "Эксплуатация и экономика",
+      "Безопасность и ownership"
+    ]);
+    expect(model.areas.filter((area) => area.href)).toEqual([
+      expect.objectContaining({
+        entityId: "inference-plane",
+        href: "/ai-platform/areas/inference-plane",
+        mapBoundary: expect.any(String),
+        statusLabel: "Доступно"
+      })
+    ]);
+    expect(model.areas.filter((area) => !area.href)).toHaveLength(6);
+    expect(model.areas.filter((area) => !area.href).every((area) => area.statusLabel === "Планируется"))
+      .toBe(true);
+    expect(model.intersections.every((intersection) => !intersection.title.includes("↔"))).toBe(
+      true
+    );
+  });
+
+  it("keeps the map immutable, source-small, deterministic, and input-order independent", () => {
+    const model = getPlatformMapViewModel(createV3Source(fixtures));
+    const reversed = getPlatformMapViewModel(createV3Source([...fixtures].reverse()));
+
+    expect(reversed).toEqual(model);
+    expect(getPlatformMapViewModel(createV3Source(fixtures))).toEqual(model);
+    expect(Object.isFrozen(model)).toBe(true);
+    expect(Object.isFrozen(model.areas)).toBe(true);
+    for (const areaModel of model.areas) {
+      expect(Object.isFrozen(areaModel)).toBe(true);
+      expect(areaModel).not.toHaveProperty("body");
+      expect(areaModel).not.toHaveProperty("sourcePath");
+    }
+  });
+
+  it("keeps a stale public area linked and marks it for review", () => {
+    const withStaleArea = fixtures.map((item) =>
+      item.entityId === "inference-plane"
+        ? area("inference-plane", 3, {
+            reviewStatus: "stale",
+            reviewedAt: "2026-01-01",
+            reviewCycleDays: 30
+          })
+        : item
+    );
+
+    expect(
+      getPlatformMapViewModel(createV3Source(withStaleArea)).areas.find(
+        (areaModel) => areaModel.entityId === "inference-plane"
+      )
+    ).toMatchObject({
+      href: "/ai-platform/areas/inference-plane",
+      statusLabel: "Нужна проверка"
+    });
+  });
+
+  it("fails closed on a missing, duplicate, or unexpected canonical area", () => {
+    const missing = fixtures.filter((item) => item.entityId !== "security-ownership");
+    const duplicate = [...fixtures, area("inference-plane", 3)];
+    const unexpected = [...fixtures, area("training-plane", 8, {
+      publicationStatus: "draft",
+      reviewStatus: "unreviewed",
+      publishedAt: null,
+      reviewedAt: null,
+      reviewCycleDays: null,
+      sources: [],
+      applicability: null,
+      limitations: null
+    })];
+
+    expect(() => getPlatformMapViewModel(createV3Source(missing))).toThrow(/seven|missing|canonical/i);
+    expect(() => getPlatformMapViewModel(createV3Source(duplicate))).toThrow(/duplicate identity/i);
+    expect(() => getPlatformMapViewModel(createV3Source(unexpected))).toThrow(/unexpected|canonical/i);
+  });
+
+  it("builds exactly two entry modes and the complete four-node pilot vertical", () => {
+    const model = getPlatformLandingViewModel(createV3Source(fixtures));
+
+    expect(model.entryModes.map(({ id, href }) => [id, href])).toEqual([
+      ["map", "/ai-platform/map"],
+      ["vertical", "#current-vertical"]
+    ]);
+    expect(model.vertical.map(({ entityId, href }) => [entityId, href])).toEqual([
+      ["inference-plane", "/ai-platform/areas/inference-plane"],
+      ["prefix-cache", "/ai-platform/components/prefix-cache"],
+      ["agent-session-cache-reuse", "/ai-platform/cases/agent-session-cache-reuse"],
+      ["audit-prompt-caching", "/projects/audit-prompt-caching"]
+    ]);
+    expect(model.vertical[2]).toMatchObject({ statusLabel: "Синтетический кейс" });
+    expect(model.entryModes[1].description).toMatch(/проверенн/i);
+    expect(Object.isFrozen(model)).toBe(true);
+    expect(Object.isFrozen(model.vertical)).toBe(true);
+  });
+
+  it.each([
+    "inference-plane",
+    "prefix-cache",
+    "agent-session-cache-reuse"
+  ])("marks stale reference %s on the landing without claiming a checked path", (entityId) => {
+    const staleReview = {
+      reviewStatus: "stale",
+      reviewedAt: "2026-01-01",
+      reviewCycleDays: 30
+    };
+    const withStaleReference = fixtures.map((item) => {
+      if (item.entityId !== entityId) return item;
+      if (entityId === "inference-plane") {
+        return area("inference-plane", 3, staleReview);
+      }
+      if (entityId === "prefix-cache") {
+        return component("prefix-cache", "inference-plane", staleReview);
+      }
+      return syntheticCase(
+        "agent-session-cache-reuse",
+        "prefix-cache",
+        staleReview
+      );
+    });
+
+    const model = getPlatformLandingViewModel(createV3Source(withStaleReference));
+
+    expect(
+      model.vertical.find((item) => item.entityId === entityId)?.statusLabel
+    ).toBe("Нужна проверка");
+    expect(model.entryModes[1].description).not.toMatch(/проверенн(?:ый|ого) путь/i);
+    expect(model.entryModes[1].description).toMatch(/повторн.*проверк/i);
+  });
+
+  it("keeps a stale related reference linked and exposes its visible review state", () => {
+    const withStaleArea = fixtures.map((item) =>
+      item.entityId === "inference-plane"
+        ? area("inference-plane", 3, {
+            reviewStatus: "stale",
+            reviewedAt: "2026-01-01",
+            reviewCycleDays: 30
+          })
+        : item
+    );
+    const model = getReferenceDetailViewModel(
+      createV3Source(withStaleArea),
+      "platform-component",
+      "prefix-cache"
+    );
+
+    expect(model?.related.find((item) => item.entityId === "inference-plane")).toMatchObject({
+      href: "/ai-platform/areas/inference-plane",
+      reviewStatusLabel: "Нужна проверка"
+    });
+  });
+
+  it("builds all three source-backed reference detail structures", () => {
+    const source = createV3Source(fixtures);
+    const exemplars = [
+      getReferenceDetailViewModel(source, "platform-area", "inference-plane"),
+      getReferenceDetailViewModel(source, "platform-component", "prefix-cache"),
+      getReferenceDetailViewModel(source, "case", "agent-session-cache-reuse")
+    ];
+
+    for (const model of exemplars) {
+      expect(model).not.toBeNull();
+      expect(Object.isFrozen(model)).toBe(true);
+      expect(model).not.toHaveProperty("body");
+      expect(model).not.toHaveProperty("sourcePath");
+      expect(model).not.toHaveProperty("sectionKeys");
+    }
+
+    const componentModel = exemplars[1]!;
+    expect(componentModel.primaryArea).toMatchObject({
+      entityId: "inference-plane",
+      href: "/ai-platform/areas/inference-plane"
+    });
+    expect(componentModel.related.map(({ entityId }) => entityId)).toEqual([
+      "inference-plane",
+      "agent-session-cache-reuse",
+      "audit-prompt-caching",
+      "short-prompt-not-cheap"
+    ]);
+    expect(componentModel.related).toHaveLength(4);
+
+  });
+
+  it("returns null for unknown reference slugs and marks the case as synthetic", () => {
+    const source = createV3Source(fixtures);
+
+    expect(getReferenceDetailViewModel(source, "platform-area", "unknown")).toBeNull();
+    expect(getReferenceDetailViewModel(source, "platform-component", "unknown")).toBeNull();
+    expect(getReferenceDetailViewModel(source, "case", "unknown")).toBeNull();
+    expect(
+      getReferenceDetailViewModel(source, "case", "agent-session-cache-reuse")
+    ).toMatchObject({ isSynthetic: true, typeLabel: "Синтетический кейс" });
+  });
+});
+
+describe("AI Platform exemplar editorial contract", () => {
+  it("states the inference responsibility contract without inventing a universal topology", () => {
+    const inferenceText = readFileSync(
+      join(process.cwd(), "content/v3/ai-platform/areas/inference-plane.mdx"),
+      "utf8"
+    );
+    const contextText = readFileSync(
+      join(process.cwd(), "content/v3/ai-platform/areas/context-agent-runtime.mdx"),
+      "utf8"
+    );
+
+    expect(inferenceText).toContain(
+      'mapBoundary: "Исполняет модельные нагрузки и управляет средами исполнения, пулами ресурсов, планированием, пакетной обработкой, памятью и кэшем; не выбирает бизнес-сценарий."'
+    );
+    expect(contextText).toContain(
+      'mapBoundary: "Собирает контекст и управляет многошаговой работой агента: поиском данных, инструментами, состоянием сессии, памятью, остановкой и восстановлением."'
+    );
+    expect(inferenceText).toContain(
+      "Inference Plane исполняет подготовленную модельную нагрузку. Если в платформе есть Control Plane, он передаёт параметры маршрута и политики; это контракт ответственности, а не обязательная предыдущая стадия пути запроса."
+    );
+    expect(inferenceText).not.toContain(
+      "Inference Plane исполняет запрос после того, как Control Plane разрешил маршрут."
+    );
+  });
+
+  it("keeps the case visibly synthetic in title and description", () => {
+    const caseText = readFileSync(
+      join(process.cwd(), "content/v3/ai-platform/cases/agent-session-cache-reuse.mdx"),
+      "utf8"
+    );
+
+    expect(caseText).toMatch(/^title: .*синтетич/m);
+    expect(caseText).toMatch(/^description: .*Синтетич/m);
+    expect(caseText).toContain("> **Синтетический кейс.**");
+  });
+
 });
 
 describe("native Blog article editorial contract", () => {

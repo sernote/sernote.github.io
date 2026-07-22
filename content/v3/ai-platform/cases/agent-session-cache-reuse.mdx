@@ -3,7 +3,7 @@ entityId: agent-session-cache-reuse
 type: case
 locale: ru
 slug: agent-session-cache-reuse
-title: "Agent session cache reuse"
+title: "Agent session cache reuse — синтетический кейс"
 description: "Синтетический пример: два эквивалентных по содержанию агентных запроса различаются только порядком инструментов, а закреплённая версия анализатора обнаруживает это изменение."
 publicationStatus: published
 reviewStatus: reviewed
@@ -168,7 +168,7 @@ AP-2 подтверждает layout drift, но оставляет нескол
 
 - Кейс не доказывает cache hit или miss у OpenAI, Claude, vLLM, SGLang либо другого runtime.
 - Не измеряет cached tokens, time to first token, end-to-end latency, throughput и стоимость.
-- Не показывает production incident, production outcome или реальный агентный traffic.
+- Не показывает production incident, результат production-системы или реальный агентный traffic.
 - Не подтверждает, что сортировка улучшит качество tool selection либо безопасна для любого API.
 - Не проверяет route locality, replica affinity, KV pressure, eviction и tenant isolation.
 - Не сравнивает модели, providers и продукты.

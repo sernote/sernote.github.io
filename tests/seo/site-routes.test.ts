@@ -5,11 +5,17 @@ import { describe, expect, it } from "vitest";
 import { SiteHeader } from "../../components/marketing/site-shell";
 import { SheetContent, SheetDescription } from "../../components/ui/sheet";
 import { getDictionary, getSiteConfig, getNavItems, type Locale } from "../../lib/i18n";
-import type { V3Article, V3Project, V3Talk } from "../../lib/content-v3/schema";
+import type {
+  V3Article,
+  V3PlatformComponent,
+  V3Project,
+  V3Talk
+} from "../../lib/content-v3/schema";
 import {
   articleMetadata,
   createPageMetadata,
   projectMetadata,
+  referenceMetadata,
   talkMetadata,
   v3MarketingMetadata
 } from "../../lib/metadata";
@@ -153,6 +159,8 @@ describe("personal master brand and metadata alternates", () => {
     ["work", "Материалы — Сергей Нотевский"],
     ["talks", "Выступления — Сергей Нотевский"],
     ["projects", "Проекты — Сергей Нотевский"],
+    ["aiPlatform", "AI Platform — Сергей Нотевский"],
+    ["aiPlatformMap", "Карта AI Platform — Сергей Нотевский"],
     ["about", "Обо мне — Сергей Нотевский"],
     ["contact", "Контакт — Сергей Нотевский"]
   ] as const)(
@@ -283,6 +291,55 @@ describe("personal master brand and metadata alternates", () => {
     expect(projectMetadata(project).authors).toEqual([
       { name: "Сергей Нотевский", url: "https://notevskii.tech/about" }
     ]);
+  });
+
+  it("emits canonical-only metadata for a published reviewed reference", () => {
+    const component: V3PlatformComponent = {
+      entityId: "prefix-cache",
+      type: "platform-component",
+      locale: "ru",
+      slug: "prefix-cache",
+      title: "Prefix Cache",
+      description:
+        "Как повторно использовать уже обработанную общую часть запроса без ложных гарантий.",
+      publicationStatus: "published",
+      reviewStatus: "reviewed",
+      publishedAt: "2026-07-22",
+      updatedAt: "2026-07-22",
+      reviewedAt: "2026-07-22",
+      reviewCycleDays: 90,
+      topics: ["prefix-cache", "inference"],
+      relations: {},
+      sources: [
+        {
+          title: "vLLM Automatic Prefix Caching",
+          url: "https://docs.vllm.ai/en/stable/design/prefix_caching/",
+          verifiedAt: "2026-07-22"
+        }
+      ],
+      applicability: "Повторяющиеся длинные префиксы.",
+      limitations: "Не ускоряет decode и не гарантирует reuse.",
+      primaryAreaId: "inference-plane",
+      relatedAreaIds: [],
+      decisionQuestions: ["Совпадает ли сериализованный префикс?"],
+      metrics: ["Cache-read tokens"],
+      failureModes: ["Нестабильный порядок tools"]
+    };
+
+    const metadata = referenceMetadata(component);
+
+    expect(metadata.title).toEqual({ absolute: "Prefix Cache — AI Platform" });
+    expect(metadata.alternates).toEqual({
+      canonical: "https://notevskii.tech/ai-platform/components/prefix-cache"
+    });
+    expect(metadata.alternates).not.toHaveProperty("languages");
+    expect(metadata.authors).toEqual([
+      {
+        name: "Сергей Нотевский",
+        url: "https://notevskii.tech/about"
+      }
+    ]);
+    expect(metadata.keywords).toEqual(["prefix-cache", "inference"]);
   });
 
   it("uses the personal master brand in both locales", () => {

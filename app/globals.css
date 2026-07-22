@@ -171,14 +171,6 @@ a {
   font-size: 0.75rem;
 }
 
-.map-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: 1px;
-  border: 1px solid var(--border);
-  background: var(--border);
-}
-
 .status-label {
   display: inline-flex;
   align-items: center;

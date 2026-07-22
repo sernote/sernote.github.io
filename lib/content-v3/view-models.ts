@@ -9,6 +9,7 @@ export type V3ListItemViewModel = Readonly<{
   meta: string;
   href: string;
   linkKind: "internal" | "external";
+  reviewStatusLabel?: "Нужна проверка";
 }>;
 
 export type HomeViewModel = Readonly<{
@@ -61,6 +62,77 @@ export type TalksViewModel = Readonly<{
 
 export type ProjectsViewModel = Readonly<{
   items: readonly ContentIndexItemViewModel[];
+}>;
+
+export type PlatformMapAreaViewModel = Readonly<{
+  entityId: string;
+  index: string;
+  title: string;
+  purpose: string;
+  mapBoundary: string;
+  statusLabel: "Доступно" | "Нужна проверка" | "Планируется";
+  href: string | null;
+}>;
+
+export type PlatformMapViewModel = Readonly<{
+  areas: readonly PlatformMapAreaViewModel[];
+  intersections: readonly Readonly<{
+    title: string;
+    description: string;
+  }>[];
+}>;
+
+export type PlatformLandingViewModel = Readonly<{
+  entryModes: readonly Readonly<{
+    id: "map" | "vertical";
+    index: string;
+    title: string;
+    description: string;
+    href: string;
+  }>[];
+  vertical: readonly Readonly<{
+    entityId: string;
+    index: string;
+    title: string;
+    meta: string;
+    href: string;
+    statusLabel:
+      | "Проверено"
+      | "Нужна проверка"
+      | "Синтетический кейс"
+      | "Открытый проект";
+  }>[];
+}>;
+
+export type ReferenceContentType = "platform-area" | "platform-component" | "case";
+
+export type ReferenceDetailViewModel = Readonly<{
+  entityId: string;
+  contentType: ReferenceContentType;
+  title: string;
+  description: string;
+  href: string;
+  typeLabel: "Область AI Platform" | "Компонент AI Platform" | "Синтетический кейс" | "Кейс AI Platform";
+  reviewStatus: "reviewed" | "stale";
+  reviewStatusLabel: "Проверено" | "Нужна повторная проверка";
+  reviewedAt: string;
+  reviewedLabel: string;
+  publishedAt: string;
+  updatedAt: string;
+  purpose: string;
+  boundary: string;
+  applicability: string;
+  limitations: string;
+  sources: readonly Readonly<{
+    title: string;
+    url: string;
+    verifiedAt: string;
+    verifiedLabel: string;
+  }>[];
+  primaryArea: V3ListItemViewModel | null;
+  parentComponent: V3ListItemViewModel | null;
+  related: readonly V3ListItemViewModel[];
+  isSynthetic: boolean;
 }>;
 
 const RUSSIAN_MONTHS = [
@@ -121,6 +193,43 @@ const HOME_ENTRANCES: HomeViewModel["entrances"] = Object.freeze([
   })
 ]);
 
+const CANONICAL_PLATFORM_AREAS = Object.freeze([
+  "strategy-boundaries",
+  "control-plane",
+  "inference-plane",
+  "context-agent-runtime",
+  "quality-lifecycle",
+  "operations-economics",
+  "security-ownership"
+] as const);
+
+const PLATFORM_INTERSECTIONS: PlatformMapViewModel["intersections"] = Object.freeze([
+  Object.freeze({
+    title: "Control Plane и Inference Plane",
+    description:
+      "Control Plane задаёт route intent, policy и limits. Inference Plane отвечает доступностью, pressure и фактом исполнения."
+  }),
+  Object.freeze({
+    title: "Context & Agent Runtime и Quality & Lifecycle",
+    description:
+      "Agent runtime собирает контекст и действия. Quality & Lifecycle проверяет версии данных, промптов, tools и поведения перед выпуском."
+  }),
+  Object.freeze({
+    title: "Эксплуатация, экономика, безопасность и ownership",
+    description:
+      "SLO, capacity, cost, data boundaries, audit и владельцы решений проходят через все области, а не образуют отдельный шаг request path."
+  })
+]);
+
+const PLATFORM_MAP_ENTRY_MODE = Object.freeze({
+  id: "map" as const,
+  index: "01",
+  title: "Карта областей",
+  description:
+    "Семь зон ответственности — от выбора сценария до эксплуатации, безопасности и ownership.",
+  href: "/ai-platform/map"
+});
+
 function metaFor(record: V3SourceItem): string {
   switch (record.type) {
     case "article":
@@ -148,6 +257,14 @@ function metaFor(record: V3SourceItem): string {
 }
 
 function normalizeListItem(record: V3SourceItem): V3ListItemViewModel {
+  const reviewStatusLabel =
+    (record.type === "platform-area" ||
+      record.type === "platform-component" ||
+      record.type === "case") &&
+    record.reviewStatus === "stale"
+      ? "Нужна проверка"
+      : undefined;
+
   return Object.freeze({
     entityId: record.entityId,
     contentType: record.type,
@@ -156,8 +273,39 @@ function normalizeListItem(record: V3SourceItem): V3ListItemViewModel {
     meta: metaFor(record),
     href: getCanonicalUrl(record),
     linkKind:
-      record.type === "article" && record.kind === "external-note" ? "external" : "internal"
+      record.type === "article" && record.kind === "external-note" ? "external" : "internal",
+    ...(reviewStatusLabel === undefined ? {} : { reviewStatusLabel })
   });
+}
+
+function requirePublicEntity(
+  source: V3Source,
+  type: V3Type,
+  entityId: string
+): V3SourceItem {
+  const record = source
+    .listPublic(type, "ru")
+    .find((candidate) => candidate.entityId === entityId);
+
+  if (record === undefined) {
+    throw new Error(`Required public ${type} ${entityId} is not available`);
+  }
+  if (record.type !== type) {
+    throw new Error(`Required ${entityId}: expected ${type}, found ${record.type}`);
+  }
+  return record;
+}
+
+function findPublicByEntityId(
+  source: V3Source,
+  type: V3Type,
+  entityId: string
+): V3SourceItem | null {
+  return (
+    source
+      .listPublic(type, "ru")
+      .find((candidate) => candidate.entityId === entityId) ?? null
+  );
 }
 
 function selectFeatured(
@@ -290,4 +438,218 @@ export function getProjectsViewModel(source: V3Source): ProjectsViewModel {
   );
 
   return Object.freeze({ items });
+}
+
+export function getPlatformMapViewModel(source: V3Source): PlatformMapViewModel {
+  const records = [
+    ...source.listPublic("platform-area", "ru"),
+    ...source.getPlannedAreas("ru")
+  ];
+  const identities = records.map((record) => record.entityId);
+  const uniqueIdentities = new Set(identities);
+
+  if (records.length !== CANONICAL_PLATFORM_AREAS.length || uniqueIdentities.size !== records.length) {
+    throw new Error("AI Platform map requires exactly seven unique canonical areas");
+  }
+
+  const unexpected = identities.filter(
+    (identity) => !CANONICAL_PLATFORM_AREAS.includes(identity as (typeof CANONICAL_PLATFORM_AREAS)[number])
+  );
+  const missing = CANONICAL_PLATFORM_AREAS.filter((identity) => !uniqueIdentities.has(identity));
+  if (unexpected.length > 0 || missing.length > 0) {
+    throw new Error(
+      `AI Platform map canonical area mismatch; missing=${missing.join(",") || "none"}; unexpected=${unexpected.join(",") || "none"}`
+    );
+  }
+
+  const byIdentity = new Map(records.map((record) => [record.entityId, record]));
+  const areas = Object.freeze(
+    CANONICAL_PLATFORM_AREAS.map((entityId, offset): PlatformMapAreaViewModel => {
+      const record = byIdentity.get(entityId);
+      if (record === undefined || record.type !== "platform-area" || record.order !== offset + 1) {
+        throw new Error(`AI Platform map area ${entityId} has an invalid canonical order`);
+      }
+
+      const isPublic = record.publicationStatus === "published";
+      const href = isPublic ? getCanonicalUrl(record) : null;
+      const statusLabel = !isPublic
+        ? "Планируется"
+        : record.reviewStatus === "stale"
+          ? "Нужна проверка"
+          : "Доступно";
+
+      return Object.freeze({
+        entityId: record.entityId,
+        index: String(record.order).padStart(2, "0"),
+        title: record.title,
+        purpose: record.description,
+        mapBoundary: record.mapBoundary,
+        statusLabel,
+        href
+      });
+    })
+  );
+
+  return Object.freeze({ areas, intersections: PLATFORM_INTERSECTIONS });
+}
+
+export function getPlatformLandingViewModel(source: V3Source): PlatformLandingViewModel {
+  const area = requirePublicEntity(source, "platform-area", "inference-plane");
+  const component = requirePublicEntity(source, "platform-component", "prefix-cache");
+  const caseRecord = requirePublicEntity(source, "case", "agent-session-cache-reuse");
+  const project = requirePublicEntity(source, "project", "audit-prompt-caching");
+
+  if (area.type !== "platform-area") throw new Error("Inference Plane has an invalid type");
+  if (component.type !== "platform-component") throw new Error("Prefix Cache has an invalid type");
+  if (caseRecord.type !== "case" || caseRecord.caseKind !== "synthetic") {
+    throw new Error("Agent session cache reuse must remain a synthetic case");
+  }
+  if (project.type !== "project") throw new Error("audit-prompt-caching has an invalid type");
+
+  const hasStaleReference = [area, component, caseRecord].some(
+    (record) => record.reviewStatus === "stale"
+  );
+  const entryModes: PlatformLandingViewModel["entryModes"] = Object.freeze([
+    PLATFORM_MAP_ENTRY_MODE,
+    Object.freeze({
+      id: "vertical",
+      index: "02",
+      title: "Текущий вертикальный срез",
+      description: hasStaleReference
+        ? "Один опубликованный путь от области инференса к компоненту, синтетическому кейсу и открытому проекту; часть reference-материалов требует повторной проверки."
+        : "Один проверенный путь от области инференса к компоненту, синтетическому кейсу и открытому проекту.",
+      href: "#current-vertical"
+    })
+  ]);
+
+  const vertical: PlatformLandingViewModel["vertical"] = Object.freeze([
+    Object.freeze({
+      entityId: area.entityId,
+      index: "01",
+      title: area.title,
+      meta: "Область",
+      href: getCanonicalUrl(area),
+      statusLabel: area.reviewStatus === "stale" ? "Нужна проверка" : "Проверено"
+    }),
+    Object.freeze({
+      entityId: component.entityId,
+      index: "02",
+      title: component.title,
+      meta: "Компонент",
+      href: getCanonicalUrl(component),
+      statusLabel:
+        component.reviewStatus === "stale" ? "Нужна проверка" : "Проверено"
+    }),
+    Object.freeze({
+      entityId: caseRecord.entityId,
+      index: "03",
+      title: caseRecord.title,
+      meta: "Кейс",
+      href: getCanonicalUrl(caseRecord),
+      statusLabel:
+        caseRecord.reviewStatus === "stale" ? "Нужна проверка" : "Синтетический кейс"
+    }),
+    Object.freeze({
+      entityId: project.entityId,
+      index: "04",
+      title: project.title,
+      meta: "Проект",
+      href: getCanonicalUrl(project),
+      statusLabel: "Открытый проект"
+    })
+  ]);
+
+  return Object.freeze({ entryModes, vertical });
+}
+
+function referenceTypeLabel(
+  record: V3SourceItem
+): ReferenceDetailViewModel["typeLabel"] {
+  if (record.type === "platform-area") return "Область AI Platform";
+  if (record.type === "platform-component") return "Компонент AI Platform";
+  if (record.type === "case") {
+    return record.caseKind === "synthetic" ? "Синтетический кейс" : "Кейс AI Platform";
+  }
+  throw new Error(`Unsupported reference type: ${record.type}`);
+}
+
+function requirePrimaryArea(source: V3Source, areaId: string): V3ListItemViewModel {
+  const areaRecord = findPublicByEntityId(source, "platform-area", areaId);
+  if (areaRecord === null || areaRecord.type !== "platform-area") {
+    throw new Error(`Published reference requires public primary area ${areaId}`);
+  }
+  return normalizeListItem(areaRecord);
+}
+
+export function getReferenceDetailViewModel(
+  source: V3Source,
+  type: ReferenceContentType,
+  slug: string
+): ReferenceDetailViewModel | null {
+  const record = source.getBySlug(type, slug, "ru");
+  if (record === null) return null;
+  if (record.type !== type) {
+    throw new Error(`Reference ${slug}: expected ${type}, found ${record.type}`);
+  }
+  if (
+    record.reviewStatus === "unreviewed" ||
+    record.publishedAt === null ||
+    record.reviewedAt === null ||
+    record.applicability === null ||
+    record.limitations === null
+  ) {
+    throw new Error(`Reference ${record.entityId} is missing public review evidence`);
+  }
+
+  let primaryArea: V3ListItemViewModel | null = null;
+  let parentComponent: V3ListItemViewModel | null = null;
+  if (record.type === "platform-component") {
+    primaryArea = requirePrimaryArea(source, record.primaryAreaId);
+  } else if (record.type === "case") {
+    const componentId = record.componentIds[0];
+    const componentRecord = findPublicByEntityId(source, "platform-component", componentId);
+    if (componentRecord === null || componentRecord.type !== "platform-component") {
+      throw new Error(`Published case ${record.entityId} requires public component ${componentId}`);
+    }
+    parentComponent = normalizeListItem(componentRecord);
+    primaryArea = requirePrimaryArea(source, componentRecord.primaryAreaId);
+  }
+
+  const sources = Object.freeze(
+    record.sources.map((sourceRecord) =>
+      Object.freeze({
+        ...sourceRecord,
+        verifiedLabel: formatRussianDate(sourceRecord.verifiedAt)
+      })
+    )
+  );
+  const related = Object.freeze(
+    source.getRelatedForPage(record, 4).map((relatedRecord) => normalizeListItem(relatedRecord))
+  );
+  const model: ReferenceDetailViewModel = Object.freeze({
+    entityId: record.entityId,
+    contentType: type,
+    title: record.title,
+    description: record.description,
+    href: getCanonicalUrl(record),
+    typeLabel: referenceTypeLabel(record),
+    reviewStatus: record.reviewStatus,
+    reviewStatusLabel:
+      record.reviewStatus === "stale" ? "Нужна повторная проверка" : "Проверено",
+    reviewedAt: record.reviewedAt,
+    reviewedLabel: formatRussianDate(record.reviewedAt),
+    publishedAt: record.publishedAt,
+    updatedAt: record.updatedAt,
+    purpose: record.description,
+    boundary: record.type === "platform-area" ? record.mapBoundary : record.limitations,
+    applicability: record.applicability,
+    limitations: record.limitations,
+    sources,
+    primaryArea,
+    parentComponent,
+    related,
+    isSynthetic: record.type === "case" && record.caseKind === "synthetic"
+  });
+
+  return model;
 }
