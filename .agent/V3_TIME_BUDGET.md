@@ -30,7 +30,7 @@ Author-hours measure planned human author/reviewer effort. Agent runtime is trac
 | Task 8 | 2 | 0 | About 9 minutes implementation and validation, a shared focused review-fix pass, and autonomous responsive browser/design QA; tracked separately | Complete | Seven continuous responsibility rows replace the card grid; the local vertical anchor, lifecycle-aware landing copy, intersection labels, broad-entry boundaries, and honest planned states pass focused, direct, and responsive gates. |
 | Task 9 | 2 | 0 | About 8 minutes implementation and validation, a shared focused review-fix pass, and autonomous responsive browser/design QA; tracked separately | Complete | Breadcrumb targets, stale related-state labels, actual-MDX structure validation, anchor-only six-file path auditing, detail overflow containment, and the full map-to-case path pass focused, direct, and responsive gates. |
 | Task 10 | 2 | 0 | About 14 minutes implementation, 6 minutes spec correction, and 7 minutes quality hardening; tracked separately | Complete | Canonical discovery, source-backed breadcrumb relationships, valid video/software semantics, and XML-safe RSS completed and exported. |
-| Task 11 | 2 | 0 | Not started | Not started | — |
+| Task 11 | 2 | 0 | About 40 minutes total; tracked separately | Complete | Typed reversible route manifest, deterministic snapshot script, honest Next-rendered aliases, and a fail-closed atomic materializer with full rollback validated; 100 routes split 66 keep / 34 alias, keeps byte-stable, lint/typecheck/272 tests and the export audits pass. |
 | Task 12 | 4 | 0 | Not started | Not started | — |
 | Task 13 | 3 | 0 | Not started | Not started | — |
 | Task 14 | 4 | 0 | Not started | Not started | — |

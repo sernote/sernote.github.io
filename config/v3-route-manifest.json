@@ -1,0 +1,602 @@
+[
+  {
+    "source": "/",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/about",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ai-platform",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ai-platform/areas/inference-plane",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ai-platform/cases/agent-session-cache-reuse",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ai-platform/components/prefix-cache",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ai-platform/map",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/blog",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/blog/ai-platform-before-gpu",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/contact",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/en",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/about",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/contact",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/caching/prefix-cache",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/economics/inference-economics",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/evals/ai-quality-gate",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/gateway/ai-gateway",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/gateway/semantic-router",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/guardrails/guardrails",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/inference/embeddings-serving",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/inference/inference-runtime",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/inference/stt-serving",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/manifesto",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/maturity-model",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/observability/llm-observability-checklist",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/operating-model/ownership",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/platform-map",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/start-here",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/strategy/maas-vs-self-hosted",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/templates/execution-context-matrix",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/templates/non-prod-cost-sheet",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/handbook/templates/scenario-migration-rfc",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/projects",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/talks",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/tools",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/tools/ai-quality-gate-checklist",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/tools/llm-cost-calculator",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/tools/prefix-cache-auditor",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/en/writing",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "en"
+  },
+  {
+    "source": "/handbook",
+    "destination": "/ai-platform",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/caching/prefix-cache",
+    "destination": "/ai-platform/components/prefix-cache",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/economics/inference-economics",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/evals/ai-quality-gate",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/gateway/ai-gateway",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/gateway/semantic-router",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/guardrails/guardrails",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/inference/embeddings-serving",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/inference/inference-runtime",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/inference/stt-serving",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/manifesto",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/maturity-model",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/observability/llm-observability-checklist",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/operating-model/ownership",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/platform-map",
+    "destination": "/ai-platform/map",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/start-here",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/strategy/maas-vs-self-hosted",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/templates/execution-context-matrix",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/templates/non-prod-cost-sheet",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/handbook/templates/scenario-migration-rfc",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/projects",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/projects/audit-prompt-caching",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru",
+    "destination": "/",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/about",
+    "destination": "/about",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/contact",
+    "destination": "/contact",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook",
+    "destination": "/ai-platform",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/caching/prefix-cache",
+    "destination": "/ai-platform/components/prefix-cache",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/economics/inference-economics",
+    "destination": "/handbook/economics/inference-economics",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/evals/ai-quality-gate",
+    "destination": "/handbook/evals/ai-quality-gate",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/gateway/ai-gateway",
+    "destination": "/handbook/gateway/ai-gateway",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/gateway/semantic-router",
+    "destination": "/handbook/gateway/semantic-router",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/guardrails/guardrails",
+    "destination": "/handbook/guardrails/guardrails",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/inference/embeddings-serving",
+    "destination": "/handbook/inference/embeddings-serving",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/inference/inference-runtime",
+    "destination": "/handbook/inference/inference-runtime",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/inference/stt-serving",
+    "destination": "/handbook/inference/stt-serving",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/manifesto",
+    "destination": "/handbook/manifesto",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/maturity-model",
+    "destination": "/handbook/maturity-model",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/observability/llm-observability-checklist",
+    "destination": "/handbook/observability/llm-observability-checklist",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/operating-model/ownership",
+    "destination": "/handbook/operating-model/ownership",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/platform-map",
+    "destination": "/ai-platform/map",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/start-here",
+    "destination": "/handbook/start-here",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/strategy/maas-vs-self-hosted",
+    "destination": "/handbook/strategy/maas-vs-self-hosted",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/templates/execution-context-matrix",
+    "destination": "/handbook/templates/execution-context-matrix",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/templates/non-prod-cost-sheet",
+    "destination": "/handbook/templates/non-prod-cost-sheet",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/handbook/templates/scenario-migration-rfc",
+    "destination": "/handbook/templates/scenario-migration-rfc",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/projects",
+    "destination": "/projects",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/talks",
+    "destination": "/talks",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/tools",
+    "destination": "/tools",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/tools/ai-quality-gate-checklist",
+    "destination": "/tools/ai-quality-gate-checklist",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/tools/llm-cost-calculator",
+    "destination": "/tools/llm-cost-calculator",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/tools/prefix-cache-auditor",
+    "destination": "/tools/prefix-cache-auditor",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/ru/writing",
+    "destination": "/blog",
+    "behavior": "static-alias",
+    "locale": "ru"
+  },
+  {
+    "source": "/talks",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/talks/maas-vs-self-hosted",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/tools",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/tools/ai-quality-gate-checklist",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/tools/llm-cost-calculator",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/tools/prefix-cache-auditor",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/work",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/writing",
+    "destination": "/blog",
+    "behavior": "static-alias",
+    "locale": "ru"
+  }
+]

@@ -331,6 +331,29 @@ export function marketingMetadata(locale: Locale, key: PageKey): Metadata {
   });
 }
 
+export function staticAliasMetadata(destination: string, locale: Locale): Metadata {
+  const canonical = canonicalUrl(destination);
+  const copy =
+    locale === "ru"
+      ? {
+          title: "Страница переехала — Сергей Нотевский",
+          description:
+            "Этот адрес сохранён для старых ссылок. Актуальная версия материала доступна по канонической ссылке."
+        }
+      : {
+          title: "This page has moved — Sergei Notevskii",
+          description:
+            "This address is kept for older links. The current version of the material is at the canonical URL."
+        };
+
+  return {
+    title: { absolute: copy.title },
+    description: copy.description,
+    alternates: { canonical },
+    robots: { index: false, follow: true }
+  };
+}
+
 export function toolsIndexMetadata(locale: Locale): Metadata {
   const path = "/tools";
 

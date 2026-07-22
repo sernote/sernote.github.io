@@ -9,10 +9,16 @@ import { DocsMainContainer } from "@/components/handbook/docs-main-container";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
 import { HandbookLanding } from "@/components/pages/handbook-landing";
-import { createPageMetadata } from "@/lib/metadata";
+import { DocsAliasMain, StaticAliasBody } from "@/components/routing/static-alias-page";
+import { createPageMetadata, staticAliasMetadata } from "@/lib/metadata";
+import { getSelectedAliasDestination } from "@/lib/migration/manifest";
 import { sourceRuRoot } from "@/lib/source";
 
 export const dynamicParams = false;
+
+function handbookPath(slug?: string[]): string {
+  return slug && slug.length > 0 ? `/handbook/${slug.join("/")}` : "/handbook";
+}
 
 export function generateStaticParams() {
   return [{ slug: [] }, ...sourceRuRoot.generateParams().filter((param) => param.slug?.length)];
@@ -24,6 +30,12 @@ export async function generateMetadata({
   params: Promise<{ slug?: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+
+  const aliasDestination = getSelectedAliasDestination(handbookPath(slug));
+  if (aliasDestination !== null) {
+    return staticAliasMetadata(aliasDestination, "ru");
+  }
+
   if (!slug || slug.length === 0) {
     return createPageMetadata({
       locale: "ru",
@@ -54,6 +66,16 @@ export async function generateMetadata({
 
 export default async function HandbookPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
+
+  const aliasDestination = getSelectedAliasDestination(handbookPath(slug));
+  if (aliasDestination !== null) {
+    return (
+      <DocsAliasMain>
+        <StaticAliasBody destination={aliasDestination} locale="ru" />
+      </DocsAliasMain>
+    );
+  }
+
   if (!slug || slug.length === 0) {
     return <HandbookLanding locale="ru" />;
   }

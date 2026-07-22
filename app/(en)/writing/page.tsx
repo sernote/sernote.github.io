@@ -1,8 +1,16 @@
-import { WritingPageContent } from "@/components/pages/marketing-pages";
-import { marketingMetadata } from "@/lib/metadata";
+import { MarketingPage } from "@/components/marketing/site-shell";
+import { StaticAliasBody } from "@/components/routing/static-alias-page";
+import { staticAliasMetadata } from "@/lib/metadata";
+import { getSelectedAliasDestination } from "@/lib/migration/manifest";
 
-export const metadata = marketingMetadata("ru", "writing");
+const DESTINATION = getSelectedAliasDestination("/writing") ?? "/blog";
+
+export const metadata = staticAliasMetadata(DESTINATION, "ru");
 
 export default function WritingPage() {
-  return <WritingPageContent locale="ru" currentPath="/writing" />;
+  return (
+    <MarketingPage locale="ru" currentPath="/writing">
+      <StaticAliasBody destination={DESTINATION} locale="ru" />
+    </MarketingPage>
+  );
 }
