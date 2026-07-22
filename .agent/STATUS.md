@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot content freeze is ready for final spec rereview.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze is ready for final spec and code/data quality rereview before the personal-site shell milestone.
 
 ## Completed
 
@@ -131,7 +131,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Quality hardening RED reproduced the real flattened Fumadocs runtime shape leaking `toc`, `structuredData`, `_exports`, `extractedReferences`, `getText`, and `getMDAST` into strict frontmatter validation. The source adapter now strips all known runtime keys explicitly, preserves `body` as `MDXContent` plus a safe `sourcePath`, and still rejects unknown generated fields.
   - A separate evidence-recipe RED confirmed that the machine snapshot lacked fail-closed pin verification. The portable recipe now refuses an existing clone target and checks the exact origin, tag on HEAD, and hardcoded commit before either linter run; `.evidence-tools/` is ignored. Historical `runs[].command` values remain unchanged.
   - The pinned evidence recipe was replayed from an isolated temporary checkout: origin, `v0.1.3`, and `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23` matched; stable returned exit `0`, drift returned exit `1` with AP-2, and both JSON outputs matched the stored snapshot exactly.
-  - Quality-hardening validation passed: Fumadocs generation, focused source/evidence tests (2 files, 10 tests), full Vitest (5 files, 79 tests), direct TypeScript, full ESLint, `git diff --check`, and a direct static build (92 pages). Lifecycle/frontmatter, dates, relations, and the content-review artifact were not changed.
+  - Quality-hardening validation passed: Fumadocs generation, focused source/evidence tests (2 files, 10 tests), full Vitest (5 files, 79 tests), direct TypeScript, full ESLint, `git diff --check`, and a direct static build (92 pages). Lifecycle/frontmatter, dates, and relations were not changed.
+  - Because `119446f` changed public evidence instructions, both mandatory reviews were rerun on that exact revision. AI Platform subject review and editorial/security review both returned `PASS`; the final findings and dispositions are recorded in the content-review artifact.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

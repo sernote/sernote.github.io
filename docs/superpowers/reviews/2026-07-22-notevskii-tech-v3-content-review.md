@@ -2,7 +2,7 @@
 
 Дата freeze: 22 июля 2026 года
 Объект: 13 записей `content/v3`, три synthetic evidence-файла и thumbnail доклада
-Метод: два независимых reviewer-прохода с повторной проверкой после исправлений
+Метод: два независимых reviewer-прохода с повторной проверкой после каждого изменения публичного контента или evidence
 
 ## Роли reviewer-проходов
 
@@ -69,6 +69,24 @@
 
 Открытых Critical или блокирующих content findings нет.
 
+## Раунд 3 — quality hardening evidence и source adapter
+
+Независимое code/data quality review обнаружило три практических риска: source adapter не учитывал реальную flattened-форму Fumadocs, тип MDX body был стёрт до `unknown`, а переносимый evidence-рецепт не проверял, что тег всё ещё указывает на зафиксированный commit.
+
+Коммит `119446f`:
+
+- сохраняет body как рендеримый `MDXContent`, отделяет известные runtime-поля Fumadocs от frontmatter и по-прежнему fail-closed отклоняет неизвестные поля;
+- добавляет переносимую проверку exact origin, тега на `HEAD` и полного SHA `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23` до запуска анализатора;
+- отказывается перезаписывать существующий checkout и игнорирует локальный `.evidence-tools/`;
+- не изменяет исторические `runs[].command` и результаты stable/drift прогонов.
+
+Поскольку это изменило публичную evidence-инструкцию, оба обязательных reviewer-прохода повторены на `119446f`:
+
+- AI Platform subject reviewer: **PASS**; исходные snapshot-результаты не изменились, а fail-closed проверки фактически воспроизведены;
+- Editorial/security reviewer: **PASS**; команды оценены как понятные, недеструктивные и не раскрывающие чувствительных данных.
+
+Открытых предметных, editorial и security findings на ревизии `119446f` нет.
+
 ## Атомарная promotion
 
 Freeze date захвачена один раз: `2026-07-22`.
@@ -81,4 +99,4 @@ Freeze date захвачена один раз: `2026-07-22`.
 
 ## Итог
 
-Content review принят на финальной ревизии после повышения статусов — `afbd6ac`. Пилотный вертикальный срез готов к spec review. Evidence-link release gate и обязательный human usability launch gate остаются отдельными условиями запуска.
+Content review принят на финальной content/evidence-ревизии `119446f`. Пилотный вертикальный срез готов к финальному spec и code/data quality rereview. Evidence-link release gate и обязательный human usability launch gate остаются отдельными условиями запуска.
