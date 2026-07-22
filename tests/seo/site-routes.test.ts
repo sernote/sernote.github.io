@@ -97,6 +97,11 @@ describe("v3 site route policy", () => {
     expect(isActiveNavItem("/ai-platform/areas/inference", "/ai-platform")).toBe(true);
     expect(isActiveNavItem("/ai-platforms", "/ai-platform")).toBe(false);
   });
+
+  it("treats the localized English home route as exact-only", () => {
+    expect(isActiveNavItem("/en", "/en")).toBe(true);
+    expect(isActiveNavItem("/en/about", "/en")).toBe(false);
+  });
 });
 
 describe("personal master brand and metadata alternates", () => {
@@ -144,5 +149,16 @@ describe("site header active state", () => {
     expect(html).toMatch(
       /<a(?=[^>]*href="\/contact")(?=[^>]*aria-current="page")[^>]*>/
     );
+  });
+
+  it("marks only About current in the English About header", () => {
+    const html = renderToStaticMarkup(
+      createElement(SiteHeader, { locale: "en", currentPath: "/en/about" })
+    );
+    const currentLinks = html.match(/<a\b[^>]*aria-current="page"[^>]*>/g) ?? [];
+
+    expect(currentLinks).toHaveLength(1);
+    expect(currentLinks[0]).toMatch(/\bhref="\/en\/about"/);
+    expect(currentLinks[0]).not.toMatch(/\bhref="\/en"/);
   });
 });

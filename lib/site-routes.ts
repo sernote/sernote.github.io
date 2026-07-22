@@ -95,6 +95,10 @@ export function isActiveNavItem(currentPath: string, href: string): boolean {
   let current = normalizePath(currentPath);
   const target = normalizePath(href);
 
+  if (target === "/en" || target === "/ru") {
+    return current === target;
+  }
+
   if (current === "/ru" || current.startsWith("/ru/")) {
     current = current.slice(3) || "/";
   }

@@ -139,7 +139,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - TDD RED confirmed `lib/site-routes.ts` was absent. After the route module alone was added, the focused suite remained RED on the old seven-item RU navigation, handbook master brand, and fabricated language alternates.
   - The pre-change export audit also failed all five representative surfaces: marketing and tool pages had two main landmarks, handbook chapters had none, and none had a skip link.
   - A self-review regression RED showed that Contact, although a utility action, lacked `aria-current="page"`; both desktop and mobile Contact links now share the same tested active-state decision.
-  - Focused route/metadata/shell tests passed: 1 file, 7 tests. The full suite passed: 6 files, 86 tests.
+  - Spec-review regression RED showed that the localized `/en` home target was also active on `/en/about`, producing two current-page links. Localized home targets are now exact-only while `/ru/**` compatibility normalization still feeds the canonical RU navigation.
+  - Focused route/metadata/shell tests passed: 1 file, 9 tests. The full suite passed: 6 files, 88 tests.
   - Direct Fumadocs generation, TypeScript, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 92 static/SSG pages.
   - The post-build shell audit passed for a marketing page, tool page, handbook landing, handbook chapter, and `/ru` compatibility chapter; every sample has exactly one skip link and one `main#main-content`.
 - `CI=true pnpm install` passed in the non-interactive shell.
