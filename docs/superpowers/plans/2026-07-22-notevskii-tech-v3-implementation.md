@@ -867,6 +867,8 @@ git commit -m "feat: add v3 discovery and structured metadata"
 
 ### Task 11: Make route migration explicit and reversible
 
+**Post-build inventory correction:** the verified Task 10 export contains 103 HTML files. Excluding the exact shared auxiliary set (`404.html`, `404/index.html`, `_not-found/index.html`) leaves 100 route records: 66 `keep` and 34 `static-alias` (the four selected root aliases plus `/ru` and its 29 descendants). This observed inventory is the normative production integration baseline; fixture tests derive their own cardinality from the injected export. `getCanonicalStaticRoutes()` contains only the statically declared subset and must not be treated as exhaustive destination truth.
+
 **Files:**
 
 - Create: `config/v3-route-manifest.json`
@@ -880,6 +882,7 @@ git commit -m "feat: add v3 discovery and structured metadata"
 - Modify: `app/(en)/writing/page.tsx`
 - Modify: `app/(en)/handbook/[[...slug]]/page.tsx`
 - Modify: `package.json`
+- Modify: `.agent/STATUS.md`
 
 - [ ] **Step 1: Write manifest parser and alias tests**
 
@@ -894,7 +897,7 @@ Every exported HTML route receives one exact record using `source`, `destination
 ]
 ```
 
-All other exported routes receive their own exact `keep` or exact `/ru/...` `static-alias` decision. Reject duplicate sources, root aliases, missing destinations for `static-alias`, non-null destinations for `keep`, cycles/chains, and any manifest whose exact source set differs from the export’s HTML route set. `validateManifest(records, knownCanonicalPaths)` receives an injected set combining `getCanonicalStaticRoutes()` with registry-derived published local paths; `site-routes.ts` never imports the MDX source.
+All other exported routes receive their own exact `keep` or exact `/ru/...` `static-alias` decision. Reject duplicate normalized sources, `/` as an alias source (while allowing `/` as the destination of `/ru`), missing destinations for `static-alias`, non-null destinations for `keep`, cycles/chains, and any manifest whose exact source set differs from the export’s non-auxiliary HTML route set. `validateManifest(records, exportedRoutePaths)` receives that exact injected set. Every alias destination must be a distinct `keep` record in the same manifest; file existence is checked against `out/`. Do not combine `getCanonicalStaticRoutes()` with registry paths as exhaustive truth, and do not interpret the old route list as a collision with the four mandatory aliases. `site-routes.ts` never imports the MDX source.
 
 - [ ] **Step 2: Run migration tests and confirm RED**
 
@@ -912,9 +915,11 @@ Create `config/v3-export-auxiliary-paths.json` with the exact relative files `40
 
 Write `snapshot-route-manifest.mjs` with Node built-ins. It enumerates every `out/**/index.html` plus top-level `.html` route, omits only the shared auxiliary-export files before converting files to routes, assigns `keep`, applies the four selected v3 overrides, maps `/ru` directly to `/`, and converts every legacy `/ru/...` route to a direct root canonical destination. It flattens `/ru/writing`, `/ru/handbook`, `/ru/handbook/platform-map`, and `/ru/handbook/caching/prefix-cache` directly to the final v3 destination. Sort records by source and write `config/v3-route-manifest.json` deterministically. Exercise this `.mjs` CLI from Vitest as a black box with `node:child_process` `spawnSync` and temporary fixture trees—including simultaneous `404.html` and `404/index.html`—and prove neither duplicate route enters the manifest; do not import untyped `.mjs` code into TypeScript while `allowJs` is false.
 
-Run: `pnpm build && node scripts/snapshot-route-manifest.mjs out config/v3-route-manifest.json`
+Add `"build:raw": "next build --webpack"` to `package.json` before generating the first inventory. This raw command intentionally exists before the manifest-dependent normal build.
 
-Expected: one exact manifest record per exported HTML route, no wildcard source, and explicit records for all 40 legacy handbook documents, all `/ru/**`, all `/en/**`, and all tool routes.
+Run: `pnpm build:raw && node scripts/snapshot-route-manifest.mjs out config/v3-route-manifest.json`
+
+Expected in the production integration fixture: exactly 100 records, 66 `keep`, 34 `static-alias`, no wildcard source, and explicit records for all 60 exported handbook routes (20 root RU, 20 `/en`, 20 `/ru`), `/ru` plus its 29 descendants, `/en` plus its 29 descendants, and every tool route. Infer locale from the public route, never from the misleading route-group directory name.
 
 - [ ] **Step 5: Implement honest alias bodies with explicit landmark ownership**
 
@@ -926,30 +931,34 @@ Create a landmark-neutral `StaticAliasBody` that renders only the concise explan
 
 - [ ] **Step 7: Materialize every exact static alias after export**
 
-Write `apply-static-aliases.mjs` with Node built-ins. Iterate manifest records with `behavior: static-alias`, verify each source file and final canonical target file exist, and replace only the exported source with self-contained alias HTML containing `lang`, title, description, a skip link, exactly one `<main id="main-content">`, target canonical, `noindex,follow`, visible link, and meta refresh. Refuse to write outside `out/`; reject duplicate sources, traversal, missing targets, alias chains, and any alias source that collides with a `keep` canonical path. Multiple alias sources may intentionally share one final canonical destination—for example `/writing` and `/ru/writing` both target `/blog`. Never rewrite a `keep` file.
+Write `apply-static-aliases.mjs` with Node built-ins. Before the first write, preflight the complete manifest, graph, exact source coverage, auxiliary exclusions, lexical and `realpath` containment, source/target regular files, and every target’s distinct `keep` decision. Reject a symlink in the export root-to-file path and reject any source or target whose real path escapes the real export root. Extract and validate the target page’s sole canonical so the replacement preserves the emitted trailing-slash policy.
 
-Add `tests/migration/static-aliases.test.ts` with `spawnSync` black-box fixtures covering `/ru` → `/`, `/ru/about`, `/ru/handbook`, a missing target, path traversal rejection, one skip link, and exactly one `main#main-content` in every rewritten alias.
+Prepare and validate every replacement in a temporary sibling file before committing any change. During the commit phase, retain the original bytes, use same-filesystem replacement, and restore every already-replaced source if any later rename/write fails; a failed run must leave the original export intact. Then replace only each `static-alias` source with self-contained alias HTML containing `lang`, title, description, a skip link, exactly one `<main id="main-content">`, target canonical, `noindex,follow`, visible link, and meta refresh. Refuse to write outside `out/`; reject duplicate sources, traversal (including backslashes, encoded traversal, query, and fragment), missing targets, alias chains, and structural source collisions. Multiple alias sources may intentionally share one final canonical destination—for example `/writing` and `/ru/writing` both target `/blog`. Never rewrite a `keep` file.
+
+Add `tests/migration/static-aliases.test.ts` with `spawnSync` black-box fixtures covering `/ru` → `/`, `/ru/about`, `/ru/handbook`, a missing target, traversal and symlink-parent escape rejection, preflight-before-write atomicity, an injected failure after the first replacement with full rollback, a successful retry, an unchanged `keep` hash, one skip link, and exactly one `main#main-content` in every rewritten alias. Run the materializer twice and require byte-identical output.
 
 - [ ] **Step 8: Make `pnpm build` produce the final alias state**
 
-Set:
+Compose the normal build from the `build:raw` script added in Step 4:
 
 ```json
-"build": "next build --webpack && node scripts/apply-static-aliases.mjs out"
+"build": "pnpm build:raw && node scripts/apply-static-aliases.mjs out"
 ```
 
-The script is idempotent so repeated local and CI builds produce the same output.
+The snapshot workflow always uses `pnpm build:raw`, so route drift can regenerate the manifest before aliases are applied. The normal script is idempotent so repeated local and CI builds produce the same output.
 
 - [ ] **Step 9: Run migration tests and production build**
 
-Run: `pnpm vitest run tests/migration && pnpm typecheck && pnpm build`
+Run: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`
 
-Expected: manifest coverage equals the exported pre-alias route inventory; every exact alias has final target canonical + `noindex`; all `keep` handbook, `/en/**`, and tool pages still build.
+Expected: manifest coverage equals the 100-route pre-alias inventory; the final manifest contains 66 `keep` and 34 direct aliases; every alias has final target canonical + `noindex,follow`; repeated materialization is idempotent; all `keep` handbook, `/en/**`, and tool pages remain byte-stable and build.
+
+Update `.agent/STATUS.md` with the observed 103 HTML / 100 route inventory, the 66/34 decision split, rollback/idempotency evidence, and exact command results before committing the milestone.
 
 - [ ] **Step 10: Commit migration**
 
 ```bash
-git add config/v3-route-manifest.json config/v3-export-auxiliary-paths.json lib/migration components/routing scripts/snapshot-route-manifest.mjs scripts/apply-static-aliases.mjs app/'(en)'/writing app/'(en)'/handbook tests/migration package.json .agent/V3_TIME_BUDGET.md
+git add config/v3-route-manifest.json config/v3-export-auxiliary-paths.json lib/migration components/routing scripts/snapshot-route-manifest.mjs scripts/apply-static-aliases.mjs app/'(en)'/writing app/'(en)'/handbook tests/migration package.json .agent/STATUS.md .agent/V3_TIME_BUDGET.md
 git commit -m "feat: add static v3 route aliases"
 ```
 
@@ -959,25 +968,33 @@ git commit -m "feat: add static v3 route aliases"
 
 - Create: `scripts/check-static-export.mjs`
 - Create: `tests/build/static-export-contract.test.ts`
+- Modify: `scripts/check-v3-reference-path.mjs`
+- Modify: `tests/pages/reference-path-script.test.ts`
 - Modify: `package.json`
 - Modify: `.github/workflows/pages.yml`
+- Modify: `.agent/STATUS.md`
 
 - [ ] **Step 1: Write fixture-based audit tests**
 
 Create temporary HTML fixtures with controlled tags. Verify the audit reports:
 
-- missing or duplicate canonical on indexable v3 pages;
+- missing, duplicate, or non-self canonical on a `keep` page;
 - a broken internal `href`;
 - an internal fragment whose target `id` is absent;
 - missing `lang`, `<title>`, description, or exactly one `<main>`;
-- alias without one skip link, exactly one `<main id="main-content">`, `noindex`, or target canonical;
+- alias without one skip link, exactly one `<main id="main-content">`, tokenized `noindex,follow`, or exactly one target canonical;
 - a manifest source file or final destination file missing from `out/`;
 - sitemap URL without an exported file;
 - RSS item URL that is neither an exported local file nor an HTTPS external URL already rendered as a visible link in canonical HTML;
 - a local URL in JSON-LD without an exported file, or an external URL not already rendered as a visible link/source asset on its canonical v3 page;
-- raw `</script>` inside a JSON-LD payload.
+- raw `</script>` inside a JSON-LD payload;
+- an exported non-auxiliary HTML route absent from the manifest, an extra manifest source, an unsupported pilot behavior, an alias destination that is not a distinct `keep`, or an alias chain;
 
-The landmark/canonical/description checks apply to indexable canonical pages and static aliases. Load the shared auxiliary-export set and exclude `out/404.html`, `out/404/index.html`, and `out/_not-found/index.html` from page-level assertions because they are non-indexable error artifacts with no page main/canonical. Still reject any of them if it appears in sitemap, RSS, the manifest source/destination set, or a JSON-LD URL. Include a fixture with both duplicate 404 artifacts.
+The landmark/canonical/description checks apply to every injected `keep` page and static alias; only the production integration assertion pins 100 total records, 66 `keep`, and 34 aliases. Require the manifest source set to equal the complete non-auxiliary HTML route set. Every non-auxiliary page has exactly one skip link targeting its sole `main#main-content`. Every `keep` page has exactly one self-canonical and no `noindex`; aliases have exactly one manifest-target canonical plus tokenized `noindex` and `follow`, and reject `index` or `nofollow`. Alias destinations are distinct `keep` records and chains are invalid. Load the shared auxiliary-export set, require it to equal exactly `404.html`, `404/index.html`, and `_not-found/index.html`, and exclude only those files from page-level assertions because they are non-indexable error artifacts with no page main/canonical. Still reject any of them if it appears in sitemap, RSS, the manifest source/destination set, or a JSON-LD URL. Include a fixture with both duplicate 404 artifacts.
+
+The test must also fail when `sitemap.xml`, `robots.txt`, `rss.xml`, or any required JSON-LD block is absent, empty, duplicated, or unexpected. In the production integration, require exactly 15 unique sitemap URLs and prove that each resolves to a self-canonical `keep` record—never an alias or auxiliary file. Require exactly two RSS items: the native item resolves to a sitemap-listed `keep`, while the external Habr item is HTTPS and already appears as a visible link on a sitemap-listed canonical page. Validate robots as `User-agent: *`, `Allow: /`, the exact production sitemap URL, and no `Disallow`.
+
+Require the exact Task 10 schema matrix and no JSON-LD elsewhere: `/` has `Person` + `WebSite`; `/blog/ai-platform-before-gpu` has `BlogPosting` + `BreadcrumbList`; `/talks/maas-vs-self-hosted` has `VideoObject` + `BreadcrumbList`; `/projects/audit-prompt-caching` has `SoftwareSourceCode` + `BreadcrumbList`; and the exact area/component/case routes each have `TechArticle` + `BreadcrumbList`. That is two top-level scripts per page and 14 total.
 
 - [ ] **Step 2: Run the audit test and confirm RED**
 
@@ -987,7 +1004,9 @@ Expected: FAIL because the audit module/CLI does not exist.
 
 - [ ] **Step 3: Implement a bounded Node-built-in audit**
 
-Use `node:fs`, `node:path`, and `node:url`. Inspect only deterministic tags/attributes emitted by this app; do not attempt to build a general HTML parser. Resolve internal links and fragments relative to their exporting page and read the exact alias manifest. Build the permitted external URL set from HTTPS `href`/`src` values already emitted by canonical v3 pages, so the audit does not duplicate content metadata, inherit arbitrary legacy links, or import MDX in Node. The talk thumbnail is a local exported asset, so its JSON-LD URL is validated as a local file rather than allowlisted as an external exception. Return route-scoped diagnostics and exit 1 when any contract fails.
+Use `node:fs`, `node:path`, and `node:url`. The CLI shape is `check-static-export.mjs <outDir> [manifestJson] [auxiliaryJson]`, with repository defaults when fixture paths are omitted. Inspect only deterministic tags/attributes emitted by this app; do not attempt to build a general HTML parser. Decode numeric entities and `&amp;`, `&quot;`, and `&apos;`; resolve `/path` and `/path/`, queries, and decoded Unicode fragments relative to the exporting page; and enforce filesystem containment.
+
+Build the permitted RSS external URL set globally from HTTPS links already visible on sitemap-listed canonical pages. Build the JSON-LD external set per containing page from visible anchors and media sources. Require every JSON-LD `@context` to equal `https://schema.org`, but exempt only that property from URL allowlisting. Treat a local JSON-LD `@id` fragment as a graph identifier rather than a required DOM id while still verifying that its base route/file exists. The talk thumbnail remains a local exported asset. Permit a YouTube `embedUrl` only when its video id exactly matches the same object’s `sameAs`, and require that `sameAs` to match a visible same-page YouTube watch anchor; do not create a general embed exception. Scan actual `application/ld+json` script elements, parse the bounded payload, and reject truncation or a raw closing-script sequence without globally flagging every normal `</script>` tag. Return diagnostics sorted by route, rule, and URL; fixture tests inject temporary manifest/auxiliary paths and assert exact multi-error ordering so repository defaults cannot leak into them.
 
 Exercise `scripts/check-static-export.mjs` as a CLI through `spawnSync` against temporary fixture trees; do not import the untyped `.mjs` module into TypeScript.
 
@@ -997,19 +1016,20 @@ Add:
 
 ```json
 "verify:export": "node scripts/check-static-export.mjs out",
-"verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm verify:export"
+"verify:reference": "node scripts/check-v3-reference-path.mjs",
+"verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm verify:reference && pnpm verify:export"
 ```
 
-Keep the Task 11 `build` pipeline (`next build --webpack` followed by exact-alias materialization). Add `pnpm verify:export` immediately after `pnpm build` in Pages CI.
+Keep the Task 11 `build` pipeline (`build:raw` followed by exact-alias materialization). Before making the reference check mandatory on CI, replace its string-based containment check with cross-platform `path.relative()` / `path.isAbsolute()` containment and add a portability regression. Add `pnpm verify:reference` and then `pnpm verify:export` immediately after `pnpm build` in Pages CI; the generic crawl does not replace the six-file / 16-transition pilot path contract.
 
 - [ ] **Step 5: Prove the gate catches a real failure**
 
-Run `pnpm build`, temporarily change one fixture-generated internal link in `out/` to `/missing-contract-target/`, run `pnpm verify:export`, and confirm non-zero exit with that URL. Re-run `pnpm build` to restore `out/`, then confirm `pnpm verify:export` exits 0. Do not commit `out/`.
+Run `pnpm build`, copy the final `out/` to a temporary directory, change the named Home link to `/missing-contract-target/` only in that copy, and run the audit CLI with the temporary export plus explicit manifest/auxiliary paths. Confirm non-zero exit with that route while leaving the repository export untouched. Then run the complete `pnpm verify` against the original export and record the negative and positive evidence in `.agent/STATUS.md`. Do not commit `out/` or the temporary copy.
 
 - [ ] **Step 6: Commit the gate**
 
 ```bash
-git add scripts/check-static-export.mjs tests/build/static-export-contract.test.ts package.json .github/workflows/pages.yml .agent/V3_TIME_BUDGET.md
+git add scripts/check-static-export.mjs scripts/check-v3-reference-path.mjs tests/build/static-export-contract.test.ts tests/pages/reference-path-script.test.ts package.json .github/workflows/pages.yml .agent/STATUS.md .agent/V3_TIME_BUDGET.md
 git commit -m "test: audit static export contracts"
 ```
 
