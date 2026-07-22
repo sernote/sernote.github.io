@@ -83,13 +83,11 @@ export function EditorialMdxLink({
       {children}
       {external ? (
         <>
-          <span
+          <ArrowUpRight
             aria-hidden="true"
             data-external-cue="true"
-            className="ml-1 inline-block text-primary no-underline"
-          >
-            ↗
-          </span>
+            className="ml-1 inline size-3.5 align-[-0.125em] text-primary no-underline"
+          />
           <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
         </>
       ) : null}

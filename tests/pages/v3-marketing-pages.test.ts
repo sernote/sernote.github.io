@@ -393,8 +393,13 @@ describe("v3 reusable content detail page", () => {
 
     expect(externalHtml).toContain('target="_blank"');
     expect(externalHtml).toContain('rel="noreferrer"');
-    expect(externalHtml).toContain('data-external-cue="true"');
-    expect(externalHtml).toContain("↗");
+    expect(externalHtml).toMatch(
+      /<svg(?=[^>]*data-external-cue="true")(?=[^>]*class="[^"]*lucide-arrow-up-right[^"]*")(?=[^>]*aria-hidden="true")[^>]*>/
+    );
+    expect(externalHtml).toMatch(
+      /class="[^"]*\binline\b[^"]*\balign-\[-0\.125em\][^"]*\bno-underline\b[^"]*"/
+    );
+    expect(externalHtml).not.toContain("↗");
     expect(externalHtml).toContain("Внешняя ссылка, откроется в новой вкладке");
     expect(internalHtml).not.toContain('target="_blank"');
     expect(internalHtml).not.toContain("Внешняя ссылка, откроется в новой вкладке");
