@@ -47,11 +47,22 @@
 - Поля `command` фиксируют фактический исторический запуск; `reproductionCommand` и `portableCheckoutCommand` — отдельный переносимый рецепт. Эти значения не подменяют друг друга.
 - Публичные материалы не заявляют production hit rate, latency, cost, topology или outcome. Evidence остаётся явно синтетическим и source-controlled.
 
-## Раунд 2 и convergence
+## Раунд 2 — согласование до повышения статусов
 
 После `4a88165` reviewers отдельно перепроверили attribution роли, upload-date semantics, описания, маркировку синтетики, privacy boundary, CI-утверждение и воспроизводимость. Остаточные findings об attribution роли, противоречивом описании кейса и недоступных evidence URL исправлены в `9a64a17` и `45120db`.
 
-Финальный проход выполнен по состоянию после `45120db`:
+Проверка до повышения статусов выполнена по состоянию после `45120db`:
+
+- AI Platform subject reviewer: **PASS**;
+- Editorial/security reviewer: **PASS**.
+
+## Spec review после повышения статусов и финальное согласование
+
+После атомарного повышения статусов spec review обнаружил одно lifecycle-противоречие: тела Inference Plane и Prefix Cache сохранили устаревший текст `draft + unreviewed`, хотя frontmatter уже фиксировал опубликованное и проверенное состояние. Коммит `044b5f7` заменил эти фразы на правдивый статус и 90-дневный цикл повторной проверки. Сканирование всех 13 MDX-тел не нашло других устаревших lifecycle-утверждений.
+
+Финальный editorial rereview заменил одно публичное слово `applicability` на `применимости` в `afbd6ac`. Оба исправления изменили только публичную прозу: lifecycle/frontmatter, даты и relations остались без изменений.
+
+Оба обязательных reviewer-прохода повторены на финальной ревизии после повышения статусов — `afbd6ac`:
 
 - AI Platform subject reviewer: **PASS**;
 - Editorial/security reviewer: **PASS**.
@@ -70,4 +81,4 @@ Freeze date захвачена один раз: `2026-07-22`.
 
 ## Итог
 
-Content review принят. Пилотный вертикальный срез готов к spec review. Evidence-link release gate и обязательный human usability launch gate остаются отдельными условиями запуска.
+Content review принят на финальной ревизии после повышения статусов — `afbd6ac`. Пилотный вертикальный срез готов к spec review. Evidence-link release gate и обязательный human usability launch gate остаются отдельными условиями запуска.

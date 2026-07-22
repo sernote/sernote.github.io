@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot content freeze is ready for spec review.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot content freeze is ready for final spec rereview.
 
 ## Completed
 
@@ -125,7 +125,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - The first independent content reviews returned no critical finding and requested corrections. The draft-only pass clarified the talk's source date and organizer role, simplified Russian descriptions, removed translated fragments, made the synthetic evidence recipe portable, and changed the CI statement from current enforcement to a prospective guardrail.
   - Portable evidence commands were reproduced from an isolated checkout at tag `v0.1.3` / commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`: the stable fixture returned exit `0`, while the drift fixture returned the expected AP-2 finding and exit `1`. The machine snapshot keeps the originally observed commands separate from the portable reproduction recipe.
   - Correction-pass validation passed: the review checklist and lifecycle invariants, Fumadocs generation, focused source suite (6 tests), full suite (4 files, 75 tests), direct TypeScript, targeted and full ESLint, `git diff --check`, and a direct static build (92 pages).
-  - Both mandatory content reviewers converged to `PASS` after `45120db`; the review rounds, findings, dispositions, source checks, and evidence semantics are recorded in `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
+  - After atomic promotion, spec review found stale `draft + unreviewed` prose in the Inference Plane and Prefix Cache bodies. Commit `044b5f7` aligned both paragraphs with the reviewed lifecycle and scanned all 13 bodies; `afbd6ac` replaced the remaining public `applicability` with `применимости`. These fixes did not change lifecycle/frontmatter, dates, or relations.
+  - Both mandatory content reviewers converged to `PASS` on the final promoted revision `afbd6ac`; the review rounds, findings, dispositions, source checks, and evidence semantics are recorded in `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
   - Final content freeze validation passed: 13 total records, 7 published, 6 draft, 3 reviewed, 10 unreviewed, 7 populated `publishedAt`, 3 populated `reviewedAt`, and six planned areas in canonical order. Fumadocs generation, focused source tests (6), full Vitest (75), direct TypeScript, full ESLint, `git diff --check`, and a direct static build (92 pages) passed.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
