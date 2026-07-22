@@ -1,3 +1,5 @@
+import { createElement } from "react";
+import type { MDXContent } from "mdx/types";
 import { describe, expect, it } from "vitest";
 
 import { createV3Source } from "../../lib/content-v3/source-core";
@@ -31,10 +33,36 @@ const reviewed = {
   limitations: "Не подтверждает характеристики конкретной production-системы."
 } as const;
 
+const flattenedRuntimeBody: MDXContent = () => createElement("p", null, "Runtime body");
+
+const flattenedRuntimeEntry = {
+  ...published,
+  entityId: "fumadocs-runtime-shape",
+  type: "article",
+  kind: "native",
+  slug: "fumadocs-runtime-shape",
+  excerpt: "Краткое объяснение реальной формы записи Fumadocs.",
+  sourceName: null,
+  sourceUrl: null,
+  supersedes: null,
+  supersededBy: null,
+  body: flattenedRuntimeBody,
+  info: {
+    path: "blog/fumadocs-runtime-shape.mdx",
+    fullPath: "content/v3/blog/fumadocs-runtime-shape.mdx"
+  },
+  toc: [{ title: "Контекст", url: "#context", depth: 2 }],
+  structuredData: { headings: [], contents: [] },
+  _exports: { frontmatter: { entityId: "fumadocs-runtime-shape" } },
+  extractedReferences: [],
+  getText: async () => "# Fumadocs runtime shape",
+  getMDAST: async () => ({ type: "root", children: [] })
+} as const;
+
 function entry(metadata: Record<string, unknown>, path: string) {
   return {
     ...metadata,
-    body: () => null,
+    body: flattenedRuntimeBody,
     info: { path }
   };
 }
@@ -134,6 +162,35 @@ const fixtures = [
 ];
 
 describe("v3 generated-entry source adapter", () => {
+  it("accepts the flattened Fumadocs runtime shape without leaking runtime fields", () => {
+    const source = createV3Source([flattenedRuntimeEntry]);
+    const item = source.getBySlug("article", "fumadocs-runtime-shape", "ru");
+
+    expect(item).not.toBeNull();
+    expect(item?.body).toBe(flattenedRuntimeBody);
+    const renderableBody: MDXContent = item!.body;
+    expect(renderableBody({}).type).toBe("p");
+    expect(createElement(renderableBody, {}).type).toBe(flattenedRuntimeBody);
+    expect(item?.sourcePath).toBe("blog/fumadocs-runtime-shape.mdx");
+    for (const runtimeKey of [
+      "info",
+      "toc",
+      "structuredData",
+      "_exports",
+      "extractedReferences",
+      "getText",
+      "getMDAST"
+    ]) {
+      expect(item).not.toHaveProperty(runtimeKey);
+    }
+  });
+
+  it("still rejects generated fields outside the known Fumadocs runtime contract", () => {
+    expect(() =>
+      createV3Source([{ ...flattenedRuntimeEntry, unexpectedRuntimeField: true }])
+    ).toThrow(/unexpectedRuntimeField|unrecognized key/i);
+  });
+
   it("validates stripped metadata while preserving body and a safe source path", () => {
     const source = createV3Source(fixtures);
 

@@ -70,19 +70,31 @@ Agent runtime часто собирает tools из registry на каждом 
 
 Запросы намеренно не содержат credentials, tenant identifiers и текст пользователей. Названия функций описывают чтение публичной policy и запись синтетического audit artifact. Evidence хранится рядом с контентом и проходит обычный code review.
 
-Анализатор закреплён за публичным релизом `v0.1.3` и коммитом `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Данные GitHub Latest Release API и копия репозитория проверены 22 июля 2026 года. Такая фиксация защищает кейс от незаметного изменения правила после обновления проекта.
+Анализатор закреплён за публичным релизом `v0.1.3` и коммитом `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`. Данные GitHub Latest Release API и копия репозитория проверены 22 июля 2026 года. Одного тега для такой фиксации недостаточно: тег может сменить целевой коммит. Перед запуском кейс сверяет origin, точный тег на HEAD и полный SHA коммита.
 
 ## Закреплённые команды
 
-Запускайте команды из корня локальной копии этого сайта. Сначала клонируйте закреплённый релиз анализатора в относительный каталог:
+Запускайте команды из корня локальной копии этого сайта. Сначала создайте свежую копию анализатора. Защитное условие перед `git clone` вернёт ненулевой код, если целевой каталог уже существует:
 
 ```bash
-git clone --depth 1 --branch v0.1.3 \
+test ! -e .evidence-tools/audit-prompt-caching-v0.1.3 && \
+  git clone --depth 1 --branch v0.1.3 \
   https://github.com/sernote/audit-prompt-caching.git \
   .evidence-tools/audit-prompt-caching-v0.1.3
 ```
 
-Затем проверьте стабильный файл из репозитория сайта:
+Существующую копию можно использовать повторно только после всех трёх проверок. Каждая команда вернёт ненулевой код при любом несовпадении:
+
+```bash
+git -C .evidence-tools/audit-prompt-caching-v0.1.3 remote get-url origin | \
+  grep -Fx 'https://github.com/sernote/audit-prompt-caching.git'
+git -C .evidence-tools/audit-prompt-caching-v0.1.3 describe --tags --exact-match HEAD | \
+  grep -Fx 'v0.1.3'
+git -C .evidence-tools/audit-prompt-caching-v0.1.3 rev-parse HEAD | \
+  grep -Fx 'cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23'
+```
+
+Только после этого проверьте стабильный файл из репозитория сайта:
 
 ```bash
 python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts/layout_linter.py \
@@ -118,7 +130,7 @@ python3 .evidence-tools/audit-prompt-caching-v0.1.3/audit-prompt-caching/scripts
 }
 ```
 
-В исходном коде этой версии файлы находятся по путям `evidence/v3/agent-session-cache-reuse/step-stable.json`, `evidence/v3/agent-session-cache-reuse/step-drift.json` и `evidence/v3/agent-session-cache-reuse/layout-linter-output.json`. Машинный снимок сохраняет исходные команды, отдельный переносимый рецепт, ожидаемые и полученные коды завершения и оба JSON-результата.
+В исходном коде этой версии файлы находятся по путям `evidence/v3/agent-session-cache-reuse/step-stable.json`, `evidence/v3/agent-session-cache-reuse/step-drift.json` и `evidence/v3/agent-session-cache-reuse/layout-linter-output.json`. Машинный снимок сохраняет исходные команды, отдельный переносимый рецепт с проверками origin, тега и HEAD, ожидаемые и полученные коды завершения и оба JSON-результата.
 
 ## Гипотезы после finding
 

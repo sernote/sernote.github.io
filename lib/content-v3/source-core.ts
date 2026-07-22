@@ -1,15 +1,24 @@
+import type { MDXContent } from "mdx/types";
+
 import { createRegistry, type Locale, type V3Type } from "./registry";
 import type { V3Frontmatter, V3PlatformArea } from "./schema";
 
 type GeneratedV3Entry = {
-  body: unknown;
+  body: MDXContent;
   info?: {
     path?: string;
+    fullPath?: string;
   };
+  toc?: unknown;
+  structuredData?: unknown;
+  _exports?: unknown;
+  extractedReferences?: unknown;
+  getText?: unknown;
+  getMDAST?: unknown;
 };
 
 export type V3SourceItem<T extends V3Frontmatter = V3Frontmatter> = T & {
-  body: unknown;
+  body: MDXContent;
   sourcePath: string;
 };
 
@@ -29,9 +38,20 @@ export type V3Source = {
 
 type NormalizedEntry = {
   metadata: Record<string, unknown>;
-  body: unknown;
+  body: MDXContent;
   sourcePath: string;
 };
+
+const GENERATED_RUNTIME_KEYS = [
+  "body",
+  "info",
+  "toc",
+  "structuredData",
+  "_exports",
+  "extractedReferences",
+  "getText",
+  "getMDAST"
+] as const;
 
 function safeSourcePath(info: GeneratedV3Entry["info"]): string {
   const path = info?.path;
@@ -47,8 +67,12 @@ function safeSourcePath(info: GeneratedV3Entry["info"]): string {
 }
 
 function normalizeEntry<T extends GeneratedV3Entry>(entry: T): NormalizedEntry {
-  const { body, info, ...metadata } = entry;
-  return { metadata, body, sourcePath: safeSourcePath(info) };
+  const metadata: Record<string, unknown> = { ...entry };
+  for (const key of GENERATED_RUNTIME_KEYS) {
+    delete metadata[key];
+  }
+
+  return { metadata, body: entry.body, sourcePath: safeSourcePath(entry.info) };
 }
 
 function sourceIdentity(record: Pick<V3Frontmatter, "type" | "locale" | "entityId">): string {
@@ -70,7 +94,9 @@ export function createV3Source<T extends GeneratedV3Entry>(entries: readonly T[]
     if (entry === undefined) {
       throw new Error(`Missing generated source entry for ${sourceIdentity(record)}`);
     }
-    return Object.freeze({ ...record, body: entry.body, sourcePath: entry.sourcePath });
+    return Object.freeze(
+      Object.assign({}, record, { body: entry.body, sourcePath: entry.sourcePath })
+    );
   }
 
   return {
