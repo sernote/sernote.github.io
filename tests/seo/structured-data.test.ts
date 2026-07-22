@@ -174,7 +174,8 @@ const areaBreadcrumbContext = {
   title: area.title,
   href: `/ai-platform/areas/${area.slug}`,
   primaryArea: null,
-  parentComponent: null
+  parentComponent: null,
+  parentComponentPrimaryAreaId: null
 } as const;
 
 const componentBreadcrumbContext = {
@@ -185,10 +186,12 @@ const componentBreadcrumbContext = {
   primaryArea: {
     entityId: area.entityId,
     contentType: area.type,
+    slug: area.slug,
     title: area.title,
     href: `/ai-platform/areas/${area.slug}`
   },
-  parentComponent: null
+  parentComponent: null,
+  parentComponentPrimaryAreaId: null
 } as const;
 
 const caseBreadcrumbContext = {
@@ -200,9 +203,11 @@ const caseBreadcrumbContext = {
   parentComponent: {
     entityId: component.entityId,
     contentType: component.type,
+    slug: component.slug,
     title: component.title,
     href: `/ai-platform/components/${component.slug}`
-  }
+  },
+  parentComponentPrimaryAreaId: component.primaryAreaId
 } as const;
 
 describe("public SEO URLs", () => {
@@ -353,6 +358,76 @@ describe("JSON-LD builders", () => {
     }
   });
 
+  it("uses source-backed slugs when reference identity differs from its canonical path", () => {
+    const differentlySluggedArea: V3PlatformArea = {
+      ...area,
+      entityId: "inference-plane-record",
+      slug: "serving-runtime"
+    };
+    const differentlySluggedComponent: V3PlatformComponent = {
+      ...component,
+      entityId: "prefix-cache-record",
+      slug: "cache-runtime",
+      primaryAreaId: differentlySluggedArea.entityId
+    };
+    const differentlySluggedCase: V3Case = {
+      ...caseRecord,
+      entityId: "agent-cache-case-record",
+      slug: "agent-cache-case",
+      componentIds: [differentlySluggedComponent.entityId]
+    };
+    const primaryArea = {
+      entityId: differentlySluggedArea.entityId,
+      contentType: differentlySluggedArea.type,
+      slug: differentlySluggedArea.slug,
+      title: differentlySluggedArea.title,
+      href: "/ai-platform/areas/serving-runtime"
+    } as const;
+    const parentComponent = {
+      entityId: differentlySluggedComponent.entityId,
+      contentType: differentlySluggedComponent.type,
+      slug: differentlySluggedComponent.slug,
+      title: differentlySluggedComponent.title,
+      href: "/ai-platform/components/cache-runtime"
+    } as const;
+
+    const componentData = buildReferenceStructuredData(differentlySluggedComponent, {
+      entityId: differentlySluggedComponent.entityId,
+      contentType: differentlySluggedComponent.type,
+      title: differentlySluggedComponent.title,
+      href: "/ai-platform/components/cache-runtime",
+      primaryArea,
+      parentComponent: null,
+      parentComponentPrimaryAreaId: null
+    });
+    const caseData = buildReferenceStructuredData(differentlySluggedCase, {
+      entityId: differentlySluggedCase.entityId,
+      contentType: differentlySluggedCase.type,
+      title: differentlySluggedCase.title,
+      href: "/ai-platform/cases/agent-cache-case",
+      primaryArea,
+      parentComponent,
+      parentComponentPrimaryAreaId: differentlySluggedComponent.primaryAreaId
+    });
+
+    expect(componentData[1]["itemListElement"]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: differentlySluggedArea.title,
+          item: "https://notevskii.tech/ai-platform/areas/serving-runtime/"
+        })
+      ])
+    );
+    expect(caseData[1]["itemListElement"]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: differentlySluggedComponent.title,
+          item: "https://notevskii.tech/ai-platform/components/cache-runtime/"
+        })
+      ])
+    );
+  });
+
   it("fails closed when reference breadcrumb context does not match the record", () => {
     expect(() =>
       buildReferenceStructuredData(component, {
@@ -369,6 +444,19 @@ describe("JSON-LD builders", () => {
       buildReferenceStructuredData(caseRecord, {
         ...caseBreadcrumbContext,
         parentComponent: null
+      })
+    ).toThrow(/breadcrumb context/);
+
+    expect(() =>
+      buildReferenceStructuredData(caseRecord, {
+        ...caseBreadcrumbContext,
+        primaryArea: {
+          ...caseBreadcrumbContext.primaryArea,
+          entityId: "control-plane",
+          slug: "control-plane",
+          title: "Control Plane",
+          href: "/ai-platform/areas/control-plane"
+        }
       })
     ).toThrow(/breadcrumb context/);
   });

@@ -13,6 +13,7 @@ import { ReferenceDetailPage } from "../../components/pages/reference-detail-pag
 import type {
   PlatformLandingViewModel,
   PlatformMapViewModel,
+  ReferenceBreadcrumbItemViewModel,
   ReferenceDetailViewModel,
   V3ListItemViewModel
 } from "../../lib/content-v3/view-models";
@@ -114,9 +115,10 @@ const landingModel: PlatformLandingViewModel = Object.freeze({
   ])
 });
 
-const primaryArea: V3ListItemViewModel = Object.freeze({
+const primaryArea: ReferenceBreadcrumbItemViewModel = Object.freeze({
   entityId: "inference-plane",
   contentType: "platform-area",
+  slug: "inference-plane",
   title: "Inference Plane",
   description: "Исполнение model workloads.",
   meta: "Область AI Platform",
@@ -151,6 +153,7 @@ const referenceModel: ReferenceDetailViewModel = Object.freeze({
   ]),
   primaryArea,
   parentComponent: null,
+  parentComponentPrimaryAreaId: null,
   related: Object.freeze([
     primaryArea,
     Object.freeze({
@@ -275,9 +278,10 @@ describe("AI Platform reference detail shell", () => {
         }
       })
     );
-    const parentComponent: V3ListItemViewModel = Object.freeze({
+    const parentComponent: ReferenceBreadcrumbItemViewModel = Object.freeze({
       entityId: "prefix-cache",
       contentType: "platform-component",
+      slug: "prefix-cache",
       title: "Prefix Cache",
       description: "Повторное использование префикса.",
       meta: "Компонент AI Platform",
@@ -293,6 +297,7 @@ describe("AI Platform reference detail shell", () => {
           href: "/ai-platform/cases/agent-session-cache-reuse",
           typeLabel: "Синтетический кейс",
           parentComponent,
+          parentComponentPrimaryAreaId: "inference-plane",
           isSynthetic: true
         }
       })

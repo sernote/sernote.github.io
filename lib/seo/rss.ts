@@ -1,8 +1,26 @@
 import type { V3Article } from "@/lib/content-v3/schema";
 import { canonicalUrl, publicFileUrl } from "@/lib/seo/urls";
 
+function stripInvalidXmlCharacters(value: string): string {
+  let sanitized = "";
+
+  for (const character of value) {
+    const codePoint = character.codePointAt(0)!;
+    const valid =
+      codePoint === 0x09 ||
+      codePoint === 0x0a ||
+      codePoint === 0x0d ||
+      (codePoint >= 0x20 && codePoint <= 0xd7ff) ||
+      (codePoint >= 0xe000 && codePoint <= 0xfffd) ||
+      (codePoint >= 0x10000 && codePoint <= 0x10ffff);
+    if (valid) sanitized += character;
+  }
+
+  return sanitized;
+}
+
 function escapeXml(value: string): string {
-  return value
+  return stripInvalidXmlCharacters(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")

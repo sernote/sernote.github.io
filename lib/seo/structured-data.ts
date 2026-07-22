@@ -35,6 +35,7 @@ type Breadcrumb = Readonly<{ name: string; path: string }>;
 type ReferenceBreadcrumbItem = Readonly<{
   entityId: string;
   contentType: V3Type;
+  slug: string;
   title: string;
   href: string;
 }>;
@@ -46,6 +47,7 @@ export type ReferenceBreadcrumbContext = Readonly<{
   href: string;
   primaryArea: ReferenceBreadcrumbItem | null;
   parentComponent: ReferenceBreadcrumbItem | null;
+  parentComponentPrimaryAreaId: string | null;
 }>;
 
 const AUTHOR_NAME = "Сергей Нотевский";
@@ -127,7 +129,11 @@ function assertReferenceBreadcrumbContext(
   }
 
   if (record.type === "platform-area") {
-    if (context.primaryArea !== null || context.parentComponent !== null) {
+    if (
+      context.primaryArea !== null ||
+      context.parentComponent !== null ||
+      context.parentComponentPrimaryAreaId !== null
+    ) {
       throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
     }
     return;
@@ -137,14 +143,17 @@ function assertReferenceBreadcrumbContext(
   if (
     primaryArea === null ||
     primaryArea.contentType !== "platform-area" ||
-    primaryArea.href !== `/ai-platform/areas/${primaryArea.entityId}` ||
+    primaryArea.href !== `/ai-platform/areas/${primaryArea.slug}` ||
     (context.parentComponent !== null && record.type === "platform-component")
   ) {
     throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
   }
 
   if (record.type === "platform-component") {
-    if (primaryArea.entityId !== record.primaryAreaId) {
+    if (
+      primaryArea.entityId !== record.primaryAreaId ||
+      context.parentComponentPrimaryAreaId !== null
+    ) {
       throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
     }
     return;
@@ -155,7 +164,8 @@ function assertReferenceBreadcrumbContext(
     parentComponent === null ||
     parentComponent.contentType !== "platform-component" ||
     parentComponent.entityId !== record.componentIds[0] ||
-    parentComponent.href !== `/ai-platform/components/${parentComponent.entityId}`
+    parentComponent.href !== `/ai-platform/components/${parentComponent.slug}` ||
+    context.parentComponentPrimaryAreaId !== primaryArea.entityId
   ) {
     throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
   }

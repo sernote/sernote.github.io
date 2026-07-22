@@ -12,6 +12,11 @@ export type V3ListItemViewModel = Readonly<{
   reviewStatusLabel?: "Нужна проверка";
 }>;
 
+export type ReferenceBreadcrumbItemViewModel = V3ListItemViewModel &
+  Readonly<{
+    slug: string;
+  }>;
+
 export type HomeViewModel = Readonly<{
   entrances: readonly Readonly<{
     id: "blog" | "work" | "ai-platform";
@@ -129,8 +134,9 @@ export type ReferenceDetailViewModel = Readonly<{
     verifiedAt: string;
     verifiedLabel: string;
   }>[];
-  primaryArea: V3ListItemViewModel | null;
-  parentComponent: V3ListItemViewModel | null;
+  primaryArea: ReferenceBreadcrumbItemViewModel | null;
+  parentComponent: ReferenceBreadcrumbItemViewModel | null;
+  parentComponentPrimaryAreaId: string | null;
   related: readonly V3ListItemViewModel[];
   isSynthetic: boolean;
 }>;
@@ -275,6 +281,19 @@ function normalizeListItem(record: V3SourceItem): V3ListItemViewModel {
     linkKind:
       record.type === "article" && record.kind === "external-note" ? "external" : "internal",
     ...(reviewStatusLabel === undefined ? {} : { reviewStatusLabel })
+  });
+}
+
+function normalizeReferenceBreadcrumbItem(
+  record: V3SourceItem
+): ReferenceBreadcrumbItemViewModel {
+  if (record.type !== "platform-area" && record.type !== "platform-component") {
+    throw new Error(`Unsupported reference breadcrumb type: ${record.type}`);
+  }
+
+  return Object.freeze({
+    ...normalizeListItem(record),
+    slug: record.slug
   });
 }
 
@@ -573,12 +592,15 @@ function referenceTypeLabel(
   throw new Error(`Unsupported reference type: ${record.type}`);
 }
 
-function requirePrimaryArea(source: V3Source, areaId: string): V3ListItemViewModel {
+function requirePrimaryArea(
+  source: V3Source,
+  areaId: string
+): ReferenceBreadcrumbItemViewModel {
   const areaRecord = findPublicByEntityId(source, "platform-area", areaId);
   if (areaRecord === null || areaRecord.type !== "platform-area") {
     throw new Error(`Published reference requires public primary area ${areaId}`);
   }
-  return normalizeListItem(areaRecord);
+  return normalizeReferenceBreadcrumbItem(areaRecord);
 }
 
 export function getReferenceDetailViewModel(
@@ -601,8 +623,9 @@ export function getReferenceDetailViewModel(
     throw new Error(`Reference ${record.entityId} is missing public review evidence`);
   }
 
-  let primaryArea: V3ListItemViewModel | null = null;
-  let parentComponent: V3ListItemViewModel | null = null;
+  let primaryArea: ReferenceBreadcrumbItemViewModel | null = null;
+  let parentComponent: ReferenceBreadcrumbItemViewModel | null = null;
+  let parentComponentPrimaryAreaId: string | null = null;
   if (record.type === "platform-component") {
     primaryArea = requirePrimaryArea(source, record.primaryAreaId);
   } else if (record.type === "case") {
@@ -611,7 +634,8 @@ export function getReferenceDetailViewModel(
     if (componentRecord === null || componentRecord.type !== "platform-component") {
       throw new Error(`Published case ${record.entityId} requires public component ${componentId}`);
     }
-    parentComponent = normalizeListItem(componentRecord);
+    parentComponent = normalizeReferenceBreadcrumbItem(componentRecord);
+    parentComponentPrimaryAreaId = componentRecord.primaryAreaId;
     primaryArea = requirePrimaryArea(source, componentRecord.primaryAreaId);
   }
 
@@ -647,6 +671,7 @@ export function getReferenceDetailViewModel(
     sources,
     primaryArea,
     parentComponent,
+    parentComponentPrimaryAreaId,
     related,
     isSynthetic: record.type === "case" && record.caseKind === "synthetic"
   });

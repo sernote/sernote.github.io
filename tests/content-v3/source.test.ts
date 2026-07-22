@@ -855,6 +855,32 @@ describe("AI Platform map and reference view models", () => {
 
   });
 
+  it("carries canonical slugs and the parent component area relation into case context", () => {
+    const source = createV3Source([
+      area("area-identity", 3, { slug: "serving-runtime" }),
+      component("component-identity", "area-identity", { slug: "cache-runtime" }),
+      syntheticCase("case-identity", "component-identity", {
+        slug: "agent-cache-case",
+        relations: {}
+      })
+    ]);
+    const model = getReferenceDetailViewModel(source, "case", "agent-cache-case");
+
+    expect(model).toMatchObject({
+      primaryArea: {
+        entityId: "area-identity",
+        slug: "serving-runtime",
+        href: "/ai-platform/areas/serving-runtime"
+      },
+      parentComponent: {
+        entityId: "component-identity",
+        slug: "cache-runtime",
+        href: "/ai-platform/components/cache-runtime"
+      },
+      parentComponentPrimaryAreaId: "area-identity"
+    });
+  });
+
   it("returns null for unknown reference slugs and marks the case as synthetic", () => {
     const source = createV3Source(fixtures);
 

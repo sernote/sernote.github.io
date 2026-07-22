@@ -97,4 +97,41 @@ describe("RSS builder", () => {
     expect(xml).toContain("Boundary &quot;A&quot; &gt; boundary &apos;B&apos;.");
     expect(xml).not.toContain("Cache < reuse");
   });
+
+  it("removes XML 1.0-invalid controls while preserving valid whitespace and Unicode", () => {
+    const invalidControls = "\u0000\u0001\u0008\u000B\u000C\u000E\u001F";
+    const validText = "tab\tline-feed\ncarriage-return\rrocket 🚀";
+    const unsafe: V3Article = {
+      ...nativeArticle,
+      entityId: "xml-controls",
+      slug: "xml-controls",
+      title: `Before${invalidControls}After ${validText}`,
+      description: `Description${invalidControls} ${validText}`
+    };
+    const xml = buildRssFeed([unsafe]);
+
+    for (const control of invalidControls) {
+      expect(xml).not.toContain(control);
+    }
+    expect(xml).toContain(`BeforeAfter ${validText}`);
+    expect(xml).toContain(`Description ${validText}`);
+
+    const invalidCodePoints = Array.from(xml).filter((character) => {
+      const codePoint = character.codePointAt(0)!;
+      return !(
+        codePoint === 0x09 ||
+        codePoint === 0x0a ||
+        codePoint === 0x0d ||
+        (codePoint >= 0x20 && codePoint <= 0xd7ff) ||
+        (codePoint >= 0xe000 && codePoint <= 0xfffd) ||
+        (codePoint >= 0x10000 && codePoint <= 0x10ffff)
+      );
+    });
+    expect(invalidCodePoints).toEqual([]);
+    expect(xml).toMatch(
+      /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<rss version="2\.0">[\s\S]*<channel>[\s\S]*<item>[\s\S]*<\/item>[\s\S]*<\/channel>\n<\/rss>\n$/
+    );
+    expect(xml.match(/<item>/g)).toHaveLength(1);
+    expect(xml.match(/<\/item>/g)).toHaveLength(1);
+  });
 });
