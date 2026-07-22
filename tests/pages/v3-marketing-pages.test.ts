@@ -122,7 +122,7 @@ describe("v3 editorial primitives", () => {
     expect(internalHtml).toContain("grid-cols-[minmax(0,1fr)_2.75rem]");
     expect(externalHtml).toContain('data-link-kind="external"');
     expect(externalHtml).toContain('rel="noreferrer"');
-    expect(externalHtml).toContain("Внешняя ссылка");
+    expect(externalHtml).toContain("Внешняя ссылка, откроется в новой вкладке");
   });
 });
 
@@ -136,6 +136,9 @@ describe("v3 complete top-level personal pages", () => {
     expect(count(html, /<h1\b/g)).toBe(1);
     expect(html).toContain("AI PLATFORM LEAD · БИТРИКС24");
     expect(html).toContain("Сергей Нотевский");
+    expect(html).toContain(
+      "Проектирую production AI-платформы: от выбора пути исполнения и собственного инференса до качества, стоимости и эксплуатации."
+    );
     for (const href of ["/blog", "/work", "/ai-platform"]) {
       expect(html).toContain(`href="${href}"`);
     }
@@ -148,6 +151,16 @@ describe("v3 complete top-level personal pages", () => {
     }
     for (const label of ["Из блога", "Открытый проект", "Из AI Platform"]) {
       expect(html).toContain(`>${label}<`);
+    }
+    for (const copy of [
+      "Главное",
+      "По одному материалу из каждого раздела",
+      "Границы платформы, control plane, путь исполнения и контракты с продуктовыми командами.",
+      "MaaS, self-hosted и гибридные схемы: запуск моделей, наблюдаемость и эксплуатационные решения.",
+      "Оценка качества, релизный контроль, стоимость сценария и понятное распределение ответственности.",
+      "Начать разговор"
+    ]) {
+      expect(html).toContain(copy);
     }
     expect(html).not.toContain("Production AI Platform Handbook");
   });
@@ -167,6 +180,9 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).toContain('href="/talks"');
     expect(html).toContain('href="/projects"');
     expect(html).toContain('href="https://habr.com/ru/companies/bitrix/articles/1033822/"');
+    expect(html).toContain(
+      "Выступления, открытые проекты и внешние публикации о production AI-платформах — по одному выбранному материалу в каждом формате."
+    );
     expect(html).not.toContain('href="/writing"');
   });
 
@@ -175,11 +191,23 @@ describe("v3 complete top-level personal pages", () => {
 
     expect(count(html, /<main\b/g)).toBe(1);
     expect(count(html, /data-work-area=/g)).toBe(3);
-    expect(html).toContain("Bitrix24");
+    expect(html).toContain(
+      "AI Platform Lead в Битрикс24. Работаю с архитектурой, инференсом, качеством и эксплуатацией production AI-платформ."
+    );
+    expect(html).not.toContain("Bitrix24");
+    for (const copy of [
+      "Архитектура платформы",
+      "Работаю с MaaS, self-hosted и гибридными схемами: инференсом, кешем, планированием мощности и наблюдаемостью.",
+      "Качество, экономика и ответственность",
+      "Связываю оценку качества, релизный контроль, стоимость и ответственность в единый эксплуатационный контур."
+    ]) {
+      expect(html).toContain(copy);
+    }
     expect(html).toContain("Редакционные принципы");
     for (const channel of ["Telegram", "Habr", "GitHub"]) {
       expect(html).toContain(channel);
     }
+    expect(count(html, /Внешняя ссылка, откроется в новой вкладке/g)).toBeGreaterThanOrEqual(3);
   });
 
   it("renders Contact with Telegram as the only primary action and four contexts", () => {
@@ -189,6 +217,16 @@ describe("v3 complete top-level personal pages", () => {
     expect(count(html, /data-contact-context=/g)).toBe(4);
     expect(count(html, /data-primary-action=/g)).toBe(1);
     expect(html).toContain('href="https://t.me/sergeinotevskii"');
+    for (const copy of [
+      "Напишите в Telegram и сразу обозначьте задачу. Ниже — четыре повода для разговора.",
+      "С чем можно обратиться",
+      "Сравнить MaaS, self-hosted и гибридный подход, определить ответственность команды и ближайшие решения.",
+      "Обсудить доклад, подкаст или технический разбор о production AI-платформах.",
+      "Совместный публичный проект",
+      "Внешняя ссылка, откроется в новой вкладке"
+    ]) {
+      expect(html).toContain(copy);
+    }
     expect(html).not.toMatch(/<form\b/);
     expect(html).not.toMatch(/availability|отвечу в течение/i);
   });

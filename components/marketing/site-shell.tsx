@@ -3,7 +3,14 @@ import type { ReactNode } from "react";
 import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from "@/components/ui/sheet";
 import {
   getDictionary,
   getNavItems,
@@ -67,9 +74,12 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent closeLabel={dictionary.shell.closeNavigation}>
             <SheetHeader>
               <SheetTitle>{dictionary.shell.navigation}</SheetTitle>
+              <SheetDescription className="sr-only">
+                {dictionary.shell.navigationDescription}
+              </SheetDescription>
             </SheetHeader>
             <nav className="mt-8 flex flex-col gap-4">
               {navItems.map((item) => (

@@ -25,28 +25,28 @@ const V3_RU_MARKETING_PAGES = {
     alternatePath: "/en",
     title: "Сергей Нотевский — AI Platform Lead",
     description:
-      "Личный сайт Сергея Нотевского: статьи, выступления, открытые проекты и практический reference по production AI platform."
+      "Личный сайт Сергея Нотевского: статьи, выступления, открытые проекты и практический справочник по production AI-платформам."
   },
   work: {
     path: "/work",
     alternatePath: null,
     title: "Материалы — Сергей Нотевский",
     description:
-      "Выступления, открытые инженерные проекты и внешние публикации Сергея Нотевского о production AI platforms."
+      "Выступления, открытые инженерные проекты и внешние публикации Сергея Нотевского о production AI-платформах."
   },
   about: {
     path: "/about",
     alternatePath: "/en/about",
     title: "Обо мне — Сергей Нотевский",
     description:
-      "Профессиональный контекст Сергея Нотевского: AI Platform Lead, инженерная практика и публичные материалы."
+      "Сергей Нотевский — AI Platform Lead в Битрикс24: инженерная практика и публичные материалы."
   },
   contact: {
     path: "/contact",
     alternatePath: "/en/contact",
     title: "Контакт — Сергей Нотевский",
     description:
-      "Связаться с Сергеем Нотевским по вопросам AI-platform architecture, выступлений и открытых проектов."
+      "Связаться с Сергеем Нотевским по вопросам архитектуры ИИ-платформ, выступлений и открытых проектов."
   }
 } as const satisfies Record<
   V3MarketingPageKey,

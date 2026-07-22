@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page implementation checkpoint is complete; autonomous browser/design inspection and independent reviews remain open before the milestone can be closed.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page implementation and review-hardening checkpoints are complete; autonomous browser/design inspection remains open before the milestone can be closed.
 
 ## Completed
 
@@ -12,6 +12,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Added a body-preserving v3 source adapter over the generated Fumadocs collection, deterministic draft-area planning, a verified public talk thumbnail, and synthetic stable/drift prompt-cache evidence produced with the tagged public `audit-prompt-caching` linter.
 - Replaced the handbook-first global identity with the Сергей Нотевский personal master brand, an exact four-item Russian primary navigation, allowlisted locale equivalence, canonical-only metadata by default, and a shared accessible shell with one skip link and one main landmark across marketing, tools, handbook pages, and `/ru` compatibility pages.
 - Built the v3 Russian Home, Materials, About, and Contact compositions around the accepted author-index direction. Explicit content selections are resolved through a pure injected view model, Materials links its external article directly to Habr, and the four pages use final direct metadata rather than the frozen legacy copy.
+- Hardened the reviewed v3 personal pages with a real localized description and close name for the mobile navigation dialog, explicit new-tab guidance for assistive technology, and the converged Russian page and metadata copy.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -152,6 +153,10 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused content, metadata, and page-composition validation passed: 3 files, 41 tests. The full suite passed: 7 files, 112 tests.
   - Fumadocs generation, direct TypeScript validation, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 93 static/SSG pages including `/work`.
   - The post-build shell audit again passed for all five representative exports. Browser hierarchy, responsive, focus-order, and same-viewport screenshot comparison are intentionally pending the root design checkpoint and are not claimed here.
+  - Review-hardening RED reproduced nine concrete regressions: missing localized dialog semantics, a leaked close-label prop, incomplete external-link guidance, and stale Russian page/metadata copy.
+  - Focused GREEN passed: 2 files, 28 tests. Full Vitest passed: 7 files, 116 tests.
+  - Fumadocs generation, direct TypeScript validation, full ESLint, `git diff --check`, the five-surface landmark audit, and the direct webpack static build passed; the build generated 93 static/SSG pages.
+  - The Next.js build still reports the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

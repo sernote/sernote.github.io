@@ -33,7 +33,7 @@ function RowContents({ item, eyebrow }: ContentListItemProps) {
           className="size-5 transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1"
         />
         {item.linkKind === "external" ? (
-          <span className="sr-only">Внешняя ссылка</span>
+          <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
         ) : null}
       </span>
     </>

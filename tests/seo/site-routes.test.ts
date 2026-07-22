@@ -1,9 +1,10 @@
-import { createElement } from "react";
+import { createElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { SiteHeader } from "../../components/marketing/site-shell";
-import { getSiteConfig, getNavItems } from "../../lib/i18n";
+import { SheetContent, SheetDescription } from "../../components/ui/sheet";
+import { getDictionary, getSiteConfig, getNavItems, type Locale } from "../../lib/i18n";
 import { createPageMetadata, v3MarketingMetadata } from "../../lib/metadata";
 import {
   RU_PRIMARY_NAV,
@@ -11,6 +12,23 @@ import {
   getCanonicalStaticRoutes,
   isActiveNavItem
 } from "../../lib/site-routes";
+
+type AnyElement = ReactElement<Record<string, unknown>>;
+
+function collectElements(node: ReactNode): AnyElement[] {
+  if (Array.isArray(node)) return node.flatMap(collectElements);
+  if (!isValidElement(node)) return [];
+
+  const element = node as AnyElement;
+  return [element, ...collectElements(element.props.children as ReactNode)];
+}
+
+function collectText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(collectText).join("");
+  if (!isValidElement(node)) return "";
+  return collectText((node as AnyElement).props.children as ReactNode);
+}
 
 describe("v3 site route policy", () => {
   it("defines the exact compact Russian primary navigation", () => {
@@ -214,6 +232,21 @@ describe("personal master brand and metadata alternates", () => {
       languages: { en: "https://notevskii.tech/en/contact" }
     });
   });
+
+  it("uses the reviewed Russian metadata copy verbatim", () => {
+    expect(v3MarketingMetadata("home").description).toBe(
+      "Личный сайт Сергея Нотевского: статьи, выступления, открытые проекты и практический справочник по production AI-платформам."
+    );
+    expect(v3MarketingMetadata("work").description).toBe(
+      "Выступления, открытые инженерные проекты и внешние публикации Сергея Нотевского о production AI-платформах."
+    );
+    expect(v3MarketingMetadata("about").description).toBe(
+      "Сергей Нотевский — AI Platform Lead в Битрикс24: инженерная практика и публичные материалы."
+    );
+    expect(v3MarketingMetadata("contact").description).toBe(
+      "Связаться с Сергеем Нотевским по вопросам архитектуры ИИ-платформ, выступлений и открытых проектов."
+    );
+  });
 });
 
 describe("site header active state", () => {
@@ -236,5 +269,45 @@ describe("site header active state", () => {
     expect(currentLinks).toHaveLength(1);
     expect(currentLinks[0]).toMatch(/\bhref="\/en\/about"/);
     expect(currentLinks[0]).not.toMatch(/\bhref="\/en"/);
+  });
+
+  it.each([
+    ["ru", "Основные разделы сайта и контакты.", "Закрыть навигацию"],
+    ["en", "Primary site sections and contact options.", "Close navigation"]
+  ] as const)(
+    "provides a real localized mobile-dialog description and close name for %s",
+    (locale, expectedDescription, expectedCloseLabel) => {
+      const tree = SiteHeader({ locale: locale as Locale, currentPath: locale === "ru" ? "/" : "/en" });
+      const elements = collectElements(tree);
+      const description = elements.find((element) => element.type === SheetDescription);
+      const content = elements.find((element) => element.type === SheetContent);
+
+      expect(getDictionary(locale).shell.navigationDescription).toBe(expectedDescription);
+      expect(getDictionary(locale).shell.closeNavigation).toBe(expectedCloseLabel);
+      expect(description?.props.children).toBe(expectedDescription);
+      expect(description?.props.className).toContain("sr-only");
+      expect(content?.props.closeLabel).toBe(expectedCloseLabel);
+    }
+  );
+
+  it("keeps closeLabel out of Radix DialogContent while using it as the accessible name", () => {
+    const render = (
+      SheetContent as unknown as {
+        render: (props: Record<string, unknown>, ref: null) => ReactNode;
+      }
+    ).render;
+    const tree = render(
+      {
+        closeLabel: "Закрыть навигацию",
+        children: createElement("p", null, "Содержимое")
+      },
+      null
+    );
+    const elements = collectElements(tree);
+
+    expect(
+      elements.some((element) => Object.hasOwn(element.props, "closeLabel"))
+    ).toBe(false);
+    expect(collectText(tree)).toContain("Закрыть навигацию");
   });
 });

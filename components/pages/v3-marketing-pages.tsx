@@ -19,35 +19,35 @@ const professionalContext = [
   {
     index: "01",
     title: "Архитектура платформы",
-    description: "Границы платформы, control plane, execution path и контракты с продуктовыми командами."
+    description: "Границы платформы, control plane, путь исполнения и контракты с продуктовыми командами."
   },
   {
     index: "02",
     title: "Инференс и эксплуатация",
-    description: "MaaS, self-hosted и гибридные схемы, serving, наблюдаемость и эксплуатационные решения."
+    description: "MaaS, self-hosted и гибридные схемы: запуск моделей, наблюдаемость и эксплуатационные решения."
   },
   {
     index: "03",
     title: "Качество и ответственность",
-    description: "Evals, release gates, стоимость сценария и понятные зоны ownership."
+    description: "Оценка качества, релизный контроль, стоимость сценария и понятное распределение ответственности."
   }
 ] as const;
 
 const aboutAreas = [
   {
     index: "01",
-    title: "Архитектура AI Platform",
+    title: "Архитектура платформы",
     description: "Проектирую границы платформы, control plane, маршрутизацию и контракты для продуктовых сценариев."
   },
   {
     index: "02",
     title: "Инференс и эксплуатация",
-    description: "Работаю с MaaS, self-hosted и гибридными схемами: serving, cache, capacity и наблюдаемость."
+    description: "Работаю с MaaS, self-hosted и гибридными схемами: инференсом, кешем, планированием мощности и наблюдаемостью."
   },
   {
     index: "03",
-    title: "Качество, экономика и ownership",
-    description: "Связываю evals, release control, стоимость и ответственность в один эксплуатационный контур."
+    title: "Качество, экономика и ответственность",
+    description: "Связываю оценку качества, релизный контроль, стоимость и ответственность в единый эксплуатационный контур."
   }
 ] as const;
 
@@ -60,16 +60,16 @@ const contactContexts = [
   {
     index: "02",
     title: "Стратегическая сессия",
-    description: "Сверить MaaS, self-hosted и гибридный путь, ответственность команды и ближайшие решения."
+    description: "Сравнить MaaS, self-hosted и гибридный подход, определить ответственность команды и ближайшие решения."
   },
   {
     index: "03",
     title: "Выступление",
-    description: "Обсудить доклад, подкаст или технический разбор о production AI platforms."
+    description: "Обсудить доклад, подкаст или технический разбор о production AI-платформах."
   },
   {
     index: "04",
-    title: "Публичная коллаборация",
+    title: "Совместный публичный проект",
     description: "Предложить совместный материал, открытый проект или профессиональное исследование."
   }
 ] as const;
@@ -112,7 +112,7 @@ function ExternalChannel({ href, children }: { href: string; children: string })
         aria-hidden="true"
         className="size-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
       />
-      <span className="sr-only">Внешняя ссылка</span>
+      <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
     </a>
   );
 }
@@ -129,7 +129,7 @@ export function HomePageContent({ model }: HomePageContentProps) {
             Сергей Нотевский
           </h1>
           <p className="mt-7 max-w-[42rem] text-lg leading-8 text-muted-foreground sm:text-xl sm:leading-8">
-            Проектирую production AI platforms: от выбора execution path и собственного инференса до качества, стоимости и эксплуатации.
+            Проектирую production AI-платформы: от выбора пути исполнения и собственного инференса до качества, стоимости и эксплуатации.
           </p>
         </div>
 
@@ -143,10 +143,10 @@ export function HomePageContent({ model }: HomePageContentProps) {
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
         <div className="mb-10 max-w-3xl">
           <p className="font-mono text-xs uppercase tracking-[0.12em] text-primary">
-            Выбранные материалы
+            Главное
           </p>
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-foreground sm:text-4xl">
-            Один материал из каждого направления
+            По одному материалу из каждого раздела
           </h2>
         </div>
         <div className="border-t border-border/80">
@@ -201,7 +201,7 @@ export function HomePageContent({ model }: HomePageContentProps) {
             href="/contact"
             className="group inline-flex min-h-11 shrink-0 items-center gap-3 py-2 text-sm font-semibold text-foreground hover:text-primary"
           >
-            Выбрать контекст
+            Начать разговор
             <ArrowRight
               aria-hidden="true"
               className="size-4 text-primary transition-transform group-hover:translate-x-1"
@@ -220,7 +220,7 @@ export function WorkPageContent({ model }: WorkPageContentProps) {
         <PageIntro
           overline="Материалы"
           title="Публичная работа"
-          lead="Выступления, открытые проекты и внешние публикации о production AI platforms — по одному проверенному входу в каждый формат."
+          lead="Выступления, открытые проекты и внешние публикации о production AI-платформах — по одному выбранному материалу в каждом формате."
         />
 
         <div className="mt-16 sm:mt-20 lg:mt-24">
@@ -271,7 +271,7 @@ export function AboutPageContent() {
         <PageIntro
           overline="Обо мне"
           title="Сергей Нотевский"
-          lead="AI Platform Lead в Bitrix24. Работаю с архитектурой, инференсом, качеством и эксплуатацией production AI platforms."
+          lead="AI Platform Lead в Битрикс24. Работаю с архитектурой, инференсом, качеством и эксплуатацией production AI-платформ."
         />
 
         <section className="mt-16 grid gap-8 sm:mt-20 lg:mt-24 lg:grid-cols-[minmax(12rem,0.36fr)_minmax(0,1fr)] lg:gap-16">
@@ -346,7 +346,7 @@ export function ContactPageContent() {
         <PageIntro
           overline="Контакт"
           title="Начать разговор"
-          lead="Напишите в Telegram и сразу обозначьте задачу. Ниже — четыре контекста, в которых разговор будет предметным."
+          lead="Напишите в Telegram и сразу обозначьте задачу. Ниже — четыре повода для разговора."
         />
 
         <a
@@ -361,7 +361,7 @@ export function ContactPageContent() {
             aria-hidden="true"
             className="size-5 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
           />
-          <span className="sr-only">Внешняя ссылка</span>
+          <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
         </a>
 
         <section className="mt-16 sm:mt-20" aria-labelledby="contact-contexts-heading">
@@ -369,7 +369,7 @@ export function ContactPageContent() {
             id="contact-contexts-heading"
             className="font-mono text-xs uppercase tracking-[0.12em] text-primary"
           >
-            Подходящие контексты
+            С чем можно обратиться
           </h2>
           <div className="mt-5 border-t border-border/80">
             {contactContexts.map((context) => (
