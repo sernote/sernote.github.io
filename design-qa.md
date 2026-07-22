@@ -1,10 +1,10 @@
-# Design QA — v3 personal-page checkpoint
+# Design QA — v3 personal pages and Blog checkpoint
 
 Date: 22 July 2026
 
-Scope: Home, Materials, About, Contact, and the shared responsive shell
+Scope: Home, Materials, About, Contact, Blog index, native Blog article, and the shared responsive shell
 
-Reviewed revision: `95ed270`
+Reviewed revision: `e1120f2`
 
 ## Source visual truth
 
@@ -20,6 +20,11 @@ Reviewed revision: `95ed270`
 - Final Home, 390 × 844: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/45-v3-home-390-converged.png`.
 - Final mobile menu: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/46-v3-home-menu-390-converged.png`.
 - Final four-page mobile grid: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/48-v3-mobile-pages-grid.png`.
+- Final Blog index, 390 × 844: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/49-v3-blog-index-390.png`.
+- Final native Blog article, 390 × 844: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/50-v3-blog-article-390.png`.
+- Final Blog index and article, 768 × 900: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/51-v3-blog-index-768.png` and `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/52-v3-blog-article-768.png`.
+- Final Blog index and article, 1440 × 900: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/55-v3-blog-index-1440-final.png` and `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/56-v3-blog-article-1440-final.png`.
+- Final native-article ending, 390 × 844: `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/58-v3-blog-article-bottom-390-final.png`.
 
 All captures use the production static export, Russian locale, dark theme, top-of-page state, no authentication, CSS pixels equal to image pixels, and `devicePixelRatio = 1`. No density normalization was required.
 
@@ -29,6 +34,9 @@ All captures use the production static export, Russian locale, dark theme, top-o
 | Mobile Home | n/a | 390 × 844 | 390 × 844 | 1× |
 | Tablet Home | n/a | 768 × 900 | 768 × 900 | 1× |
 | Desktop Home | n/a | 1440 × 900 | 1440 × 900 | 1× |
+| Mobile Blog | n/a | 390 × 844 | 390 × 844 | 1× |
+| Tablet Blog | n/a | 768 × 900 | 768 × 900 | 1× |
+| Desktop Blog | n/a | 1440 × 900 | 1440 × 900 | 1× |
 
 ## Full-view comparison
 
@@ -37,6 +45,8 @@ Combined same-input evidence: `/Users/notevskii/.codex/visualizations/2026/07/21
 The previous state makes the handbook and a pseudo-dashboard the dominant product, presents three competing calls to action, and delays the author's public surfaces. The converged state gives the author the dominant type scale, keeps the public role and scope concise, and exposes Blog, Materials, and AI Platform as one ruled index in the first viewport. The selected-content section begins at the bottom of the same desktop viewport, so the page does not use empty space to simulate a premium position.
 
 No actionable P0, P1, or P2 visual mismatch remains against the accepted author-index direction.
+
+The Blog checkpoint uses the converged Home as the visual-system reference. The same-input Home → Blog index → native article comparison is `/Users/notevskii/.codex/visualizations/2026/07/21/019f8688-86f0-7411-b38d-77491051182f/site-strategy-audit/57-v3-home-blog-system-comparison.png`. It confirms that Blog keeps the same shell, grid, type scale, dividers, muted/cyan hierarchy, and ruled-row language while moving long-form reading into a calm 720 px column. Blog is not a visual copy of System Design Space; only the accepted information-architecture lesson is carried forward.
 
 ## Focused-region evidence
 
@@ -53,6 +63,7 @@ No additional desktop crop was needed because the 1280 × 720 comparison keeps t
 - Copy and content: the public role is consistently `AI Platform Lead в Битрикс24`; page and metadata copy passed the independent Russian editorial and public-boundary review. No confidential scale, internal topology, price, testimonial, availability, or unsupported result is present.
 - Icons: only the existing Lucide menu, close, internal-arrow, and external-arrow icons are used. Stroke, sizing, and alignment remain consistent across the shell and ruled rows.
 - Responsiveness: at 390 px the H1 stays on one line and all three Home entrances end by y=801 in an 844 px viewport. At 768 px all entrances end by y=713 in a 900 px viewport. At 1440 px the split composition and next-section heading are both visible.
+- Blog reading surfaces: the index has exactly two continuous ruled rows, including one direct Habr row. The native article uses a 720 px outer column and 688 px prose column at 768 and 1440 px. The index and article remain exactly viewport-wide without horizontal overflow at 390, 768, and 1440 px; the article CTA and Contact path remain visible and usable at its mobile ending.
 
 ## Accessibility, interactions, and console
 
@@ -62,6 +73,7 @@ No additional desktop crop was needed because the 1280 × 720 comparison keeps t
 - Keyboard behavior was verified in the open menu: initial focus is on Close, Tab moves to Blog, Escape closes the dialog, unlocks the body, and returns focus to the menu trigger.
 - The primary Contact route contains one Telegram action, four contexts, and no form.
 - A fresh production-static browser tab reported no console warnings or errors after the final mobile-menu interaction (`[]`).
+- Blog runtime QA confirmed one main and one H1 on both routes, active Blog navigation, no false language switch, a direct Habr target, safe external-link attributes, visible Lucide external cues with assistive text, a localized mobile dialog, body-scroll lock, and an empty console (`[]`).
 - The root-level browser driver did not reliably inject the very first Tab from browser chrome, so activation of the skip link remains part of the final Task 14 keyboard sweep; its DOM order, target, focus styles, and landmark destination are covered by source and export checks.
 
 ## Comparison history
@@ -69,12 +81,13 @@ No additional desktop crop was needed because the 1280 × 720 comparison keeps t
 1. Initial author-index comparison (`83f2b10`) found no structural visual blocker, but runtime QA found a P2 accessibility defect: Radix warned that the mobile dialog lacked a description. Independent review also found an untranslated close name and overly dense Russian product wording.
 2. `1675db5` added the localized hidden dialog description and close name, improved external-link guidance, simplified the page and metadata copy, and retained the visual composition. Post-fix mobile evidence is the menu capture above; a fresh browser log is empty.
 3. The final editorial convergence pass found one P2 content-consistency issue: decorative Home source copy did not use the exact public role formulation. `95ed270` aligned the role without changing the uppercase visual treatment. The 1280 comparison, 1440 Home, and 390 Home captures above are the post-fix evidence. Independent spec and editorial rereviews both passed.
+4. Blog spec review found one P1 visual-contract issue: an external MDX link used the text glyph `↗`. `62afd51` replaced it with the shared Lucide `ArrowUpRight` and a regression test. Quality review then found duplicated author branding in the final Blog title; `e1120f2` switched v3 marketing titles to Next.js absolute titles without changing article metadata. Final spec, editorial, and quality rereviews returned `SPEC COMPLIANT`, `PASS`, and `READY`.
 
 ## Findings
 
 No open P0, P1, or P2 finding.
 
-Non-blocking P3 engineering note: `tests/seo/site-routes.test.ts` currently inspects React `forwardRef`'s internal `.render` shape to prove `closeLabel` is not leaked. Replace that assertion with a hydrated DOM test when the repository adds a browser-component test harness.
+Non-blocking P3 engineering notes: `tests/seo/site-routes.test.ts` currently inspects React `forwardRef`'s internal `.render` shape to prove `closeLabel` is not leaked, and the Task 6 route contract still includes source-text assertions. Replace both with hydrated/runtime coverage when the Task 14 browser-component harness is available.
 
 ## Implementation checklist
 
@@ -84,5 +97,6 @@ Non-blocking P3 engineering note: `tests/seo/site-routes.test.ts` currently insp
 - [x] Mobile navigation labels, focus movement, Escape behavior, and scroll lock work.
 - [x] Public copy and metadata passed independent editorial review.
 - [x] Browser console is clean after the previously failing interaction.
+- [x] Blog index and native article passed responsive, semantic, external-link, metadata, review, and static-export QA.
 
 final result: passed

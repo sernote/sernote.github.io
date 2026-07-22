@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Blog implementation is complete and technically validated; Talks and Projects are the next implementation milestone. Browser/design QA and independent review are not claimed for Task 6.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Blog implementation, independent reviews, and responsive browser/design QA have converged; Talks and Projects are the next implementation milestone.
 
 ## Completed
 
@@ -168,7 +168,12 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused GREEN passed: 3 files, 57 tests. Full Vitest passed: 7 files, 128 tests.
   - Direct Fumadocs generation, TypeScript validation, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 95 static/SSG pages.
   - Static export checks confirmed `/blog/` and `/blog/ai-platform-before-gpu/`, one main landmark on both pages, the native author/body/AI Platform/Contact content, article Open Graph timestamps, and the direct Habr link. No `/blog/short-prompt-not-cheap/` export or local link exists.
-  - The five-surface shell landmark audit passed. Browser/design QA and independent review were not run or claimed for this implementation checkpoint.
+  - The five-surface shell landmark audit passed.
+  - Spec review found one P1 visual-contract issue in the text-glyph external cue; `62afd51` replaced it with the shared Lucide icon under a focused regression test. Quality review then found duplicated author branding in the final v3 marketing titles; `e1120f2` made those titles absolute while keeping native article metadata on the layout template.
+  - Final independent rereviews returned `SPEC COMPLIANT`, editorial `PASS`, and quality `READY`. The remaining source-text route-test debt is recorded for Task 14 and does not block the Blog milestone.
+  - Production-static browser QA passed at 390 × 844, 768 × 900, and 1440 × 900. Both Blog routes keep one main and one H1, no horizontal overflow, active Blog navigation, no false language switch, safe external-link cues, and a clean console. The native article keeps a 720 px long-form column, and its AI Platform and Contact ending remains usable on mobile.
+  - The Home/Blog same-input visual-system comparison, responsive captures, and final `passed` result are recorded in `design-qa.md`.
+  - Final root verification on `e1120f2` passed Fumadocs generation, 7 Vitest files / 133 tests, TypeScript, ESLint, `git diff --check`, the 95-page webpack static build, the five-surface landmark audit, and a 20-check Blog export audit.
   - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
