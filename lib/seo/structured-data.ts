@@ -6,7 +6,7 @@ import type {
   V3Project,
   V3Talk
 } from "@/lib/content-v3/schema";
-import { getCanonicalUrl } from "@/lib/content-v3/registry";
+import { getCanonicalUrl, type V3Type } from "@/lib/content-v3/registry";
 import { canonicalUrl, publicFileUrl } from "@/lib/seo/urls";
 
 type JsonPrimitive = string | number | boolean | null;
@@ -32,6 +32,21 @@ export type StructuredData = Readonly<
 
 type ReferenceRecord = V3PlatformArea | V3PlatformComponent | V3Case;
 type Breadcrumb = Readonly<{ name: string; path: string }>;
+type ReferenceBreadcrumbItem = Readonly<{
+  entityId: string;
+  contentType: V3Type;
+  title: string;
+  href: string;
+}>;
+
+export type ReferenceBreadcrumbContext = Readonly<{
+  entityId: string;
+  contentType: ReferenceRecord["type"];
+  title: string;
+  href: string;
+  primaryArea: ReferenceBreadcrumbItem | null;
+  parentComponent: ReferenceBreadcrumbItem | null;
+}>;
 
 const AUTHOR_NAME = "Сергей Нотевский";
 
@@ -67,6 +82,82 @@ function requirePublished(
 ): asserts record is typeof record & { publicationStatus: "published"; publishedAt: string } {
   if (record.publicationStatus !== "published" || record.publishedAt === null) {
     throw new Error(`${label} structured data requires a published record: ${record.entityId}`);
+  }
+}
+
+function youtubeVideoId(recordingUrl: string, entityId: string): string {
+  let url: URL;
+
+  try {
+    url = new URL(recordingUrl);
+  } catch {
+    throw new Error(`Talk ${entityId} requires a supported YouTube URL`);
+  }
+
+  let videoId: string | null = null;
+  if (
+    (url.hostname === "youtube.com" || url.hostname === "www.youtube.com") &&
+    url.pathname === "/watch"
+  ) {
+    videoId = url.searchParams.get("v");
+  } else if (url.hostname === "youtu.be") {
+    const segments = url.pathname.split("/").filter(Boolean);
+    videoId = segments.length === 1 ? segments[0] : null;
+  }
+
+  if (videoId === null || !/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+    throw new Error(`Talk ${entityId} requires a supported YouTube URL`);
+  }
+
+  return videoId;
+}
+
+function assertReferenceBreadcrumbContext(
+  record: ReferenceRecord,
+  context: ReferenceBreadcrumbContext
+): void {
+  const detailMatches =
+    context.entityId === record.entityId &&
+    context.contentType === record.type &&
+    context.title === record.title &&
+    context.href === getCanonicalUrl(record);
+
+  if (!detailMatches) {
+    throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
+  }
+
+  if (record.type === "platform-area") {
+    if (context.primaryArea !== null || context.parentComponent !== null) {
+      throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
+    }
+    return;
+  }
+
+  const primaryArea = context.primaryArea;
+  if (
+    primaryArea === null ||
+    primaryArea.contentType !== "platform-area" ||
+    primaryArea.href !== `/ai-platform/areas/${primaryArea.entityId}` ||
+    (context.parentComponent !== null && record.type === "platform-component")
+  ) {
+    throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
+  }
+
+  if (record.type === "platform-component") {
+    if (primaryArea.entityId !== record.primaryAreaId) {
+      throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
+    }
+    return;
+  }
+
+  const parentComponent = context.parentComponent;
+  if (
+    parentComponent === null ||
+    parentComponent.contentType !== "platform-component" ||
+    parentComponent.entityId !== record.componentIds[0] ||
+    parentComponent.href !== `/ai-platform/components/${parentComponent.entityId}`
+  ) {
+    throw new Error(`Reference ${record.entityId} has mismatched breadcrumb context`);
   }
 }
 
@@ -130,6 +221,7 @@ export function buildTalkStructuredData(talk: V3Talk): readonly StructuredData[]
   ) {
     throw new Error(`Talk structured data requires verified recording evidence: ${talk.entityId}`);
   }
+  const videoId = youtubeVideoId(talk.recordingUrl, talk.entityId);
 
   const video = validated({
     "@context": "https://schema.org",
@@ -138,7 +230,8 @@ export function buildTalkStructuredData(talk: V3Talk): readonly StructuredData[]
     name: talk.title,
     description: talk.abstract,
     url: canonicalUrl(getCanonicalUrl(talk)),
-    contentUrl: talk.recordingUrl,
+    sameAs: talk.recordingUrl,
+    embedUrl: `https://www.youtube.com/embed/${videoId}`,
     uploadDate: talk.recordingUploadedAt,
     thumbnailUrl: publicFileUrl(talk.thumbnail.path),
     inLanguage: talk.locale,
@@ -167,11 +260,12 @@ export function buildProjectStructuredData(
     description: project.description,
     url: canonicalUrl(getCanonicalUrl(project)),
     codeRepository: project.repositoryUrl,
-    datePublished: project.publishedAt,
-    dateModified: project.updatedAt,
     ...(project.verifiedRelease === null
       ? {}
-      : { version: project.verifiedRelease.version }),
+      : {
+          version: project.verifiedRelease.version,
+          datePublished: project.verifiedRelease.publishedAt
+        }),
     author: personReference()
   });
 
@@ -186,12 +280,14 @@ export function buildProjectStructuredData(
 }
 
 export function buildReferenceStructuredData(
-  record: ReferenceRecord
+  record: ReferenceRecord,
+  context: ReferenceBreadcrumbContext
 ): readonly StructuredData[] {
   requirePublished(record, "Reference");
   if (record.reviewStatus !== "reviewed" && record.reviewStatus !== "stale") {
     throw new Error(`Reference structured data requires reviewed evidence: ${record.entityId}`);
   }
+  assertReferenceBreadcrumbContext(record, context);
 
   const article = validated({
     "@context": "https://schema.org",
@@ -214,6 +310,17 @@ export function buildReferenceStructuredData(
 
   if (record.type === "platform-area") {
     referenceBreadcrumbs.push({ name: "Карта", path: "/ai-platform/map" });
+  } else {
+    referenceBreadcrumbs.push({
+      name: context.primaryArea!.title,
+      path: context.primaryArea!.href
+    });
+    if (record.type === "case") {
+      referenceBreadcrumbs.push({
+        name: context.parentComponent!.title,
+        path: context.parentComponent!.href
+      });
+    }
   }
   referenceBreadcrumbs.push({ name: record.title, path: detailPath });
 

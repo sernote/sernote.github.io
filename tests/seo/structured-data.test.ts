@@ -168,6 +168,43 @@ const caseRecord: V3Case = {
   evidence: ["Синтетические JSON fixtures"]
 };
 
+const areaBreadcrumbContext = {
+  entityId: area.entityId,
+  contentType: area.type,
+  title: area.title,
+  href: `/ai-platform/areas/${area.slug}`,
+  primaryArea: null,
+  parentComponent: null
+} as const;
+
+const componentBreadcrumbContext = {
+  entityId: component.entityId,
+  contentType: component.type,
+  title: component.title,
+  href: `/ai-platform/components/${component.slug}`,
+  primaryArea: {
+    entityId: area.entityId,
+    contentType: area.type,
+    title: area.title,
+    href: `/ai-platform/areas/${area.slug}`
+  },
+  parentComponent: null
+} as const;
+
+const caseBreadcrumbContext = {
+  entityId: caseRecord.entityId,
+  contentType: caseRecord.type,
+  title: caseRecord.title,
+  href: `/ai-platform/cases/${caseRecord.slug}`,
+  primaryArea: componentBreadcrumbContext.primaryArea,
+  parentComponent: {
+    entityId: component.entityId,
+    contentType: component.type,
+    title: component.title,
+    href: `/ai-platform/components/${component.slug}`
+  }
+} as const;
+
 describe("public SEO URLs", () => {
   it("normalizes canonical URLs to the public origin with trailing slashes", () => {
     expect(canonicalUrl("/")).toBe("https://notevskii.tech/");
@@ -246,37 +283,94 @@ describe("JSON-LD builders", () => {
     });
   });
 
-  it("uses the verified recording upload date and local production thumbnail for VideoObject", () => {
+  it("uses the verified recording identity, embed URL, upload date, and local thumbnail", () => {
     const data = buildTalkStructuredData(talk);
     expect(data.map((item) => item["@type"])).toEqual(["VideoObject", "BreadcrumbList"]);
     expect(data[0]).toMatchObject({
-      contentUrl: "https://www.youtube.com/watch?v=RHbbeHKGh6I",
+      sameAs: "https://www.youtube.com/watch?v=RHbbeHKGh6I",
+      embedUrl: "https://www.youtube.com/embed/RHbbeHKGh6I",
       uploadDate: "2026-02-22",
       thumbnailUrl: "https://notevskii.tech/media/talks/maas-vs-self-hosted.jpg"
     });
+    expect(data[0]).not.toHaveProperty("contentUrl");
     expect(data[0]).not.toHaveProperty("duration");
   });
 
-  it("builds SoftwareSourceCode and TechArticle schemas with breadcrumbs", () => {
+  it("fails closed when a verified talk URL cannot yield a supported YouTube id", () => {
+    expect(() =>
+      buildTalkStructuredData({
+        ...talk,
+        recordingUrl: "https://videos.example.com/watch?v=RHbbeHKGh6I"
+      })
+    ).toThrow(/supported YouTube URL/);
+  });
+
+  it("uses verified release dates rather than editorial page dates for software", () => {
     const projectData = buildProjectStructuredData(project);
     expect(projectData.map((item) => item["@type"])).toEqual([
       "SoftwareSourceCode",
       "BreadcrumbList"
     ]);
-    expect(projectData[0]).toMatchObject({ codeRepository: project.repositoryUrl });
+    expect(projectData[0]).toMatchObject({
+      codeRepository: project.repositoryUrl,
+      version: "v0.1.3",
+      datePublished: "2026-07-20"
+    });
+    expect(projectData[0]).not.toHaveProperty("dateModified");
+    expect(serializeJsonLd(projectData[0])).not.toContain(project.updatedAt);
 
-    for (const reference of [area, component, caseRecord]) {
-      const referenceData = buildReferenceStructuredData(reference);
+    const withoutRelease = buildProjectStructuredData({
+      ...project,
+      verifiedRelease: null
+    })[0];
+    expect(withoutRelease).not.toHaveProperty("version");
+    expect(withoutRelease).not.toHaveProperty("datePublished");
+    expect(withoutRelease).not.toHaveProperty("dateModified");
+  });
+
+  it("builds TechArticle schemas with breadcrumbs that mirror visible hierarchy", () => {
+    const contexts = [
+      [area, areaBreadcrumbContext, ["Главная", "AI Platform", "Карта", area.title]],
+      [component, componentBreadcrumbContext, ["Главная", "AI Platform", area.title, component.title]],
+      [
+        caseRecord,
+        caseBreadcrumbContext,
+        ["Главная", "AI Platform", area.title, component.title, caseRecord.title]
+      ]
+    ] as const;
+
+    for (const [reference, context, expectedNames] of contexts) {
+      const referenceData = buildReferenceStructuredData(reference, context);
       expect(referenceData.map((item) => item["@type"])).toEqual([
         "TechArticle",
         "BreadcrumbList"
       ]);
-      expect(referenceData[1]).toMatchObject({
-        itemListElement: expect.arrayContaining([
-          expect.objectContaining({ name: reference.title })
-        ])
-      });
+      expect(referenceData[1]["itemListElement"]).toEqual(
+        expectedNames.map((name, index) =>
+          expect.objectContaining({ position: index + 1, name })
+        )
+      );
     }
+  });
+
+  it("fails closed when reference breadcrumb context does not match the record", () => {
+    expect(() =>
+      buildReferenceStructuredData(component, {
+        ...componentBreadcrumbContext,
+        primaryArea: {
+          ...componentBreadcrumbContext.primaryArea,
+          entityId: "control-plane",
+          href: "/ai-platform/areas/control-plane"
+        }
+      })
+    ).toThrow(/breadcrumb context/);
+
+    expect(() =>
+      buildReferenceStructuredData(caseRecord, {
+        ...caseBreadcrumbContext,
+        parentComponent: null
+      })
+    ).toThrow(/breadcrumb context/);
   });
 
   it("serializes JSON-LD without a literal closing script tag", () => {
@@ -308,6 +402,9 @@ describe("JSON-LD builders", () => {
       const source = readFileSync(join(process.cwd(), path), "utf8");
       expect(source, path).toContain("<JsonLd");
       expect(source, path).toContain(builder);
+      if (builder === "buildReferenceStructuredData") {
+        expect(source, path).toContain("buildReferenceStructuredData(record, model)");
+      }
     }
   });
 });

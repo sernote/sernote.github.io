@@ -116,10 +116,11 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 - v3 discovery and structured-metadata milestone:
   - TDD RED confirmed the new SEO modules were absent; a separate route-wiring RED confirmed the metadata routes and JSON-LD page integration were absent. The static-build regression was reproduced and covered before adding the Next 16 `force-static` metadata-route requirement.
-  - Focused SEO validation passed: 2 files, 15 tests. Full Vitest passed: 12 files, 201 tests.
+  - Spec-review regression RED reproduced six failures: incomplete reference breadcrumb hierarchies, unvalidated breadcrumb context, a YouTube watch page mislabeled as media content, unsupported recording URLs accepted, and editorial page dates leaking into software metadata and route wiring.
+  - Review-correction GREEN passed: focused SEO validation 2 files, 18 tests; full Vitest 12 files, 204 tests.
   - Fumadocs generation, Next route type generation, direct TypeScript, full ESLint, and the direct webpack static build passed; the build generated 105 static/SSG pages.
   - The export produced valid `out/sitemap.xml`, `out/robots.txt`, and `out/rss.xml`. Sitemap inspection confirmed trailing-slash local canonicals with no Habr URL, `/ru/` alias, `/writing/` route, or draft area; robots allows `/` and has no `Disallow`; RSS contains both the native article canonical and the external Habr source link/guid in descending date order.
-  - Emitted HTML inspection confirmed Person + WebSite on Home, the required detail schema plus BreadcrumbList on all six native detail exports, the verified YouTube URL and upload date, the production local thumbnail URL, and no VideoObject duration. XML parsing, `git diff --check`, and the absence of `pnpm-workspace.yaml` were also checked.
+  - Emitted HTML inspection confirmed exact area, component, and case breadcrumb hierarchies from the validated reference view model; the VideoObject uses the verified watch URL as `sameAs`, a derived YouTube `embedUrl`, the verified upload date, and the production local thumbnail without `contentUrl` or duration; SoftwareSourceCode uses release date `2026-07-20` and version `v0.1.3` without editorial `dateModified`. XML parsing, `git diff --check`, and the absence of `pnpm-workspace.yaml` were also checked.
   - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning; it does not prevent a successful static export.
 - v3 content contract milestone:
   - TDD RED confirmed the schema module was absent before implementation.

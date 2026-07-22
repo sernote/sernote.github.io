@@ -45,7 +45,7 @@ export default async function PlatformAreaPage({
 
   return (
     <>
-      <JsonLd data={buildReferenceStructuredData(record)} />
+      <JsonLd data={buildReferenceStructuredData(record, model)} />
       <ReferenceDetailPage model={model}>
         <DocsBody>
           <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
