@@ -131,7 +131,10 @@ export function v3MarketingMetadata(key: V3MarketingPageKey): Metadata {
     throw new Error(`Unknown v3 marketing page: ${String(key)}`);
   }
 
-  return createPageMetadata({ locale: "ru", ...page });
+  return {
+    ...createPageMetadata({ locale: "ru", ...page }),
+    title: { absolute: page.title }
+  };
 }
 
 export function articleMetadata(article: V3Article): Metadata {

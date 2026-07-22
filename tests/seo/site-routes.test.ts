@@ -130,7 +130,7 @@ describe("v3 site route policy", () => {
 describe("personal master brand and metadata alternates", () => {
   it("keeps the Blog index canonical-only", () => {
     const metadata = v3MarketingMetadata("blog");
-    expect(metadata.title).toBe("Блог — Сергей Нотевский");
+    expect(metadata.title).toEqual({ absolute: "Блог — Сергей Нотевский" });
     expect(metadata.description).toBe(
       "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
     );
@@ -138,6 +138,23 @@ describe("personal master brand and metadata alternates", () => {
       canonical: "https://notevskii.tech/blog"
     });
   });
+
+  it.each([
+    ["home", "Сергей Нотевский — AI Platform Lead"],
+    ["blog", "Блог — Сергей Нотевский"],
+    ["work", "Материалы — Сергей Нотевский"],
+    ["about", "Обо мне — Сергей Нотевский"],
+    ["contact", "Контакт — Сергей Нотевский"]
+  ] as const)(
+    "uses an absolute title for the %s page without changing social titles",
+    (key, expectedTitle) => {
+      const metadata = v3MarketingMetadata(key);
+
+      expect(metadata.title).toEqual({ absolute: expectedTitle });
+      expect(metadata.openGraph).toMatchObject({ title: expectedTitle });
+      expect(metadata.twitter).toMatchObject({ title: expectedTitle });
+    }
+  );
 
   it("emits native article canonical, timestamps, and author metadata without hreflang", () => {
     const article: V3Article = {

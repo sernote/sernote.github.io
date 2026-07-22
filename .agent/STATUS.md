@@ -331,6 +331,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - `tests/seo/site-routes.test.ts` currently inspects React `forwardRef`'s internal `.render` shape for one close-label leakage assertion; replace it with a hydrated DOM regression when the Task 14 browser-component harness is available.
+- Task 14 test debt: replace the Task 6 Blog route source-text assertions with imported or runtime route-contract coverage when the browser-component harness is available.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
