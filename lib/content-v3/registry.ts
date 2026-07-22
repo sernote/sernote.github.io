@@ -105,6 +105,21 @@ function addCalendarDays(value: string, days: number): Date {
   return result;
 }
 
+function deepFreeze<T>(value: T): T {
+  if (value === null || typeof value !== "object" || Object.isFrozen(value)) return value;
+
+  for (const nestedValue of Object.values(value as Record<string, unknown>)) {
+    deepFreeze(nestedValue);
+  }
+  Object.freeze(value);
+  return value;
+}
+
+function normalizeRelatedLimit(limit: number): number {
+  if (!Number.isFinite(limit)) return 0;
+  return Math.min(4, Math.max(0, Math.floor(limit)));
+}
+
 export function getCanonicalUrl(record: V3Frontmatter): string {
   if (record.type === "article" && record.kind === "external-note") {
     if (record.sourceUrl === null) throw new Error(`External article ${record.entityId} has no URL`);
@@ -138,7 +153,7 @@ export function createRegistry(
   inputs: readonly unknown[],
   options: RegistryOptions = {}
 ): V3Registry {
-  const records = inputs.map((input) => parseV3Frontmatter(input)).sort(compareAll);
+  const records = inputs.map((input) => deepFreeze(parseV3Frontmatter(input))).sort(compareAll);
   const byIdentity = new Map<string, V3Frontmatter>();
   const byLocaleEntity = new Map<string, V3Frontmatter>();
   const entityTypes = new Map<string, V3Type>();
@@ -366,7 +381,8 @@ export function createRegistry(
         (record) => record.type === type && record.locale === locale && record.slug === slug
       ) ?? null,
     getByIdentity: lookup,
-    getRelated: (record) => [...(forward.get(identityKey(record, record.locale)) ?? [])],
+    getRelated: (record) =>
+      [...(forward.get(identityKey(record, record.locale)) ?? [])].sort(comparePublic),
     getRelatedForPage: (record, limit = 4) => {
       const result: V3Frontmatter[] = [];
       const seen = new Set<string>();
@@ -374,7 +390,7 @@ export function createRegistry(
         forward.get(identityKey(record, record.locale)) ?? [],
         structural(record),
         backlinks.get(identityKey(record, record.locale)) ?? []
-      ];
+      ].map((bucket) => [...bucket].sort(comparePublic));
       for (const bucket of buckets) {
         for (const candidate of bucket) {
           const key = identityKey(candidate, candidate.locale);
@@ -383,7 +399,7 @@ export function createRegistry(
           result.push(candidate);
         }
       }
-      return result.slice(0, Math.max(0, limit));
+      return result.slice(0, normalizeRelatedLimit(limit));
     },
     getBacklinks: (ref, locale) => {
       if (locale !== undefined) {

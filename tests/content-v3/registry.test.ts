@@ -434,6 +434,27 @@ describe("v3 registry public queries and ordering", () => {
       shared.title
     );
   });
+
+  it("exposes the same deeply frozen records from every query", () => {
+    const registry = createRegistry(
+      [article("target"), article("source", { relations: { articleIds: ["target"] } })],
+      { now }
+    );
+    const record = registry.getByIdentity({ type: "article", entityId: "source" }, "ru")!;
+    const relationIds = record.relations.articleIds!;
+
+    expect(Object.isFrozen(record)).toBe(true);
+    expect(Object.isFrozen(record.relations)).toBe(true);
+    expect(Object.isFrozen(relationIds)).toBe(true);
+    expect(registry.all().find((candidate) => candidate.entityId === "source")).toBe(record);
+    expect(registry.getRelated(record)[0]).toBe(
+      registry.getByIdentity({ type: "article", entityId: "target" }, "ru")
+    );
+    expect(() => {
+      record.title = "Mutated title";
+    }).toThrow(TypeError);
+    expect(() => relationIds.push("another-target")).toThrow(TypeError);
+  });
 });
 
 describe("v3 visible related records", () => {
@@ -467,21 +488,20 @@ describe("v3 visible related records", () => {
     )!;
 
     expect(registry.getRelated(record).map((item) => item.entityId)).toEqual([
-      "cache-guide",
-      "gateway"
+      "gateway",
+      "cache-guide"
     ]);
     expect(registry.getRelatedForPage(record).map((item) => item.entityId)).toEqual([
-      "cache-guide",
       "gateway",
+      "cache-guide",
       "runtime",
       "cache-case"
     ]);
     expect(registry.getRelatedForPage(record, 8).map((item) => item.entityId)).toEqual([
-      "cache-guide",
       "gateway",
+      "cache-guide",
       "runtime",
-      "cache-case",
-      "cache-talk"
+      "cache-case"
     ]);
     expect(
       createRegistry([backlink, useCase, draftGuide, guide, cache, runtime, gateway].reverse(), {
@@ -489,6 +509,95 @@ describe("v3 visible related records", () => {
       })
         .getRelatedForPage(record, 8)
         .map((item) => item.entityId)
-    ).toEqual(["cache-guide", "gateway", "runtime", "cache-case", "cache-talk"]);
+    ).toEqual(["gateway", "cache-guide", "runtime", "cache-case"]);
+  });
+
+  it("clamps explicit limits to a finite integer between zero and four", () => {
+    const target = article("target");
+    const sources = ["one", "two", "three", "four"].map((entityId) =>
+      article(entityId, { relations: { articleIds: ["target"] } })
+    );
+    const registry = createRegistry([target, ...sources], { now });
+    const targetRecord = registry.getByIdentity({ type: "article", entityId: "target" }, "ru")!;
+
+    expect(registry.getRelatedForPage(targetRecord, 2.9)).toHaveLength(2);
+    expect(registry.getRelatedForPage(targetRecord, -1)).toEqual([]);
+    expect(registry.getRelatedForPage(targetRecord, Number.POSITIVE_INFINITY)).toEqual([]);
+    expect(registry.getRelatedForPage(targetRecord, Number.NaN)).toEqual([]);
+  });
+
+  it("sorts every priority bucket independently of relation and input order", () => {
+    const oldForward = article("old-forward", { publishedAt: "2026-05-01" });
+    const newForward = article("new-forward", { publishedAt: "2026-07-01" });
+    const forwardSource = (ids: string[]) =>
+      article("forward-source", { relations: { articleIds: ids } });
+    const forwardNormal = createRegistry(
+      [oldForward, newForward, forwardSource(["old-forward", "new-forward"])],
+      { now }
+    );
+    const forwardReversed = createRegistry(
+      [forwardSource(["new-forward", "old-forward"]), newForward, oldForward],
+      { now }
+    );
+    const forwardIds = (registry: ReturnType<typeof createRegistry>) => {
+      const record = registry.getByIdentity({ type: "article", entityId: "forward-source" }, "ru")!;
+      return {
+        direct: registry.getRelated(record).map((candidate) => candidate.entityId),
+        visible: registry.getRelatedForPage(record).map((candidate) => candidate.entityId)
+      };
+    };
+    expect([forwardIds(forwardNormal), forwardIds(forwardReversed)]).toEqual([
+      { direct: ["new-forward", "old-forward"], visible: ["new-forward", "old-forward"] },
+      { direct: ["new-forward", "old-forward"], visible: ["new-forward", "old-forward"] }
+    ]);
+
+    const platformArea = area("runtime");
+    const oldComponent = component("old-component", "runtime", { publishedAt: "2026-05-01" });
+    const newComponent = component("new-component", "runtime", { publishedAt: "2026-07-01" });
+    const structuralNormal = createRegistry(
+      [platformArea, oldComponent, newComponent, caseRecord("focus-case", ["old-component", "new-component"])],
+      { now }
+    );
+    const structuralReversed = createRegistry(
+      [caseRecord("focus-case", ["new-component", "old-component"]), newComponent, oldComponent, platformArea],
+      { now }
+    );
+    const structuralIds = (registry: ReturnType<typeof createRegistry>) => {
+      const record = registry.getByIdentity({ type: "case", entityId: "focus-case" }, "ru")!;
+      return registry.getRelatedForPage(record).map((candidate) => candidate.entityId);
+    };
+    expect([structuralIds(structuralNormal), structuralIds(structuralReversed)]).toEqual([
+      ["new-component", "old-component"],
+      ["new-component", "old-component"]
+    ]);
+
+    const backlinkTarget = article("backlink-target");
+    const oldArticleBacklink = article("old-article-backlink", {
+      publishedAt: "2026-05-01",
+      relations: { articleIds: ["backlink-target"] }
+    });
+    const newTalkBacklink = talk("new-talk-backlink", {
+      publishedAt: "2026-07-01",
+      relations: { articleIds: ["backlink-target"] }
+    });
+    const backlinkNormal = createRegistry(
+      [oldArticleBacklink, backlinkTarget, newTalkBacklink],
+      { now }
+    );
+    const backlinkReversed = createRegistry(
+      [newTalkBacklink, backlinkTarget, oldArticleBacklink],
+      { now }
+    );
+    const backlinkIds = (registry: ReturnType<typeof createRegistry>) => {
+      const record = registry.getByIdentity(
+        { type: "article", entityId: "backlink-target" },
+        "ru"
+      )!;
+      return registry.getRelatedForPage(record).map((candidate) => candidate.entityId);
+    };
+    expect([backlinkIds(backlinkNormal), backlinkIds(backlinkReversed)]).toEqual([
+      ["new-talk-backlink", "old-article-backlink"],
+      ["new-talk-backlink", "old-article-backlink"]
+    ]);
   });
 });
