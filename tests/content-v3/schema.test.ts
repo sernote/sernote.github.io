@@ -16,10 +16,7 @@ const base = {
   reviewedAt: null,
   reviewCycleDays: null,
   topics: ["caching"],
-  relations: {},
-  sources: [],
-  applicability: null,
-  limitations: null
+  relations: {}
 } as const;
 
 const reviewed = {
@@ -156,6 +153,21 @@ describe("v3 frontmatter record variants", () => {
 });
 
 describe("v3 lifecycle and relation invariants", () => {
+  it.each([
+    ["article", article],
+    ["talk", talk],
+    ["project", project]
+  ])("accepts a reviewed editorial %s without reference-only evidence fields", (_type, record) => {
+    const result = v3FrontmatterSchema.safeParse({
+      ...record,
+      reviewStatus: "reviewed",
+      reviewedAt: today,
+      reviewCycleDays: 90
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects an external note without sourceUrl", () => {
     const result = v3FrontmatterSchema.safeParse({
       ...article,
@@ -171,14 +183,21 @@ describe("v3 lifecycle and relation invariants", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects a reviewed reference without a review cycle, sources, applicability, or limitations", () => {
+  it.each([
+    ["platform-area", platformArea],
+    ["platform-component", platformComponent],
+    ["case", caseRecord]
+  ])("rejects a reviewed %s without reference evidence", (_type, record) => {
     const result = v3FrontmatterSchema.safeParse({
-      ...platformComponent,
-      reviewCycleDays: null,
+      ...record,
+      reviewStatus: "reviewed",
+      reviewedAt: today,
+      reviewCycleDays: 90,
       sources: [],
       applicability: null,
       limitations: null
     });
+
     expect(result.success).toBe(false);
   });
 

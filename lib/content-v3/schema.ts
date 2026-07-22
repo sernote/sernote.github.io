@@ -74,7 +74,10 @@ const sharedBaseShape = {
   reviewedAt: calendarDate.nullable(),
   reviewCycleDays: z.number().int().positive().nullable(),
   topics: z.array(nonEmptyText).max(8),
-  relations: relationsSchema,
+  relations: relationsSchema
+};
+
+const referenceEvidenceShape = {
   sources: z.array(sourceSchema).default([]),
   applicability: nonEmptyText.nullable().default(null),
   limitations: nonEmptyText.nullable().default(null)
@@ -163,6 +166,7 @@ const projectSchema = z
 const platformAreaSchema = z
   .object({
     ...sharedBaseShape,
+    ...referenceEvidenceShape,
     type: z.literal("platform-area"),
     slug: kebabCaseId,
     order: z.number().int(),
@@ -175,6 +179,7 @@ const platformAreaSchema = z
 const platformComponentSchema = z
   .object({
     ...sharedBaseShape,
+    ...referenceEvidenceShape,
     type: z.literal("platform-component"),
     slug: kebabCaseId,
     primaryAreaId: kebabCaseId,
@@ -188,6 +193,7 @@ const platformComponentSchema = z
 const caseSchema = z
   .object({
     ...sharedBaseShape,
+    ...referenceEvidenceShape,
     type: z.literal("case"),
     slug: kebabCaseId,
     caseKind: z.enum(["synthetic", "composite", "public"]),
@@ -225,22 +231,32 @@ export const v3FrontmatterSchema = z
           message: "Review cycle is required"
         });
       }
-      if (record.sources.length === 0) {
-        context.addIssue({ code: "custom", path: ["sources"], message: "Review sources are required" });
-      }
-      if (record.applicability === null) {
-        context.addIssue({
-          code: "custom",
-          path: ["applicability"],
-          message: "Applicability is required"
-        });
-      }
-      if (record.limitations === null) {
-        context.addIssue({
-          code: "custom",
-          path: ["limitations"],
-          message: "Limitations are required"
-        });
+      if (
+        record.type === "platform-area" ||
+        record.type === "platform-component" ||
+        record.type === "case"
+      ) {
+        if (record.sources.length === 0) {
+          context.addIssue({
+            code: "custom",
+            path: ["sources"],
+            message: "Review sources are required"
+          });
+        }
+        if (record.applicability === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["applicability"],
+            message: "Applicability is required"
+          });
+        }
+        if (record.limitations === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["limitations"],
+            message: "Limitations are required"
+          });
+        }
       }
     }
 
