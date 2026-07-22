@@ -147,7 +147,7 @@ export function HomePageContent({ model }: HomePageContentProps) {
             Сергей Нотевский
           </h1>
           <p className="mt-7 max-w-[42rem] text-lg leading-8 text-muted-foreground sm:text-xl sm:leading-8">
-            Проектирую production AI-платформы: от выбора пути исполнения и собственного инференса до качества, стоимости и эксплуатации.
+            Отвечаю за инференс, качество ответов, стоимость запроса и надёжность ИИ-сервисов под реальной нагрузкой.
           </p>
         </div>
 

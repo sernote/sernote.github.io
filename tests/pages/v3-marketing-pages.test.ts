@@ -227,7 +227,7 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).not.toContain("AI PLATFORM LEAD · БИТРИКС24");
     expect(html).toContain("Сергей Нотевский");
     expect(html).toContain(
-      "Проектирую production AI-платформы: от выбора пути исполнения и собственного инференса до качества, стоимости и эксплуатации."
+      "Отвечаю за инференс, качество ответов, стоимость запроса и надёжность ИИ-сервисов под реальной нагрузкой."
     );
     for (const href of ["/blog", "/work", "/ai-platform"]) {
       expect(html).toContain(`href="${href}"`);
