@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page implementation and review-hardening checkpoints are complete; autonomous browser/design inspection remains open before the milestone can be closed.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 personal-page milestone is closed after independent spec, quality, editorial, browser, accessibility, and design QA; Blog is the next implementation milestone.
 
 ## Completed
 
@@ -157,6 +157,10 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused GREEN passed: 2 files, 28 tests. Full Vitest passed: 7 files, 116 tests.
   - Fumadocs generation, direct TypeScript validation, full ESLint, `git diff --check`, the five-surface landmark audit, and the direct webpack static build passed; the build generated 93 static/SSG pages.
   - A final editorial RED caught the decorative hero source text diverging from the public role formulation. The source now reads `AI Platform Lead в Битрикс24`; CSS retains the uppercase visual treatment.
+  - Final independent spec and Russian editorial rereviews passed on `95ed270`; the code-quality rereview found no Critical or Important issue and marked the milestone ready to proceed.
+  - Production-static browser QA passed at 390 × 844, 768 × 900, 1280 × 720, and 1440 × 900. Home keeps the author and all three entrances in the first viewport; Home, Materials, About, and Contact have no horizontal overflow and retain one main landmark.
+  - Mobile-menu runtime QA confirmed a localized description and close name, initial focus on Close, Tab movement to Blog, Escape close with focus return, body-scroll lock, exact navigation links, and an empty final browser console log.
+  - The same-input before/after comparison, responsive captures, finding history, and final `passed` result are recorded in `design-qa.md`.
   - The Next.js build still reports the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
@@ -318,6 +322,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Human usability remains a launch gate: at least 5 of 6 target readers must complete the acceptance task. Content freeze and technical validation do not by themselves make the pilot launch-ready.
 - The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
+- `tests/seo/site-routes.test.ts` currently inspects React `forwardRef`'s internal `.render` shape for one close-label leakage assertion; replace it with a hydrated DOM regression when the Task 14 browser-component harness is available.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
 - Browser plugin / Playwright MCP verification was not available from this environment; rendered smoke checks were performed with local headless Chrome instead.
 - No analytics, newsletter, comments, search index or backend integrations are included by design.
