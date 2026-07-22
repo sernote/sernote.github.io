@@ -2,13 +2,13 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the corrected v3 pilot vertical is awaiting content re-review.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, review-driven editorial pass complete, default-root Russian routing complete, and the v3 pilot content freeze is ready for spec review.
 
 ## Completed
 
 - Established the typed v3 content contract as a parallel Fumadocs collection without changing the legacy `docs` or `docsRu` collection behavior; review evidence fields are scoped to reference records, external notes identify their source, and talk formats use a closed vocabulary.
 - Added a pure v3 content registry that validates identities, canonical URLs, editorial and structural relations, public visibility, bilingual alternates, and reference review deadlines before route code consumes deeply frozen records; visible related results use deterministic per-bucket ordering and a hard four-item cap.
-- Drafted the v3 pilot vertical as 13 Russian MDX records: two articles, one talk, one project, seven platform areas, one platform component, and one synthetic case. All records remain `draft`, all reference exemplars remain `unreviewed`, and every `publishedAt` remains `null` pending independent review.
+- Completed the reviewed v3 pilot vertical as 13 Russian MDX records: seven public records, including three reviewed reference exemplars, plus six draft map-only areas. Both mandatory content reviewers passed after correction rounds; the auditable review record is `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
 - Added a body-preserving v3 source adapter over the generated Fumadocs collection, deterministic draft-area planning, a verified public talk thumbnail, and synthetic stable/drift prompt-cache evidence produced with the tagged public `audit-prompt-caching` linter.
 - Created durable project instructions:
   - `AGENTS.md`
@@ -116,15 +116,17 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused registry suite passed: 18 tests.
   - Full suite passed: 3 files, 69 tests.
   - Targeted ESLint, direct TypeScript validation with `tsc --noEmit`, and `git diff --check` passed.
-- v3 draft pilot vertical checkpoint:
+- v3 pilot content milestone:
   - TDD RED confirmed the source adapter module was absent; a second RED confirmed that an early adapter discarded MDX bodies and inferred planned areas too narrowly.
   - Focused source-adapter suite passed: 1 file, 6 tests. Full suite passed: 4 files, 75 tests.
   - Fumadocs generation, full direct ESLint, direct TypeScript validation, targeted ESLint, `git diff --check`, and a direct `next build --webpack` passed; the build generated 92 static/SSG pages.
-  - Content invariants confirmed 13/13 records are `draft`, 13/13 are `unreviewed`, 13/13 have `publishedAt: null`, and no published v3 record exists.
+  - The pre-review checkpoint confirmed 13/13 records were `draft`, `unreviewed`, and without `publishedAt` before any lifecycle promotion.
   - `pnpm lint` and `pnpm typecheck` could not reach their scripts because this environment's pnpm wrapper tried to recreate `node_modules`; equivalent repository binaries were run successfully, and the wrapper's generated `pnpm-workspace.yaml` side effect was removed.
   - The first independent content reviews returned no critical finding and requested corrections. The draft-only pass clarified the talk's source date and organizer role, simplified Russian descriptions, removed translated fragments, made the synthetic evidence recipe portable, and changed the CI statement from current enforcement to a prospective guardrail.
   - Portable evidence commands were reproduced from an isolated checkout at tag `v0.1.3` / commit `cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23`: the stable fixture returned exit `0`, while the drift fixture returned the expected AP-2 finding and exit `1`. The machine snapshot keeps the originally observed commands separate from the portable reproduction recipe.
   - Correction-pass validation passed: the review checklist and lifecycle invariants, Fumadocs generation, focused source suite (6 tests), full suite (4 files, 75 tests), direct TypeScript, targeted and full ESLint, `git diff --check`, and a direct static build (92 pages).
+  - Both mandatory content reviewers converged to `PASS` after `45120db`; the review rounds, findings, dispositions, source checks, and evidence semantics are recorded in `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
+  - Final content freeze validation passed: 13 total records, 7 published, 6 draft, 3 reviewed, 10 unreviewed, 7 populated `publishedAt`, 3 populated `reviewedAt`, and six planned areas in canonical order. Fumadocs generation, focused source tests (6), full Vitest (75), direct TypeScript, full ESLint, `git diff --check`, and a direct static build (92 pages) passed.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.
@@ -281,8 +283,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 ## Known issues
 
-- The v3 pilot vertical is intentionally a draft checkpoint. It requires independent content review and correction before any review or publication status can change.
 - Release gate for v3 evidence: before launch, check the three canonical `main` URLs. If all resolve, they may replace the truthful source-tree paths in the case; otherwise keep the code paths. Do not claim current URL availability while any link returns 404.
+- Human usability remains a launch gate: at least 5 of 6 target readers must complete the acceptance task. Content freeze and technical validation do not by themselves make the pilot launch-ready.
 - The MaaS vs self-hosted recording uses the source calendar date from YouTube metadata, 2026-02-22; the event date remains 2026-02-19.
 - Content is intentionally v0 placeholder-but-useful; it needs editorial expansion before a full public launch.
 - Russian content is much cleaner after the editorial pass, but should still get a final human read before a broad public launch.
