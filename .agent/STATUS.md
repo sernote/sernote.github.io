@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The v3 Talks and Projects implementation, review hardening, independent rereviews, and responsive browser/design QA have converged; the AI Platform landing and seven-area map are the next implementation milestone.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The complete v3 public surfaces and the AI Platform pilot vertical have passed implementation review, responsive browser/design QA, and static path validation. Canonical SEO, exact legacy aliases, and the release-contract gate are the next milestones.
 
 ## Completed
 
@@ -15,6 +15,8 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Hardened the reviewed v3 personal pages with a real localized description and close name for the mobile navigation dialog, explicit new-tab guidance for assistive technology, and the converged Russian page and metadata copy.
 - Built the v3 Blog as a two-row editorial index: one native article and one metadata-only external Habr note. Added the source-backed native detail route, reusable author-led detail shell, semantic publication metadata, safe MDX link treatment, and the reviewed Russian article corrections without creating a local route for the external note.
 - Built the v3 Talks and Projects as complete one-row editorial indexes with one source-backed detail exemplar each. The talk separates event and recording dates, uses the verified recording thumbnail and CTA, and links into the AI Platform map; the project exposes its quick start, privacy boundary, limitations, license, verified release snapshot, GitHub CTA, and related Prefix Cache component without live popularity metrics.
+- Built the v3 AI Platform landing as a concise reference entrance and the complete seven-area map as one ordered responsibility system. Six planned areas remain honest non-links; Inference Plane alone opens the reviewed pilot vertical.
+- Built the full Inference Plane → Prefix Cache → synthetic agent-session cache case path with canonical routes, accurate breadcrumbs, responsibility boundaries, lifecycle-aware labels, related-content continuation, structural MDX validation, and a fail-closed six-file export-path audit.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -188,6 +190,14 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Production-static browser QA passed all four routes at 390 × 844, 768 × 900, and 1440 × 900. Each route keeps one main and one H1, active Materials navigation, no false language switch, and no horizontal overflow. The Talk thumbnail remains exactly 16:9; the Project code blocks scroll internally and the immutable SHA stays within the viewport.
   - Keyboard and interaction QA confirmed the five timestamp links, 44 px primary/continuation actions, mobile-dialog scroll lock, Escape close with focus return, and an empty final console. The Talk and Project AI Platform/Contact endings remain usable on mobile.
   - Final root verification on `c7ad951` passed Fumadocs generation, 7 Vitest files / 147 tests, TypeScript, ESLint, `git diff --check`, the 97-page webpack static build, the five-surface landmark audit, and a 32-check Talks/Projects export audit. The same-viewport mobile and desktop comparisons and final `passed` design result are recorded in `design-qa.md`.
+  - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
+- v3 AI Platform map and reference-vertical checkpoint (`c787e9d`):
+  - TDD and correction-pass coverage validates the seven exact area identities, order, purpose, responsibility boundary, lifecycle state, unavailable-area non-interactivity, two real landing entrances, exact detail structures, breadcrumb targets, stale related labels, and the complete six-route graph.
+  - Independent spec/design, AI Platform subject/content, and code-quality rereviews converged with no open P0, P1, or in-scope P2 finding.
+  - Production-static browser QA passed the landing and map at 390 × 844, 768 × 900, 1280 × 720, and 1440 × 900, plus area, component, and case details at 390 × 844 and 1440 × 900. Every checked route has one main, one H1, no page-level horizontal overflow, an accurate active navigation state, and a clean console.
+  - The map is one continuous ordered list; all six planned rows have no anchors, while Inference Plane is the only available area. The synthetic case disclosure appears before the title, and its code samples scroll inside the detail column.
+  - Final direct validation passed: Fumadocs generation, 10 Vitest files / 186 tests, TypeScript, ESLint, `git diff --check`, the five-surface landmark audit, the six-file / 16-transition reference-path audit, and a 102-page webpack static build.
+  - The same-input old-handbook/new-reference comparison, mobile/desktop system comparisons, exact screenshots, and keyboard-driver limitation are recorded in `design-qa.md`.
   - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning. No `pnpm-workspace.yaml` side effect was created.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
