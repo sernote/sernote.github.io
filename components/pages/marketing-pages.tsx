@@ -211,7 +211,7 @@ export function AboutPageContent({ locale = "en", currentPath }: PageProps) {
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-4xl">
           <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
           <h1 className="text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
@@ -222,7 +222,7 @@ export function AboutPageContent({ locale = "en", currentPath }: PageProps) {
             <SectionCard key={title} title={title} description={description} />
           ))}
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -232,14 +232,14 @@ export function ProjectsPageContent({ locale = "en", currentPath }: PageProps) {
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
         <div className="mt-12">
           <FeaturedProjects locale={locale} />
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -299,7 +299,7 @@ export function WritingPageContent({ locale = "en", currentPath }: PageProps) {
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
           <div>
             <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
@@ -366,7 +366,7 @@ export function WritingPageContent({ locale = "en", currentPath }: PageProps) {
             </a>
           ))}
         </section>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -376,14 +376,14 @@ export function TalksPageContent({ locale = "en", currentPath }: PageProps) {
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
         <div className="mt-12">
           <TalksPreview locale={locale} />
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -403,7 +403,7 @@ export function ContactPageContent({ locale = "en", currentPath }: PageProps) {
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{page.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
@@ -442,7 +442,7 @@ export function ContactPageContent({ locale = "en", currentPath }: PageProps) {
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </MarketingPage>
   );
 }

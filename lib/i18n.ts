@@ -1,3 +1,5 @@
+import { RU_PRIMARY_NAV } from "@/lib/site-routes";
+
 export const locales = ["en", "ru"] as const;
 
 export type Locale = (typeof locales)[number];
@@ -38,14 +40,14 @@ const siteUrl =
 
 export function getSiteConfig(locale: Locale = defaultLocale) {
   return {
-    name: "Production AI Platform Handbook",
+    name: locale === "ru" ? "Сергей Нотевский" : "Sergei Notevskii",
     author: locale === "ru" ? "Сергей Нотевский" : "Sergei Notevskii",
     role: locale === "ru" ? "AI Platform Lead" : "AI Platform Lead",
     url: siteUrl,
     description:
       locale === "ru"
-        ? "Хэндбук про ИИ-платформы в продакшене: инференс, маршрутизация, кеш, проверка качества, защитные ограничения, наблюдаемость, стоимость и ответственность."
-        : "A field guide for building LLM, STT, embeddings and agent platforms in production: inference, routing, cache, evals, guardrails, observability, cost, incidents and ownership.",
+        ? "Личная инженерная публикация о production AI platforms: архитектуре, инференсе, качестве, стоимости и эксплуатации."
+        : "A personal engineering publication about production AI platforms, public work and the decisions behind reliable AI systems.",
     links: siteLinks
   };
 }
@@ -53,15 +55,7 @@ export function getSiteConfig(locale: Locale = defaultLocale) {
 export function getNavItems(locale: Locale = defaultLocale) {
   const items =
     locale === "ru"
-      ? [
-          { href: "/", label: "Главная" },
-          { href: "/handbook", label: "Хэндбук" },
-          { href: "/tools", label: "Инструменты" },
-          { href: "/writing", label: "Тексты" },
-          { href: "/talks", label: "Выступления" },
-          { href: "/projects", label: "Проекты" },
-          { href: "/about", label: "Обо мне" }
-        ]
+      ? RU_PRIMARY_NAV
       : [
           { href: "/", label: "Home" },
           { href: "/handbook", label: "Handbook" },
@@ -461,7 +455,7 @@ const enDictionary = {
     startReading: "Start reading",
     openNavigation: "Open navigation",
     navigation: "Navigation",
-    footerLine: "Production AI Platform Handbook · from API key to platform",
+    footerLine: "Sergei Notevskii · production AI platforms",
     contact: "Contact"
   },
   home: {
@@ -698,7 +692,7 @@ const ruDictionary = {
     startReading: "Читать",
     openNavigation: "Открыть навигацию",
     navigation: "Навигация",
-    footerLine: "Хэндбук ИИ-платформы в продакшене · от API-ключа к платформе",
+    footerLine: "Сергей Нотевский · production AI platforms",
     contact: "Контакты"
   },
   home: {

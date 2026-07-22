@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The personal master-brand shell is the active milestone.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The personal master-brand shell and its semantic route policy are complete; v3 route/page composition is the next milestone.
 
 ## Completed
 
@@ -10,6 +10,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 - Added a pure v3 content registry that validates identities, canonical URLs, editorial and structural relations, public visibility, bilingual alternates, and reference review deadlines before route code consumes deeply frozen records; visible related results use deterministic per-bucket ordering and a hard four-item cap.
 - Completed the reviewed v3 pilot vertical as 13 Russian MDX records: seven public records, including three reviewed reference exemplars, plus six draft map-only areas. Both mandatory content reviewers passed after correction rounds; the auditable review record is `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
 - Added a body-preserving v3 source adapter over the generated Fumadocs collection, deterministic draft-area planning, a verified public talk thumbnail, and synthetic stable/drift prompt-cache evidence produced with the tagged public `audit-prompt-caching` linter.
+- Replaced the handbook-first global identity with the Сергей Нотевский personal master brand, an exact four-item Russian primary navigation, allowlisted locale equivalence, canonical-only metadata by default, and a shared accessible shell with one skip link and one main landmark across marketing, tools, handbook pages, and `/ru` compatibility pages.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -134,6 +135,13 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Quality-hardening validation passed: Fumadocs generation, focused source/evidence tests (2 files, 10 tests), full Vitest (5 files, 79 tests), direct TypeScript, full ESLint, `git diff --check`, and a direct static build (92 pages). Lifecycle/frontmatter, dates, and relations were not changed.
   - Because `119446f` changed public evidence instructions, both mandatory reviews were rerun on that exact revision. AI Platform subject review and editorial/security review both returned `PASS`; the final findings and dispositions are recorded in the content-review artifact.
   - Final Task 3 spec review returned `SPEC COMPLIANT`; independent code/data quality rereview returned no Critical, Important, or Minor findings and `Ready to proceed: Yes` on `abf00cf`.
+- v3 personal master-brand shell milestone:
+  - TDD RED confirmed `lib/site-routes.ts` was absent. After the route module alone was added, the focused suite remained RED on the old seven-item RU navigation, handbook master brand, and fabricated language alternates.
+  - The pre-change export audit also failed all five representative surfaces: marketing and tool pages had two main landmarks, handbook chapters had none, and none had a skip link.
+  - A self-review regression RED showed that Contact, although a utility action, lacked `aria-current="page"`; both desktop and mobile Contact links now share the same tested active-state decision.
+  - Focused route/metadata/shell tests passed: 1 file, 7 tests. The full suite passed: 6 files, 86 tests.
+  - Direct Fumadocs generation, TypeScript, full ESLint, `git diff --check`, and the direct webpack static build passed; the build generated 92 static/SSG pages.
+  - The post-build shell audit passed for a marketing page, tool page, handbook landing, handbook chapter, and `/ru` compatibility chapter; every sample has exactly one skip link and one `main#main-content`.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { getDictionary, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
+import { getActualAlternate } from "@/lib/site-routes";
 
 type PageKey = keyof ReturnType<typeof getDictionary>["pages"];
 type ToolKey = "prefix" | "cost" | "quality";
@@ -14,33 +15,42 @@ const OG_IMAGE = {
   url: "https://notevskii.tech/og-image.svg",
   width: 1200,
   height: 630,
-  alt: "Production AI Platform Handbook"
+  alt: "Сергей Нотевский — production AI platforms"
 };
 
 export function createPageMetadata({
   locale,
   path,
+  alternatePath,
   title,
   description
 }: {
   locale: Locale;
   path: string;
+  alternatePath?: string | null;
   title: string;
   description: string;
 }): Metadata {
   const siteConfig = getSiteConfig(locale);
   const canonical = absoluteUrl(locale, path);
-  const alternatePath = locale === "en" ? path.replace(/^\/en(?=\/|$)/, "") || "/" : path;
+  const alternateLocale = locale === "ru" ? "en" : "ru";
+  const alternateUrl = alternatePath
+    ? `${siteConfig.url}${alternatePath === "/" ? "" : alternatePath}`
+    : null;
 
   return {
     title,
     description,
     alternates: {
       canonical,
-      languages: {
-        ru: absoluteUrl("ru", alternatePath),
-        en: absoluteUrl("en", alternatePath)
-      }
+      ...(alternateUrl
+        ? {
+            languages: {
+              [locale]: canonical,
+              [alternateLocale]: alternateUrl
+            }
+          }
+        : {})
     },
     openGraph: {
       title,
@@ -63,10 +73,12 @@ export function createPageMetadata({
 export function homeMetadata(locale: Locale): Metadata {
   const dictionary = getDictionary(locale);
   const title = locale === "ru" ? "Сергей Нотевский - AI Platform Lead" : "Sergei Notevskii - AI Platform Lead";
+  const path = "/";
 
   return createPageMetadata({
     locale,
-    path: "/",
+    path,
+    alternatePath: getActualAlternate(localizedPath(path, locale), locale),
     title,
     description: dictionary.home.hero.copy
   });
@@ -74,19 +86,24 @@ export function homeMetadata(locale: Locale): Metadata {
 
 export function marketingMetadata(locale: Locale, key: PageKey): Metadata {
   const page = getDictionary(locale).pages[key];
+  const path = `/${key}`;
 
   return createPageMetadata({
     locale,
-    path: `/${key}`,
+    path,
+    alternatePath: getActualAlternate(localizedPath(path, locale), locale),
     title: page.title,
     description: page.copy
   });
 }
 
 export function toolsIndexMetadata(locale: Locale): Metadata {
+  const path = "/tools";
+
   return createPageMetadata({
     locale,
-    path: "/tools",
+    path,
+    alternatePath: getActualAlternate(localizedPath(path, locale), locale),
     title: locale === "ru" ? "Инструменты" : "Tools",
     description:
       locale === "ru"
@@ -101,6 +118,7 @@ export function toolMetadata(locale: Locale, key: ToolKey, path: string): Metada
   return createPageMetadata({
     locale,
     path,
+    alternatePath: getActualAlternate(localizedPath(path, locale), locale),
     title: page.title,
     description: page.copy
   });

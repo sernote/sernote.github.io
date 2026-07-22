@@ -42,7 +42,7 @@ export function ToolsIndexPageContent({ locale = "en", currentPath }: ToolPagePr
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-4xl">
           <Badge variant="outline" className="font-mono uppercase text-primary">
             <Wrench data-icon="inline-start" />
@@ -71,7 +71,7 @@ export function ToolsIndexPageContent({ locale = "en", currentPath }: ToolPagePr
             </Link>
           ))}
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -82,14 +82,14 @@ export function PrefixCacheAuditorPageContent({ locale = "en", currentPath }: To
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{dictionary.tools.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
         <div className="mt-12">
           <PrefixCacheAuditor locale={locale} />
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -100,14 +100,14 @@ export function LlmCostCalculatorPageContent({ locale = "en", currentPath }: Too
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{dictionary.tools.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
         <div className="mt-12">
           <LlmCostCalculator locale={locale} />
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }
@@ -118,14 +118,14 @@ export function QualityGateChecklistPageContent({ locale = "en", currentPath }: 
 
   return (
     <MarketingPage locale={locale} currentPath={currentPath}>
-      <main className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="mb-3 font-mono text-xs uppercase text-primary">{dictionary.tools.label}</p>
         <h1 className="max-w-4xl text-5xl font-semibold tracking-normal md:text-7xl">{page.title}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">{page.copy}</p>
         <div className="mt-12">
           <QualityGateChecklist locale={locale} />
         </div>
-      </main>
+      </div>
     </MarketingPage>
   );
 }

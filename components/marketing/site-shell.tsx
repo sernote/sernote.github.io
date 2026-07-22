@@ -5,13 +5,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
-  alternateLocalePath,
   getDictionary,
   getNavItems,
   getSiteConfig,
   localizedPath,
   type Locale
 } from "@/lib/i18n";
+import { getActualAlternate, isActiveNavItem } from "@/lib/site-routes";
 
 type LocalizedShellProps = {
   locale?: Locale;
@@ -22,7 +22,9 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
   const siteConfig = getSiteConfig(locale);
   const navItems = getNavItems(locale);
   const dictionary = getDictionary(locale);
-  const languageHref = alternateLocalePath(currentPath, locale);
+  const languageHref = getActualAlternate(currentPath, locale);
+  const contactHref = localizedPath("/contact", locale);
+  const isContactActive = isActiveNavItem(currentPath, contactHref);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/82 backdrop-blur-xl">
@@ -35,19 +37,28 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
         </Link>
         <nav className="flex items-center gap-5 max-md:hidden">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActiveNavItem(currentPath, item.href) ? "page" : undefined}
+              className="text-sm text-muted-foreground hover:text-foreground aria-[current=page]:text-foreground"
+            >
               {item.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-2 max-md:hidden">
-          <Button asChild variant="ghost" size="sm">
-            <Link href={languageHref} aria-label={dictionary.language.switchTo}>
-              {dictionary.language.alternate}
-            </Link>
-          </Button>
+          {languageHref ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={languageHref} aria-label={dictionary.language.switchTo}>
+                {dictionary.language.alternate}
+              </Link>
+            </Button>
+          ) : null}
           <Button asChild variant="outline" size="sm">
-            <Link href={localizedPath("/contact", locale)}>{dictionary.shell.contact}</Link>
+            <Link href={contactHref} aria-current={isContactActive ? "page" : undefined}>
+              {dictionary.shell.contact}
+            </Link>
           </Button>
         </div>
         <Sheet>
@@ -62,14 +73,25 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
             </SheetHeader>
             <nav className="mt-8 flex flex-col gap-4">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActiveNavItem(currentPath, item.href) ? "page" : undefined}
+                  className="text-sm text-muted-foreground hover:text-foreground aria-[current=page]:text-foreground"
+                >
                   {item.label}
                 </Link>
               ))}
-              <Link href={languageHref} className="text-sm text-primary">
-                {dictionary.language.switchTo}
-              </Link>
-              <Link href={localizedPath("/contact", locale)} className="text-sm text-primary">
+              {languageHref ? (
+                <Link href={languageHref} className="text-sm text-primary">
+                  {dictionary.language.switchTo}
+                </Link>
+              ) : null}
+              <Link
+                href={contactHref}
+                aria-current={isContactActive ? "page" : undefined}
+                className="text-sm text-primary"
+              >
                 {dictionary.shell.contact}
               </Link>
             </nav>
@@ -77,6 +99,14 @@ export function SiteHeader({ locale = "en", currentPath = "/" }: LocalizedShellP
         </Sheet>
       </div>
     </header>
+  );
+}
+
+export function SkipLink({ locale = "en" }: Pick<LocalizedShellProps, "locale">) {
+  return (
+    <a href="#main-content" className="skip-link">
+      {locale === "ru" ? "Перейти к содержанию" : "Skip to content"}
+    </a>
   );
 }
 
@@ -103,8 +133,11 @@ export function SiteFooter({ locale = "en" }: Pick<LocalizedShellProps, "locale"
 export function MarketingPage({ children, locale = "en", currentPath = "/" }: { children: ReactNode } & LocalizedShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
+      <SkipLink locale={locale} />
       <SiteHeader locale={locale} currentPath={currentPath} />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" tabIndex={-1} className="content-safe min-w-0 flex-1">
+        {children}
+      </main>
       <SiteFooter locale={locale} />
     </div>
   );

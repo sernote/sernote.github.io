@@ -82,7 +82,11 @@ export function HandbookLanding({ locale = "en" }: { locale?: Locale }) {
   const stats = getHandbookStats(locale);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="content-safe mx-auto min-w-0 w-full max-w-7xl [grid-area:main] px-4 py-16 sm:px-6 lg:px-8"
+    >
       <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <Badge variant="outline" className="font-mono uppercase text-primary">

@@ -5,6 +5,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 
 import { ChapterActions } from "@/components/handbook/chapter-actions";
 import { ChapterMeta } from "@/components/handbook/chapter-meta";
+import { DocsMainContainer } from "@/components/handbook/docs-main-container";
 import { LanguageSwitcher } from "@/components/i18n-language-switcher";
 import { getMDXComponents } from "@/components/mdx";
 import { HandbookLanding } from "@/components/pages/handbook-landing";
@@ -67,7 +68,11 @@ export default async function HandbookPage({ params }: { params: Promise<{ slug?
   const currentPath = `/en/handbook/${slug.join("/")}`;
 
   return (
-    <DocsPage toc={page.data.toc} tableOfContent={{ enabled: true }}>
+    <DocsPage
+      toc={page.data.toc}
+      tableOfContent={{ enabled: true }}
+      slots={{ container: DocsMainContainer }}
+    >
       <LanguageSwitcher locale="en" currentPath={currentPath} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
