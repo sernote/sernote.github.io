@@ -10,6 +10,7 @@ import type {
   V3Talk
 } from "@/lib/content-v3/schema";
 import { getDictionary, getSiteConfig, localizedPath, type Locale } from "@/lib/i18n";
+import { canonicalUrl, publicFileUrl } from "@/lib/seo/urls";
 import { getActualAlternate } from "@/lib/site-routes";
 
 type PageKey = keyof ReturnType<typeof getDictionary>["pages"];
@@ -26,12 +27,11 @@ type V3MarketingPageKey =
   | "contact";
 
 function absoluteUrl(locale: Locale, path: string) {
-  const siteConfig = getSiteConfig(locale);
-  return `${siteConfig.url}${localizedPath(path, locale) === "/" ? "" : localizedPath(path, locale)}`;
+  return canonicalUrl(localizedPath(path, locale));
 }
 
 const OG_IMAGE = {
-  url: "https://notevskii.tech/og-image.svg",
+  url: publicFileUrl("/og-image.svg"),
   width: 1200,
   height: 630,
   alt: "Сергей Нотевский — production AI platforms"
@@ -134,7 +134,7 @@ export function createPageMetadata({
       );
     }
 
-    alternateUrl = `${siteConfig.url}${alternatePath === "/" ? "" : alternatePath}`;
+    alternateUrl = canonicalUrl(alternatePath);
   }
 
   return {

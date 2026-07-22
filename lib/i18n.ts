@@ -1,4 +1,5 @@
 import { RU_PRIMARY_NAV } from "@/lib/site-routes";
+import { getPublicOrigin } from "@/lib/seo/urls";
 
 export const locales = ["en", "ru"] as const;
 
@@ -35,15 +36,12 @@ export const siteLinks = {
   podcastSmallTalk: "https://www.youtube.com/watch?v=NrvGciRm8Ps&t=1992s"
 };
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://notevskii.tech";
-
 export function getSiteConfig(locale: Locale = defaultLocale) {
   return {
     name: locale === "ru" ? "Сергей Нотевский" : "Sergei Notevskii",
     author: locale === "ru" ? "Сергей Нотевский" : "Sergei Notevskii",
     role: locale === "ru" ? "AI Platform Lead" : "AI Platform Lead",
-    url: siteUrl,
+    url: getPublicOrigin(),
     description:
       locale === "ru"
         ? "Личная инженерная публикация о production AI platforms: архитектуре, инференсе, качестве, стоимости и эксплуатации."

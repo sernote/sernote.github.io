@@ -2,10 +2,12 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The complete v3 public surfaces and the AI Platform pilot vertical have passed implementation review, responsive browser/design QA, and static path validation. Canonical SEO, exact legacy aliases, and the release-contract gate are the next milestones.
+MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The complete v3 public surfaces, AI Platform pilot vertical, and source-backed discovery metadata have passed implementation validation and static export. Exact legacy aliases and the release-contract gate are the next milestones.
 
 ## Completed
 
+- Added one canonical trailing-slash URL policy across page metadata and discovery output; validated JSON-LD now covers the home identity plus every native v3 detail shape, with the talk using the verified recording upload date and captured local thumbnail without an invented duration.
+- Added a published-local-only sitemap, permissive robots metadata, and a deterministic escaped RSS feed that keeps native articles on local canonicals and external notes on their source URLs. All three discovery artifacts are statically exported at `/sitemap.xml`, `/robots.txt`, and `/rss.xml`.
 - Established the typed v3 content contract as a parallel Fumadocs collection without changing the legacy `docs` or `docsRu` collection behavior; review evidence fields are scoped to reference records, external notes identify their source, and talk formats use a closed vocabulary.
 - Added a pure v3 content registry that validates identities, canonical URLs, editorial and structural relations, public visibility, bilingual alternates, and reference review deadlines before route code consumes deeply frozen records; visible related results use deterministic per-bucket ordering and a hard four-item cap.
 - Completed the reviewed v3 pilot vertical as 13 Russian MDX records: seven public records, including three reviewed reference exemplars, plus six draft map-only areas. Both mandatory content reviewers passed after correction rounds; the auditable review record is `docs/superpowers/reviews/2026-07-22-notevskii-tech-v3-content-review.md`.
@@ -112,6 +114,13 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 
 ## Validation results
 
+- v3 discovery and structured-metadata milestone:
+  - TDD RED confirmed the new SEO modules were absent; a separate route-wiring RED confirmed the metadata routes and JSON-LD page integration were absent. The static-build regression was reproduced and covered before adding the Next 16 `force-static` metadata-route requirement.
+  - Focused SEO validation passed: 2 files, 15 tests. Full Vitest passed: 12 files, 201 tests.
+  - Fumadocs generation, Next route type generation, direct TypeScript, full ESLint, and the direct webpack static build passed; the build generated 105 static/SSG pages.
+  - The export produced valid `out/sitemap.xml`, `out/robots.txt`, and `out/rss.xml`. Sitemap inspection confirmed trailing-slash local canonicals with no Habr URL, `/ru/` alias, `/writing/` route, or draft area; robots allows `/` and has no `Disallow`; RSS contains both the native article canonical and the external Habr source link/guid in descending date order.
+  - Emitted HTML inspection confirmed Person + WebSite on Home, the required detail schema plus BreadcrumbList on all six native detail exports, the verified YouTube URL and upload date, the production local thumbnail URL, and no VideoObject duration. XML parsing, `git diff --check`, and the absence of `pnpm-workspace.yaml` were also checked.
+  - The Next.js build retains the pre-existing multiple-lockfile workspace-root warning; it does not prevent a successful static export.
 - v3 content contract milestone:
   - TDD RED confirmed the schema module was absent before implementation.
   - Focused schema suite passed: 46 tests.

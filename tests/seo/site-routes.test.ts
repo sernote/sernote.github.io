@@ -149,7 +149,7 @@ describe("personal master brand and metadata alternates", () => {
       "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
     );
     expect(metadata.alternates).toEqual({
-      canonical: "https://notevskii.tech/blog"
+      canonical: "https://notevskii.tech/blog/"
     });
   });
 
@@ -202,20 +202,20 @@ describe("personal master brand and metadata alternates", () => {
 
     const metadata = articleMetadata(article);
     expect(metadata.alternates).toEqual({
-      canonical: "https://notevskii.tech/blog/ai-platform-before-gpu"
+      canonical: "https://notevskii.tech/blog/ai-platform-before-gpu/"
     });
     expect(metadata.openGraph).toMatchObject({
       type: "article",
-      url: "https://notevskii.tech/blog/ai-platform-before-gpu",
+      url: "https://notevskii.tech/blog/ai-platform-before-gpu/",
       publishedTime: "2026-07-22",
       modifiedTime: "2026-07-22",
-      authors: ["https://notevskii.tech/about"],
+      authors: ["https://notevskii.tech/about/"],
       tags: ["ai-platform", "architecture", "ownership", "slo"]
     });
     expect(metadata.authors).toEqual([
       {
         name: "Сергей Нотевский",
-        url: "https://notevskii.tech/about"
+        url: "https://notevskii.tech/about/"
       }
     ]);
     expect(metadata.alternates).not.toHaveProperty("languages");
@@ -280,16 +280,16 @@ describe("personal master brand and metadata alternates", () => {
     };
 
     expect(talkMetadata(talk).alternates).toEqual({
-      canonical: "https://notevskii.tech/talks/maas-vs-self-hosted"
+      canonical: "https://notevskii.tech/talks/maas-vs-self-hosted/"
     });
     expect(projectMetadata(project).alternates).toEqual({
-      canonical: "https://notevskii.tech/projects/audit-prompt-caching"
+      canonical: "https://notevskii.tech/projects/audit-prompt-caching/"
     });
     expect(talkMetadata(talk).authors).toEqual([
-      { name: "Сергей Нотевский", url: "https://notevskii.tech/about" }
+      { name: "Сергей Нотевский", url: "https://notevskii.tech/about/" }
     ]);
     expect(projectMetadata(project).authors).toEqual([
-      { name: "Сергей Нотевский", url: "https://notevskii.tech/about" }
+      { name: "Сергей Нотевский", url: "https://notevskii.tech/about/" }
     ]);
   });
 
@@ -330,13 +330,13 @@ describe("personal master brand and metadata alternates", () => {
 
     expect(metadata.title).toEqual({ absolute: "Prefix Cache — AI Platform" });
     expect(metadata.alternates).toEqual({
-      canonical: "https://notevskii.tech/ai-platform/components/prefix-cache"
+      canonical: "https://notevskii.tech/ai-platform/components/prefix-cache/"
     });
     expect(metadata.alternates).not.toHaveProperty("languages");
     expect(metadata.authors).toEqual([
       {
         name: "Сергей Нотевский",
-        url: "https://notevskii.tech/about"
+        url: "https://notevskii.tech/about/"
       }
     ]);
     expect(metadata.keywords).toEqual(["prefix-cache", "inference"]);
@@ -357,7 +357,7 @@ describe("personal master brand and metadata alternates", () => {
       description: "Инженерные заметки"
     });
     expect(canonicalOnly.alternates).toEqual({
-      canonical: "https://notevskii.tech/blog"
+      canonical: "https://notevskii.tech/blog/"
     });
 
     const paired = createPageMetadata({
@@ -368,10 +368,10 @@ describe("personal master brand and metadata alternates", () => {
       description: "Профессиональный контекст"
     });
     expect(paired.alternates).toEqual({
-      canonical: "https://notevskii.tech/about",
+      canonical: "https://notevskii.tech/about/",
       languages: {
-        ru: "https://notevskii.tech/about",
-        en: "https://notevskii.tech/en/about"
+        ru: "https://notevskii.tech/about/",
+        en: "https://notevskii.tech/en/about/"
       }
     });
   });
@@ -407,7 +407,7 @@ describe("personal master brand and metadata alternates", () => {
       });
 
       expect(metadata.alternates).toEqual({
-        canonical: "https://notevskii.tech/about"
+        canonical: "https://notevskii.tech/about/"
       });
     }
   });
@@ -433,22 +433,22 @@ describe("personal master brand and metadata alternates", () => {
 
   it("keeps Materials canonical-only while pairing only real v3 translations", () => {
     expect(v3MarketingMetadata("work").alternates).toEqual({
-      canonical: "https://notevskii.tech/work"
+      canonical: "https://notevskii.tech/work/"
     });
     expect(v3MarketingMetadata("home").alternates).toEqual({
-      canonical: "https://notevskii.tech",
+      canonical: "https://notevskii.tech/",
       languages: {
-        ru: "https://notevskii.tech",
-        en: "https://notevskii.tech/en"
+        ru: "https://notevskii.tech/",
+        en: "https://notevskii.tech/en/"
       }
     });
     expect(v3MarketingMetadata("about").alternates).toMatchObject({
-      canonical: "https://notevskii.tech/about",
-      languages: { en: "https://notevskii.tech/en/about" }
+      canonical: "https://notevskii.tech/about/",
+      languages: { en: "https://notevskii.tech/en/about/" }
     });
     expect(v3MarketingMetadata("contact").alternates).toMatchObject({
-      canonical: "https://notevskii.tech/contact",
-      languages: { en: "https://notevskii.tech/en/contact" }
+      canonical: "https://notevskii.tech/contact/",
+      languages: { en: "https://notevskii.tech/en/contact/" }
     });
   });
 

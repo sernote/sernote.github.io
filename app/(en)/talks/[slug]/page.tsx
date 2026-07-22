@@ -10,9 +10,11 @@ import {
   type ContentDetailFact
 } from "@/components/pages/content-detail-page";
 import { getMDXComponents } from "@/components/mdx";
+import { JsonLd } from "@/components/seo/json-ld";
 import { v3Source } from "@/lib/content-v3/source";
 import { formatRussianDate } from "@/lib/content-v3/view-models";
 import { talkMetadata } from "@/lib/metadata";
+import { buildTalkStructuredData } from "@/lib/seo/structured-data";
 
 export const dynamicParams = false;
 
@@ -66,7 +68,9 @@ export default async function TalkPage({
   ];
 
   return (
-    <ContentDetailPage
+    <>
+      <JsonLd data={buildTalkStructuredData(record)} />
+      <ContentDetailPage
       currentPath={`/talks/${record.slug}`}
       overline="Доклад"
       title={record.title}
@@ -133,6 +137,7 @@ export default async function TalkPage({
       <DocsBody>
         <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
       </DocsBody>
-    </ContentDetailPage>
+      </ContentDetailPage>
+    </>
   );
 }

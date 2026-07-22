@@ -9,9 +9,11 @@ import {
   type ContentDetailFact
 } from "@/components/pages/content-detail-page";
 import { getMDXComponents } from "@/components/mdx";
+import { JsonLd } from "@/components/seo/json-ld";
 import { v3Source } from "@/lib/content-v3/source";
 import { formatRussianDate } from "@/lib/content-v3/view-models";
 import { projectMetadata } from "@/lib/metadata";
+import { buildProjectStructuredData } from "@/lib/seo/structured-data";
 
 export const dynamicParams = false;
 
@@ -67,7 +69,9 @@ export default async function ProjectPage({
   ];
 
   return (
-    <ContentDetailPage
+    <>
+      <JsonLd data={buildProjectStructuredData(record)} />
+      <ContentDetailPage
       currentPath={`/projects/${record.slug}`}
       overline="Открытый проект"
       title={record.title}
@@ -112,6 +116,7 @@ export default async function ProjectPage({
       <DocsBody className="[&_code]:break-all [&_pre_code]:break-normal">
         <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
       </DocsBody>
-    </ContentDetailPage>
+      </ContentDetailPage>
+    </>
   );
 }

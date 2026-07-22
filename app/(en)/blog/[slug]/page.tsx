@@ -8,8 +8,10 @@ import {
   EditorialMdxLink
 } from "@/components/pages/content-detail-page";
 import { getMDXComponents } from "@/components/mdx";
+import { JsonLd } from "@/components/seo/json-ld";
 import { v3Source } from "@/lib/content-v3/source";
 import { articleMetadata } from "@/lib/metadata";
+import { buildArticleStructuredData } from "@/lib/seo/structured-data";
 
 export const dynamicParams = false;
 
@@ -46,7 +48,9 @@ export default async function ArticlePage({
   const MDX = record.body;
 
   return (
-    <ContentDetailPage
+    <>
+      <JsonLd data={buildArticleStructuredData(record)} />
+      <ContentDetailPage
       currentPath={`/blog/${record.slug}`}
       overline="Авторская статья"
       title={record.title}
@@ -84,6 +88,7 @@ export default async function ArticlePage({
       <DocsBody>
         <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
       </DocsBody>
-    </ContentDetailPage>
+      </ContentDetailPage>
+    </>
   );
 }
