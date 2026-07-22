@@ -661,10 +661,28 @@ git add app/'(en)'/talks app/'(en)'/projects components/pages tests/content-v3/s
 git commit -m "feat: add v3 talks and projects"
 ```
 
+### Tasks 8–9 integration contract
+
+Tasks 8 and 9 are one atomic implementation and review checkpoint. The map must expose
+Inference Plane as its only enabled area, while the canonical detail route for that area is
+created by Task 9. Do not close or commit Task 8 separately with a broken link, a stub detail
+page, or a temporary self-link. Close the checkpoint only after the landing, map, area,
+component, synthetic case, and project path all resolve in the static export.
+
+The map also requires a concise responsibility boundary for every area, including the six
+draft-only records. Add a required, validated `mapBoundary` field to the platform-area schema
+and all seven area frontmatters. It is the canonical one-sentence boundary summary for the map;
+`included` and `excluded` remain the expanded detail-page lists. The map view model must read
+the summary from the source; do not parse MDX body text or hard-code a second copy in a
+component. Schema tests must reject a missing, empty, or whitespace-only value.
+
 ### Task 8: Build the AI Platform landing and seven-area map
 
 **Files:**
 
+- Modify: `lib/content-v3/schema.ts`
+- Modify: `content/v3/ai-platform/areas/*.mdx`
+- Modify: `lib/content-v3/view-models.ts`
 - Create: `components/ai-platform/platform-map.tsx`
 - Create: `components/pages/ai-platform-pages.tsx`
 - Create: `app/(en)/ai-platform/page.tsx`
@@ -678,10 +696,18 @@ Add a view-model assertion:
 const map = getPlatformMapViewModel(source);
 expect(map.areas).toHaveLength(7);
 expect(map.areas.filter((area) => area.href)).toEqual([
-  expect.objectContaining({ entityId: "inference-plane", statusLabel: "Доступно" })
+  expect.objectContaining({
+    entityId: "inference-plane",
+    mapBoundary: expect.any(String),
+    statusLabel: "Доступно"
+  })
 ]);
 expect(map.areas.filter((area) => !area.href)).toHaveLength(6);
 ```
+
+Also assert exact `01–07` ordering, frozen DTOs, same-input determinism, failure on a
+missing/duplicate/unexpected area, and the future stale state: a stale published area remains
+linked and is labeled `Нужна проверка`.
 
 - [ ] **Step 2: Run the focused test and confirm RED**
 
@@ -691,11 +717,11 @@ Expected: FAIL until the map view model is implemented.
 
 - [ ] **Step 3: Build the AI Platform landing**
 
-Explain that the product is a responsibility-and-decision reference, not a deployed topology and not one company’s architecture. Show the two entry modes: map and current vertical. Render the complete path `Inference Plane → Prefix Cache → synthetic case → audit-prompt-caching`.
+Explain that the product is a responsibility-and-decision reference, not a deployed topology and not one company’s architecture. Show the two entry modes: map and current vertical. Render the complete ordered path `Inference Plane`, `Prefix Cache`, `Agent session cache reuse` with a visible synthetic-case label, and `audit-prompt-caching`. This is a semantic ruled list, not a diagram or four detached cards.
 
 - [ ] **Step 4: Build the map as semantic HTML**
 
-Use a responsive ordered list/grid of seven real sections, not a handmade SVG or CSS diagram. Each cell contains purpose, responsibility boundary, and status. Follow the grid with a short semantic “Как области связаны” list covering Control Plane → Inference Plane, Context/Agent Runtime → Quality/Lifecycle, and Operations/Economics + Security/Ownership as cross-cutting responsibilities; present these as intersections, not strict topology. Only Inference Plane is a link. Keyboard order must follow reading order; at 390 px the map becomes a single column without horizontal scrolling.
+Use a responsive ordered list/grid of seven real sections, not a handmade SVG or CSS diagram. Each cell contains purpose, `mapBoundary`, and status. Follow the grid with a short semantic “Как области связаны” list covering Control Plane with Inference Plane, Context/Agent Runtime with Quality/Lifecycle, and Operations/Economics plus Security/Ownership as cross-cutting responsibilities; present these as intersections, not strict topology. In the pilot dataset only Inference Plane is a link because it is the only public area. The general rule is source-driven: every `published + reviewed/stale` area is linked, while draft areas remain plain non-interactive content without disabled-control semantics. Keyboard order must follow reading order; at 390 px the map becomes a single column without horizontal scrolling.
 
 - [ ] **Step 5: Run the reference-mode design/accessibility checkpoint**
 
@@ -703,16 +729,15 @@ Inspect `/ai-platform` and `/ai-platform/map` in the existing in-app browser at 
 
 - [ ] **Step 6: Verify build and link integrity manually**
 
-Run: `pnpm typecheck && pnpm build`
+Run: `./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/next build --webpack`
 
-Expected: `/ai-platform/` and `/ai-platform/map/` generate and every enabled map link resolves.
+Expected: `/ai-platform/` and `/ai-platform/map/` generate. Keep the checkpoint open until
+Task 9 creates `/ai-platform/areas/inference-plane/` and the full enabled path passes the
+static-export link audit.
 
-- [ ] **Step 7: Commit the reference entry points**
+- [ ] **Step 7: Continue directly into Task 9 without an intermediate commit**
 
-```bash
-git add components/ai-platform components/pages/ai-platform-pages.tsx app/'(en)'/ai-platform tests/content-v3/source.test.ts .agent/V3_TIME_BUDGET.md
-git commit -m "feat: add AI Platform landing and map"
-```
+Do not create a broken-link checkpoint. Run the combined review and commit only after Task 9.
 
 ### Task 9: Build one area, component, and synthetic case page
 
@@ -722,6 +747,7 @@ git commit -m "feat: add AI Platform landing and map"
 - Create: `app/(en)/ai-platform/areas/[area]/page.tsx`
 - Create: `app/(en)/ai-platform/components/[component]/page.tsx`
 - Create: `app/(en)/ai-platform/cases/[case]/page.tsx`
+- Create: `scripts/check-v3-reference-path.mjs`
 
 - [ ] **Step 1: Test exact static params and missing-record behavior**
 
@@ -749,7 +775,17 @@ Use `dynamicParams = false`, source-generated params, `notFound()` for unknown s
 
 - [ ] **Step 5: Verify the full vertical**
 
-Run: `pnpm typecheck && pnpm build`
+Run the repository direct gates and the static-export link audit:
+
+```bash
+./node_modules/.bin/vitest run
+./node_modules/.bin/fumadocs-mdx
+./node_modules/.bin/tsc --noEmit
+./node_modules/.bin/eslint .
+./node_modules/.bin/next build --webpack
+node scripts/check-shell-landmarks.mjs
+node scripts/check-v3-reference-path.mjs
+```
 
 Expected files:
 
@@ -759,11 +795,19 @@ out/ai-platform/components/prefix-cache/index.html
 out/ai-platform/cases/agent-session-cache-reuse/index.html
 ```
 
-- [ ] **Step 6: Commit reference detail pages**
+Also verify that `/ai-platform/`, `/ai-platform/map/`, the three reference detail routes, and
+`/projects/audit-prompt-caching/` form one fully resolving canonical path. Review the combined
+checkpoint for content contracts, AI-platform system-design claims, responsive product design,
+accessibility, and implementation quality. Fix every P0/P1 and every in-scope P2 before commit.
+The temporary reference-path audit must fail closed unless all six exact export files exist and
+their expected forward/back links are present in the rendered HTML; Task 12 may later subsume it
+into the full migration/export auditor.
+
+- [ ] **Step 6: Commit the atomic AI Platform checkpoint**
 
 ```bash
-git add components/pages/reference-detail-page.tsx app/'(en)'/ai-platform tests/content-v3/source.test.ts .agent/V3_TIME_BUDGET.md
-git commit -m "feat: complete Prefix Cache reference vertical"
+git add lib/content-v3/schema.ts lib/content-v3/view-models.ts content/v3/ai-platform components/ai-platform components/pages/ai-platform-pages.tsx components/pages/reference-detail-page.tsx app/'(en)'/ai-platform scripts/check-v3-reference-path.mjs tests .agent/V3_TIME_BUDGET.md
+git commit -m "feat: add AI Platform reference vertical"
 ```
 
 ### Task 10: Add canonical metadata, JSON-LD, sitemap, robots, and RSS
