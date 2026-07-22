@@ -7,6 +7,7 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
 ## Completed
 
 - Established the typed v3 content contract as a parallel Fumadocs collection without changing the legacy `docs` or `docsRu` collection behavior; review evidence fields are scoped to reference records, external notes identify their source, and talk formats use a closed vocabulary.
+- Added a pure v3 content registry that validates identities, canonical URLs, editorial and structural relations, public visibility, bilingual alternates, and reference review deadlines before route code consumes content.
 - Created durable project instructions:
   - `AGENTS.md`
   - `.agent/PROJECT_SPEC.md`
@@ -107,6 +108,11 @@ MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain l
   - Focused schema suite passed: 46 tests.
   - Full suite passed: 2 files, 51 tests.
   - Fumadocs generation, ESLint, TypeScript, static production build, and `git diff --check` passed.
+- v3 validated registry milestone:
+  - TDD RED confirmed the registry module was absent before implementation.
+  - Focused registry suite passed: 15 tests.
+  - Full suite passed: 3 files, 66 tests.
+  - Targeted ESLint, direct TypeScript validation with `tsc --noEmit`, and `git diff --check` passed.
 - `CI=true pnpm install` passed in the non-interactive shell.
 - `pnpm lint` passed.
 - `pnpm typecheck` passed.

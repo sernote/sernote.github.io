@@ -21,7 +21,7 @@ Author-hours measure planned human author/reviewer effort. Agent runtime is trac
 | Task | Planned author-hours | Consumed user attention (hours) | Agent runtime | Milestone status | Note |
 | --- | ---: | ---: | --- | --- | --- |
 | Task 1 | 1 | 0 | About 13 minutes total; tracked separately | Complete | Typed schema, parallel collection, editorial metadata, and reference review invariants validated. |
-| Task 2 | 2 | 0 | Not started | Not started | — |
+| Task 2 | 2 | 0 | About 8 minutes total; tracked separately | Complete | Pure validated content registry, lifecycle checks, graph queries, canonical URLs, and deterministic public views validated. |
 | Task 3 | 2 | 0 | Not started | Not started | — |
 | Task 4 | 2 | 0 | Not started | Not started | — |
 | Task 5 | 2 | 0 | Not started | Not started | — |
