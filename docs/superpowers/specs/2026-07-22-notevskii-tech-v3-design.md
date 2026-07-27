@@ -1,6 +1,6 @@
 # notevskii.tech v3 — продуктовая спецификация
 
-Статус: accepted — converged
+Статус: superseded by `2026-07-27-notevskii-tech-v3-1-correction-design.md`
 Владелец: Сергей Нотевский
 Дата: 22 июля 2026 года
 Горизонт первого релиза: до 31 декабря 2026 года

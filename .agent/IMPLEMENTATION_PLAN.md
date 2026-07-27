@@ -1,6 +1,6 @@
 # Implementation Plan
 
-> **Superseded (historical context):** The product direction in this file is superseded by the accepted v3 spec (`docs/superpowers/specs/2026-07-22-notevskii-tech-v3-design.md`) and implementation plan (`docs/superpowers/plans/2026-07-22-notevskii-tech-v3-implementation.md`). It is kept for historical context; the current milestones are Tasks 1–14 in the v3 implementation plan.
+> **Superseded (historical context):** The accepted product direction is `docs/superpowers/specs/2026-07-27-notevskii-tech-v3-1-correction-design.md`. A v3.1 implementation plan has not been written yet. This file and the v3 implementation plan are historical evidence, not instructions for the next implementation cycle.
 
 ## Milestone 0: Bootstrap
 
@@ -171,4 +171,3 @@ Do not add any of the following unless explicitly requested in a later milestone
 - API routes
 - Live AI calls
 - Graph/tracks/bookmarks
-

@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-MVP implemented, bilingual RU/EN version validated, GitHub Pages custom-domain launch complete, and the reviewed v3 pilot content/evidence freeze has converged. The complete v3 public surfaces, AI Platform pilot vertical, and source-backed discovery metadata have passed implementation validation and static export. All fourteen v3 implementation tasks are technically complete. Tasks 11–13 (reversible route migration, static-export contract audit, documentation/brand/content-safety finalization) and the Task 14 convergence review have converged, and the full automated gate passes from a clean build. The implementation is a **technical release candidate**: `pilot accepted`/`launch-ready` still depends on the human six-reader usability gate, which is the single open launch blocker.
+The v3 implementation remains the current technical baseline, but it is no longer the target product. The accepted v3.1 correction spec and exact route decisions have converged after three independent review tracks with no open P0/P1/P2. V3.1 implementation has not started, and no implementation plan exists yet. The first operational action after this spec cycle is to fix the live `/blog` Pages conflict and verify the current root, blog index, one local article, `/work`, and `/ai-platform` from the external network. The visual direction will be produced separately before the v3.1 implementation plan.
 
 ## Completed
 

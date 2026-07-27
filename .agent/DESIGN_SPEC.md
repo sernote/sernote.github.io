@@ -1,6 +1,6 @@
 # Design Spec
 
-> **Superseded (historical context):** The product direction in this file is superseded by the accepted v3 spec (`docs/superpowers/specs/2026-07-22-notevskii-tech-v3-design.md`) and implementation plan (`docs/superpowers/plans/2026-07-22-notevskii-tech-v3-implementation.md`). It is kept for historical context; the current product is the personal-master-brand v3 surface with the AI Platform reference vertical.
+> **Superseded (historical context):** The current normative product direction is `docs/superpowers/specs/2026-07-27-notevskii-tech-v3-1-correction-design.md`. A new visual direction will be selected outside this repository before the v3.1 implementation plan. This file is kept only as historical context.
 
 ## Design thesis
 
@@ -135,4 +135,3 @@ Build reusable components:
 The site should look intentional even with placeholder content.
 
 It should be credible enough to show publicly as v0.1.
-
