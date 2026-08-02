@@ -471,6 +471,36 @@ describe("static export audit — deterministic ordering", () => {
   });
 });
 
+describe("static export audit — verification lifecycle", () => {
+  it("runs the real-export integration suite after build locally and in Pages CI", () => {
+    const postBuildTest =
+      "pnpm vitest run tests/build/static-export-contract.test.ts";
+    const packageJson = JSON.parse(
+      readFileSync(join(process.cwd(), "package.json"), "utf8")
+    ) as { scripts?: Record<string, string> };
+    const verifyScript = packageJson.scripts?.verify ?? "";
+    expect(verifyScript).toContain(
+      `pnpm build && ${postBuildTest} && pnpm verify:reference && pnpm verify:export`
+    );
+
+    const workflow = readFileSync(
+      join(process.cwd(), ".github/workflows/pages.yml"),
+      "utf8"
+    );
+    const buildIndex = workflow.indexOf("run: pnpm build");
+    const integrationIndex = workflow.indexOf(`run: ${postBuildTest}`);
+    const referenceIndex = workflow.indexOf("run: pnpm verify:reference");
+    const exportIndex = workflow.indexOf("run: pnpm verify:export");
+    const uploadIndex = workflow.indexOf("uses: actions/upload-pages-artifact@v3");
+
+    expect(buildIndex).toBeGreaterThanOrEqual(0);
+    expect(integrationIndex).toBeGreaterThan(buildIndex);
+    expect(referenceIndex).toBeGreaterThan(integrationIndex);
+    expect(exportIndex).toBeGreaterThan(referenceIndex);
+    expect(uploadIndex).toBeGreaterThan(exportIndex);
+  });
+});
+
 describe("static export audit — production integration", () => {
   const outDir = join(process.cwd(), "out");
   const manifestPath = join(process.cwd(), "config/v3-route-manifest.json");

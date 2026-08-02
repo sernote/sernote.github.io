@@ -146,4 +146,41 @@ git diff --check
 PASS
 ```
 
+## Исправление по итогам code-quality review
+
+Code-quality review нашёл два Important и одно Minor замечание к проверкам. Исправление не меняет product/content scope:
+
+- локальный `pnpm verify` и Pages CI теперь после `pnpm build` явно запускают `pnpm vitest run tests/build/static-export-contract.test.ts`; затем выполняются прежние reference/export audits;
+- отдельный lifecycle contract test фиксирует этот порядок в `package.json` и `.github/workflows/pages.yml`, поэтому post-build запуск нельзя удалить незаметно;
+- exact external contract теперь покрывает все source-owned frontmatter-поля пяти pilot records, включая `description`, `topics`, `relations`, а также точное короткое MDX body с канонической ссылкой;
+- `evidence.test.ts` проверяет `AUTHOR_PROFILE` прямым импортом: полное равенство объекта и `sameAs`, `Object.isFrozen(AUTHOR_PROFILE)` и `Object.isFrozen(AUTHOR_PROFILE.sameAs)`.
+
+TDD RED для lifecycle wiring:
+
+```text
+corepack pnpm vitest run tests/build/static-export-contract.test.ts -t "runs the real-export integration suite after build locally and in Pages CI"
+Test Files: 1 failed
+Tests: 1 failed, 41 skipped
+Причина: package verify не содержал post-build integration command.
+```
+
+Три независимых schema-valid mutation RED выполнены на реальном `prefix-cache-the-code.mdx`: изменённый `description`, удалённый `projectIds` и добавленный второй body paragraph каждый дали `1 failed, 41 skipped` в exact external contract test. После восстановления тот же focused test дал `1 passed, 41 skipped`.
+
+Clean pre-build proof без каталога `out` выполнил 36 unit/lifecycle tests и ожидаемо пропустил только шесть real-export assertions. После build полный файл выполняет все 42 теста, включая точный RSS count и JSON-LD matrix.
+
+Финальная проверка второго follow-up:
+
+```text
+corepack pnpm verify
+PASS: lint, typecheck, full tests, build, 42 post-build static-export tests, reference audit, export audit
+Warnings: latest build — pre-existing multiple-lockfile workspace-root message; an earlier run also emitted non-failing Fumadocs dynamic-import cache messages
+
+corepack pnpm vitest run tests/content-v3
+Test Files: 5 passed
+Tests: 143 passed
+
+git diff --check
+PASS
+```
+
 Итог review: **PASS**. Source limitations описаны выше; противоречий заданным title, date, platform, authorship или role evidence нет.

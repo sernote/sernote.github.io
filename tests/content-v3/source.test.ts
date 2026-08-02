@@ -273,46 +273,81 @@ const externalArticleSharedContract = {
 const pilotExternalArticleContract = {
   "prefix-cache-the-code": {
     ...externalArticleSharedContract,
+    entityId: "prefix-cache-the-code",
     title: "Почему короткий промпт может стоить дороже длинного",
+    description:
+      "Публичная аннотация к\u00a0материалу о\u00a0prefix cache и\u00a0стоимости длинных агентных сессий.",
     publishedAt: "2026-06-18",
+    topics: ["prefix-cache", "agents", "llm-economics"],
+    relations: {
+      projectIds: ["audit-prompt-caching"],
+      platformEntityIds: ["prefix-cache"]
+    },
     sourceName: "Журнал «Код» / Яндекс Практикум",
     sourceUrl: "https://thecode.media/prefix-cache-promt-ai-agenty/",
     sourceAuthorProfileUrl: "https://thecode.media/authors/sergey-notevskiy/",
     excerpt:
       "Объяснение prefix cache для читателя, который хочет понять, почему локальное сокращение промпта способно увеличить стоимость агентной сессии",
     externalType: "authored-article",
-    participationLabel: "Вклад Сергея: автор материала и технического разбора"
+    participationLabel: "Вклад Сергея: автор материала и технического разбора",
+    mdxBody:
+      "Это внешний авторский материал о\u00a0prefix cache в\u00a0многошаговой работе агента. На сайте хранится только оригинальная аннотация; полный текст опубликован в\u00a0[журнале «Код»](https://thecode.media/prefix-cache-promt-ai-agenty/)."
   },
   "prefix-cache-habr": {
     ...externalArticleSharedContract,
+    entityId: "prefix-cache-habr",
     title:
       "Короткий промпт ≠ дешёвый промпт: как оптимизация ломает prefix cache в LLM-агентах",
+    description:
+      "Публичная аннотация к\u00a0статье о\u00a0стабильности префикса, списке tools и\u00a0effective cost в\u00a0агентных циклах.",
     publishedAt: "2026-05-12",
+    topics: ["prefix-cache", "agents", "tool-use"],
+    relations: {
+      projectIds: ["audit-prompt-caching"],
+      platformEntityIds: ["prefix-cache"]
+    },
     sourceName: "Хабр · блог Битрикс24",
     sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
     sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
     excerpt:
       "Разбор плавающего списка tools, стабильности префикса и effective cost в длинном агентном цикле",
     externalType: "authored-article",
-    participationLabel: "Вклад Сергея: автор статьи и практических рекомендаций"
+    participationLabel: "Вклад Сергея: автор статьи и практических рекомендаций",
+    mdxBody:
+      "Это внешняя авторская статья о\u00a0том, как изменения ранних блоков запроса влияют на prefix cache в\u00a0агентном цикле. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/1033822/)."
   },
   "effective-cost-habr": {
     ...externalArticleSharedContract,
+    entityId: "effective-cost-habr",
     title: "Погоди переезжать на дешёвую модель: считаем effective cost с учётом кэша",
+    description:
+      "Публичная аннотация к\u00a0сравнению стоимости LLM с\u00a0учётом cache read, cache miss и\u00a0цен провайдеров.",
     publishedAt: "2026-03-10",
+    topics: ["llm-economics", "prefix-cache", "model-selection"],
+    relations: {
+      projectIds: ["audit-prompt-caching"],
+      platformEntityIds: ["prefix-cache"]
+    },
     sourceName: "Хабр · блог Битрикс24",
     sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1008320/",
     sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
     excerpt:
       "Практическая модель стоимости, которая учитывает cache read, cache miss и различия провайдеров, а не только цену миллиона токенов",
     externalType: "authored-article",
-    participationLabel: "Вклад Сергея: автор расчёта и сравнительного разбора"
+    participationLabel: "Вклад Сергея: автор расчёта и сравнительного разбора",
+    mdxBody:
+      "Это внешняя авторская статья о\u00a0расчёте стоимости LLM с\u00a0учётом кэша и\u00a0условий разных провайдеров. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/1008320/)."
   },
   "agent-skills-habr": {
     ...externalArticleSharedContract,
+    entityId: "agent-skills-habr",
     title:
       "Навыки агентов (Agent Skills): что это такое и почему это больше, чем «папка с промптами»",
+    description:
+      "Публичная аннотация к\u00a0объяснению Agent Skills как переносимых и\u00a0версионируемых модулей поведения AI-агента.",
     publishedAt: "2025-12-26",
+    topics: ["agent-skills", "agents", "context-management"],
+    relations: {},
     sourceName: "Хабр · блог Битрикс24",
     sourceUrl: "https://habr.com/ru/companies/bitrix/articles/980654/",
     sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
@@ -320,12 +355,19 @@ const pilotExternalArticleContract = {
       "Объяснение Agent Skills как переносимого, версионируемого артефакта для поведения AI-агентов и рабочих процессов",
     externalType: "authored-article",
     participationLabel:
-      "Вклад Сергея: автор объяснительного материала и модели Discovery → Activation → Execution"
+      "Вклад Сергея: автор объяснительного материала и модели Discovery → Activation → Execution",
+    mdxBody:
+      "Это внешняя авторская статья об Agent Skills как переносимых инструкциях, критериях и\u00a0ресурсах для AI-агента. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/980654/)."
   },
   "prompt-engineering-vc": {
     ...externalArticleSharedContract,
+    entityId: "prompt-engineering-vc",
     title: "Промт-инжиниринг больше не нужен?",
+    description:
+      "Публичная аннотация к\u00a0материалу о\u00a0роли промпта в\u00a0пользовательских запросах и\u00a0архитектуре AI-продукта.",
     publishedAt: "2025-04-28",
+    topics: ["prompt-engineering", "ai-products", "agents"],
+    relations: {},
     sourceName: "vc.ru · Битрикс24",
     sourceUrl: "https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu",
     sourceAuthorProfileUrl: null,
@@ -333,7 +375,9 @@ const pilotExternalArticleContract = {
       "Разбор того, как промпт меняется от пользовательской формулировки до части архитектуры AI-продукта",
     externalType: "expert-comment",
     participationLabel:
-      "Вклад Сергея: основной эксперт материала; объясняет пользовательский и продуктовый контекст промпт-инжиниринга"
+      "Вклад Сергея: основной эксперт материала; объясняет пользовательский и продуктовый контекст промпт-инжиниринга",
+    mdxBody:
+      "Это внешний материал с\u00a0экспертным комментарием о\u00a0промпте как части пользовательской задачи и\u00a0архитектуры AI-продукта. На сайте хранится только оригинальная аннотация; полный текст опубликован на [vc.ru](https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu)."
   }
 } as const;
 
@@ -420,6 +464,19 @@ const actualV3Source = createV3Source(
     info: { path: sourcePath }
   }))
 );
+
+function externalArticleSnapshot(record: V3SourceItem<V3Article>) {
+  const sourceOwned: Record<string, unknown> = { ...record };
+  delete sourceOwned.body;
+  delete sourceOwned.sourcePath;
+  const document = actualV3Documents.find(
+    (candidate) => candidate.sourcePath === record.sourcePath
+  );
+  if (document === undefined) {
+    throw new Error(`Missing raw MDX document for ${record.sourcePath}`);
+  }
+  return { ...sourceOwned, mdxBody: document.content };
+}
 
 const fixtures = [
   article("ai-platform-before-gpu", {
@@ -577,53 +634,7 @@ describe("v3 generated-entry source adapter", () => {
 
     expect(
       Object.fromEntries(
-        external.map(({
-          entityId,
-          type,
-          locale,
-          kind,
-          slug,
-          editorialFormat,
-          title,
-          publicationStatus,
-          reviewStatus,
-          publishedAt,
-          updatedAt,
-          reviewedAt,
-          reviewCycleDays,
-          sourceName,
-          sourceUrl,
-          sourceAuthorProfileUrl,
-          excerpt,
-          externalType,
-          participationLabel,
-          supersedes,
-          supersededBy
-        }) => [
-          entityId,
-          {
-            type,
-            locale,
-            kind,
-            slug,
-            editorialFormat,
-            title,
-            publicationStatus,
-            reviewStatus,
-            publishedAt,
-            updatedAt,
-            reviewedAt,
-            reviewCycleDays,
-            sourceName,
-            sourceUrl,
-            sourceAuthorProfileUrl,
-            excerpt,
-            externalType,
-            participationLabel,
-            supersedes,
-            supersededBy
-          }
-        ])
+        external.map((record) => [record.entityId, externalArticleSnapshot(record)])
       )
     ).toEqual(pilotExternalArticleContract);
     for (const record of external) {

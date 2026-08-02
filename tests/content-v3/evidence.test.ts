@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import evidence from "../../evidence/v3/agent-session-cache-reuse/layout-linter-output.json";
+import { AUTHOR_PROFILE } from "../../lib/author-profile";
 
 const checkoutPath = ".evidence-tools/audit-prompt-caching-v0.1.3";
 const origin = "https://github.com/sernote/audit-prompt-caching.git";
@@ -40,26 +41,22 @@ describe("agent-session cache-reuse evidence recipe", () => {
 
 describe("v3.1 public content evidence", () => {
   it("defines the frozen source-backed author profile contract", () => {
-    const profileText = readRequiredFile(
-      join(process.cwd(), "lib/author-profile.ts")
-    );
-
-    for (const exactValue of [
-      'id: "https://notevskii.tech/about/#person"',
-      'name: "Сергей Нотевский"',
-      'role: "AI Platform Lead"',
-      'company: "Битрикс24"',
-      'url: "https://notevskii.tech/about/"',
-      '"https://habr.com/ru/users/Ser_no/"',
-      '"https://github.com/sernote"',
-      '"https://t.me/sergeinotevskii"',
-      "В 2024 году я выступал как продакт-менеджер и AI-евангелист Битрикс24, в 2025-м — как AI-евангелист и разработчик команды CoPilot. Сейчас моя публичная роль — AI Platform Lead. Я отвечаю за направление LLM-моделей: поиск, анализ, адаптацию и тестирование на сценариях Битрикс24."
-    ]) {
-      expect(profileText).toContain(exactValue);
-    }
-    expect(profileText).toMatch(/export const AUTHOR_PROFILE = Object\.freeze\(/);
-    expect(profileText).toMatch(/sameAs:\s*Object\.freeze\(\[/);
-    expect(profileText).not.toMatch(/webinars\.bitrix24\.by|mergeconf\.ru|thecode\.media/);
+    expect(AUTHOR_PROFILE).toEqual({
+      id: "https://notevskii.tech/about/#person",
+      name: "Сергей Нотевский",
+      role: "AI Platform Lead",
+      company: "Битрикс24",
+      url: "https://notevskii.tech/about/",
+      sameAs: [
+        "https://habr.com/ru/users/Ser_no/",
+        "https://github.com/sernote",
+        "https://t.me/sergeinotevskii"
+      ],
+      aboutIntro:
+        "В 2024 году я выступал как продакт-менеджер и AI-евангелист Битрикс24, в 2025-м — как AI-евангелист и разработчик команды CoPilot. Сейчас моя публичная роль — AI Platform Lead. Я отвечаю за направление LLM-моделей: поиск, анализ, адаптацию и тестирование на сценариях Битрикс24."
+    });
+    expect(Object.isFrozen(AUTHOR_PROFILE)).toBe(true);
+    expect(Object.isFrozen(AUTHOR_PROFILE.sameAs)).toBe(true);
   });
 
   it("keeps the exact compact native workload note", () => {
