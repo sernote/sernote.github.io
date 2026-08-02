@@ -63,6 +63,9 @@ jobs:
       - name: Build static site
         run: pnpm build
 
+      - name: Verify real static export integration
+        run: V31_EXPORT_INTEGRATION=1 pnpm vitest run tests/build/static-export-contract.test.ts
+
       - name: Verify reference path contract
         run: pnpm verify:reference
 

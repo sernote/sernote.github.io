@@ -1,10 +1,15 @@
-import { ProjectsPageContent } from "@/components/pages/v3-marketing-pages";
-import { v3Source } from "@/lib/content-v3/source";
-import { getProjectsViewModel } from "@/lib/content-v3/view-models";
-import { v3MarketingMetadata } from "@/lib/metadata";
+import { StaticAliasBody } from "@/components/routing/static-alias-page";
+import { EditorialShell } from "@/components/site/editorial-shell";
+import { staticAliasMetadata } from "@/lib/metadata";
 
-export const metadata = v3MarketingMetadata("projects");
+const DESTINATION = "/materials";
+
+export const metadata = staticAliasMetadata(DESTINATION, "ru");
 
 export default function ProjectsPage() {
-  return <ProjectsPageContent model={getProjectsViewModel(v3Source)} />;
+  return (
+    <EditorialShell currentPath="/materials">
+      <StaticAliasBody destination={DESTINATION} locale="ru" />
+    </EditorialShell>
+  );
 }

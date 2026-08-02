@@ -1,10 +1,15 @@
-import { WorkPageContent } from "@/components/pages/v3-marketing-pages";
-import { getWorkViewModel } from "@/lib/content-v3/view-models";
-import { v3Source } from "@/lib/content-v3/source";
-import { v3MarketingMetadata } from "@/lib/metadata";
+import { StaticAliasBody } from "@/components/routing/static-alias-page";
+import { EditorialShell } from "@/components/site/editorial-shell";
+import { staticAliasMetadata } from "@/lib/metadata";
 
-export const metadata = v3MarketingMetadata("work");
+const DESTINATION = "/materials";
+
+export const metadata = staticAliasMetadata(DESTINATION, "ru");
 
 export default function WorkPage() {
-  return <WorkPageContent model={getWorkViewModel(v3Source)} />;
+  return (
+    <EditorialShell currentPath="/materials">
+      <StaticAliasBody destination={DESTINATION} locale="ru" />
+    </EditorialShell>
+  );
 }

@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { JsonLd } from "../../components/seo/json-ld";
+import { AUTHOR_PROFILE } from "../../lib/author-profile";
 import type {
   V3Article,
   V3Case,
@@ -14,6 +15,7 @@ import type {
   V3Talk
 } from "../../lib/content-v3/schema";
 import {
+  buildAboutStructuredData,
   buildArticleStructuredData,
   buildHomeStructuredData,
   buildProjectStructuredData,
@@ -22,7 +24,32 @@ import {
   serializeJsonLd
 } from "../../lib/seo/structured-data";
 import { buildSitemapEntries, canonicalUrl } from "../../lib/seo/urls";
+import { parseManifest, validateManifest } from "../../lib/migration/manifest";
 import { v3MarketingMetadata } from "../../lib/metadata";
+
+const manifest = validateManifest(
+  parseManifest(
+    JSON.parse(
+      readFileSync(join(process.cwd(), "config/v3-route-manifest.json"), "utf8")
+    )
+  )
+);
+
+const expectedKeepPaths = [
+  "/",
+  "/about",
+  "/ai-platform",
+  "/ai-platform/areas/inference-plane",
+  "/ai-platform/cases/agent-session-cache-reuse",
+  "/ai-platform/components/prefix-cache",
+  "/ai-platform/map",
+  "/blog",
+  "/blog/ai-platform-before-gpu",
+  "/blog/workload-shape-over-model-name",
+  "/materials",
+  "/projects/audit-prompt-caching",
+  "/talks/maas-vs-self-hosted"
+] as const;
 
 const published = {
   locale: "ru" as const,
@@ -42,24 +69,18 @@ const article: V3Article = {
   type: "article",
   kind: "native",
   slug: "ai-platform-before-gpu",
+  editorialFormat: "article",
   title: "ИИ-платформа начинается не с GPU",
   description:
     "Почему production AI начинается с правил работы с данными, качества, SLO и владельцев.",
   excerpt: "Сначала зафиксируйте контракт сценария, а затем выбирайте способ исполнения.",
+  externalType: null,
   sourceName: null,
   sourceUrl: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
   supersedes: null,
   supersededBy: null
-};
-
-const externalArticle: V3Article = {
-  ...article,
-  entityId: "short-prompt-not-cheap",
-  kind: "external-note",
-  slug: null,
-  title: "Короткий промпт не значит дешёвый",
-  sourceName: "Хабр",
-  sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/"
 };
 
 const talk: V3Talk = {
@@ -224,52 +245,93 @@ describe("public SEO URLs", () => {
     });
   });
 
-  it("keeps aliases, drafts, and external URLs out of sitemap entries", () => {
-    const draftArea: V3PlatformArea = {
-      ...area,
-      entityId: "control-plane",
-      slug: "control-plane",
-      publicationStatus: "draft",
-      reviewStatus: "unreviewed",
-      publishedAt: null,
-      reviewedAt: null,
-      reviewCycleDays: null,
-      sources: [],
-      applicability: null,
-      limitations: null
-    };
-
-    const entries = buildSitemapEntries([article, externalArticle, talk, project, area, component, caseRecord, draftArea]);
+  it("derives exactly the canonical keep routes from the validated manifest", () => {
+    const entries = buildSitemapEntries(manifest);
     const urls = entries.map((entry) => entry.url);
 
-    expect(urls).toContain("https://notevskii.tech/blog/ai-platform-before-gpu/");
-    expect(urls).toContain("https://notevskii.tech/ai-platform/components/prefix-cache/");
+    expect(urls).toEqual(expectedKeepPaths.map(canonicalUrl));
+    expect(urls).toHaveLength(13);
     expect(urls.every((url) => url.endsWith("/"))).toBe(true);
     expect(urls.some((url) => url.includes("habr.com"))).toBe(false);
-    expect(urls.some((url) => url.includes("control-plane"))).toBe(false);
     expect(urls).not.toContain("https://notevskii.tech/ru/");
     expect(urls).not.toContain("https://notevskii.tech/writing/");
+    expect(urls).not.toContain("https://notevskii.tech/work/");
+    expect(urls).not.toContain("https://notevskii.tech/talks/");
+    expect(urls).not.toContain("https://notevskii.tech/projects/");
+    expect(urls).not.toContain("https://notevskii.tech/contact/");
   });
 
   it("exposes public sitemap and permissive robots metadata routes", () => {
     const sitemapSource = readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8");
     const robotsSource = readFileSync(join(process.cwd(), "app/robots.ts"), "utf8");
-    expect(sitemapSource).toContain(
-      'buildSitemapEntries(v3Source.listPublic(undefined, "ru"))'
-    );
+    expect(sitemapSource).toContain("validateManifest(parseManifest(routeManifest))");
+    expect(sitemapSource).toContain("buildSitemapEntries(manifest)");
     expect(sitemapSource).toContain('export const dynamic = "force-static"');
     expect(robotsSource).toContain('allow: "/"');
+    expect(robotsSource).toContain('userAgent: "OAI-SearchBot"');
     expect(robotsSource).toContain('publicFileUrl("/sitemap.xml")');
     expect(robotsSource).toContain('export const dynamic = "force-static"');
     expect(robotsSource).not.toContain("disallow");
   });
+
+  it("keeps Materials canonical-only without an archived English alternate", () => {
+    expect(v3MarketingMetadata("materials").alternates).toEqual({
+      canonical: "https://notevskii.tech/materials/"
+    });
+  });
 });
 
 describe("JSON-LD builders", () => {
-  it("builds Person and WebSite schemas for the home page", () => {
+  it("publishes only WebSite on Home and one ProfilePage Person on About", () => {
     const data = buildHomeStructuredData();
-    expect(data.map((item) => item["@type"])).toEqual(["Person", "WebSite"]);
+    const about = buildAboutStructuredData();
+
+    expect(data.map((item) => item["@type"])).toEqual(["WebSite"]);
+    expect(data[0]).toMatchObject({
+      author: { "@id": AUTHOR_PROFILE.id }
+    });
+    expect(about.map((item) => item["@type"])).toEqual(["ProfilePage"]);
+    expect(about[0]).toMatchObject({
+      url: AUTHOR_PROFILE.url,
+      mainEntity: {
+        "@type": "Person",
+        "@id": AUTHOR_PROFILE.id,
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url,
+        jobTitle: AUTHOR_PROFILE.role,
+        sameAs: AUTHOR_PROFILE.sameAs
+      }
+    });
+    expect(about[0]["mainEntity"]).toMatchObject({
+      worksFor: { "@type": "Organization", name: AUTHOR_PROFILE.company }
+    });
+    expect((about[0]["mainEntity"] as { sameAs: readonly string[] }).sameAs).toEqual([
+      "https://habr.com/ru/users/Ser_no/",
+      "https://github.com/sernote",
+      "https://t.me/sergeinotevskii"
+    ]);
+    expect(JSON.stringify(about)).not.toMatch(/habr\.com\/.*\/articles\//);
     expect(data.every((item) => item["@context"] === "https://schema.org")).toBe(true);
+  });
+
+  it("uses the one author id across every authored schema", () => {
+    const authored = [
+      buildArticleStructuredData(article)[0],
+      buildTalkStructuredData(talk)[0],
+      buildProjectStructuredData(project)[0],
+      buildReferenceStructuredData(area, areaBreadcrumbContext)[0]
+    ];
+
+    for (const item of authored) {
+      expect(item.author).toMatchObject({
+        "@type": "Person",
+        "@id": AUTHOR_PROFILE.id,
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url
+      });
+    }
+    expect(buildProjectStructuredData(project)[0]).toHaveProperty("author");
+    expect(buildProjectStructuredData(project)[0]).not.toHaveProperty("creator");
   });
 
   it("builds BlogPosting and breadcrumb schemas for a native article", () => {
@@ -299,6 +361,11 @@ describe("JSON-LD builders", () => {
     });
     expect(data[0]).not.toHaveProperty("contentUrl");
     expect(data[0]).not.toHaveProperty("duration");
+    expect(data[1]["itemListElement"]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Материалы", item: "https://notevskii.tech/materials/" })
+      ])
+    );
   });
 
   it("fails closed when a verified talk URL cannot yield a supported YouTube id", () => {
@@ -322,6 +389,11 @@ describe("JSON-LD builders", () => {
       datePublished: "2026-07-20"
     });
     expect(projectData[0]).not.toHaveProperty("dateModified");
+    expect(projectData[1]["itemListElement"]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Материалы", item: "https://notevskii.tech/materials/" })
+      ])
+    );
     expect(serializeJsonLd(projectData[0])).not.toContain(project.updatedAt);
 
     const withoutRelease = buildProjectStructuredData({
@@ -469,15 +541,15 @@ describe("JSON-LD builders", () => {
 
   it("renders only application/ld+json scripts with safe serialized data", () => {
     const html = renderToStaticMarkup(createElement(JsonLd, { data: buildHomeStructuredData() }));
-    expect(html.match(/<script/g)).toHaveLength(2);
-    expect(html.match(/type="application\/ld\+json"/g)).toHaveLength(2);
-    expect(html).toContain("Person");
+    expect(html.match(/<script/g)).toHaveLength(1);
+    expect(html.match(/type="application\/ld\+json"/g)).toHaveLength(1);
     expect(html).toContain("WebSite");
   });
 
   it("wires validated JSON-LD builders into every applicable page shape", () => {
     const pages = [
       ["app/(en)/page.tsx", "buildHomeStructuredData"],
+      ["app/(en)/about/page.tsx", "buildAboutStructuredData"],
       ["app/(en)/blog/[slug]/page.tsx", "buildArticleStructuredData"],
       ["app/(en)/talks/[slug]/page.tsx", "buildTalkStructuredData"],
       ["app/(en)/projects/[slug]/page.tsx", "buildProjectStructuredData"],

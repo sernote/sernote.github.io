@@ -1,6 +1,6 @@
 export const RU_PRIMARY_NAV = [
   { label: "Блог", href: "/blog" },
-  { label: "Материалы", href: "/work" },
+  { label: "Материалы", href: "/materials" },
   { label: "AI Platform", href: "/ai-platform" },
   { label: "Обо мне", href: "/about" }
 ] as const;
@@ -105,8 +105,8 @@ export function isActiveNavItem(currentPath: string, href: string): boolean {
     return current === "/";
   }
 
-  if (target === "/work") {
-    return ["/work", "/talks", "/projects"].some((section) =>
+  if (target === "/materials") {
+    return ["/materials", "/work", "/talks", "/projects"].some((section) =>
       isPathWithin(current, section)
     );
   }

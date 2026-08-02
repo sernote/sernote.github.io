@@ -34,6 +34,14 @@ const ALIASES: Array<{ source: string; destination: string }> = [
   { source: "/writing", destination: "/blog" }
 ];
 
+const ARCHIVES = [
+  {
+    source: "/handbook/economics/inference-economics",
+    archiveTarget: "/ai-platform",
+    archivedAt: "2026-08-02"
+  }
+];
+
 const AUXILIARY = ["404.html", "404/index.html", "_not-found/index.html"];
 
 function keepHtml(route: string): string {
@@ -56,6 +64,14 @@ function writeFixtureFiles(root: string, records: Array<Record<string, unknown>>
     const abs = join(outDir, aliasSourceFile(alias.source));
     mkdirSync(dirname(abs), { recursive: true });
     writeFileSync(abs, `<!doctype html><html lang="ru"><body>stale legacy body for ${alias.source}</body></html>`);
+  }
+  for (const archive of ARCHIVES) {
+    const abs = join(outDir, aliasSourceFile(archive.source));
+    mkdirSync(dirname(abs), { recursive: true });
+    writeFileSync(
+      abs,
+      `<!doctype html><html lang="ru"><head><title>Экономика инференса</title><meta name="description" content="Старое описание"><link rel="canonical" href="${ORIGIN}${archive.source}/"><script src="/_next/static/legacy.js"></script></head><body><header>legacy header</header><main id="main-content"><article><h1>Экономика инференса</h1><p>Полезный исторический текст.</p><a href="/old-related/">related</a><form><button>Калькулятор</button></form><section class="featured">Featured</section></article></main><footer>legacy footer</footer><script>self.__next_f.push([])</script></body></html>`
+    );
   }
   for (const aux of AUXILIARY) {
     const abs = join(outDir, aux);
@@ -82,7 +98,15 @@ function defaultRecords(): Array<Record<string, unknown>> {
     behavior: "static-alias",
     locale: "ru"
   }));
-  return [...keepRecords, ...aliasRecords];
+  const archiveRecords = ARCHIVES.map((archive) => ({
+    source: archive.source,
+    destination: null,
+    behavior: "archive",
+    locale: "ru",
+    archivedAt: archive.archivedAt,
+    archiveTarget: archive.archiveTarget
+  }));
+  return [...keepRecords, ...aliasRecords, ...archiveRecords];
 }
 
 function makeFixture(records = defaultRecords()) {
@@ -160,6 +184,35 @@ describe("apply-static-aliases.mjs — materialization", () => {
     }
   });
 
+  it("rewrites archive routes as self-canonical, non-hydrated linear documents", () => {
+    const fixture = makeFixture();
+    const result = run(fixture);
+    expect(result.status, result.stderr).toBe(0);
+
+    const archive = ARCHIVES[0];
+    const html = read(fixture.outDir, aliasSourceFile(archive.source));
+    expect(html).toContain(`data-archive="true"`);
+    expect(html).toContain(`<link rel="canonical" href="${ORIGIN}${archive.source}/">`);
+    expect(html).toMatch(/name="robots" content="noindex, follow"/i);
+    expect(html).toContain("Архив");
+    expect(html).toContain("2026-08-02");
+    expect(html).toContain("Полезный исторический текст.");
+    expect(countMatches(html, new RegExp(`href=["']${archive.archiveTarget}/?["']`, "gi"))).toBe(1);
+    expect(html).not.toMatch(/<script\b|self\.__next_f|\/_next\/static\/|<form\b|<button\b/i);
+    expect(html).not.toMatch(/legacy header|legacy footer|Featured|http-equiv=["']refresh/i);
+    expect(html).not.toContain("/old-related/");
+  });
+
+  it("rejects archives without an explicit date and direct keep target", () => {
+    const records = defaultRecords().map((record) =>
+      record.behavior === "archive" ? { ...record, archivedAt: undefined } : record
+    );
+    const fixture = makeFixture(records);
+    const result = run(fixture);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toMatch(/archivedAt|archive/i);
+  });
+
   it("leaves every keep file byte-identical", () => {
     const fixture = makeFixture();
     const before = KEEPS.map((k) => hashFile(fixture.outDir, k.file));
@@ -175,6 +228,9 @@ describe("apply-static-aliases.mjs — materialization", () => {
     expect(run(fixture).status).toBe(0);
     const second = ALIASES.map((a) => read(fixture.outDir, aliasSourceFile(a.source)));
     expect(second).toEqual(first);
+    expect(read(fixture.outDir, aliasSourceFile(ARCHIVES[0].source))).toContain(
+      'data-archive="true"'
+    );
   });
 });
 
@@ -236,13 +292,13 @@ describe("apply-static-aliases.mjs — atomic rollback", () => {
   it("restores every already-written source when a commit-phase failure is injected", () => {
     const fixture = makeFixture();
     const originals = new Map(
-      ALIASES.map((a) => [a.source, read(fixture.outDir, aliasSourceFile(a.source))])
+      [...ALIASES, ...ARCHIVES].map((a) => [a.source, read(fixture.outDir, aliasSourceFile(a.source))])
     );
     const result = run(fixture, { APPLY_STATIC_ALIASES_FAULT: "commit-after-first" });
     expect(result.status).not.toBe(0);
     // Full rollback: all alias sources back to their original stale bytes.
-    for (const alias of ALIASES) {
-      expect(read(fixture.outDir, aliasSourceFile(alias.source))).toBe(originals.get(alias.source));
+    for (const route of [...ALIASES, ...ARCHIVES]) {
+      expect(read(fixture.outDir, aliasSourceFile(route.source))).toBe(originals.get(route.source));
     }
     // No leftover temp siblings.
     const leftovers = readdirSync(join(fixture.outDir, "ru"))

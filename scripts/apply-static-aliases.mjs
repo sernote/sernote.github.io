@@ -202,6 +202,79 @@ function assertAliasStructure(html, label) {
   }
 }
 
+function escapeHtml(value) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function textContent(value) {
+  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function extractDescription(html) {
+  const tag = /<meta\b[^>]*\bname=["']description["'][^>]*>/i.exec(html)?.[0];
+  return tag ? /\bcontent=["']([^"']*)["']/i.exec(tag)?.[1] ?? "" : "";
+}
+
+function cleanArchiveMain(html, label) {
+  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(html);
+  if (!main) fail(`${label} must contain a main element before archiving`);
+  let content = main[1];
+  content = content.replace(/<!--[\s\S]*?-->/g, "");
+  content = content.replace(
+    /<(script|style|noscript|template|header|footer|nav|aside|form|button|dialog|iframe|object|canvas|svg)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
+    ""
+  );
+  content = content.replace(/<(?:input|select|textarea)\b[^>]*>(?:[\s\S]*?<\/(?:select|textarea)\s*>)?/gi, "");
+  content = content.replace(
+    /<([a-z][\w-]*)\b[^>]*(?:class|id)=["'][^"']*(?:featured|related|sidebar|cta|client-control)[^"']*["'][^>]*>[\s\S]*?<\/\1\s*>/gi,
+    ""
+  );
+  content = content.replace(/<a\b[^>]*>([\s\S]*?)<\/a\s*>/gi, "$1");
+  content = content.replace(/\s(?:on[a-z]+|href|action|formaction|data-nextjs[^=\s]*)=(?:["'][^"']*["']|[^\s>]+)/gi, "");
+  return content.trim();
+}
+
+function buildArchiveHtml(plan) {
+  if (/\bdata-archive=["']true["']/i.test(plan.originalText)) return plan.originalText;
+  const rawTitle = /<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(plan.originalText)?.[1] ?? "Архивный материал";
+  const title = textContent(rawTitle) || "Архивный материал";
+  const description = extractDescription(plan.originalText) || "Архивная версия материала.";
+  const content = cleanArchiveMain(plan.originalText, `archive ${plan.source}`);
+  const archiveTargetHref = plan.archiveTarget === "/" ? "/" : `${plan.archiveTarget}/`;
+  const lang = plan.locale === "en" ? "en" : "ru";
+  const copy =
+    lang === "en"
+      ? { status: "Archive", note: "This material is kept for reference and is no longer maintained.", link: "Current section" }
+      : { status: "Архив", note: "Материал сохранён для справки и больше не поддерживается.", link: "Актуальный раздел" };
+  return [
+    "<!doctype html>",
+    `<html lang="${lang}" data-archive="true">`,
+    "<head>",
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    `<title>${escapeHtml(title)} — ${copy.status}</title>`,
+    `<meta name="description" content="${escapeHtml(description)}">`,
+    `<link rel="canonical" href="${plan.canonical}">`,
+    '<meta name="robots" content="noindex, follow">',
+    '<style>:root{font-family:system-ui,sans-serif;color:#17191d;background:#f7f8fa}body{margin:0}.skip-link{position:absolute;left:-9999px}.skip-link:focus{left:1rem;top:1rem}main{max-width:760px;margin:auto;padding:48px 24px 80px}article{line-height:1.65}.archive-state{border-bottom:1px solid #d9dde5;margin-bottom:32px;padding-bottom:24px}.archive-state strong{display:block;color:#2457d6;font-size:.875rem;text-transform:uppercase;letter-spacing:.08em}.archive-link{border-top:1px solid #d9dde5;margin-top:40px;padding-top:24px}a{color:#2457d6}</style>',
+    "</head>",
+    "<body>",
+    `<a class="skip-link" href="#main-content">${lang === "en" ? "Skip to content" : "Перейти к содержанию"}</a>`,
+    '<main id="main-content" tabindex="-1">',
+    `<header class="archive-state"><strong>${copy.status}</strong><p>${copy.note}</p><time datetime="${plan.archivedAt}">${plan.archivedAt}</time></header>`,
+    `<article>${content}</article>`,
+    `<p class="archive-link"><a href="${archiveTargetHref}">${copy.link}</a></p>`,
+    "</main>",
+    "</body>",
+    "</html>",
+    ""
+  ].join("\n");
+}
+
 // ---- Preflight -----------------------------------------------------------
 
 const auxiliaryList = loadJson(auxiliaryArg, "auxiliary paths");
@@ -218,6 +291,7 @@ if (!Array.isArray(manifest)) {
 const seen = new Set();
 const keepSources = new Set();
 const aliases = [];
+const archives = [];
 
 for (const record of manifest) {
   if (typeof record !== "object" || record === null || typeof record.source !== "string") {
@@ -248,8 +322,34 @@ for (const record of manifest) {
       destination: normalizeRoute(record.destination),
       locale: record.locale === "en" ? "en" : "ru"
     });
+  } else if (record.behavior === "archive") {
+    if (record.destination !== null) {
+      fail(`archive route ${JSON.stringify(source)} destination must be null`);
+    }
+    if (record.archivedAt !== "2026-08-02") {
+      fail(`archive route ${JSON.stringify(source)} archivedAt must be 2026-08-02`);
+    }
+    if (typeof record.archiveTarget !== "string") {
+      fail(`archive route ${JSON.stringify(source)} requires archiveTarget`);
+    }
+    assertSafeRoute(record.archiveTarget, "archive target");
+    archives.push({
+      source,
+      archiveTarget: normalizeRoute(record.archiveTarget),
+      archivedAt: record.archivedAt,
+      locale: record.locale === "en" ? "en" : "ru"
+    });
   } else {
-    fail(`unsupported pilot behavior ${JSON.stringify(record.behavior)} for ${JSON.stringify(source)}`);
+    fail(`unsupported behavior ${JSON.stringify(record.behavior)} for ${JSON.stringify(source)}`);
+  }
+}
+
+for (const archive of archives) {
+  if (archive.source === archive.archiveTarget) {
+    fail(`archive target for ${JSON.stringify(archive.source)} must be distinct`);
+  }
+  if (!keepSources.has(archive.archiveTarget)) {
+    fail(`archive target ${JSON.stringify(archive.archiveTarget)} for ${JSON.stringify(archive.source)} must be a direct keep record`);
   }
 }
 
@@ -296,13 +396,32 @@ for (const alias of aliases) {
   plans.push({ source: alias.source, srcAbs, canonical, localPath, locale: alias.locale });
 }
 
+for (const archive of archives) {
+  const srcAbs = path.join(realExportRoot, routeToFile(archive.source));
+  if (!isContained(path.resolve(srcAbs))) fail(`archive source ${JSON.stringify(archive.source)} escapes the export root`);
+  assertRegularContainedFile(srcAbs, `archive source ${archive.source}`);
+  const targetAbs = path.join(realExportRoot, routeToFile(archive.archiveTarget));
+  assertRegularContainedFile(targetAbs, `archive target ${archive.archiveTarget}`);
+  const originalText = readFileSync(srcAbs, "utf8");
+  const sourceCanonical = extractCanonical(originalText, `archive source ${archive.source}`);
+  let origin;
+  try {
+    origin = new URL(sourceCanonical).origin;
+  } catch {
+    fail(`archive source ${archive.source} canonical is not an absolute URL: ${sourceCanonical}`);
+  }
+  const canonical = `${origin}${archive.source === "/" ? "/" : `${archive.source}/`}`;
+  plans.push({ ...archive, srcAbs, canonical, originalText, archiveTarget: archive.archiveTarget });
+}
+
 // ---- Prepare (temporary siblings) ---------------------------------------
 
 const staged = [];
 try {
   for (const plan of plans) {
-    const html = buildAliasHtml(plan);
-    assertAliasStructure(html, `alias ${plan.source}`);
+    const isArchive = Object.prototype.hasOwnProperty.call(plan, "archivedAt");
+    const html = isArchive ? buildArchiveHtml(plan) : buildAliasHtml(plan);
+    if (!isArchive) assertAliasStructure(html, `alias ${plan.source}`);
     // Read the original bytes before writing the temp sibling so a failed read
     // cannot leave an orphaned temp file behind.
     const original = readFileSync(plan.srcAbs);
@@ -349,4 +468,4 @@ try {
   fail(`commit failed after ${committed.length} replacement(s); rolled back to original export: ${error.message}`);
 }
 
-console.log(`Materialized ${committed.length} static alias page(s) in ${outDirArg}.`);
+console.log(`Materialized ${aliases.length} alias page(s) and ${archives.length} archive page(s) in ${outDirArg}.`);

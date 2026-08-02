@@ -1,5 +1,6 @@
 import "../globals.css";
 import "fumadocs-ui/style.css";
+import "@fontsource-variable/onest";
 
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -27,9 +28,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" className="dark" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
-        <RootProvider theme={{ defaultTheme: "dark", enableSystem: false, forcedTheme: "dark" }}>
+        <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
           {children}
         </RootProvider>
       </body>

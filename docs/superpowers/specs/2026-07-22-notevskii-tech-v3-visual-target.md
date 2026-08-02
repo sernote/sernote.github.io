@@ -1,7 +1,7 @@
 # notevskii.tech v3 — visual target
 
-Status: accepted implementation direction  
-Date: 22 July 2026  
+Status: superseded by `2026-07-27-notevskii-tech-v3-1-correction-design.md`
+Date: 22 July 2026
 Applies first to: Home, Materials, About, Contact
 
 ## Direction: Author index

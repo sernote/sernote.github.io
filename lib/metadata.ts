@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AUTHOR_PROFILE } from "@/lib/author-profile";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
 import type {
   V3Article,
@@ -18,6 +19,7 @@ type ToolKey = "prefix" | "cost" | "quality";
 type V3MarketingPageKey =
   | "home"
   | "blog"
+  | "materials"
   | "work"
   | "talks"
   | "projects"
@@ -31,7 +33,7 @@ function absoluteUrl(locale: Locale, path: string) {
 }
 
 const OG_IMAGE = {
-  url: publicFileUrl("/og-image.svg"),
+  url: publicFileUrl("/og-image.png"),
   width: 1200,
   height: 630,
   alt: "Сергей Нотевский — production AI platforms"
@@ -51,6 +53,13 @@ const V3_RU_MARKETING_PAGES = {
     title: "Блог — Сергей Нотевский",
     description:
       "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
+  },
+  materials: {
+    path: "/materials",
+    alternatePath: null,
+    title: "Материалы — Сергей Нотевский",
+    description:
+      "Выступления, интервью, открытые проекты и внешние публикации Сергея Нотевского о production AI-платформах."
   },
   work: {
     path: "/work",
@@ -201,11 +210,11 @@ export function articleMetadata(article: V3Article): Metadata {
     title: article.title,
     description: article.description
   });
-  const authorUrl = absoluteUrl(article.locale, "/about");
+  const authorUrl = AUTHOR_PROFILE.url;
 
   return {
     ...baseMetadata,
-    authors: [{ name: "Сергей Нотевский", url: authorUrl }],
+    authors: [{ name: AUTHOR_PROFILE.name, url: authorUrl }],
     keywords: article.topics,
     openGraph: {
       ...baseMetadata.openGraph,
@@ -249,8 +258,8 @@ function localEditorialMetadata(
     ...metadata,
     authors: [
       {
-        name: "Сергей Нотевский",
-        url: absoluteUrl(record.locale, "/about")
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url
       }
     ],
     keywords: record.topics
@@ -296,8 +305,8 @@ export function referenceMetadata(record: V3Reference): Metadata {
     title: { absolute: title },
     authors: [
       {
-        name: "Сергей Нотевский",
-        url: absoluteUrl(record.locale, "/about")
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url
       }
     ],
     keywords: record.topics

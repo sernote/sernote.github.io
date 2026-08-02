@@ -66,6 +66,14 @@ function alias(destination: string, body?: string): string {
   });
 }
 
+function archivePage(source: string, archiveTarget: string): string {
+  return page({
+    canonical: `${ORIGIN}${source}/`,
+    robots: "noindex, follow",
+    body: `<div data-archive="true"><strong>Архив</strong><time datetime="2026-08-02">2026-08-02</time><a href="${archiveTarget}/">Актуальный раздел</a></div>`
+  });
+}
+
 const AUXILIARY = ["404.html", "404/index.html", "_not-found/index.html"];
 
 const jsonLdScript = (obj: unknown) =>
@@ -89,6 +97,7 @@ function validFiles(): Record<string, string> {
     "work/index.html": keep("/work", `<a href="https://habr.com/x">Habr</a>`),
     "about/index.html": keep("/about", `<h2 id="about-heading">Обо мне</h2><a href="#about-heading">К заголовку</a><a href="/blog/">Блог</a>`),
     "writing/index.html": alias("/blog"),
+    "old/index.html": archivePage("/old", "/blog"),
     "ru/index.html": alias("/"),
     "sitemap.xml": sitemap(["/", "/blog", "/work", "/about"]),
     "rss.xml": rss(),
@@ -116,6 +125,7 @@ function manifestRecords(): Array<Record<string, unknown>> {
     { source: "/work", destination: null, behavior: "keep", locale: "ru" },
     { source: "/about", destination: null, behavior: "keep", locale: "ru" },
     { source: "/writing", destination: "/blog", behavior: "static-alias", locale: "ru" },
+    { source: "/old", destination: null, behavior: "archive", locale: "ru", archivedAt: "2026-08-02", archiveTarget: "/blog" },
     { source: "/ru", destination: "/", behavior: "static-alias", locale: "ru" }
   ];
 }
@@ -265,6 +275,27 @@ describe("static export audit — alias contract", () => {
   });
 });
 
+describe("static export audit — archive contract", () => {
+  it("accepts a self-canonical non-hydrated archive outside sitemap", () => {
+    const result = run(buildExport());
+    expect(result.status, result.stderr).toBe(0);
+  });
+
+  it("flags alias semantics, hydration assets and a missing explicit target", () => {
+    const files = validFiles();
+    files["old/index.html"] = page({
+      canonical: `${ORIGIN}/blog/`,
+      robots: "noindex, follow",
+      head: '<meta http-equiv="refresh" content="0; url=/blog/"><script src="/_next/static/x.js"></script>',
+      body: '<div data-archive="true"><strong>Архив</strong><time>2026-08-02</time></div>'
+    });
+    const result = run(buildExport(files));
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toMatch(/archive/i);
+    expect(result.stderr).toMatch(/canonical|refresh|hydration|target/i);
+  });
+});
+
 describe("static export audit — manifest coverage", () => {
   it("flags an exported route missing from the manifest", () => {
     const files = validFiles();
@@ -280,11 +311,11 @@ describe("static export audit — manifest coverage", () => {
     expect(run(buildExport(validFiles(), records)).stderr).toMatch(/ghost|manifest|missing/i);
   });
 
-  it("flags an unsupported pilot behavior", () => {
+  it("flags an unsupported behavior", () => {
     const records = manifestRecords().map((r) =>
-      r.source === "/work" ? { ...r, behavior: "archive" } : r
+      r.source === "/work" ? { ...r, behavior: "merge" } : r
     );
-    expect(run(buildExport(validFiles(), records)).stderr).toMatch(/behavior|archive/i);
+    expect(run(buildExport(validFiles(), records)).stderr).toMatch(/behavior|merge/i);
   });
 
   it("flags an alias whose destination is not a keep (chain)", () => {
@@ -471,18 +502,41 @@ describe("static export audit — deterministic ordering", () => {
   });
 });
 
+describe("static export audit — verification lifecycle", () => {
+  it("runs the real-export integration suite after build locally and in Pages CI", () => {
+    const postBuildTest =
+      "V31_EXPORT_INTEGRATION=1 pnpm vitest run tests/build/static-export-contract.test.ts";
+    const packageJson = JSON.parse(
+      readFileSync(join(process.cwd(), "package.json"), "utf8")
+    ) as { scripts?: Record<string, string> };
+    const verifyScript = packageJson.scripts?.verify ?? "";
+    expect(verifyScript).toContain(
+      `pnpm build && ${postBuildTest} && pnpm verify:reference && pnpm verify:export`
+    );
+
+    const workflow = readFileSync(
+      join(process.cwd(), ".github/workflows/pages.yml"),
+      "utf8"
+    );
+    const buildIndex = workflow.indexOf("run: pnpm build");
+    const integrationIndex = workflow.indexOf(`run: ${postBuildTest}`);
+    const referenceIndex = workflow.indexOf("run: pnpm verify:reference");
+    const exportIndex = workflow.indexOf("run: pnpm verify:export");
+    const uploadIndex = workflow.indexOf("uses: actions/upload-pages-artifact@v3");
+
+    expect(buildIndex).toBeGreaterThanOrEqual(0);
+    expect(integrationIndex).toBeGreaterThan(buildIndex);
+    expect(referenceIndex).toBeGreaterThan(integrationIndex);
+    expect(exportIndex).toBeGreaterThan(referenceIndex);
+    expect(uploadIndex).toBeGreaterThan(exportIndex);
+  });
+});
+
 describe("static export audit — production integration", () => {
   const outDir = join(process.cwd(), "out");
   const manifestPath = join(process.cwd(), "config/v3-route-manifest.json");
   const auxPath = join(process.cwd(), "config/v3-export-auxiliary-paths.json");
-  const hasExport = (() => {
-    try {
-      readFileSync(join(outDir, "index.html"));
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const hasExport = process.env.V31_EXPORT_INTEGRATION === "1";
 
   it.runIf(hasExport)("passes the audit against the real export", () => {
     const result = spawnSync(
@@ -493,17 +547,23 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 100 records split 66 keep / 34 alias", () => {
+  it.runIf(hasExport)("has exactly 102 records split 13 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(100);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(66);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(34);
+    expect(records).toHaveLength(102);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(13);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
+    expect(records).toContainEqual({
+      source: "/blog/workload-shape-over-model-name",
+      destination: null,
+      behavior: "keep",
+      locale: "ru"
+    });
   });
 
-  it.runIf(hasExport)("has 15 sitemap URLs, all resolving to keep records", () => {
+  it.runIf(hasExport)("lists only keep records in the sitemap", () => {
     const sitemapXml = readFileSync(join(outDir, "sitemap.xml"), "utf8");
     const locs = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-    expect(new Set(locs).size).toBe(15);
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
     const keeps = new Set(
       records.filter((r: { behavior: string }) => r.behavior === "keep").map((r: { source: string }) => r.source)
@@ -526,15 +586,17 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly two RSS items", () => {
+  it.runIf(hasExport)("has exactly seven RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(2);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(7);
   });
 
-  it.runIf(hasExport)("emits exactly 14 JSON-LD scripts matching the schema matrix", () => {
+  it.runIf(hasExport)("emits exactly 16 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
-      "index.html": ["Person", "WebSite"],
+      "index.html": ["WebSite"],
+      "about/index.html": ["ProfilePage"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
       "talks/maas-vs-self-hosted/index.html": ["VideoObject", "BreadcrumbList"],
       "projects/audit-prompt-caching/index.html": ["SoftwareSourceCode", "BreadcrumbList"],
       "ai-platform/areas/inference-plane/index.html": ["TechArticle", "BreadcrumbList"],
@@ -545,11 +607,11 @@ describe("static export audit — production integration", () => {
     for (const [file, expectedTypes] of Object.entries(matrix)) {
       const html = readFileSync(join(outDir, file), "utf8");
       const scripts = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
-      expect(scripts.length, file).toBe(2);
+      expect(scripts.length, file).toBe(expectedTypes.length);
       total += scripts.length;
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
     }
-    expect(total).toBe(14);
+    expect(total).toBe(16);
   });
 });
