@@ -39,12 +39,36 @@ const article = {
   type: "article",
   kind: "native",
   slug: "prefix-cache",
+  editorialFormat: "article",
   excerpt: "Краткое объяснение работы prefix cache в производственной системе.",
+  externalType: null,
   sourceName: null,
   sourceUrl: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
   supersedes: null,
   supersededBy: null
 } as const;
+
+function nativeArticle(overrides: Record<string, unknown> = {}) {
+  return { ...article, ...overrides };
+}
+
+function externalArticle(overrides: Record<string, unknown> = {}) {
+  return {
+    ...article,
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    publishedAt: today,
+    externalType: "authored-article",
+    sourceName: "Habr",
+    sourceUrl: "https://example.com/notes/prefix-cache",
+    sourceAuthorProfileUrl: null,
+    participationLabel: "Авторская статья",
+    ...overrides
+  };
+}
 
 const talk = {
   ...base,
@@ -155,6 +179,68 @@ describe("v3 frontmatter record variants", () => {
   });
 });
 
+describe("v3 article publication contract", () => {
+  it.each(["article", "note"])("accepts native editorialFormat %s", (editorialFormat) => {
+    expect(() => parseV3Frontmatter(nativeArticle({ editorialFormat }))).not.toThrow();
+  });
+
+  it("rejects a native article without editorialFormat", () => {
+    expect(() => parseV3Frontmatter(nativeArticle({ editorialFormat: null }))).toThrow(
+      /editorialFormat/
+    );
+  });
+
+  it("rejects an external note with a native editorialFormat", () => {
+    expect(() => parseV3Frontmatter(externalArticle({ editorialFormat: "article" }))).toThrow(
+      /external/i
+    );
+  });
+
+  it("rejects an external note without externalType", () => {
+    expect(() => parseV3Frontmatter(externalArticle({ externalType: null }))).toThrow(
+      /externalType/
+    );
+  });
+
+  it("rejects an external note without participationLabel", () => {
+    expect(() => parseV3Frontmatter(externalArticle({ participationLabel: null }))).toThrow(
+      /participationLabel/
+    );
+  });
+
+  it.each([
+    ["externalType", "authored-article"],
+    ["sourceName", "Habr"],
+    ["sourceUrl", "https://example.com/articles/prefix-cache"],
+    ["sourceAuthorProfileUrl", "https://example.com/authors/platform-engineer"],
+    ["participationLabel", "Авторская статья"]
+  ])("rejects native article external field %s", (field, value) => {
+    expect(() => parseV3Frontmatter(nativeArticle({ [field]: value }))).toThrow(/native/i);
+  });
+
+  it("requires every external publication field except sourceAuthorProfileUrl", () => {
+    expect(() => parseV3Frontmatter(externalArticle())).not.toThrow();
+    expect(() =>
+      parseV3Frontmatter(
+        externalArticle({ sourceAuthorProfileUrl: "https://example.com/authors/platform-engineer" })
+      )
+    ).not.toThrow();
+
+    for (const field of ["publishedAt", "sourceName", "sourceUrl"] as const) {
+      expect(() => parseV3Frontmatter(externalArticle({ [field]: null }))).toThrow(
+        new RegExp(field)
+      );
+    }
+  });
+
+  it.each(["authored-article", "expert-comment", "interview", "media-mention"])(
+    "accepts externalType %s",
+    (externalType) => {
+      expect(() => parseV3Frontmatter(externalArticle({ externalType }))).not.toThrow();
+    }
+  );
+});
+
 describe("v3 lifecycle and relation invariants", () => {
   it.each([undefined, "", "   "])(
     "rejects a platform area with an invalid mapBoundary %s",
@@ -192,33 +278,20 @@ describe("v3 lifecycle and relation invariants", () => {
 
   it("rejects an external note without sourceUrl", () => {
     const result = v3FrontmatterSchema.safeParse({
-      ...article,
-      kind: "external-note",
-      slug: null,
-      sourceName: "Habr",
-      sourceUrl: null
+      ...externalArticle({ sourceUrl: null })
     });
     expect(result.success).toBe(false);
   });
 
   it("rejects an external note without sourceName", () => {
     const result = v3FrontmatterSchema.safeParse({
-      ...article,
-      kind: "external-note",
-      slug: null,
-      sourceUrl: "https://example.com/notes/prefix-cache"
+      ...externalArticle({ sourceName: null })
     });
     expect(result.success).toBe(false);
   });
 
   it("accepts an external note with sourceName and an HTTPS sourceUrl", () => {
-    const result = v3FrontmatterSchema.safeParse({
-      ...article,
-      kind: "external-note",
-      slug: null,
-      sourceName: "Habr",
-      sourceUrl: "https://example.com/notes/prefix-cache"
-    });
+    const result = v3FrontmatterSchema.safeParse(externalArticle());
     expect(result.success).toBe(true);
   });
 
@@ -297,11 +370,7 @@ describe("v3 navigated path and URL safety", () => {
     (sourceUrl) => {
       expect(
         v3FrontmatterSchema.safeParse({
-          ...article,
-          kind: "external-note",
-          slug: null,
-          sourceName: "Habr",
-          sourceUrl
+          ...externalArticle({ sourceUrl })
         }).success
       ).toBe(false);
     }
@@ -309,13 +378,7 @@ describe("v3 navigated path and URL safety", () => {
 
   it("accepts an absolute HTTPS navigated URL", () => {
     expect(
-      v3FrontmatterSchema.safeParse({
-        ...article,
-        kind: "external-note",
-        slug: null,
-        sourceName: "Habr",
-        sourceUrl: "https://example.com/notes/prefix-cache"
-      }).success
+      v3FrontmatterSchema.safeParse(externalArticle()).success
     ).toBe(true);
   });
 

@@ -89,9 +89,15 @@ const articleSchema = z
     type: z.literal("article"),
     kind: z.enum(["native", "external-note"]),
     slug: kebabCaseId.nullable(),
+    editorialFormat: z.enum(["article", "note"]).nullable(),
     excerpt: nonEmptyText,
+    externalType: z
+      .enum(["authored-article", "expert-comment", "interview", "media-mention"])
+      .nullable(),
     sourceName: nonEmptyText.nullable(),
     sourceUrl: httpsUrl.nullable(),
+    sourceAuthorProfileUrl: httpsUrl.nullable(),
+    participationLabel: nonEmptyText.nullable(),
     supersedes: kebabCaseId.nullable(),
     supersededBy: kebabCaseId.nullable()
   })
@@ -264,6 +270,20 @@ export const v3FrontmatterSchema = z
 
     if (record.type === "article") {
       if (record.kind === "external-note") {
+        if (record.editorialFormat !== null) {
+          context.addIssue({
+            code: "custom",
+            path: ["editorialFormat"],
+            message: "External notes must not define editorialFormat"
+          });
+        }
+        if (record.publishedAt === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["publishedAt"],
+            message: "External notes require publishedAt"
+          });
+        }
         if (record.slug !== null) {
           context.addIssue({
             code: "custom",
@@ -285,8 +305,51 @@ export const v3FrontmatterSchema = z
             message: "External notes require sourceName"
           });
         }
-      } else if (record.slug === null) {
-        context.addIssue({ code: "custom", path: ["slug"], message: "Native articles require a slug" });
+        if (record.externalType === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["externalType"],
+            message: "External notes require externalType"
+          });
+        }
+        if (record.participationLabel === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["participationLabel"],
+            message: "External notes require participationLabel"
+          });
+        }
+      } else {
+        if (record.slug === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["slug"],
+            message: "Native articles require a slug"
+          });
+        }
+        if (record.editorialFormat === null) {
+          context.addIssue({
+            code: "custom",
+            path: ["editorialFormat"],
+            message: "Native articles require editorialFormat"
+          });
+        }
+
+        for (const [field, value] of [
+          ["externalType", record.externalType],
+          ["sourceName", record.sourceName],
+          ["sourceUrl", record.sourceUrl],
+          ["sourceAuthorProfileUrl", record.sourceAuthorProfileUrl],
+          ["participationLabel", record.participationLabel]
+        ] as const) {
+          if (value !== null) {
+            context.addIssue({
+              code: "custom",
+              path: [field],
+              message: `Native articles must not define ${field}`
+            });
+          }
+        }
       }
     }
 

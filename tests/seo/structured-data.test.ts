@@ -42,12 +42,16 @@ const article: V3Article = {
   type: "article",
   kind: "native",
   slug: "ai-platform-before-gpu",
+  editorialFormat: "article",
   title: "ИИ-платформа начинается не с GPU",
   description:
     "Почему production AI начинается с правил работы с данными, качества, SLO и владельцев.",
   excerpt: "Сначала зафиксируйте контракт сценария, а затем выбирайте способ исполнения.",
+  externalType: null,
   sourceName: null,
   sourceUrl: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
   supersedes: null,
   supersededBy: null
 };
@@ -57,9 +61,13 @@ const externalArticle: V3Article = {
   entityId: "short-prompt-not-cheap",
   kind: "external-note",
   slug: null,
+  editorialFormat: null,
   title: "Короткий промпт не значит дешёвый",
+  externalType: "authored-article",
   sourceName: "Хабр",
-  sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/"
+  sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
+  sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+  participationLabel: "Автор статьи"
 };
 
 const talk: V3Talk = {

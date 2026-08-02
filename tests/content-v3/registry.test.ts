@@ -44,9 +44,13 @@ function article(entityId: string, overrides: Record<string, unknown> = {}) {
     type: "article",
     kind: "native",
     slug: entityId,
+    editorialFormat: "article",
     excerpt: "Краткое практическое объяснение инженерного решения.",
+    externalType: null,
     sourceName: null,
     sourceUrl: null,
+    sourceAuthorProfileUrl: null,
+    participationLabel: null,
     supersedes: null,
     supersededBy: null,
     ...overrides
@@ -161,8 +165,11 @@ describe("v3 registry identity and URLs", () => {
     const external = article("external-prefix-cache", {
       kind: "external-note",
       slug: null,
+      editorialFormat: null,
+      externalType: "authored-article",
       sourceName: "Habr",
-      sourceUrl: "https://example.com/notes/prefix-cache"
+      sourceUrl: "https://example.com/notes/prefix-cache",
+      participationLabel: "Авторская статья"
     });
     expect(createRegistry([article("prefix-cache"), external], { now }).all()).toHaveLength(2);
   });
@@ -179,8 +186,11 @@ describe("v3 registry identity and URLs", () => {
       article("external", {
         kind: "external-note",
         slug: null,
+        editorialFormat: null,
+        externalType: "authored-article",
         sourceName: "Habr",
-        sourceUrl: "https://example.com/external"
+        sourceUrl: "https://example.com/external",
+        participationLabel: "Авторская статья"
       })
     ];
     const registry = createRegistry(records, { now });
@@ -334,8 +344,11 @@ describe("v3 registry public queries and ordering", () => {
       article("external", {
         kind: "external-note",
         slug: null,
+        editorialFormat: null,
+        externalType: "authored-article",
         sourceName: "Habr",
-        sourceUrl: "https://example.com/external"
+        sourceUrl: "https://example.com/external",
+        participationLabel: "Авторская статья"
       })
     ];
     const registry = createRegistry(records, { now });

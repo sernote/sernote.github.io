@@ -15,7 +15,10 @@ const shared = {
   reviewCycleDays: null,
   topics: ["ai-platform"],
   relations: {},
+  externalType: null,
   sourceName: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
   supersedes: null,
   supersededBy: null
 };
@@ -25,6 +28,7 @@ const nativeArticle: V3Article = {
   entityId: "ai-platform-before-gpu",
   kind: "native",
   slug: "ai-platform-before-gpu",
+  editorialFormat: "article",
   title: "ИИ-платформа начинается не с GPU",
   description: "Сначала данные, качество, SLO и владельцы — затем GPU.",
   excerpt: "Сценарий и ответственность важнее списка устройств.",
@@ -37,12 +41,16 @@ const externalArticle: V3Article = {
   entityId: "short-prompt-not-cheap",
   kind: "external-note",
   slug: null,
+  editorialFormat: null,
   title: "Короткий промпт не значит дешёвый",
   description: "Почему порядок tools влияет на cache reuse.",
   excerpt: "Короткий запрос иногда обходится дороже длинного.",
   publishedAt: "2026-05-12",
+  externalType: "authored-article",
   sourceName: "Хабр",
-  sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/"
+  sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
+  sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+  participationLabel: "Автор статьи"
 };
 
 describe("RSS builder", () => {

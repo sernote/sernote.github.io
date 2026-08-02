@@ -181,6 +181,7 @@ describe("personal master brand and metadata alternates", () => {
       locale: "ru",
       kind: "native",
       slug: "ai-platform-before-gpu",
+      editorialFormat: "article",
       title: "ИИ-платформа начинается не с GPU",
       description:
         "Почему для production-сценария сначала нужно определить правила работы с данными, критерии качества, SLO и владельцев, а уже потом выбирать модель и инфраструктуру.",
@@ -194,8 +195,11 @@ describe("personal master brand and metadata alternates", () => {
       reviewCycleDays: null,
       topics: ["ai-platform", "architecture", "ownership", "slo"],
       relations: {},
+      externalType: null,
       sourceName: null,
       sourceUrl: null,
+      sourceAuthorProfileUrl: null,
+      participationLabel: null,
       supersedes: null,
       supersededBy: null
     };
