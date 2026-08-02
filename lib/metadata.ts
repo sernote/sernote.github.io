@@ -33,7 +33,7 @@ function absoluteUrl(locale: Locale, path: string) {
 }
 
 const OG_IMAGE = {
-  url: publicFileUrl("/og-image.svg"),
+  url: publicFileUrl("/og-image.png"),
   width: 1200,
   height: 630,
   alt: "Сергей Нотевский — production AI platforms"

@@ -14,7 +14,7 @@
     "test": "vitest run",
     "verify:reference": "node scripts/check-v3-reference-path.mjs out",
     "verify:export": "node scripts/check-static-export.mjs out",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm vitest run tests/build/static-export-contract.test.ts && pnpm verify:reference && pnpm verify:export"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && V31_EXPORT_INTEGRATION=1 pnpm vitest run tests/build/static-export-contract.test.ts && pnpm verify:reference && pnpm verify:export"
   },
   "dependencies": {
     "@fontsource-variable/onest": "5.3.0",

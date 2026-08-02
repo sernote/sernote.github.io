@@ -505,7 +505,7 @@ describe("static export audit — deterministic ordering", () => {
 describe("static export audit — verification lifecycle", () => {
   it("runs the real-export integration suite after build locally and in Pages CI", () => {
     const postBuildTest =
-      "pnpm vitest run tests/build/static-export-contract.test.ts";
+      "V31_EXPORT_INTEGRATION=1 pnpm vitest run tests/build/static-export-contract.test.ts";
     const packageJson = JSON.parse(
       readFileSync(join(process.cwd(), "package.json"), "utf8")
     ) as { scripts?: Record<string, string> };
@@ -536,15 +536,7 @@ describe("static export audit — production integration", () => {
   const outDir = join(process.cwd(), "out");
   const manifestPath = join(process.cwd(), "config/v3-route-manifest.json");
   const auxPath = join(process.cwd(), "config/v3-export-auxiliary-paths.json");
-  const hasExport = (() => {
-    try {
-      readFileSync(join(outDir, "index.html"));
-      readFileSync(join(outDir, "materials/index.html"));
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const hasExport = process.env.V31_EXPORT_INTEGRATION === "1";
 
   it.runIf(hasExport)("passes the audit against the real export", () => {
     const result = spawnSync(
@@ -615,7 +607,7 @@ describe("static export audit — production integration", () => {
     for (const [file, expectedTypes] of Object.entries(matrix)) {
       const html = readFileSync(join(outDir, file), "utf8");
       const scripts = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
-      expect(scripts.length, file).toBe(2);
+      expect(scripts.length, file).toBe(expectedTypes.length);
       total += scripts.length;
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
