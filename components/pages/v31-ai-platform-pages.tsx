@@ -82,7 +82,7 @@ function InlineLink({ href, children }: { href: string; children: ReactNode }) {
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <h2 className="border-b border-border pb-4 text-2xl font-semibold leading-tight tracking-[-0.025em] text-foreground">
+    <h2 className="max-w-[52rem] text-2xl font-semibold leading-tight tracking-[-0.025em] text-foreground md:text-[1.75rem]">
       {children}
     </h2>
   );
@@ -101,11 +101,11 @@ export function AiPlatformPageContent({
   return (
     <EditorialShell currentPath="/ai-platform">
       <div className={`${frameClassName} py-10 md:py-12 lg:py-14`}>
-        <header className="max-w-[760px]">
-          <h1 className="text-[2.125rem] font-semibold leading-[1.08] tracking-[-0.04em] md:text-[2.75rem]">
+        <header data-platform-hero="" className="max-w-[820px] pb-4 md:pb-8">
+          <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">
             AI Platform
           </h1>
-          <p className="mt-5 text-xl leading-[1.45] tracking-[-0.015em] md:text-[1.375rem]">
+          <p className="mt-7 max-w-[48rem] text-xl leading-[1.45] tracking-[-0.015em] md:text-[1.5rem] md:leading-[1.45]">
             AI-платформа — набор общих контрактов и возможностей, который помогает нескольким продуктовым сценариям безопасно проходить путь от запроса до наблюдаемого результата.
           </p>
           <p className="mt-4 text-base leading-7 text-muted-foreground md:text-lg">
@@ -117,55 +117,53 @@ export function AiPlatformPageContent({
           </div>
         </header>
 
-        <section aria-labelledby="platform-signals-heading" className="mt-12 border-t border-border pt-7 md:mt-14">
+        <section aria-labelledby="platform-signals-heading" className="mt-12 border-t border-border pt-9 md:mt-16 md:pt-10">
           <SectionTitle>
             <span id="platform-signals-heading">Признаки, что одного API уже недостаточно</span>
           </SectionTitle>
-          <ul className="m-0 grid list-none p-0 md:grid-cols-2 md:gap-x-14">
+          <ul className="m-0 mt-6 grid list-none gap-x-16 p-0 md:grid-cols-2">
             {PLATFORM_SIGNALS.map((signal) => (
-              <li key={signal} data-platform-signal="" className="border-b border-border py-4 text-base leading-6">
+              <li key={signal} data-platform-signal="" className="border-t border-border py-4 text-base leading-7">
                 {signal}
               </li>
             ))}
           </ul>
         </section>
 
-        <section aria-labelledby="platform-maturity-heading" className="mt-12 border-t border-border pt-7">
+        <section aria-labelledby="platform-maturity-heading" className="mt-14 md:mt-20">
           <SectionTitle>
             <span id="platform-maturity-heading">От отдельного сценария к платформе</span>
           </SectionTitle>
-          <ol className="m-0 grid list-none p-0 md:grid-cols-5">
+          <ol className="m-0 mt-7 grid list-none gap-x-14 gap-y-2 p-0 md:grid-cols-2">
             {MATURITY_STEPS.map(([title, description], index) => (
               <li
                 key={title}
                 data-maturity-step=""
-                className="relative border-b border-border py-4 md:border-r md:px-5 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-t border-border py-5"
               >
-                <h3 className="text-base font-semibold leading-5">
-                  {title}
-                  {index === MATURITY_STEPS.length - 1 ? null : (
-                    <ArrowRight aria-hidden="true" className="ml-1 inline size-4 text-primary max-md:hidden" />
-                  )}
-                </h3>
-                <p className="mt-2 text-sm leading-5 text-muted-foreground">{description}</p>
+                <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 className="text-base font-semibold leading-5">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+                </div>
               </li>
             ))}
           </ol>
         </section>
 
-        <section aria-labelledby="execution-modes-heading" className="mt-12 border-t border-border pt-7">
+        <section aria-labelledby="execution-modes-heading" className="mt-14 md:mt-20">
           <SectionTitle>
             <span id="execution-modes-heading">Три способа исполнения — без универсального победителя</span>
           </SectionTitle>
-          <div className="grid md:grid-cols-3">
+          <div className="mt-7 border-t border-border">
             {EXECUTION_MODES.map((mode) => (
               <article
                 key={mode.id}
                 data-execution-mode={mode.id}
-                className="border-b border-border py-5 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                className="grid gap-5 border-b border-border py-7 md:grid-cols-[minmax(11rem,0.45fr)_minmax(0,1.55fr)] md:gap-12"
               >
                 <h3 className="text-xl font-semibold">{mode.title}</h3>
-                <dl className="mt-4 space-y-4">
+                <dl className="grid gap-5 lg:grid-cols-3">
                   {mode.facts.map(([term, description]) => (
                     <div key={term}>
                       <dt className="text-sm text-muted-foreground">{term}</dt>
@@ -178,41 +176,45 @@ export function AiPlatformPageContent({
           </div>
         </section>
 
-        <section aria-labelledby="situational-entries-heading" className="mt-12 border-t border-border pt-7">
+        <section aria-labelledby="situational-entries-heading" className="mt-14 md:mt-20">
           <SectionTitle>
             <span id="situational-entries-heading">Где вы сейчас</span>
           </SectionTitle>
-          <div>
+          <div className="mt-7 border-t border-border">
             {SITUATIONAL_ENTRIES.map(([situation, question]) => (
               <article
                 key={situation}
                 data-situational-entry=""
-                className="grid gap-3 border-b border-border py-5 lg:grid-cols-[minmax(16rem,0.9fr)_minmax(16rem,1fr)_auto] lg:items-center lg:gap-10"
+                className="grid gap-3 border-b border-border py-6 md:grid-cols-[minmax(16rem,0.9fr)_minmax(18rem,1.1fr)] md:gap-12"
               >
                 <h3 className="text-base font-semibold leading-6">{situation}</h3>
-                <p className="text-sm leading-6 text-muted-foreground">{question}</p>
-                <InlineLink href="/ai-platform/map">Открыть маршрут</InlineLink>
+                <div>
+                  <p className="text-sm leading-6 text-muted-foreground">{question}</p>
+                  <InlineLink href="/ai-platform/map">Открыть маршрут</InlineLink>
+                </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section aria-labelledby="platform-areas-heading" className="mt-12 border-t border-border pt-7">
+        <section aria-labelledby="platform-areas-heading" className="mt-14 md:mt-20">
           <SectionTitle>
             <span id="platform-areas-heading">Области AI Platform</span>
           </SectionTitle>
-          <div>
+          <div className="mt-7 border-t border-border">
             {mapModel.areas.map((area) => {
               const presentation = getAreaPresentation(area);
               const status = area.statusLabel === "Планируется" ? "Запланировано" : area.statusLabel === "Доступно" ? "Проверено" : "Нужна проверка";
               const content = (
                 <>
-                  <h3 className="text-base font-semibold leading-6 group-hover:text-primary group-focus-visible:text-primary">
-                    {presentation.title}
-                    {area.href === null ? null : <ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />}
-                  </h3>
+                  <div>
+                    <h3 className="text-base font-semibold leading-6 group-hover:text-primary group-focus-visible:text-primary">
+                      {presentation.title}
+                      {area.href === null ? null : <ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />}
+                    </h3>
+                    <p className="mt-2 text-xs text-muted-foreground">{status}</p>
+                  </div>
                   <p className="text-sm leading-6 text-muted-foreground">{area.purpose}</p>
-                  <p className="text-sm text-muted-foreground md:text-right">{status}</p>
                 </>
               );
 
@@ -220,7 +222,7 @@ export function AiPlatformPageContent({
                 <div
                   key={area.entityId}
                   data-platform-area-summary={area.entityId}
-                  className="grid gap-2 border-b border-border py-4 md:grid-cols-[minmax(14rem,0.85fr)_minmax(18rem,1.4fr)_8rem] md:gap-8"
+                  className="grid gap-4 border-b border-border py-5 md:grid-cols-[minmax(15rem,0.8fr)_minmax(20rem,1.2fr)] md:gap-12"
                 >
                   {content}
                 </div>
@@ -229,7 +231,7 @@ export function AiPlatformPageContent({
                   key={area.entityId}
                   href={area.href}
                   data-platform-area-summary={area.entityId}
-                  className="group grid min-h-11 gap-2 border-b border-border py-4 md:grid-cols-[minmax(14rem,0.85fr)_minmax(18rem,1.4fr)_8rem] md:gap-8"
+                  className="group grid min-h-11 gap-4 border-b border-border py-5 md:grid-cols-[minmax(15rem,0.8fr)_minmax(20rem,1.2fr)] md:gap-12"
                 >
                   {content}
                 </Link>
@@ -238,13 +240,14 @@ export function AiPlatformPageContent({
           </div>
         </section>
 
-        <section id="current-vertical" aria-labelledby="platform-vertical-heading" className="mt-12 scroll-mt-24 border-t border-border pt-7">
+        <section id="current-vertical" aria-labelledby="platform-vertical-heading" className="mt-14 scroll-mt-24 md:mt-20">
           <SectionTitle>
             <span id="platform-vertical-heading">Один путь уже разобран полностью</span>
           </SectionTitle>
-          <ol className="m-0 grid list-none p-0 md:grid-cols-2 lg:grid-cols-4">
-            {model.vertical.map((node) => (
-              <li key={node.entityId} data-vertical-node={node.entityId} className="border-b border-border py-4 md:border-r md:px-5 md:odd:pl-0 md:even:border-r-0 lg:odd:pl-5 lg:even:border-r lg:first:pl-0 lg:last:border-r-0 lg:last:pr-0">
+          <ol className="m-0 mt-7 grid list-none gap-x-14 p-0 md:grid-cols-2">
+            {model.vertical.map((node, index) => (
+              <li key={node.entityId} data-vertical-node={node.entityId} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-t border-border py-5">
+                <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
                 <Link href={node.href} className="group block min-h-11">
                   <h3 className="text-base font-semibold leading-5 group-hover:text-primary group-focus-visible:text-primary">
                     {node.title}

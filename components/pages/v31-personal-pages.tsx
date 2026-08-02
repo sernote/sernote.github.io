@@ -36,11 +36,13 @@ function HomeEntrance({ entrance }: { entrance: HomeViewModel["entrances"][numbe
   return (
     <Link
       href={entrance.href}
-      className="group grid min-h-32 grid-cols-[minmax(0,1fr)_2rem] gap-5 border-b border-border px-0 py-5 first:border-t md:min-h-36 md:border-l md:border-t md:px-7 md:py-7 md:first:border-l-0 lg:px-7"
+      data-home-entrance={entrance.id}
+      className="group grid min-h-28 grid-cols-[2rem_minmax(0,1fr)_1.5rem] gap-4 border-b border-border py-6 md:min-h-36 md:grid-cols-[2rem_minmax(0,1fr)_1.5rem] md:gap-5 md:border-b-0 md:py-8"
     >
+      <span className="pt-1 font-mono text-xs text-muted-foreground">{entrance.index}</span>
       <span>
-        <span className="block text-xl font-semibold tracking-[-0.025em]">{entrance.label}</span>
-        <span className="mt-2 block max-w-sm text-base leading-6 text-muted-foreground">
+        <span className="block text-[1.35rem] font-semibold tracking-[-0.025em] md:text-2xl">{entrance.label}</span>
+        <span className="mt-2 block max-w-sm text-sm leading-6 text-muted-foreground md:text-base">
           {entrance.description}
         </span>
       </span>
@@ -58,18 +60,18 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
   return (
     <EditorialShell currentPath="/">
       <section className="bg-[var(--surface-subtle)]">
-        <div className={`${frameClassName} pt-8 md:pt-12 lg:pt-12`}>
-          <div className="pb-10 md:pb-11">
-            <h1 className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.045em] md:text-[2.25rem]">
+        <div className={`${frameClassName} pt-10 md:pt-16 lg:pt-20`}>
+          <div className="pb-10 md:pb-12 lg:pb-14">
+            <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem] lg:text-[4.5rem]">
               Сергей Нотевский
             </h1>
-            <p className="mt-2 text-sm font-semibold text-primary md:text-base">
+            <p className="mt-4 text-sm font-semibold text-primary md:text-base">
               AI Platform Lead в Битрикс24
             </p>
           </div>
           <nav
             aria-label="Основные разделы"
-            className="grid border-t border-border md:grid-cols-3 md:border-t"
+            className="grid border-t border-border md:grid-cols-3 md:gap-12"
           >
             {model.entrances.map((entrance) => (
               <HomeEntrance key={entrance.id} entrance={entrance} />
@@ -83,8 +85,8 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
           title="Сейчас"
           action={{ href: "/materials", label: "Все материалы" }}
         />
-        <div className="grid lg:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)]">
-          <article className="border-b border-border py-8 lg:border-r lg:pr-12">
+        <div className="grid gap-2 lg:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] lg:gap-16">
+          <article className="border-b border-border py-8 lg:border-b-0 lg:py-10">
             <p className="text-sm text-muted-foreground">Статья · Блог</p>
             <h2 className="mt-3 max-w-3xl text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.035em] md:text-[2rem]">
               {article.item.title}
@@ -96,7 +98,7 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
               Читать статью
             </EditorialLink>
           </article>
-          <div className="lg:pl-12">
+          <div className="border-t border-border lg:mt-10">
             {[talk, project].map((entry) => (
               <article key={entry.item.entityId} className="border-b border-border py-6">
                 <p className="text-sm text-muted-foreground">{entry.label}</p>
@@ -300,21 +302,23 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
   return (
     <EditorialShell currentPath="/about">
       <div className={`${frameClassName} py-10 md:py-16 lg:py-16`}>
-        <header className="border-b border-border pb-10 md:pb-12">
-          <h1 className="text-[2.35rem] font-semibold leading-none tracking-[-0.05em] md:text-[2.9rem]">
-            {AUTHOR_PROFILE.name}
-          </h1>
-          <p className="mt-3 text-base font-semibold text-primary">
-            {AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}
-          </p>
-          <p className="mt-7 max-w-[48rem] text-lg leading-8 text-foreground">
+        <header className="grid gap-9 pb-12 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-10 md:pb-16 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(24rem,1.3fr)] lg:gap-16">
+          <div>
+            <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.5rem]">
+              {AUTHOR_PROFILE.name}
+            </h1>
+            <p className="mt-4 text-base font-semibold text-primary">
+              {AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}
+            </p>
+          </div>
+          <p className="max-w-[48rem] text-lg leading-8 text-foreground md:text-xl md:leading-9">
             {AUTHOR_PROFILE.aboutIntro}
           </p>
         </header>
 
-        <section className="grid gap-7 border-b border-border py-9 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12">
+        <section className="grid gap-8 border-t border-border py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">Фокус</h2>
-          <div className="space-y-7">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
             <div>
               <h3 className="text-lg font-semibold">Инженерный фокус</h3>
               <p className="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
@@ -330,7 +334,7 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
           </div>
         </section>
 
-        <section className="grid gap-7 border-b border-border py-9 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12">
+        <section className="grid gap-7 border-t border-border py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">Публикации и выступления</h2>
           <div className="border-t border-border">
             {model.evidence.map((item) => (
@@ -347,7 +351,7 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
           </div>
         </section>
 
-        <section className="grid gap-7 border-b border-border py-9 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12">
+        <section className="grid gap-8 py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">Редакционные принципы</h2>
           <div className="space-y-4 text-base leading-7 text-muted-foreground">
             <p>Отделяю проверенный факт от рабочей гипотезы и прямо обозначаю границы применимости.</p>
@@ -356,9 +360,9 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
           </div>
         </section>
 
-        <section className="grid gap-7 border-b border-border py-9 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Короткая биография для организаторов</h2>
-          <p className="max-w-3xl text-base leading-7 text-muted-foreground">
+        <section className="border-y border-border bg-[var(--surface-subtle)] px-5 py-8 md:px-8 md:py-10">
+          <h2 className="text-sm font-semibold text-primary">Короткая биография для организаторов</h2>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-foreground">
             Сергей Нотевский — AI Platform Lead в Битрикс24. Работает с выбором и адаптацией LLM, инфраструктурой инференса, качеством и эксплуатацией AI-сценариев. В публичных материалах разбирает production AI как систему инженерных решений и ответственности.
           </p>
         </section>

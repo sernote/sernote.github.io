@@ -70,6 +70,8 @@ describe("v3.1 personal pages", () => {
     expect(count(html, /<main\b/g)).toBe(1);
     expect(html).toContain("Сергей Нотевский");
     expect(html).toContain("AI Platform Lead в Битрикс24");
+    expect(html).not.toContain("Статьи, выступления и рабочая система знаний об AI Platform.");
+    expect(html).not.toContain('data-home-intro=""');
     expect(html).toContain("Сейчас");
     expect(html).toContain("Все материалы");
     expect(html).toContain('href="/blog"');

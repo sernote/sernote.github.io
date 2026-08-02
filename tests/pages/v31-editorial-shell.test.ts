@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement, type ComponentType, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -45,6 +47,22 @@ describe("v3.1 editorial shell", () => {
     expect(html).toContain("GitHub");
     expect(html).toContain("© 2026 Сергей Нотевский");
     expect(html).toContain("Меню");
+  });
+
+  it("uses a dedicated desktop navigation display rule after the Fumadocs cascade", () => {
+    const html = renderToStaticMarkup(
+      createElement(TestShell, { currentPath: "/" }, createElement("span", null, "x"))
+    );
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+
+    expect(html).toContain("editorial-desktop-nav");
+    expect(html).not.toContain("hidden items-center gap-8 md:flex");
+    expect(css).toMatch(/\.editorial-desktop-nav\s*{[^}]*display:\s*none/);
+    expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*\.editorial-desktop-nav\s*{[^}]*display:\s*flex/);
+    expect(html).toContain("editorial-mobile-nav-trigger");
+    expect(html).not.toContain("text-primary md:hidden");
+    expect(css).toMatch(/\.editorial-mobile-nav-trigger\s*{[^}]*display:\s*inline-flex/);
+    expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*\.editorial-mobile-nav-trigger\s*{[^}]*display:\s*none/);
   });
 
   it("provides minimal editorial heading and link primitives", () => {

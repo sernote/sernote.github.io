@@ -30,7 +30,7 @@ export function EditorialShell({
           <Link href="/" className="inline-flex min-h-10 items-center text-sm font-semibold">
             Сергей Нотевский
           </Link>
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="editorial-desktop-nav">
             <nav aria-label="Основная навигация" className="flex items-center gap-8">
               {RU_PRIMARY_NAV.map((item) => (
                 <Link
