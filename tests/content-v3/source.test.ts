@@ -784,22 +784,9 @@ describe("v3 personal-site view models", () => {
         "2026-07-22",
         "22 июля 2026 года",
         "Авторская статья"
-      ],
-      [
-        "prefix-cache-habr",
-        "https://habr.com/ru/companies/bitrix/articles/1033822/",
-        "external",
-        "external-note",
-        "Хабр · блог Битрикс24",
-        "2026-05-12",
-        "12 мая 2026 года",
-        "Хабр · блог Битрикс24 · внешний материал"
       ]
     ]);
-    expect(model.items.map(({ description }) => description)).toEqual([
-      nativeArticleExcerpt,
-      externalArticleExcerpt
-    ]);
+    expect(model.items.map(({ description }) => description)).toEqual([nativeArticleExcerpt]);
   });
 
   it("keeps the Blog view model immutable, body-free, and independent of generated-entry order", () => {
@@ -861,18 +848,18 @@ describe("v3 personal-site view models", () => {
 
     expect(model.entrances.map(({ id, href }) => [id, href])).toEqual([
       ["blog", "/blog"],
-      ["work", "/work"],
+      ["materials", "/materials"],
       ["ai-platform", "/ai-platform"]
     ]);
     expect(model.featured.map(({ surface, item }) => [surface, item.entityId])).toEqual([
       ["blog", "ai-platform-before-gpu"],
-      ["work", "audit-prompt-caching"],
-      ["ai-platform", "inference-plane"]
+      ["materials", "maas-vs-self-hosted-roii"],
+      ["materials", "audit-prompt-caching"]
     ]);
     expect(model.featured.map(({ item }) => [item.href, item.linkKind])).toEqual([
       ["/blog/ai-platform-before-gpu", "internal"],
-      ["/projects/audit-prompt-caching", "internal"],
-      ["/ai-platform/areas/inference-plane", "internal"]
+      ["/talks/maas-vs-self-hosted", "internal"],
+      ["/projects/audit-prompt-caching", "internal"]
     ]);
   });
 
@@ -952,10 +939,10 @@ describe("v3 personal-site view models", () => {
     );
   });
 
-  it("fails closed when a selected reference is stale", () => {
-    const withStaleArea = fixtures.map((item) =>
-      item.entityId === "inference-plane"
-        ? area("inference-plane", 3, {
+  it("fails closed when a selected material is stale", () => {
+    const withStaleTalk = fixtures.map((item) =>
+      item.entityId === "maas-vs-self-hosted-roii"
+        ? talk("maas-vs-self-hosted-roii", {
             reviewStatus: "stale",
             reviewedAt: "2026-01-01",
             reviewCycleDays: 30
@@ -963,8 +950,8 @@ describe("v3 personal-site view models", () => {
         : item
     );
 
-    expect(() => getHomeViewModel(createV3Source(withStaleArea))).toThrow(
-      /inference-plane.*not available/i
+    expect(() => getHomeViewModel(createV3Source(withStaleTalk))).toThrow(
+      /maas-vs-self-hosted-roii.*not available/i
     );
   });
 

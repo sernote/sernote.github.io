@@ -19,17 +19,65 @@ export type ReferenceBreadcrumbItemViewModel = V3ListItemViewModel &
 
 export type HomeViewModel = Readonly<{
   entrances: readonly Readonly<{
-    id: "blog" | "work" | "ai-platform";
+    id: "blog" | "materials" | "ai-platform";
     index: string;
     label: string;
     description: string;
     href: string;
   }>[];
   featured: readonly Readonly<{
-    surface: "blog" | "work" | "ai-platform";
+    surface: "blog" | "materials";
     label: string;
     item: V3ListItemViewModel;
   }>[];
+}>;
+
+export type ExternalPublicationViewModel = Readonly<{
+  entityId: string;
+  externalTypeLabel:
+    | "Авторская статья"
+    | "Экспертный комментарий"
+    | "Интервью"
+    | "Упоминание";
+  sourceName: string;
+  publishedLabel: string;
+  title: string;
+  excerpt: string;
+  participationLabel: string;
+  href: string;
+}>;
+
+export type TalkSummaryViewModel = Readonly<{
+  entityId: string;
+  title: string;
+  venue: string;
+  eventDateLabel: string;
+  formatLabel: string;
+  description: string;
+  recordingLabel: string | null;
+  thumbnail: { path: string; alt: string } | null;
+  href: string;
+}>;
+
+export type ProjectSummaryViewModel = Readonly<{
+  entityId: string;
+  title: string;
+  typeLabel: string;
+  releaseLabel: string | null;
+  description: string;
+  evidenceBoundary: string;
+  href: string;
+  repositoryUrl: string;
+}>;
+
+export type MaterialsViewModel = Readonly<{
+  talks: readonly TalkSummaryViewModel[];
+  projects: readonly ProjectSummaryViewModel[];
+  publications: readonly ExternalPublicationViewModel[];
+}>;
+
+export type AboutViewModel = Readonly<{
+  evidence: readonly V3ListItemViewModel[];
 }>;
 
 export type WorkViewModel = Readonly<{
@@ -184,11 +232,11 @@ const HOME_ENTRANCES: HomeViewModel["entrances"] = Object.freeze([
     href: "/blog"
   }),
   Object.freeze({
-    id: "work",
+    id: "materials",
     index: "02",
     label: "Материалы",
     description: "Выступления, открытые проекты и публикации.",
-    href: "/work"
+    href: "/materials"
   }),
   Object.freeze({
     id: "ai-platform",
@@ -348,22 +396,63 @@ function selectFeatured(
   return normalizeListItem(visibleRecord);
 }
 
+function requireEligibleEntity(
+  source: V3Source,
+  expectedType: V3Type,
+  entityId: string,
+  expectedArticleKind?: "native" | "external-note"
+): V3SourceItem {
+  const record = source
+    .listPublic(undefined, "ru")
+    .find((candidate) => candidate.entityId === entityId);
+  const featured = source
+    .listFeatured(undefined, "ru")
+    .some((candidate) => candidate.entityId === entityId);
+
+  if (
+    record === undefined ||
+    record.publicationStatus !== "published" ||
+    record.reviewStatus === "stale" ||
+    !featured
+  ) {
+    throw new Error(`Required public ${expectedType} ${entityId} is not available`);
+  }
+  if (record.type !== expectedType) {
+    throw new Error(`Required ${entityId}: expected ${expectedType}, found ${record.type}`);
+  }
+  if (
+    expectedArticleKind !== undefined &&
+    (record.type !== "article" || record.kind !== expectedArticleKind)
+  ) {
+    throw new Error(`Required article ${entityId} must be ${expectedArticleKind}`);
+  }
+  return record;
+}
+
 export function getHomeViewModel(source: V3Source): HomeViewModel {
+  const article = requireEligibleEntity(
+    source,
+    "article",
+    "ai-platform-before-gpu",
+    "native"
+  );
+  const talk = requireEligibleEntity(source, "talk", "maas-vs-self-hosted-roii");
+  const project = requireEligibleEntity(source, "project", "audit-prompt-caching");
   const featured: HomeViewModel["featured"] = Object.freeze([
     Object.freeze({
       surface: "blog",
-      label: "Из блога",
-      item: selectFeatured(source, "article", "ai-platform-before-gpu")
+      label: "Статья",
+      item: normalizeListItem(article)
     }),
     Object.freeze({
-      surface: "work",
+      surface: "materials",
+      label: "Выступление",
+      item: normalizeListItem(talk)
+    }),
+    Object.freeze({
+      surface: "materials",
       label: "Открытый проект",
-      item: selectFeatured(source, "project", "audit-prompt-caching")
-    }),
-    Object.freeze({
-      surface: "ai-platform",
-      label: "Из AI Platform",
-      item: selectFeatured(source, "platform-area", "inference-plane")
+      item: normalizeListItem(project)
     })
   ]);
 
@@ -406,23 +495,170 @@ export function getWorkViewModel(source: V3Source): WorkViewModel {
 
 export function getBlogViewModel(source: V3Source): BlogViewModel {
   const items = Object.freeze(
-    source.listPublic("article", "ru").map((record): BlogListItemViewModel => {
-      if (record.type !== "article" || record.publishedAt === null) {
-        throw new Error(`Blog record ${record.entityId} is not a published article`);
-      }
+    source
+      .listPublic("article", "ru")
+      .filter((record) => record.type === "article" && record.kind === "native")
+      .sort((left, right) => {
+        if (left.type !== "article" || right.type !== "article") return 0;
+        return (
+          (right.publishedAt ?? "").localeCompare(left.publishedAt ?? "") ||
+          Number(right.editorialFormat === "article") -
+            Number(left.editorialFormat === "article") ||
+          left.entityId.localeCompare(right.entityId)
+        );
+      })
+      .map((record): BlogListItemViewModel => {
+        if (
+          record.type !== "article" ||
+          record.kind !== "native" ||
+          record.publishedAt === null
+        ) {
+          throw new Error(`Blog record ${record.entityId} is not a published article`);
+        }
 
+        return Object.freeze({
+          ...normalizeListItem(record),
+          description: record.excerpt,
+          articleKind: record.kind,
+          sourceName: record.sourceName,
+          publishedAt: record.publishedAt,
+          publishedLabel: formatRussianDate(record.publishedAt)
+        });
+      })
+  );
+
+  return Object.freeze({ items });
+}
+
+const EXTERNAL_TYPE_LABELS = {
+  "authored-article": "Авторская статья",
+  "expert-comment": "Экспертный комментарий",
+  interview: "Интервью",
+  "media-mention": "Упоминание"
+} as const;
+
+const TALK_FORMAT_LABELS = {
+  talk: "Доклад",
+  webinar: "Вебинар",
+  podcast: "Подкаст",
+  interview: "Интервью"
+} as const;
+
+const MATERIALS_EXTERNAL_IDS = [
+  "prefix-cache-the-code",
+  "prefix-cache-habr",
+  "effective-cost-habr",
+  "agent-skills-habr",
+  "prompt-engineering-vc"
+] as const;
+
+const ABOUT_EVIDENCE_IDS = [
+  ["article", "prefix-cache-the-code", "external-note"],
+  ["article", "prefix-cache-habr", "external-note"],
+  ["talk", "maas-vs-self-hosted-roii"],
+  ["project", "audit-prompt-caching"],
+  ["article", "agent-skills-habr", "external-note"]
+] as const;
+
+export function getMaterialsViewModel(source: V3Source): MaterialsViewModel {
+  requireEligibleEntity(source, "talk", "maas-vs-self-hosted-roii");
+  requireEligibleEntity(source, "project", "audit-prompt-caching");
+  for (const entityId of MATERIALS_EXTERNAL_IDS) {
+    requireEligibleEntity(source, "article", entityId, "external-note");
+  }
+
+  const talks = Object.freeze(
+    source
+      .listPublic("talk", "ru")
+      .sort((left, right) => {
+        if (left.type !== "talk" || right.type !== "talk") return 0;
+        return (
+          right.eventDate.localeCompare(left.eventDate) ||
+          left.entityId.localeCompare(right.entityId)
+        );
+      })
+      .map((record): TalkSummaryViewModel => {
+        if (record.type !== "talk") {
+          throw new Error(`Materials received ${record.type} as talk`);
+        }
+        return Object.freeze({
+          entityId: record.entityId,
+          title: record.title,
+          venue: record.venue,
+          eventDateLabel: formatRussianDate(record.eventDate),
+          formatLabel: TALK_FORMAT_LABELS[record.format],
+          description: record.abstract,
+          recordingLabel: record.recordingUrl === null ? null : "Смотреть запись",
+          thumbnail:
+            record.thumbnail === null
+              ? null
+              : Object.freeze({ path: record.thumbnail.path, alt: record.thumbnail.alt }),
+          href: getCanonicalUrl(record)
+        });
+      })
+  );
+
+  const projects = Object.freeze(
+    source.listPublic("project", "ru").map((record): ProjectSummaryViewModel => {
+      if (record.type !== "project") {
+        throw new Error(`Materials received ${record.type} as project`);
+      }
       return Object.freeze({
-        ...normalizeListItem(record),
-        description: record.excerpt,
-        articleKind: record.kind,
-        sourceName: record.sourceName,
-        publishedAt: record.publishedAt,
-        publishedLabel: formatRussianDate(record.publishedAt)
+        entityId: record.entityId,
+        title: record.title,
+        typeLabel: "Открытый проект",
+        releaseLabel: record.verifiedRelease?.version ?? null,
+        description: record.description,
+        evidenceBoundary: record.supportBoundary,
+        href: getCanonicalUrl(record),
+        repositoryUrl: record.repositoryUrl
       });
     })
   );
 
-  return Object.freeze({ items });
+  const publications = Object.freeze(
+    source
+      .listPublic("article", "ru")
+      .filter((record) => record.type === "article" && record.kind === "external-note")
+      .sort((left, right) =>
+        (right.publishedAt ?? "").localeCompare(left.publishedAt ?? "") ||
+        left.entityId.localeCompare(right.entityId)
+      )
+      .map((record): ExternalPublicationViewModel => {
+        if (
+          record.type !== "article" ||
+          record.kind !== "external-note" ||
+          record.externalType === null ||
+          record.sourceName === null ||
+          record.sourceUrl === null ||
+          record.participationLabel === null ||
+          record.publishedAt === null
+        ) {
+          throw new Error(`External publication ${record.entityId} is incomplete`);
+        }
+        return Object.freeze({
+          entityId: record.entityId,
+          externalTypeLabel: EXTERNAL_TYPE_LABELS[record.externalType],
+          sourceName: record.sourceName,
+          publishedLabel: formatRussianDate(record.publishedAt),
+          title: record.title,
+          excerpt: record.excerpt,
+          participationLabel: record.participationLabel,
+          href: record.sourceUrl
+        });
+      })
+  );
+
+  return Object.freeze({ talks, projects, publications });
+}
+
+export function getAboutViewModel(source: V3Source): AboutViewModel {
+  const evidence = Object.freeze(
+    ABOUT_EVIDENCE_IDS.map(([type, entityId, articleKind]) =>
+      normalizeListItem(requireEligibleEntity(source, type, entityId, articleKind))
+    )
+  );
+  return Object.freeze({ evidence });
 }
 
 export function getTalksViewModel(source: V3Source): TalksViewModel {

@@ -48,16 +48,6 @@ const project: V3ListItemViewModel = Object.freeze({
   linkKind: "internal"
 });
 
-const platformArea: V3ListItemViewModel = Object.freeze({
-  entityId: "inference-plane",
-  contentType: "platform-area",
-  title: "Inference Plane",
-  description: "Serving, pools, scheduling, cache и workload boundaries.",
-  meta: "Область AI Platform",
-  href: "/ai-platform/areas/inference-plane",
-  linkKind: "internal"
-});
-
 const talk: V3ListItemViewModel = Object.freeze({
   entityId: "maas-vs-self-hosted-roii",
   contentType: "talk",
@@ -109,13 +99,13 @@ const TestableContentDetailPage = ContentDetailPage as ComponentType<
 const homeModel: HomeViewModel = Object.freeze({
   entrances: Object.freeze([
     Object.freeze({ id: "blog", index: "01", label: "Блог", description: "Статьи.", href: "/blog" }),
-    Object.freeze({ id: "work", index: "02", label: "Материалы", description: "Публичная работа.", href: "/work" }),
+    Object.freeze({ id: "materials", index: "02", label: "Материалы", description: "Публичная работа.", href: "/materials" }),
     Object.freeze({ id: "ai-platform", index: "03", label: "AI Platform", description: "Reference.", href: "/ai-platform" })
   ]),
   featured: Object.freeze([
     Object.freeze({ surface: "blog", label: "Из блога", item: nativeArticle }),
-    Object.freeze({ surface: "work", label: "Открытый проект", item: project }),
-    Object.freeze({ surface: "ai-platform", label: "Из AI Platform", item: platformArea })
+    Object.freeze({ surface: "materials", label: "Открытый проект", item: project }),
+    Object.freeze({ surface: "materials", label: "Выступление", item: talk })
   ])
 });
 
