@@ -15,13 +15,11 @@ import {
   AboutPageContent,
   BlogPageContent,
   ContactPageContent,
-  HomePageContent,
   ProjectsPageContent,
   TalksPageContent,
   WorkPageContent
 } from "../../components/pages/v3-marketing-pages";
 import type {
-  HomeViewModel,
   ProjectsViewModel,
   TalksViewModel,
   V3ListItemViewModel,
@@ -95,19 +93,6 @@ const blogModel = Object.freeze({
 const TestableContentDetailPage = ContentDetailPage as ComponentType<
   Omit<ContentDetailPageProps, "children">
 >;
-
-const homeModel: HomeViewModel = Object.freeze({
-  entrances: Object.freeze([
-    Object.freeze({ id: "blog", index: "01", label: "Блог", description: "Статьи.", href: "/blog" }),
-    Object.freeze({ id: "materials", index: "02", label: "Материалы", description: "Публичная работа.", href: "/materials" }),
-    Object.freeze({ id: "ai-platform", index: "03", label: "AI Platform", description: "Reference.", href: "/ai-platform" })
-  ]),
-  featured: Object.freeze([
-    Object.freeze({ surface: "blog", label: "Из блога", item: nativeArticle }),
-    Object.freeze({ surface: "materials", label: "Открытый проект", item: project }),
-    Object.freeze({ surface: "materials", label: "Выступление", item: talk })
-  ])
-});
 
 const workModel: WorkViewModel = Object.freeze({
   groups: Object.freeze([
@@ -206,45 +191,6 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).not.toContain('href="/blog/short-prompt-not-cheap"');
   });
 
-  it("renders the author first and all three entrances in one main", () => {
-    const html = renderToStaticMarkup(
-      createElement(HomePageContent, { model: homeModel })
-    );
-
-    expect(count(html, /<main\b/g)).toBe(1);
-    expect(count(html, /<h1\b/g)).toBe(1);
-    expect(html).toContain("AI Platform Lead в Битрикс24");
-    expect(html).not.toContain("AI PLATFORM LEAD · БИТРИКС24");
-    expect(html).toContain("Сергей Нотевский");
-    expect(html).toContain(
-      "Отвечаю за инференс, качество ответов, стоимость запроса и надёжность ИИ-сервисов под реальной нагрузкой."
-    );
-    for (const href of ["/blog", "/work", "/ai-platform"]) {
-      expect(html).toContain(`href="${href}"`);
-    }
-    for (const entityId of [
-      "ai-platform-before-gpu",
-      "audit-prompt-caching",
-      "inference-plane"
-    ]) {
-      expect(html).toContain(`data-entity-id="${entityId}"`);
-    }
-    for (const label of ["Из блога", "Открытый проект", "Из AI Platform"]) {
-      expect(html).toContain(`>${label}<`);
-    }
-    for (const copy of [
-      "Главное",
-      "По одному материалу из каждого раздела",
-      "Границы платформы, control plane, путь исполнения и контракты с продуктовыми командами.",
-      "MaaS, self-hosted и гибридные схемы: запуск моделей, наблюдаемость и эксплуатационные решения.",
-      "Оценка качества, релизный контроль, стоимость сценария и понятное распределение ответственности.",
-      "Начать разговор"
-    ]) {
-      expect(html).toContain(copy);
-    }
-    expect(html).not.toContain("Production AI Platform Handbook");
-  });
-
   it("renders Materials as three consecutive groups without a fake writing index", () => {
     const html = renderToStaticMarkup(
       createElement(WorkPageContent, { model: workModel })
@@ -283,7 +229,7 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).toContain("Свои ИИ-модели или API по подписке?");
     expect(html).toContain(talksModel.items[0].description);
     expect(html).toMatch(
-      /<a(?=[^>]*href="\/work")(?=[^>]*aria-current="page")[^>]*>/
+      /<a(?=[^>]*href="\/materials")(?=[^>]*aria-current="page")[^>]*>/
     );
     expect(html).toMatch(
       /<a(?=[^>]*href="https:\/\/t\.me\/s\/sergeinotevskii")(?=[^>]*target="_blank")(?=[^>]*rel="noreferrer")[^>]*>/
@@ -306,7 +252,7 @@ describe("v3 complete top-level personal pages", () => {
     expect(html).toContain("Открытый проект · v0.1.3");
     expect(html).toContain(projectsModel.items[0].description);
     expect(html).toMatch(
-      /<a(?=[^>]*href="\/work")(?=[^>]*aria-current="page")[^>]*>/
+      /<a(?=[^>]*href="\/materials")(?=[^>]*aria-current="page")[^>]*>/
     );
     expect(html).not.toMatch(/\b(?:stars?|forks?)\b/i);
   });
@@ -582,17 +528,11 @@ describe("v3 Blog route contract", () => {
     expect(routeText).toContain("notFound()");
     expect(routeText).toContain("DocsBody");
     expect(routeText).toContain("EditorialMdxLink");
-    expect(routeText).toContain('overline="Авторская статья"');
-    expect(routeText).toContain('name: "Сергей Нотевский"');
-    expect(routeText).toContain('href: "/about"');
-    expect(routeText).toContain("Продолжить в AI Platform");
-    expect(routeText).toContain(
-      "Карта областей и практический reference по построению production AI platform: от стратегии и control plane до инференса, качества, стоимости и эксплуатации."
-    );
-    expect(routeText).toContain('href="/ai-platform"');
-    expect(routeText).toContain("Открыть AI Platform");
-    expect(routeText).toContain("Вопрос или предложение по материалу");
-    expect(routeText).toContain("Связаться с Сергеем");
+    expect(routeText).toContain("V31ContentDetailPage");
+    expect(routeText).toContain('authorHref="/about"');
+    expect(routeText).toContain('kindLabel={isNote ? "Короткая заметка" : "Статья"}');
+    expect(routeText).toMatch(/v3Source\s*\.getRelatedForPage\(record, 3\)/);
+    expect(routeText).toContain('contactLabel="Обсудить материал"');
     expect(routeText).not.toContain("DocsPage");
     expect(routeText).not.toContain("dangerouslySetInnerHTML");
     expect(routeText).not.toContain("short-prompt-not-cheap");
@@ -601,22 +541,15 @@ describe("v3 Blog route contract", () => {
 });
 
 describe("v3 Talks and Projects route contract", () => {
-  it.each([
-    ["talks", "TalksPageContent", "getTalksViewModel", 'v3MarketingMetadata("talks")'],
-    [
-      "projects",
-      "ProjectsPageContent",
-      "getProjectsViewModel",
-      'v3MarketingMetadata("projects")'
-    ]
-  ] as const)("keeps the %s index source-backed", (segment, component, builder, metadata) => {
+  it.each(["talks", "projects"] as const)("keeps the %s index as an alias to Materials", (segment) => {
     const routePath = join(process.cwd(), `app/(en)/${segment}/page.tsx`);
     const routeText = readFileSync(routePath, "utf8");
 
-    expect(routeText).toContain(component);
-    expect(routeText).toContain(`${builder}(v3Source)`);
-    expect(routeText).toContain(metadata);
-    expect(routeText).not.toContain("getDictionary");
+    expect(routeText).toContain("StaticAliasBody");
+    expect(routeText).toContain("EditorialShell");
+    expect(routeText).toContain('const DESTINATION = "/materials"');
+    expect(routeText).toContain('staticAliasMetadata(DESTINATION, "ru")');
+    expect(routeText).toContain("destination={DESTINATION}");
   });
 
   it.each([
@@ -625,20 +558,18 @@ describe("v3 Talks and Projects route contract", () => {
       "maas-vs-self-hosted",
       "talk",
       "talkMetadata",
-      "Смотреть запись",
-      "/ai-platform/map"
+      "Смотреть запись"
     ],
     [
       "projects",
       "audit-prompt-caching",
       "project",
       "projectMetadata",
-      "Открыть на GitHub",
-      "/ai-platform/components/prefix-cache"
+      "Открыть на GitHub"
     ]
   ] as const)(
     "builds the %s exemplar from source-generated params",
-    (segment, slug, contentType, metadataBuilder, primaryAction, relatedHref) => {
+    (segment, slug, contentType, metadataBuilder, primaryAction) => {
       const routePath = join(process.cwd(), `app/(en)/${segment}/[slug]/page.tsx`);
 
       expect(existsSync(routePath)).toBe(true);
@@ -650,13 +581,12 @@ describe("v3 Talks and Projects route contract", () => {
       expect(routeText).toContain(`v3Source.getBySlug("${contentType}", slug, "ru")`);
       expect(routeText).toContain("notFound()");
       expect(routeText).toContain(metadataBuilder);
-      expect(routeText).toContain("ContentDetailPage");
+      expect(routeText).toContain("V31ContentDetailPage");
       expect(routeText).toContain("DocsBody");
       expect(routeText).toContain("EditorialMdxLink");
       expect(routeText).toContain(primaryAction);
-      expect(routeText).toContain(relatedHref);
-      expect(routeText).toContain('name: "Сергей Нотевский"');
-      expect(routeText).toContain('href: "/about"');
+      expect(routeText).toMatch(/v3Source\s*\.getRelatedForPage\(record, 3\)/);
+      expect(routeText).toContain('authorHref="/about"');
     }
   );
 });
