@@ -22,7 +22,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
         <button
           ref={triggerRef}
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center text-sm font-medium text-primary md:hidden"
+          className="editorial-mobile-nav-trigger min-h-11 min-w-11 items-center justify-center text-sm font-medium text-primary"
         >
           Меню
         </button>

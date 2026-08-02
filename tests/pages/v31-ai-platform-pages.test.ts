@@ -117,6 +117,7 @@ describe("v3.1 AI Platform landing", () => {
     expect(count(html, /data-situational-entry=/g)).toBe(4);
     expect(count(html, /data-platform-area-summary=/g)).toBe(7);
     expect(count(html, /data-vertical-node=/g)).toBe(4);
+    expect(html).toContain('data-platform-hero=""');
     expect(html).toContain("без универсального победителя");
     expect(html).toContain('href="/ai-platform/map"');
     expect(html).toContain('href="/blog/ai-platform-before-gpu"');
@@ -134,6 +135,7 @@ describe("v3.1 AI Platform map", () => {
     expect(count(html, /data-area-status="Запланировано"/g)).toBe(6);
     expect(count(html, />Ключевой вопрос</g)).toBe(7);
     expect(count(html, />Основные компоненты</g)).toBe(7);
+    expect(count(html, /data-map-layout="editorial-two-column"/g)).toBe(7);
   });
 
   it("labels the page as a capability map and preserves a single reading direction", () => {

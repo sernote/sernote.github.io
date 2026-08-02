@@ -222,6 +222,26 @@ a {
   overflow-x: auto;
 }
 
+.editorial-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.editorial-mobile-nav-trigger {
+  display: inline-flex;
+}
+
+@media (min-width: 768px) {
+  .editorial-desktop-nav {
+    display: flex;
+  }
+
+  .editorial-mobile-nav-trigger {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
