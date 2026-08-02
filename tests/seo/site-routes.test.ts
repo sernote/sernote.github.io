@@ -47,7 +47,7 @@ describe("v3 site route policy", () => {
   it("defines the exact compact Russian primary navigation", () => {
     expect(RU_PRIMARY_NAV).toEqual([
       { label: "Блог", href: "/blog" },
-      { label: "Материалы", href: "/work" },
+      { label: "Материалы", href: "/materials" },
       { label: "AI Platform", href: "/ai-platform" },
       { label: "Обо мне", href: "/about" }
     ]);
@@ -126,10 +126,10 @@ describe("v3 site route policy", () => {
     expect(isActiveNavItem("/blog/cache-shape", "/blog")).toBe(true);
     expect(isActiveNavItem("/blogroll", "/blog")).toBe(false);
 
-    for (const path of ["/work", "/talks", "/talks/maas", "/projects/audit-cache"]) {
-      expect(isActiveNavItem(path, "/work"), path).toBe(true);
+    for (const path of ["/materials", "/work", "/talks", "/talks/maas", "/projects/audit-cache"]) {
+      expect(isActiveNavItem(path, "/materials"), path).toBe(true);
     }
-    expect(isActiveNavItem("/projects-archive", "/work")).toBe(false);
+    expect(isActiveNavItem("/projects-archive", "/materials")).toBe(false);
 
     expect(isActiveNavItem("/ai-platform/areas/inference", "/ai-platform")).toBe(true);
     expect(isActiveNavItem("/ai-platforms", "/ai-platform")).toBe(false);

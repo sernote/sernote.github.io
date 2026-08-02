@@ -17,6 +17,7 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm vitest run tests/build/static-export-contract.test.ts && pnpm verify:reference && pnpm verify:export"
   },
   "dependencies": {
+    "@fontsource-variable/onest": "5.3.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-progress": "^1.1.7",
