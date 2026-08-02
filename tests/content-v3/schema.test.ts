@@ -209,6 +209,36 @@ describe("v3 article publication contract", () => {
   });
 
   it.each([
+    ["editorialFormat", () => nativeArticle()],
+    ["externalType", () => externalArticle()],
+    ["sourceAuthorProfileUrl", () => externalArticle()],
+    ["participationLabel", () => externalArticle()]
+  ] as const)("rejects omitted required article field %s at its issue path", (field, makeArticle) => {
+    const candidate: Record<string, unknown> = makeArticle();
+    delete candidate[field];
+
+    const result = v3FrontmatterSchema.safeParse(candidate);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((issue) => issue.path[0] === field)).toBe(true);
+    }
+  });
+
+  it("rejects a non-HTTPS sourceAuthorProfileUrl at its issue path", () => {
+    const result = v3FrontmatterSchema.safeParse(
+      externalArticle({ sourceAuthorProfileUrl: "http://example.com/authors/platform-engineer" })
+    );
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some((issue) => issue.path[0] === "sourceAuthorProfileUrl")
+      ).toBe(true);
+    }
+  });
+
+  it.each([
     ["externalType", "authored-article"],
     ["sourceName", "Habr"],
     ["sourceUrl", "https://example.com/articles/prefix-cache"],
