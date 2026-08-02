@@ -220,6 +220,11 @@ describe("v3.1 personal-page view models", () => {
       ids.indexOf("workload-shape-over-model-name")
     );
     expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
+    expect(model.items.map(({ editorialFormat }) => editorialFormat)).toEqual([
+      "article",
+      "note"
+    ]);
+    expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);
   });
 
   it("builds complete Materials groups and keeps external publications newest first without local routes", () => {

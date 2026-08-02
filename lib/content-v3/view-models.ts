@@ -95,6 +95,8 @@ export type WorkViewModel = Readonly<{
 export type BlogListItemViewModel = V3ListItemViewModel &
   Readonly<{
     articleKind: "native" | "external-note";
+    editorialFormat?: "article" | "note";
+    topics?: readonly string[];
     sourceName: string | null;
     publishedAt: string;
     publishedLabel: string;
@@ -511,6 +513,7 @@ export function getBlogViewModel(source: V3Source): BlogViewModel {
         if (
           record.type !== "article" ||
           record.kind !== "native" ||
+          record.editorialFormat === null ||
           record.publishedAt === null
         ) {
           throw new Error(`Blog record ${record.entityId} is not a published article`);
@@ -520,6 +523,8 @@ export function getBlogViewModel(source: V3Source): BlogViewModel {
           ...normalizeListItem(record),
           description: record.excerpt,
           articleKind: record.kind,
+          editorialFormat: record.editorialFormat,
+          topics: Object.freeze([...record.topics]),
           sourceName: record.sourceName,
           publishedAt: record.publishedAt,
           publishedLabel: formatRussianDate(record.publishedAt)

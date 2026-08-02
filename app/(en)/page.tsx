@@ -1,4 +1,4 @@
-import { HomePageContent } from "@/components/pages/v3-marketing-pages";
+import { HomePageContent } from "@/components/pages/v31-personal-pages";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getHomeViewModel } from "@/lib/content-v3/view-models";
 import { v3Source } from "@/lib/content-v3/source";

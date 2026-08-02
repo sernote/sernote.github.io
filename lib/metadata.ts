@@ -18,6 +18,7 @@ type ToolKey = "prefix" | "cost" | "quality";
 type V3MarketingPageKey =
   | "home"
   | "blog"
+  | "materials"
   | "work"
   | "talks"
   | "projects"
@@ -51,6 +52,13 @@ const V3_RU_MARKETING_PAGES = {
     title: "Блог — Сергей Нотевский",
     description:
       "Авторские разборы и короткие инженерные заметки о production AI-платформах. Внешние материалы ведут прямо на исходную площадку."
+  },
+  materials: {
+    path: "/materials",
+    alternatePath: null,
+    title: "Материалы — Сергей Нотевский",
+    description:
+      "Выступления, интервью, открытые проекты и внешние публикации Сергея Нотевского о production AI-платформах."
   },
   work: {
     path: "/work",

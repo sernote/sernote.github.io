@@ -1,16 +1,17 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocsBody } from "fumadocs-ui/page";
 
 import {
-  ContentDetailPage,
-  EditorialMdxLink,
-  type ContentDetailFact
-} from "@/components/pages/content-detail-page";
+  V31ContentDetailPage,
+  type DetailFact,
+  type DetailRelatedItem
+} from "@/components/pages/v31-content-detail-page";
+import { EditorialMdxLink } from "@/components/pages/content-detail-page";
 import { getMDXComponents } from "@/components/mdx";
 import { JsonLd } from "@/components/seo/json-ld";
+import { getCanonicalUrl } from "@/lib/content-v3/registry";
 import { v3Source } from "@/lib/content-v3/source";
 import { formatRussianDate } from "@/lib/content-v3/view-models";
 import { talkMetadata } from "@/lib/metadata";
@@ -49,8 +50,9 @@ export default async function TalkPage({
   const { slug } = await params;
   const record = getTalk(slug);
   const MDX = record.body;
-  const facts: ContentDetailFact[] = [
+  const facts: DetailFact[] = [
     { label: "Площадка", value: record.venue },
+    { label: "Формат", value: record.format === "talk" ? "Доклад" : record.format },
     {
       label: "Дата выступления",
       value: formatRussianDate(record.eventDate),
@@ -66,21 +68,31 @@ export default async function TalkPage({
         ]
       : [])
   ];
+  const related: DetailRelatedItem[] = v3Source.getRelatedForPage(record, 3).map((item) => ({
+    href: getCanonicalUrl(item),
+    title: item.title,
+    meta: item.type === "article" ? "Блог" : item.type === "project" ? "Открытый проект" : "AI Platform"
+  }));
+
+  function timestampLabel(seconds: number): string {
+    const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const remainder = (seconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${remainder}`;
+  }
 
   return (
     <>
       <JsonLd data={buildTalkStructuredData(record)} />
-      <ContentDetailPage
-      currentPath={`/talks/${record.slug}`}
-      overline="Доклад"
-      title={record.title}
-      deck={record.abstract}
-      author={{ name: "Сергей Нотевский", href: "/about" }}
-      facts={facts}
-      media={
-        record.thumbnail !== null && record.recordingUrl !== null ? (
+      <V31ContentDetailPage
+        currentPath={`/talks/${record.slug}`}
+        kindLabel="Выступление"
+        title={record.title}
+        lead={record.abstract}
+        authorHref="/about"
+        facts={facts}
+        media={record.thumbnail !== null ? (
           <a
-            href={record.recordingUrl}
+            href={record.recordingUrl ?? record.thumbnail.sourceUrl}
             target="_blank"
             rel="noreferrer"
             className="group block border border-border/80 bg-muted/15 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -96,48 +108,31 @@ export default async function TalkPage({
             />
             <span className="sr-only">Смотреть запись на YouTube, откроется в новой вкладке</span>
           </a>
-        ) : null
-      }
-      primaryAction={
-        record.recordingUrl
-          ? {
-              label: "Смотреть запись",
-              href: record.recordingUrl,
-              external: true
-            }
-          : undefined
-      }
-      afterContent={
-        <section aria-labelledby="talk-next-step-heading" className="border-t border-border/80 pt-8">
-          <p className="font-mono text-xs uppercase tracking-[0.12em] text-primary">
-            AI Platform
-          </p>
-          <h2
-            id="talk-next-step-heading"
-            className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl"
-          >
-            Разложить решение по областям платформы
-          </h2>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">
-            Карта отделяет стратегический выбор от control plane, инференса, качества, эксплуатации и безопасности.
-          </p>
-          <Link
-            href="/ai-platform/map"
-            className="mt-5 inline-flex min-h-11 items-center border-b border-primary/60 py-2 text-sm font-semibold text-foreground hover:text-primary"
-          >
-            Открыть карту AI Platform
-          </Link>
+        ) : null}
+        primaryAction={record.recordingUrl ? { label: "Смотреть запись", href: record.recordingUrl, external: true } : undefined}
+        related={related}
+        contactLabel="Пригласить выступить"
+      >
+        <section>
+          <h2>Ключевые выводы</h2>
+          <ul>
+            {record.takeaways.map((takeaway) => (
+              <li key={takeaway.label}>
+                <strong>{takeaway.label}.</strong> {takeaway.text}{" "}
+                {takeaway.timestampSeconds !== null && record.recordingUrl ? (
+                  <a href={`${record.recordingUrl}&t=${takeaway.timestampSeconds}s`} target="_blank" rel="noreferrer">
+                    {timestampLabel(takeaway.timestampSeconds)}
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          {record.slidesUrl ? <p><a href={record.slidesUrl}>Открыть слайды</a></p> : null}
         </section>
-      }
-      contact={{
-        context: "Обсудить тему доклада или выступление",
-        label: "Связаться с Сергеем"
-      }}
-    >
-      <DocsBody>
-        <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
-      </DocsBody>
-      </ContentDetailPage>
+        <DocsBody>
+          <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
+        </DocsBody>
+      </V31ContentDetailPage>
     </>
   );
 }
