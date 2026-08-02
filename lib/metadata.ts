@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AUTHOR_PROFILE } from "@/lib/author-profile";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
 import type {
   V3Article,
@@ -209,11 +210,11 @@ export function articleMetadata(article: V3Article): Metadata {
     title: article.title,
     description: article.description
   });
-  const authorUrl = absoluteUrl(article.locale, "/about");
+  const authorUrl = AUTHOR_PROFILE.url;
 
   return {
     ...baseMetadata,
-    authors: [{ name: "Сергей Нотевский", url: authorUrl }],
+    authors: [{ name: AUTHOR_PROFILE.name, url: authorUrl }],
     keywords: article.topics,
     openGraph: {
       ...baseMetadata.openGraph,
@@ -257,8 +258,8 @@ function localEditorialMetadata(
     ...metadata,
     authors: [
       {
-        name: "Сергей Нотевский",
-        url: absoluteUrl(record.locale, "/about")
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url
       }
     ],
     keywords: record.topics
@@ -304,8 +305,8 @@ export function referenceMetadata(record: V3Reference): Metadata {
     title: { absolute: title },
     authors: [
       {
-        name: "Сергей Нотевский",
-        url: absoluteUrl(record.locale, "/about")
+        name: AUTHOR_PROFILE.name,
+        url: AUTHOR_PROFILE.url
       }
     ],
     keywords: record.topics

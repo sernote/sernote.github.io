@@ -6,6 +6,7 @@ import type {
   V3Project,
   V3Talk
 } from "@/lib/content-v3/schema";
+import { AUTHOR_PROFILE } from "@/lib/author-profile";
 import { getCanonicalUrl, type V3Type } from "@/lib/content-v3/registry";
 import { canonicalUrl, publicFileUrl } from "@/lib/seo/urls";
 
@@ -20,6 +21,7 @@ export type StructuredData = Readonly<
     readonly "@context": "https://schema.org";
     readonly "@type":
       | "Person"
+      | "ProfilePage"
       | "WebSite"
       | "BlogPosting"
       | "VideoObject"
@@ -50,8 +52,6 @@ export type ReferenceBreadcrumbContext = Readonly<{
   parentComponentPrimaryAreaId: string | null;
 }>;
 
-const AUTHOR_NAME = "Сергей Нотевский";
-
 function validated<T extends JsonObject>(value: T): StructuredData {
   return Object.freeze(value) as unknown as StructuredData;
 }
@@ -59,9 +59,9 @@ function validated<T extends JsonObject>(value: T): StructuredData {
 function personReference(): JsonObject {
   return {
     "@type": "Person",
-    "@id": `${canonicalUrl("/")}#person`,
-    name: AUTHOR_NAME,
-    url: canonicalUrl("/")
+    "@id": AUTHOR_PROFILE.id,
+    name: AUTHOR_PROFILE.name,
+    url: AUTHOR_PROFILE.url
   };
 }
 
@@ -172,11 +172,6 @@ function assertReferenceBreadcrumbContext(
 }
 
 export function buildHomeStructuredData(): readonly StructuredData[] {
-  const person = validated({
-    "@context": "https://schema.org",
-    ...personReference(),
-    jobTitle: "AI Platform Lead"
-  });
   const website = validated({
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -184,10 +179,30 @@ export function buildHomeStructuredData(): readonly StructuredData[] {
     name: "Сергей Нотевский",
     url: canonicalUrl("/"),
     inLanguage: "ru",
-    author: personReference()
+    author: { "@id": AUTHOR_PROFILE.id }
   });
 
-  return Object.freeze([person, website]);
+  return Object.freeze([website]);
+}
+
+export function buildAboutStructuredData(): readonly StructuredData[] {
+  const profilePage = validated({
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${AUTHOR_PROFILE.url}#profile-page`,
+    url: AUTHOR_PROFILE.url,
+    mainEntity: {
+      ...personReference(),
+      jobTitle: AUTHOR_PROFILE.role,
+      worksFor: {
+        "@type": "Organization",
+        name: AUTHOR_PROFILE.company
+      },
+      sameAs: AUTHOR_PROFILE.sameAs
+    }
+  });
+
+  return Object.freeze([profilePage]);
 }
 
 export function buildArticleStructuredData(
@@ -252,7 +267,7 @@ export function buildTalkStructuredData(talk: V3Talk): readonly StructuredData[]
     video,
     breadcrumbs([
       { name: "Главная", path: "/" },
-      { name: "Выступления", path: "/talks" },
+      { name: "Материалы", path: "/materials" },
       { name: talk.title, path: getCanonicalUrl(talk) }
     ])
   ]);
@@ -283,7 +298,7 @@ export function buildProjectStructuredData(
     sourceCode,
     breadcrumbs([
       { name: "Главная", path: "/" },
-      { name: "Проекты", path: "/projects" },
+      { name: "Материалы", path: "/materials" },
       { name: project.title, path: getCanonicalUrl(project) }
     ])
   ]);

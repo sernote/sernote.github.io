@@ -601,7 +601,8 @@ describe("static export audit — production integration", () => {
 
   it.runIf(hasExport)("emits exactly 16 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
-      "index.html": ["Person", "WebSite"],
+      "index.html": ["WebSite"],
+      "about/index.html": ["ProfilePage"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
       "talks/maas-vs-self-hosted/index.html": ["VideoObject", "BreadcrumbList"],

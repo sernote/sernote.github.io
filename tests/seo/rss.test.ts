@@ -38,7 +38,7 @@ const nativeArticle: V3Article = {
 
 const externalArticle: V3Article = {
   ...shared,
-  entityId: "short-prompt-not-cheap",
+  entityId: "prefix-cache-habr",
   kind: "external-note",
   slug: null,
   editorialFormat: null,
@@ -52,6 +52,53 @@ const externalArticle: V3Article = {
   sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
   participationLabel: "Автор статьи"
 };
+
+const publicRegistryArticles: readonly V3Article[] = [
+  nativeArticle,
+  {
+    ...nativeArticle,
+    entityId: "workload-shape-over-model-name",
+    slug: "workload-shape-over-model-name",
+    editorialFormat: "note",
+    title: "Workload shape важнее названия модели",
+    publishedAt: "2026-08-02",
+    updatedAt: "2026-08-02"
+  },
+  externalArticle,
+  {
+    ...externalArticle,
+    entityId: "prefix-cache-the-code",
+    title: "Почему короткий промпт может стоить дороже длинного",
+    sourceName: "Журнал «Код» / Яндекс Практикум",
+    sourceUrl: "https://thecode.media/prefix-cache-promt-ai-agenty/",
+    publishedAt: "2026-06-18"
+  },
+  {
+    ...externalArticle,
+    entityId: "effective-cost-habr",
+    title: "Сколько на самом деле стоит запрос к LLM",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1008320/",
+    publishedAt: "2026-03-10"
+  },
+  {
+    ...externalArticle,
+    entityId: "agent-skills-habr",
+    title: "Agent Skills как переносимый артефакт",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/980654/",
+    publishedAt: "2025-12-26"
+  },
+  {
+    ...externalArticle,
+    entityId: "prompt-engineering-vc",
+    title: "Промпт-инжиниринг как часть архитектуры AI-продукта",
+    externalType: "expert-comment",
+    sourceName: "vc.ru",
+    sourceUrl: "https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu",
+    sourceAuthorProfileUrl: null,
+    participationLabel: "Основной эксперт материала",
+    publishedAt: "2025-04-28"
+  }
+];
 
 describe("RSS builder", () => {
   it("serves the source-backed feed as a build-time static XML response", () => {
@@ -69,6 +116,33 @@ describe("RSS builder", () => {
     expect(xml).toContain("https://habr.com/ru/companies/bitrix/articles/1033822/");
     expect(xml).toContain(
       "<guid isPermaLink=\"true\">https://habr.com/ru/companies/bitrix/articles/1033822/</guid>"
+    );
+  });
+
+  it("contains all seven public article records from the registry", () => {
+    const route = readFileSync(join(process.cwd(), "app/rss.xml/route.ts"), "utf8");
+    const xml = buildRssFeed(publicRegistryArticles);
+
+    expect(route).toMatch(/v3Source\s*\.listPublic\("article", "ru"\)/);
+    expect(publicRegistryArticles).toHaveLength(7);
+    expect(xml.match(/<item>/g)).toHaveLength(7);
+    for (const article of publicRegistryArticles) {
+      const expectedUrl =
+        article.kind === "native"
+          ? `https://notevskii.tech/blog/${article.slug}/`
+          : article.sourceUrl;
+      expect(expectedUrl).not.toBeNull();
+      expect(xml).toContain(`<link>${expectedUrl}</link>`);
+      expect(xml).toContain(`<guid isPermaLink="true">${expectedUrl}</guid>`);
+    }
+  });
+
+  it("describes the site-wide materials feed rather than a local-blog-only feed", () => {
+    const xml = buildRssFeed([nativeArticle]);
+
+    expect(xml).toContain("<title>Материалы Сергея Нотевского</title>");
+    expect(xml).toContain(
+      "<description>Статьи, заметки и внешние публикации о production AI-платформах.</description>"
     );
   });
 

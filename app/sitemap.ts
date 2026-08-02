@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { v3Source } from "@/lib/content-v3/source";
+import routeManifest from "@/config/v3-route-manifest.json";
+import { parseManifest, validateManifest } from "@/lib/migration/manifest";
 import { buildSitemapEntries } from "@/lib/seo/urls";
 
 export const dynamic = "force-static";
 
+const manifest = validateManifest(parseManifest(routeManifest));
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return buildSitemapEntries(v3Source.listPublic(undefined, "ru"));
+  return buildSitemapEntries(manifest);
 }
