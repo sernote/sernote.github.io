@@ -1,6 +1,6 @@
 # Implementation Plan
 
-> **Superseded (historical context):** The accepted product direction is `docs/superpowers/specs/2026-07-27-notevskii-tech-v3-1-correction-design.md`. A v3.1 implementation plan has not been written yet. This file and the v3 implementation plan are historical evidence, not instructions for the next implementation cycle.
+> **Current normative plan:** `docs/superpowers/plans/2026-08-02-notevskii-tech-v3-1-implementation.md`. The milestones below describe the original v0 build and remain historical context only; they are not instructions for the v3.1 implementation cycle.
 
 ## Milestone 0: Bootstrap
 
