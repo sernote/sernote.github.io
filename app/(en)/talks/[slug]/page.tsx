@@ -8,7 +8,7 @@ import {
   type DetailFact,
   type DetailRelatedItem
 } from "@/components/pages/v31-content-detail-page";
-import { EditorialMdxLink } from "@/components/pages/content-detail-page";
+import { EditorialMdxLink } from "@/components/editorial/mdx-link";
 import { getMDXComponents } from "@/components/mdx";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";

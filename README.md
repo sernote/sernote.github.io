@@ -1,263 +1,83 @@
-# Production AI Platform Site
+# notevskii.tech
 
-Personal executive site and Production AI Platform Handbook.
+Личный инженерный сайт Сергея Нотевского и открытый справочник AI Platform. Это статический Next.js-сайт с тремя основными входами: Блог, Материалы и AI Platform.
 
-Core thesis:
+## Стек
 
-> Production AI is not a model. It is a platform.
+- Next.js App Router и React;
+- TypeScript;
+- Fumadocs MDX;
+- Tailwind CSS;
+- pnpm;
+- static export для GitHub Pages.
 
-The project packages the author as an AI Platform Lead and provides a practical field guide for production-grade LLM, STT, embeddings and agent platforms: inference, routing, cache, evals, guardrails, observability, cost and ownership.
+Нужен Node.js 22 или новее.
 
-## Stack
+## Публичные маршруты
 
-- Next.js App Router
-- TypeScript
-- Fumadocs MDX
-- Tailwind CSS
-- shadcn/ui-style local components
-- pnpm
-- Static export via `next build`
+- `/` — главная;
+- `/blog` — авторские статьи, короткие заметки и ссылки на внешние публикации;
+- `/materials` — выступления, открытые проекты и публикации;
+- `/ai-platform` — вход в открытый справочник по production AI-платформе;
+- `/ai-platform/map` — карта семи областей ответственности;
+- `/about` — биография, публичная роль и контакты.
 
-Node.js 22 or newer is recommended.
+Локальные страницы Блога создаются только для записей `kind: native`. Внешняя публикация ведёт прямо на канонический источник и не получает дублирующий URL на сайте.
 
-## Routes
+В текущем AI Platform pilot полностью опубликован один вертикальный срез:
 
-Russian is served at the root; English under `/en`.
+- область `/ai-platform/areas/inference-plane`;
+- компонент `/ai-platform/components/prefix-cache`;
+- синтетический кейс `/ai-platform/cases/agent-session-cache-reuse`.
 
-Primary v3 sections (Russian, root):
+Также доступны эталонные страницы выступления `/talks/maas-vs-self-hosted` и проекта `/projects/audit-prompt-caching`.
 
-- `/` - personal landing
-- `/blog` - blog index (native articles and external notes)
-- `/work` - materials (talks, projects, external publications)
-- `/talks` - talks index
-- `/projects` - projects index
-- `/ai-platform` - AI Platform reference entrance
-- `/ai-platform/map` - the seven-area responsibility map
-- `/about` - bio and positioning
-- `/contact` - public contact links
-- `/tools/prefix-cache-auditor`, `/tools/llm-cost-calculator`, `/tools/ai-quality-gate-checklist` - client-side tools
+## Контент
 
-Detail routes: `/blog/<slug>`, `/talks/<slug>`, `/projects/<slug>`, and the reviewed vertical `/ai-platform/areas/<area>`, `/ai-platform/components/<component>`, `/ai-platform/cases/<case>`.
+Типизированные записи находятся в `content/v3`, схема — в `lib/content-v3/schema.ts`. Для новой записи:
 
-English set: `/en`, `/en/about`, `/en/contact`, `/en/tools/...`, plus the kept `/en/handbook` chapters. Kept Russian handbook chapters remain at `/handbook/...`.
+1. Создайте MDX в подходящем каталоге `content/v3`.
+2. Заполните frontmatter согласно типу записи.
+3. Для внешней публикации оставьте `slug: null` и укажите подтверждённые источник, URL, тип участия и вклад автора.
+4. Для reference-материала используйте только публичные, проверяемые источники и явно задайте применимость и ограничения.
+5. Запустите `corepack pnpm verify`.
 
-Compatibility aliases are honest `noindex,follow` pages that point at the canonical destination:
+Перевод не создаётся автоматически: русский материал не подразумевает английскую копию.
 
-- `/writing` -> `/blog`
-- `/handbook` -> `/ai-platform`
-- `/handbook/platform-map` -> `/ai-platform/map`
-- `/handbook/caching/prefix-cache` -> `/ai-platform/components/prefix-cache`
-- `/ru` and every `/ru/...` -> the matching root canonical
+## Старые URL
 
-See `config/v3-route-manifest.json` for the exact keep/alias decision per exported route.
+`config/v3-route-manifest.json` задаёт решение для каждого прежнего маршрута:
 
-## Localization
+- `keep` — каноническая страница;
+- `static-alias` — совместимая страница с канонической ссылкой на новый адрес;
+- `archive` — сохранённая страница с self-canonical и `noindex,follow`, исключённая из навигации, sitemap, RSS и связей.
 
-Russian is the default route set and is served from the root. English pages are served under `/en`.
+Например, `/work` ведёт на `/materials`, `/writing` — на `/blog`, `/handbook` — на `/ai-platform`, а снятые с публикации разделы остаются доступными как архив.
 
-The language switcher pairs only routes whose meaning is identical in both locales (the allowlist in `lib/site-routes.ts`):
-
-- `/` <-> `/en`
-- `/about` <-> `/en/about`
-- `/contact` <-> `/en/contact`
-- `/tools/...` <-> `/en/tools/...`
-
-Routes whose meaning diverged between locales - notably the legacy `/writing` and `/handbook*` aliases - intentionally advertise no alternate.
-
-Marketing and tool UI copy lives in `lib/i18n.ts`. English handbook content lives in `content/handbook`, and Russian handbook content lives in `content/handbook-ru`.
-
-## Local Development
-
-Install dependencies:
+## Локальная разработка
 
 ```bash
-pnpm install
+corepack pnpm install --frozen-lockfile
+corepack pnpm dev
 ```
 
-In non-interactive CI-like shells, pnpm may prompt before recreating `node_modules`. Use:
+Полная проверка перед выпуском:
 
 ```bash
-CI=true pnpm install
+corepack pnpm verify
 ```
 
-Start the dev server:
+Она включает lint, typecheck, тесты, static build, проверку reference-путей и контракт экспортированных страниц. Результат сборки находится в `out/`.
 
-```bash
-pnpm dev
-```
+## Ограничения
 
-Run validation:
+Сайт остаётся полностью статическим: без backend, auth, базы данных, аналитики, server actions и API routes. Не публикуйте внутреннюю архитектуру, закрытые числа, договоры или данные компании; используйте обезличенные production-like примеры.
 
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-```
+## Документы проекта
 
-`pnpm build` uses `next build --webpack` intentionally. Static export is enabled through `output: "export"` in `next.config.mjs`, and the exported site is written to `out/`.
+- нормативная спецификация: `docs/superpowers/specs/2026-07-27-notevskii-tech-v3-1-correction-design.md`;
+- решения по маршрутам: `docs/superpowers/specs/2026-07-27-notevskii-tech-v3-1-route-decisions.md`;
+- план реализации: `docs/superpowers/plans/2026-08-02-notevskii-tech-v3-1-implementation.md`;
+- текущий статус: `.agent/STATUS.md`.
 
-## Content Workflow
-
-Handbook chapters live in `content/handbook` and `content/handbook-ru`.
-
-Every MDX page must include frontmatter with:
-
-- `title`
-- `description`
-- `section`
-- `type`
-- `level`
-- `status`
-- `audience`
-- `tags`
-- `related`
-- `published`
-- `updated`
-
-Chapter pages should follow the handbook pattern:
-
-1. Problem
-2. Symptoms
-3. Mental model
-4. Architecture
-5. Metrics
-6. Trade-offs
-7. Anti-patterns
-8. Checklist
-9. Example
-10. Decision template
-11. Related chapters
-
-Use public, sanitized, production-like examples only. Do not include confidential company architecture, internal numbers, vendor contracts or security-sensitive details.
-
-## v3 Content Model and Authoring
-
-The v3 personal surfaces (Blog, Materials, Talks, Projects, AI Platform) are driven by the typed content registry in `content/v3` (schema in `lib/content-v3/schema.ts`). This is the authoritative content path; the legacy handbook workflow above remains only for the kept `/handbook` chapters.
-
-### Add one v3 record
-
-1. Create one `.mdx` file under the matching directory: `content/v3/blog`, `content/v3/talks`, `content/v3/projects`, or `content/v3/ai-platform/{areas,components,cases}`.
-2. Fill the frontmatter required by the record `type`. Shared fields: `entityId` (kebab-case), `locale` (`ru`/`en`), `title`, `description`, `publicationStatus`, `reviewStatus`, `publishedAt`, `updatedAt`, `reviewedAt`, `reviewCycleDays`, `topics` (max 8), and `relations`.
-3. Run `pnpm verify` and fix any registry, route, or export-contract failure before committing.
-
-### Permitted statuses
-
-- `publicationStatus`: `draft`, `published`, `archived`. A non-draft record must set `publishedAt`.
-- `reviewStatus`: `unreviewed`, `reviewed`, `stale`. Any non-`unreviewed` status must set both `reviewedAt` and `reviewCycleDays`, and reference records (`platform-area`, `platform-component`, `case`) additionally require `sources`, `applicability`, and `limitations`. Reference records are only publicly discoverable while `reviewed` or `stale`.
-
-### Relation syntax
-
-`relations` is an object of id arrays — `articleIds`, `talkIds`, `projectIds`, `platformEntityIds` — referencing other records by `entityId`. A record may reference **at most four** related entities in total. Use `{}` for none.
-
-```yaml
-relations:
-  projectIds:
-    - audit-prompt-caching
-  platformEntityIds:
-    - prefix-cache
-```
-
-### External notes have no local route
-
-An article with `kind: external-note` must set `sourceUrl` (HTTPS) and `sourceName`, and must not set a `slug`. External notes are surfaced in the Blog/Materials indexes as links straight to their source and never receive a local detail page — the canonical location of that content is the external site, so minting a local URL would duplicate it and split its authority.
-
-### Validation and the review gate
-
-Run the full gate before shipping any content or code change:
-
-```bash
-pnpm verify
-```
-
-`pnpm verify` runs lint, typecheck, tests, the aliased static build, the reference-path audit, and the static-export contract audit. Expanding the reviewed reference vertical (new area, component, or case) additionally requires passing the pilot content-review gate recorded under `docs/superpowers/reviews/`; do not publish a reference record as `reviewed` without that artifact.
-
-### Operating ceiling
-
-This is a maintained pilot, not a content factory. Hold to:
-
-- at most one substantial new or revised artifact per month;
-- a quarterly review of the AI Platform map and every `reviewed` reference record (refresh or mark `stale`);
-- small metadata and link fixes as needed;
-- no more than one support hour per week.
-
-Translation is selective and intentional: a Russian record does not imply an English one, and no locale parity is assumed or advertised.
-
-## Tools
-
-All v0 tools are client-side only:
-
-- Prefix Cache Auditor estimates cacheability, unstable prefix segments, dynamic field warnings, tool-schema volatility and recommendations.
-- LLM Cost Calculator compares cost with and without cached input tokens.
-- AI Quality Gate Checklist tracks local readiness state across datasets, evals, regression, canary and observability.
-
-There are no API routes, server actions, auth, database, analytics or live AI calls in v0.
-
-## Deployment
-
-Primary target:
-
-- GitHub Pages
-
-Secondary targets:
-
-- Cloudflare Pages
-- Vercel
-
-For any static host, deploy the generated `out/` directory:
-
-```bash
-pnpm build
-```
-
-The project uses `trailingSlash: true` so clean static URLs resolve as directory `index.html` files on simple static servers.
-
-### GitHub Pages
-
-The repository includes `.github/workflows/pages.yml`. On every push to `main`, GitHub Actions will:
-
-1. install dependencies with pnpm
-2. run `pnpm lint`
-3. run `pnpm typecheck`
-4. run `pnpm test`
-5. run `pnpm build`
-6. deploy `out/` to GitHub Pages
-
-The current custom domain is `notevskii.tech`, configured through `public/CNAME`. The repository is still published as the user Pages repository `sernote.github.io`, which lets GitHub Pages serve the custom domain from the root of the static export.
-
-Project Pages URLs like `https://<github-user>.github.io/<repo>/` require a separate `basePath`/asset-prefix setup and are not enabled in v0.
-
-In GitHub repository settings:
-
-1. Open **Settings -> Pages**.
-2. Set **Source** to **GitHub Actions**.
-3. Add repository variable `SITE_URL=https://notevskii.tech` if Open Graph metadata needs to be forced outside the workflow default.
-4. Keep `public/CNAME` containing only `notevskii.tech`.
-5. Configure DNS at the domain provider:
-   - apex domain: GitHub Pages `A` records
-   - `www`: `CNAME` to `sernote.github.io`
-6. Enable **Enforce HTTPS** after DNS is verified.
-
-## Public Content Sources
-
-The site references only verified public surfaces:
-
-- Telegram: `https://t.me/s/sergeinotevskii`
-- Habr articles: `https://habr.com/ru/users/Ser_no/articles/`
-
-The initial handbook and writing pages use public themes around prefix cache, effective cost with cache, MaaS vs self-hosted, AI quality review and production AI platform engineering.
-
-## Agent Notes
-
-Durable implementation rules live in `AGENTS.md` and `.agent/*`.
-
-Before changing the project, read:
-
-- `AGENTS.md`
-- `.agent/PROJECT_SPEC.md`
-- `.agent/DESIGN_SPEC.md`
-- `.agent/CONTENT_MODEL.md`
-- `.agent/IMPLEMENTATION_PLAN.md`
-- `.agent/STATUS.md`
-
-After meaningful work, update `.agent/STATUS.md` with progress, validation results, decisions, known issues and blockers.
+Деплой выполняет `.github/workflows/pages.yml`; custom domain хранится в `public/CNAME`.

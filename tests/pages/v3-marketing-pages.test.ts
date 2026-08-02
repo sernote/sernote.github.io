@@ -1,16 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { createElement, type ComponentType } from "react";
+import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
+import { EditorialMdxLink } from "../../components/editorial/mdx-link";
 import { ContentListItem } from "../../components/marketing/content-list-item";
 import { PageIntro } from "../../components/marketing/page-intro";
-import {
-  ContentDetailPage,
-  EditorialMdxLink,
-  type ContentDetailPageProps
-} from "../../components/pages/content-detail-page";
 import {
   AboutPageContent,
   BlogPageContent,
@@ -89,10 +85,6 @@ const externalBlogArticle = Object.freeze({
 const blogModel = Object.freeze({
   items: Object.freeze([nativeBlogArticle, externalBlogArticle])
 });
-
-const TestableContentDetailPage = ContentDetailPage as ComponentType<
-  Omit<ContentDetailPageProps, "children">
->;
 
 const workModel: WorkViewModel = Object.freeze({
   groups: Object.freeze([
@@ -303,174 +295,7 @@ describe("v3 complete top-level personal pages", () => {
   });
 });
 
-describe("v3 reusable content detail page", () => {
-  it("renders one author-led article with media, actions, next step, and quiet contact", () => {
-    const html = renderToStaticMarkup(
-      createElement(
-        TestableContentDetailPage,
-        {
-          currentPath: "/blog/ai-platform-before-gpu",
-          overline: "Авторская статья",
-          title: "ИИ-платформа начинается не с GPU",
-          deck:
-            "Почему для production-сценария сначала нужно определить правила работы с данными, критерии качества, SLO и владельцев, а уже потом выбирать модель и инфраструктуру.",
-          author: { name: "Сергей Нотевский", href: "/about" },
-          publishedAt: "2026-07-22",
-          updatedAt: "2026-07-22",
-          media: createElement("figure", { "data-detail-media": true }, "Превью материала"),
-          primaryAction: {
-            label: "Открыть запись",
-            href: "https://example.com/recording",
-            external: true
-          },
-          afterContent: createElement(
-            "section",
-            { "data-after-content": true },
-            createElement("p", null, "AI Platform"),
-            createElement("h2", null, "Продолжить в AI Platform"),
-            createElement("a", { href: "/ai-platform" }, "Открыть AI Platform")
-          ),
-          contact: {
-            context: "Вопрос или предложение по материалу",
-            label: "Связаться с Сергеем"
-          }
-        },
-        createElement("p", null, "Тело материала")
-      )
-    );
-    const visibleText = html.replace(/<[^>]+>/g, "");
-
-    expect(count(html, /<main\b/g)).toBe(1);
-    expect(count(html, /<article\b/g)).toBe(1);
-    expect(count(html, /<h1\b/g)).toBe(1);
-    expect(visibleText).toContain("Автор — Сергей Нотевский");
-    expect(html).toContain('href="/about"');
-    expect(visibleText).toContain("Опубликовано 22 июля 2026 года");
-    expect(html).toContain('<time dateTime="2026-07-22">22 июля 2026 года</time>');
-    expect(visibleText).not.toContain("Обновлено");
-    expect(html).toContain("Превью материала");
-    expect(html).toMatch(
-      /<a(?=[^>]*href="https:\/\/example\.com\/recording")(?=[^>]*target="_blank")(?=[^>]*rel="noreferrer")[^>]*>/
-    );
-    expect(html).toContain("Продолжить в AI Platform");
-    expect(html).toContain('href="/ai-platform"');
-    expect(html).toContain("Вопрос или предложение по материалу");
-    expect(html).toContain('href="/contact"');
-    expect(html).toContain("Связаться с Сергеем");
-    expect(html).toContain("Тело материала");
-  });
-
-  it("shows a semantic updated date only when it differs from publication", () => {
-    const html = renderToStaticMarkup(
-      createElement(
-        TestableContentDetailPage,
-        {
-          currentPath: "/blog/ai-platform-before-gpu",
-          overline: "Авторская статья",
-          title: "ИИ-платформа начинается не с GPU",
-          deck: "Проверяемая редакционная вводная для материала.",
-          author: { name: "Сергей Нотевский", href: "/about" },
-          publishedAt: "2026-07-22",
-          updatedAt: "2026-08-03",
-          contact: {
-            context: "Вопрос или предложение по материалу",
-            label: "Связаться с Сергеем"
-          }
-        },
-        createElement("p", null, "Тело материала")
-      )
-    );
-    const visibleText = html.replace(/<[^>]+>/g, "");
-
-    expect(visibleText).toContain("Обновлено 3 августа 2026 года");
-    expect(html).toContain('<time dateTime="2026-08-03">3 августа 2026 года</time>');
-  });
-
-  it("renders type-specific facts without relabeling event or release dates as publication", () => {
-    const html = renderToStaticMarkup(
-      createElement(
-        TestableContentDetailPage,
-        {
-          currentPath: "/talks/maas-vs-self-hosted",
-          overline: "Доклад",
-          title: "Свои ИИ-модели или API по подписке?",
-          deck: "Как сравнить внешнее API и собственную модель.",
-          author: { name: "Сергей Нотевский", href: "/about" },
-          facts: [
-            { label: "Площадка", value: "ROИИ 2026 · день 1" },
-            {
-              label: "Дата выступления",
-              value: "19 февраля 2026 года",
-              dateTime: "2026-02-19"
-            },
-            {
-              label: "Видео опубликовано",
-              value: "22 февраля 2026 года",
-              dateTime: "2026-02-22"
-            }
-          ],
-          contact: {
-            context: "Обсудить тему доклада",
-            label: "Связаться с Сергеем"
-          }
-        },
-        createElement("p", null, "Тело доклада")
-      )
-    );
-    const visibleText = html.replace(/<[^>]+>/g, "");
-
-    expect(visibleText).toContain("Площадка — ROИИ 2026 · день 1");
-    expect(visibleText).toContain("Дата выступления — 19 февраля 2026 года");
-    expect(visibleText).toContain("Видео опубликовано — 22 февраля 2026 года");
-    expect(html).toContain(
-      '<time dateTime="2026-02-19">19 февраля 2026 года</time>'
-    );
-    expect(html).toContain(
-      '<time dateTime="2026-02-22">22 февраля 2026 года</time>'
-    );
-    expect(visibleText).not.toContain("Опубликовано 19 февраля");
-    expect(visibleText).not.toContain("Опубликовано 20 июля");
-  });
-
-  it("requires publication dates as a compile-time pair and defends the invariant at runtime", () => {
-    const baseProps = {
-      currentPath: "/talks/maas-vs-self-hosted",
-      overline: "Доклад",
-      title: "Свои ИИ-модели или API по подписке?",
-      deck: "Как сравнить внешнее API и собственную модель.",
-      author: { name: "Сергей Нотевский", href: "/about" },
-      contact: {
-        context: "Обсудить тему доклада",
-        label: "Связаться с Сергеем"
-      },
-      children: createElement("p", null, "Тело доклада")
-    };
-
-    expectTypeOf(baseProps).toMatchTypeOf<ContentDetailPageProps>();
-    expectTypeOf({
-      ...baseProps,
-      publishedAt: "2026-07-22",
-      updatedAt: "2026-08-03"
-    }).toMatchTypeOf<ContentDetailPageProps>();
-    expectTypeOf({
-      ...baseProps,
-      publishedAt: "2026-07-22"
-    }).not.toMatchTypeOf<ContentDetailPageProps>();
-    expectTypeOf({
-      ...baseProps,
-      updatedAt: "2026-08-03"
-    }).not.toMatchTypeOf<ContentDetailPageProps>();
-
-    const invalidRuntimeProps = {
-      ...baseProps,
-      publishedAt: "2026-07-22"
-    } as unknown as ContentDetailPageProps;
-
-    expect(() => ContentDetailPage(invalidRuntimeProps)).toThrow(
-      "Content detail publication dates must be supplied together"
-    );
-  });
-
+describe("editorial MDX link", () => {
   it("marks external MDX links visibly and accessibly without changing internal links", () => {
     const externalHtml = renderToStaticMarkup(
       createElement(
