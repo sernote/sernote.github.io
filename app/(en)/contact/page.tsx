@@ -1,8 +1,15 @@
-import { ContactPageContent } from "@/components/pages/v3-marketing-pages";
-import { v3MarketingMetadata } from "@/lib/metadata";
+import { StaticAliasBody } from "@/components/routing/static-alias-page";
+import { EditorialShell } from "@/components/site/editorial-shell";
+import { staticAliasMetadata } from "@/lib/metadata";
 
-export const metadata = v3MarketingMetadata("contact");
+const DESTINATION = "/about";
+
+export const metadata = staticAliasMetadata(DESTINATION, "ru");
 
 export default function ContactPage() {
-  return <ContactPageContent />;
+  return (
+    <EditorialShell currentPath="/about">
+      <StaticAliasBody destination={DESTINATION} locale="ru" />
+    </EditorialShell>
+  );
 }

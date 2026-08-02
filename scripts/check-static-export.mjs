@@ -79,6 +79,7 @@ const manifest = loadJson(manifestArg, "route manifest") ?? [];
 const manifestBySource = new Map();
 const keepSources = new Set();
 const aliasBySource = new Map();
+const archiveBySource = new Map();
 
 if (Array.isArray(manifest)) {
   for (const record of manifest) {
@@ -101,14 +102,31 @@ if (Array.isArray(manifest)) {
       } else {
         aliasBySource.set(source, normalizeRoute(record.destination));
       }
+    } else if (record.behavior === "archive") {
+      if (record.destination !== null) report(source, "manifest", "", "archive destination must be null");
+      if (record.archivedAt !== "2026-08-02") report(source, "manifest", "", "archive archivedAt must be 2026-08-02");
+      if (typeof record.archiveTarget !== "string") {
+        report(source, "manifest", "", "archive requires archiveTarget");
+      } else {
+        archiveBySource.set(source, {
+          archivedAt: record.archivedAt,
+          archiveTarget: normalizeRoute(record.archiveTarget)
+        });
+      }
     } else {
-      report(source, "manifest", "", `unsupported pilot behavior ${JSON.stringify(record.behavior)}`);
+      report(source, "manifest", "", `unsupported behavior ${JSON.stringify(record.behavior)}`);
     }
   }
   for (const [source, destination] of aliasBySource) {
     if (source === destination) report(source, "manifest", "", "alias must not point at itself");
     else if (!keepSources.has(destination)) {
       report(source, "manifest", destination, "alias destination must be a distinct keep record (no chains)");
+    }
+  }
+  for (const [source, archive] of archiveBySource) {
+    if (source === archive.archiveTarget) report(source, "manifest", archive.archiveTarget, "archive target must be distinct");
+    else if (!keepSources.has(archive.archiveTarget)) {
+      report(source, "manifest", archive.archiveTarget, "archive target must be a direct keep record");
     }
   }
 } else {
@@ -187,6 +205,7 @@ let siteOrigin = null;
 for (const [route, relative] of exportedRoutes) {
   const html = readFileSync(path.join(outDir, relative), "utf8");
   const isAlias = aliasBySource.has(route);
+  const archive = archiveBySource.get(route) ?? null;
 
   // Metadata
   if (!/<html\b[^>]*\blang=["'][^"']+["']/i.test(html)) report(route, "metadata", "", "missing html lang");
@@ -235,6 +254,39 @@ for (const [route, relative] of exportedRoutes) {
       if (!tokens.includes("follow")) report(route, "alias", "", "alias robots must include follow");
       if (tokens.includes("index")) report(route, "alias", "", "alias robots must not include index");
       if (tokens.includes("nofollow")) report(route, "alias", "", "alias robots must not include nofollow");
+    }
+  } else if (archive) {
+    if (canonicals.length !== 1) {
+      report(route, "archive", "", `archive must have exactly one canonical, found ${canonicals.length}`);
+    } else {
+      let canonicalPath = null;
+      try {
+        const canonicalUrl = new URL(canonicals[0]);
+        canonicalPath = canonicalUrl.pathname;
+        siteOrigin = siteOrigin ?? canonicalUrl.origin;
+      } catch {
+        report(route, "archive", canonicals[0], "archive canonical is not an absolute URL");
+      }
+      if (canonicalPath !== null && canonicalPath !== selfCanonicalPath) {
+        report(route, "archive", canonicals[0], `archive canonical must be self (${selfCanonicalPath})`);
+      }
+    }
+    const tokens = robots === null ? [] : robotsTokens(robots);
+    if (!tokens.includes("noindex") || !tokens.includes("follow") || tokens.includes("index") || tokens.includes("nofollow")) {
+      report(route, "archive", "", "archive must declare robots noindex, follow");
+    }
+    if (!/\bdata-archive=["']true["']/i.test(html)) report(route, "archive", "", "archive marker is missing");
+    if (!html.includes(archive.archivedAt)) report(route, "archive", "", "archive date is missing");
+    if (/<meta\b[^>]*http-equiv=["']refresh["']/i.test(html)) report(route, "archive", "", "archive must not use alias refresh semantics");
+    if (/<script\b|self\.__next_f|\/_next\/static\/|<form\b|<button\b|<input\b|<select\b|<textarea\b|\bdata-static-alias=/i.test(html)) {
+      report(route, "archive", "", "archive must not contain hydration assets or interactive legacy controls");
+    }
+    const archiveLinks = [...html.matchAll(/<a\b[^>]*\bhref=["']([^"']*)["']/gi)]
+      .map((match) => decodeEntities(match[1]))
+      .filter((href) => href.startsWith("/") && !href.startsWith("//") && !href.startsWith("/#"))
+      .filter((href) => normalizeRoute(href.split(/[?#]/, 1)[0] || "/") === archive.archiveTarget);
+    if (archiveLinks.length !== 1) {
+      report(route, "archive", archive.archiveTarget, `archive must contain exactly one current target link, found ${archiveLinks.length}`);
     }
   } else {
     if (canonicals.length !== 1) {
@@ -460,6 +512,6 @@ if (diagnostics.length > 0) {
   process.exit(1);
 } else {
   console.log(
-    `Static export audit passed: ${exportedRoutes.size} routes, ${aliasBySource.size} aliases, ${sitemapRoutes.size} sitemap URLs.`
+    `Static export audit passed: ${exportedRoutes.size} routes, ${aliasBySource.size} aliases, ${archiveBySource.size} archives, ${sitemapRoutes.size} sitemap URLs.`
   );
 }

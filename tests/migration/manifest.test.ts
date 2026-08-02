@@ -19,6 +19,21 @@ function alias(source: string, destination: string, locale: "en" | "ru" = "ru"):
   return { source, destination, behavior: "static-alias", locale };
 }
 
+function archive(
+  source: string,
+  archiveTarget: string,
+  locale: "en" | "ru" = "ru"
+): RouteRecord {
+  return {
+    source,
+    destination: null,
+    behavior: "archive",
+    locale,
+    archivedAt: "2026-08-02",
+    archiveTarget
+  };
+}
+
 /**
  * A minimal but internally consistent manifest: two keep destinations plus two
  * aliases that both resolve to a distinct keep record.
@@ -90,9 +105,7 @@ describe("parseManifest", () => {
     expect([...ROUTE_BEHAVIORS]).toEqual([
       "keep",
       "static-alias",
-      "merge",
-      "archive",
-      "remove-after-verification"
+      "archive"
     ]);
   });
 });
@@ -118,13 +131,46 @@ describe("validateManifest", () => {
   });
 
   it("rejects a static-alias with no destination", () => {
-    const records = [keep("/blog"), { source: "/writing", destination: null, behavior: "static-alias", locale: "ru" } as RouteRecord];
+    const records = [keep("/blog"), { source: "/writing", destination: null, behavior: "static-alias", locale: "ru" } as unknown as RouteRecord];
     expect(() => validateManifest(records)).toThrow(/destination/i);
   });
 
   it("rejects a keep record with a non-null destination", () => {
-    const records = [{ source: "/blog", destination: "/x", behavior: "keep", locale: "ru" } as RouteRecord];
+    const records = [{ source: "/blog", destination: "/x", behavior: "keep", locale: "ru" } as unknown as RouteRecord];
     expect(() => validateManifest(records)).toThrow(/keep/i);
+  });
+
+  it("requires archive destination, date and direct keep target", () => {
+    expect(() => validateManifest([keep("/blog"), archive("/old", "/blog")])).not.toThrow();
+    expect(() =>
+      validateManifest([
+        keep("/blog"),
+        { ...archive("/old", "/blog"), destination: "/blog" } as RouteRecord
+      ])
+    ).toThrow(/archive|destination/i);
+    expect(() =>
+      validateManifest([
+        keep("/blog"),
+        { ...archive("/old", "/blog"), archivedAt: undefined } as unknown as RouteRecord
+      ])
+    ).toThrow(/archivedAt|date/i);
+    expect(() => validateManifest([keep("/blog"), archive("/old", "/missing")])).toThrow(
+      /archiveTarget|keep/i
+    );
+  });
+
+  it("rejects archive fields on keep and alias records", () => {
+    expect(() =>
+      validateManifest([
+        { ...keep("/blog"), archivedAt: "2026-08-02", archiveTarget: "/" } as RouteRecord
+      ])
+    ).toThrow(/archive/i);
+    expect(() =>
+      validateManifest([
+        keep("/blog"),
+        { ...alias("/writing", "/blog"), archivedAt: "2026-08-02" } as RouteRecord
+      ])
+    ).toThrow(/archive/i);
   });
 
   it("rejects an alias whose destination is not a keep record (chain)", () => {
@@ -189,6 +235,14 @@ describe("createRouteManifest lookups", () => {
 
   it("resolves a keep source to itself", () => {
     expect(manifest.resolveCanonicalDestination("/blog")).toBe("/blog");
+  });
+
+  it("refuses to resolve an archive as a canonical relation target", () => {
+    const withArchive = createRouteManifest([
+      keep("/blog"),
+      archive("/old", "/blog")
+    ]);
+    expect(() => withArchive.resolveCanonicalDestination("/old")).toThrow(/archive/i);
   });
 
   it("returns every decision", () => {
