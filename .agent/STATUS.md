@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-V3.1 is implemented and is in the final release gate. The site now uses the accepted author-first editorial direction across Home, Blog, Materials, AI Platform, About, and the required detail exemplars. The production export, route lifecycle, discovery metadata, responsive layouts, and mobile navigation have passed the final integrated check. No P0 or P1 issue remains; only publication to GitHub Pages is pending.
+V3.1 was released to GitHub Pages on 2 August 2026. The live site now uses the accepted author-first editorial direction across Home, Blog, Materials, AI Platform, About, and the required detail exemplars. The production export, route lifecycle, discovery metadata, responsive layouts, and mobile navigation passed the final integrated check. Live smoke confirmed the canonical pages, social image, sitemap, RSS, robots, aliases, and archives; no P0 or P1 issue remains.
 
 ## Completed
 
