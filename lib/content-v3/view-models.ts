@@ -395,7 +395,7 @@ export function getWorkViewModel(source: V3Source): WorkViewModel {
       index: "03",
       title: "Внешняя публикация",
       description: "Статья опубликована на исходной площадке.",
-      item: selectFeatured(source, "article", "short-prompt-not-cheap"),
+      item: selectFeatured(source, "article", "prefix-cache-habr"),
       indexHref: null,
       indexLabel: null
     })

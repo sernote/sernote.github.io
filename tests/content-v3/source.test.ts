@@ -4,7 +4,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { createV3Source } from "../../lib/content-v3/source-core";
+import {
+  createV3Source,
+  type V3SourceItem
+} from "../../lib/content-v3/source-core";
+import type { V3Article } from "../../lib/content-v3/schema";
 import {
   formatRussianDate,
   getBlogViewModel,
@@ -82,6 +86,12 @@ function entry<T extends Record<string, unknown>>(metadata: T, path: string) {
     body: flattenedRuntimeBody,
     info: { path }
   };
+}
+
+function isExternalArticle(
+  record: V3SourceItem
+): record is V3SourceItem<V3Article> {
+  return record.type === "article" && record.kind === "external-note";
 }
 
 function article(
@@ -182,7 +192,7 @@ function syntheticCase(
       componentIds: [componentId],
       evidence: ["Синтетические JSON fixtures"],
       relations: {
-        articleIds: ["short-prompt-not-cheap"],
+        articleIds: ["prefix-cache-habr"],
         projectIds: ["audit-prompt-caching"]
       },
       ...overrides
@@ -243,20 +253,45 @@ const nativeArticleExcerpt =
 const externalArticleExcerpt =
   "Короткий запрос иногда обходится дороже длинного: в агентном цикле важны стабильность префикса, порядок tools и фактические cache-read сигналы.";
 
+const pilotExternalArticleContract = {
+  "prefix-cache-the-code": {
+    externalType: "authored-article",
+    participationLabel: "Вклад Сергея: автор материала и технического разбора"
+  },
+  "prefix-cache-habr": {
+    externalType: "authored-article",
+    participationLabel: "Вклад Сергея: автор статьи и практических рекомендаций"
+  },
+  "effective-cost-habr": {
+    externalType: "authored-article",
+    participationLabel: "Вклад Сергея: автор расчёта и сравнительного разбора"
+  },
+  "agent-skills-habr": {
+    externalType: "authored-article",
+    participationLabel:
+      "Вклад Сергея: автор объяснительного материала и модели Discovery → Activation → Execution"
+  },
+  "prompt-engineering-vc": {
+    externalType: "expert-comment",
+    participationLabel:
+      "Вклад Сергея: основной эксперт материала; объясняет пользовательский и продуктовый контекст промпт-инжиниринга"
+  }
+} as const;
+
 const fixtures = [
   article("ai-platform-before-gpu", {
     publishedAt: "2026-07-22",
     excerpt: nativeArticleExcerpt
   }),
-  article("short-prompt-not-cheap", {
+  article("prefix-cache-habr", {
     kind: "external-note",
     slug: null,
     editorialFormat: null,
     externalType: "authored-article",
-    sourceName: "Хабр",
+    sourceName: "Хабр · блог Битрикс24",
     sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
     sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
-    participationLabel: "Автор статьи",
+    participationLabel: "Вклад Сергея: автор статьи и практических рекомендаций",
     publishedAt: "2026-05-12",
     excerpt: externalArticleExcerpt,
     relations: { platformEntityIds: ["prefix-cache"] }
@@ -300,6 +335,72 @@ const fixtures = [
   )
 ];
 
+const v31ArticleFixtures = [
+  article("ai-platform-before-gpu", {
+    publishedAt: "2026-07-22",
+    excerpt: nativeArticleExcerpt
+  }),
+  article("workload-shape-over-model-name", {
+    editorialFormat: "note",
+    publishedAt: "2026-07-22"
+  }),
+  article("prefix-cache-the-code", {
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    externalType: "authored-article",
+    sourceName: "Журнал «Код» / Яндекс Практикум",
+    sourceUrl: "https://thecode.media/prefix-cache-promt-ai-agenty/",
+    sourceAuthorProfileUrl: "https://thecode.media/authors/sergey-notevskiy/",
+    participationLabel: pilotExternalArticleContract["prefix-cache-the-code"].participationLabel,
+    publishedAt: "2026-06-18"
+  }),
+  article("prefix-cache-habr", {
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    externalType: "authored-article",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    participationLabel: pilotExternalArticleContract["prefix-cache-habr"].participationLabel,
+    publishedAt: "2026-05-12"
+  }),
+  article("effective-cost-habr", {
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    externalType: "authored-article",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1008320/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    participationLabel: pilotExternalArticleContract["effective-cost-habr"].participationLabel,
+    publishedAt: "2026-03-10"
+  }),
+  article("agent-skills-habr", {
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    externalType: "authored-article",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/980654/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    participationLabel: pilotExternalArticleContract["agent-skills-habr"].participationLabel,
+    publishedAt: "2025-12-26"
+  }),
+  article("prompt-engineering-vc", {
+    kind: "external-note",
+    slug: null,
+    editorialFormat: null,
+    externalType: "expert-comment",
+    sourceName: "vc.ru · Битрикс24",
+    sourceUrl: "https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu",
+    sourceAuthorProfileUrl: null,
+    participationLabel: pilotExternalArticleContract["prompt-engineering-vc"].participationLabel,
+    publishedAt: "2025-04-28"
+  })
+];
+
 describe("v3 generated-entry source adapter", () => {
   it("accepts the flattened Fumadocs runtime shape without leaking runtime fields", () => {
     const source = createV3Source([flattenedRuntimeEntry]);
@@ -335,7 +436,7 @@ describe("v3 generated-entry source adapter", () => {
 
     expect(source.listPublic("article", "ru").map((item) => item.entityId)).toEqual([
       "ai-platform-before-gpu",
-      "short-prompt-not-cheap"
+      "prefix-cache-habr"
     ]);
     expect(source.getBySlug("article", "ai-platform-before-gpu", "ru")?.body).toBe(
       fixtures[0].body
@@ -346,13 +447,72 @@ describe("v3 generated-entry source adapter", () => {
     expect(source.listPublic("article", "ru")[0]).not.toHaveProperty("info");
   });
 
+  it("exposes the native and external v3.1 pilot article inventory", () => {
+    const source = createV3Source(v31ArticleFixtures);
+    const publicArticles = source.listPublic("article", "ru");
+    const nativeIds = publicArticles
+      .filter((record) => record.type === "article" && record.kind === "native")
+      .map((record) => record.entityId);
+    const externalIds = publicArticles
+      .filter(isExternalArticle)
+      .map((record) => record.entityId);
+
+    expect(nativeIds).toEqual(
+      expect.arrayContaining(["ai-platform-before-gpu", "workload-shape-over-model-name"])
+    );
+    expect(externalIds).toEqual(
+      expect.arrayContaining(Object.keys(pilotExternalArticleContract))
+    );
+    expect(externalIds.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("orders the v3.1 external pilot in reverse chronological order", () => {
+    const source = createV3Source(v31ArticleFixtures);
+    const external = source
+      .listPublic("article", "ru")
+      .filter(isExternalArticle);
+
+    expect(external.map((record) => record.entityId)).toEqual([
+      "prefix-cache-the-code",
+      "prefix-cache-habr",
+      "effective-cost-habr",
+      "agent-skills-habr",
+      "prompt-engineering-vc"
+    ]);
+  });
+
+  it("keeps every v3.1 external record metadata-only and outside local canonicals", () => {
+    const source = createV3Source(v31ArticleFixtures);
+    const publicArticles = source.listPublic("article", "ru");
+    const external = publicArticles.filter(
+      (record): record is V3SourceItem<V3Article> =>
+        isExternalArticle(record) && record.entityId in pilotExternalArticleContract
+    );
+    const localIds = new Set(
+      source.listLocalCanonical("article", "ru").map((record) => record.entityId)
+    );
+
+    expect(
+      Object.fromEntries(
+        external.map(({ entityId, externalType, participationLabel }) => [
+          entityId,
+          { externalType, participationLabel }
+        ])
+      )
+    ).toEqual(pilotExternalArticleContract);
+    for (const record of external) {
+      expect(record.slug).toBeNull();
+      expect(localIds.has(record.entityId)).toBe(false);
+    }
+  });
+
   it("generates params only for public local records", () => {
     const source = createV3Source(fixtures);
 
     expect(source.generateParams("article", "ru")).toEqual([
       { slug: "ai-platform-before-gpu" }
     ]);
-    expect(source.getBySlug("article", "short-prompt-not-cheap", "ru")).toBeNull();
+    expect(source.getBySlug("article", "prefix-cache-habr", "ru")).toBeNull();
     expect(source.getBySlug("article", "ai-platform-before-gpu", "ru")?.entityId).toBe(
       "ai-platform-before-gpu"
     );
@@ -405,7 +565,7 @@ describe("v3 generated-entry source adapter", () => {
 
     expect(source.listFeatured("article", "ru").map((item) => item.entityId)).toEqual([
       "ai-platform-before-gpu",
-      "short-prompt-not-cheap"
+      "prefix-cache-habr"
     ]);
     expect(source.getRelatedForPage(external).map((item) => item.entityId)).toEqual([
       "prefix-cache",
@@ -463,14 +623,14 @@ describe("v3 personal-site view models", () => {
         "Авторская статья"
       ],
       [
-        "short-prompt-not-cheap",
+        "prefix-cache-habr",
         "https://habr.com/ru/companies/bitrix/articles/1033822/",
         "external",
         "external-note",
-        "Хабр",
+        "Хабр · блог Битрикс24",
         "2026-05-12",
         "12 мая 2026 года",
-        "Хабр · внешний материал"
+        "Хабр · блог Битрикс24 · внешний материал"
       ]
     ]);
     expect(model.items.map(({ description }) => description)).toEqual([
@@ -559,7 +719,7 @@ describe("v3 personal-site view models", () => {
     expect(model.groups.map(({ id, item }) => [id, item.entityId])).toEqual([
       ["talks", "maas-vs-self-hosted-roii"],
       ["projects", "audit-prompt-caching"],
-      ["writing", "short-prompt-not-cheap"]
+      ["writing", "prefix-cache-habr"]
     ]);
     expect(model.groups.map(({ item }) => [item.href, item.linkKind])).toEqual([
       ["/talks/maas-vs-self-hosted", "internal"],
@@ -861,7 +1021,7 @@ describe("AI Platform map and reference view models", () => {
       "inference-plane",
       "agent-session-cache-reuse",
       "audit-prompt-caching",
-      "short-prompt-not-cheap"
+      "prefix-cache-habr"
     ]);
     expect(componentModel.related).toHaveLength(4);
 

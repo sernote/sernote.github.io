@@ -493,17 +493,23 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 100 records split 66 keep / 34 alias", () => {
+  it.runIf(hasExport)("has exactly 101 records split 67 keep / 34 alias", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(100);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(66);
+    expect(records).toHaveLength(101);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(67);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(34);
+    expect(records).toContainEqual({
+      source: "/blog/workload-shape-over-model-name",
+      destination: null,
+      behavior: "keep",
+      locale: "ru"
+    });
   });
 
-  it.runIf(hasExport)("has 15 sitemap URLs, all resolving to keep records", () => {
+  it.runIf(hasExport)("has 16 sitemap URLs, all resolving to keep records", () => {
     const sitemapXml = readFileSync(join(outDir, "sitemap.xml"), "utf8");
     const locs = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-    expect(new Set(locs).size).toBe(15);
+    expect(new Set(locs).size).toBe(16);
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
     const keeps = new Set(
       records.filter((r: { behavior: string }) => r.behavior === "keep").map((r: { source: string }) => r.source)
@@ -526,15 +532,16 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly two RSS items", () => {
+  it.runIf(hasExport)("has exactly seven RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(2);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(7);
   });
 
-  it.runIf(hasExport)("emits exactly 14 JSON-LD scripts matching the schema matrix", () => {
+  it.runIf(hasExport)("emits exactly 16 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
       "index.html": ["Person", "WebSite"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
       "talks/maas-vs-self-hosted/index.html": ["VideoObject", "BreadcrumbList"],
       "projects/audit-prompt-caching/index.html": ["SoftwareSourceCode", "BreadcrumbList"],
       "ai-platform/areas/inference-plane/index.html": ["TechArticle", "BreadcrumbList"],
@@ -550,6 +557,6 @@ describe("static export audit — production integration", () => {
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
     }
-    expect(total).toBe(14);
+    expect(total).toBe(16);
   });
 });

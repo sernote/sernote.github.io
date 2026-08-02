@@ -1,0 +1,37 @@
+---
+entityId: workload-shape-over-model-name
+type: article
+locale: ru
+kind: native
+slug: workload-shape-over-model-name
+editorialFormat: note
+title: "Workload shape важнее названия модели"
+description: "Почему модель и GPU нельзя выбирать по среднему RPS без распределения контекста, ответа, concurrency и cache reuse."
+publicationStatus: published
+reviewStatus: unreviewed
+publishedAt: "2026-07-22"
+updatedAt: "2026-07-22"
+reviewedAt: null
+reviewCycleDays: null
+topics:
+  - inference
+  - workload-shape
+  - capacity
+relations:
+  platformEntityIds:
+    - inference-plane
+excerpt: "Одинаковая модель ведёт себя по-разному на коротких чатах, длинном prefill и агентных циклах. Решение начинается с профиля запросов, а не с названия модели."
+sourceName: null
+sourceUrl: null
+externalType: null
+sourceAuthorProfileUrl: null
+participationLabel: null
+supersedes: null
+supersededBy: null
+---
+
+Название модели почти ничего не говорит о том, как будет работать конкретный сервис. Одна и та же модель может уверенно обслуживать поток коротких чатов и упереться в очередь на длинных документах: prefill, decode, длина ответа и повторное использование KV cache нагружают runtime по-разному.
+
+Поэтому среднего RPS недостаточно. До выбора модели, GPU и схемы serving нужны хотя бы распределения входных и выходных токенов, concurrency, характер прихода запросов, latency-класс, возможность batching и фактический cache reuse. Для агента к этому добавляются число шагов и стабильность префикса между ними.
+
+Сравнивать варианты стоит на replay или синтетическом профиле, который сохраняет эту форму нагрузки. Название модели и спецификация ускорителя остаются входными данными, но решение подтверждает только измерение на целевом workload. Подробнее границы этого решения разобраны в [Inference Plane](/ai-platform/areas/inference-plane).

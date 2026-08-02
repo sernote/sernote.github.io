@@ -18,7 +18,7 @@ topics:
   - synthetic-evidence
 relations:
   articleIds:
-    - short-prompt-not-cheap
+    - prefix-cache-habr
   projectIds:
     - audit-prompt-caching
 sources:
@@ -177,4 +177,4 @@ AP-2 подтверждает layout drift, но оставляет нескол
 
 В реальном расследовании после AP-2 сохраните два запроса из одного сценария, очищенных от чувствительных данных, сравните их байтовые или токенные префиксы и добавьте документированное поле чтения кэша вместе с идентификатором маршрута. Затем повторите холодный и прогретый запуски на закреплённой конфигурации. До появления этих данных честный вывод остаётся прежним: изменение найдено, влияние на среду исполнения не измерено.
 
-Связанные материалы: [Prefix Cache](/ai-platform/components/prefix-cache), [audit-prompt-caching](/projects/audit-prompt-caching) и каноническая статья [«Короткий промпт не значит дешёвый»](https://habr.com/ru/companies/bitrix/articles/1033822/).
+Связанные материалы: [Prefix Cache](/ai-platform/components/prefix-cache), [audit-prompt-caching](/projects/audit-prompt-caching) и каноническая статья [«Короткий промпт ≠ дешёвый промпт: как оптимизация ломает prefix cache в LLM-агентах»](https://habr.com/ru/companies/bitrix/articles/1033822/).
