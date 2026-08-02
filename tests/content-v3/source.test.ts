@@ -1,9 +1,11 @@
 import { createElement } from "react";
 import type { MDXContent } from "mdx/types";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { frontmatter } from "fumadocs-core/content/md/frontmatter";
 import { describe, expect, it } from "vitest";
 
+import { AUTHOR_PROFILE } from "../../lib/author-profile";
 import {
   createV3Source,
   type V3SourceItem
@@ -253,30 +255,171 @@ const nativeArticleExcerpt =
 const externalArticleExcerpt =
   "Короткий запрос иногда обходится дороже длинного: в агентном цикле важны стабильность префикса, порядок tools и фактические cache-read сигналы.";
 
+const externalArticleSharedContract = {
+  type: "article",
+  locale: "ru",
+  kind: "external-note",
+  slug: null,
+  editorialFormat: null,
+  publicationStatus: "published",
+  reviewStatus: "unreviewed",
+  updatedAt: "2026-08-02",
+  reviewedAt: null,
+  reviewCycleDays: null,
+  supersedes: null,
+  supersededBy: null
+} as const;
+
 const pilotExternalArticleContract = {
   "prefix-cache-the-code": {
+    ...externalArticleSharedContract,
+    title: "Почему короткий промпт может стоить дороже длинного",
+    publishedAt: "2026-06-18",
+    sourceName: "Журнал «Код» / Яндекс Практикум",
+    sourceUrl: "https://thecode.media/prefix-cache-promt-ai-agenty/",
+    sourceAuthorProfileUrl: "https://thecode.media/authors/sergey-notevskiy/",
+    excerpt:
+      "Объяснение prefix cache для читателя, который хочет понять, почему локальное сокращение промпта способно увеличить стоимость агентной сессии",
     externalType: "authored-article",
     participationLabel: "Вклад Сергея: автор материала и технического разбора"
   },
   "prefix-cache-habr": {
+    ...externalArticleSharedContract,
+    title:
+      "Короткий промпт ≠ дешёвый промпт: как оптимизация ломает prefix cache в LLM-агентах",
+    publishedAt: "2026-05-12",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    excerpt:
+      "Разбор плавающего списка tools, стабильности префикса и effective cost в длинном агентном цикле",
     externalType: "authored-article",
     participationLabel: "Вклад Сергея: автор статьи и практических рекомендаций"
   },
   "effective-cost-habr": {
+    ...externalArticleSharedContract,
+    title: "Погоди переезжать на дешёвую модель: считаем effective cost с учётом кэша",
+    publishedAt: "2026-03-10",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1008320/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    excerpt:
+      "Практическая модель стоимости, которая учитывает cache read, cache miss и различия провайдеров, а не только цену миллиона токенов",
     externalType: "authored-article",
     participationLabel: "Вклад Сергея: автор расчёта и сравнительного разбора"
   },
   "agent-skills-habr": {
+    ...externalArticleSharedContract,
+    title:
+      "Навыки агентов (Agent Skills): что это такое и почему это больше, чем «папка с промптами»",
+    publishedAt: "2025-12-26",
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/980654/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    excerpt:
+      "Объяснение Agent Skills как переносимого, версионируемого артефакта для поведения AI-агентов и рабочих процессов",
     externalType: "authored-article",
     participationLabel:
       "Вклад Сергея: автор объяснительного материала и модели Discovery → Activation → Execution"
   },
   "prompt-engineering-vc": {
+    ...externalArticleSharedContract,
+    title: "Промт-инжиниринг больше не нужен?",
+    publishedAt: "2025-04-28",
+    sourceName: "vc.ru · Битрикс24",
+    sourceUrl: "https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu",
+    sourceAuthorProfileUrl: null,
+    excerpt:
+      "Разбор того, как промпт меняется от пользовательской формулировки до части архитектуры AI-продукта",
     externalType: "expert-comment",
     participationLabel:
       "Вклад Сергея: основной эксперт материала; объясняет пользовательский и продуктовый контекст промпт-инжиниринга"
   }
 } as const;
+
+const requiredPilotExternalIds = Object.keys(pilotExternalArticleContract);
+
+const workloadShapeNoteContract = {
+  entityId: "workload-shape-over-model-name",
+  type: "article",
+  locale: "ru",
+  kind: "native",
+  slug: "workload-shape-over-model-name",
+  editorialFormat: "note",
+  title: "Workload shape важнее названия модели",
+  description:
+    "Почему модель и GPU нельзя выбирать по среднему RPS без распределения контекста, ответа, concurrency и cache reuse.",
+  publicationStatus: "published",
+  reviewStatus: "unreviewed",
+  publishedAt: "2026-07-22",
+  updatedAt: "2026-07-22",
+  reviewedAt: null,
+  reviewCycleDays: null,
+  topics: ["inference", "workload-shape", "capacity"],
+  relations: { platformEntityIds: ["inference-plane"] },
+  excerpt:
+    "Одинаковая модель ведёт себя по-разному на коротких чатах, длинном prefill и агентных циклах. Решение начинается с профиля запросов, а не с названия модели.",
+  sourceName: null,
+  sourceUrl: null,
+  externalType: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
+  supersedes: null,
+  supersededBy: null
+} as const;
+
+const workloadShapeNoteBody = [
+  "Название модели почти ничего не говорит о том, как будет работать конкретный сервис. Одна и та же модель может уверенно обслуживать поток коротких чатов и упереться в очередь на длинных документах: prefill, decode, длина ответа и повторное использование KV cache нагружают runtime по-разному.",
+  "",
+  "Поэтому среднего RPS недостаточно. До выбора модели, GPU и схемы serving нужны хотя бы распределения входных и выходных токенов, concurrency, характер прихода запросов, latency-класс, возможность batching и фактический cache reuse. Для агента к этому добавляются число шагов и стабильность префикса между ними.",
+  "",
+  "Сравнивать варианты стоит на replay или синтетическом профиле, который сохраняет эту форму нагрузки. Название модели и спецификация ускорителя остаются входными данными, но решение подтверждает только измерение на целевом workload. Подробнее границы этого решения разобраны в [Inference Plane](/ai-platform/areas/inference-plane)."
+].join("\n");
+
+type ActualV3Document = {
+  sourcePath: string;
+  content: string;
+  data: Record<string, unknown>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readActualV3Documents(): ActualV3Document[] {
+  const contentRoot = join(process.cwd(), "content/v3");
+
+  function listMdxFiles(directory: string, prefix = ""): string[] {
+    return readdirSync(directory, { withFileTypes: true })
+      .flatMap((entry) => {
+        const sourcePath = prefix === "" ? entry.name : `${prefix}/${entry.name}`;
+        if (entry.isDirectory()) {
+          return listMdxFiles(join(directory, entry.name), sourcePath);
+        }
+        return entry.isFile() && entry.name.endsWith(".mdx") ? [sourcePath] : [];
+      })
+      .sort();
+  }
+
+  return listMdxFiles(contentRoot)
+    .sort()
+    .map((sourcePath) => {
+      const parsed = frontmatter(readFileSync(join(contentRoot, sourcePath), "utf8"));
+      if (!isRecord(parsed.data)) {
+        throw new Error(`Expected object frontmatter in content/v3/${sourcePath}`);
+      }
+      return { sourcePath, content: parsed.content.trim(), data: parsed.data };
+    });
+}
+
+const actualV3Documents = readActualV3Documents();
+const actualV3Source = createV3Source(
+  actualV3Documents.map(({ sourcePath, data }) => ({
+    ...data,
+    body: flattenedRuntimeBody,
+    info: { path: sourcePath }
+  }))
+);
 
 const fixtures = [
   article("ai-platform-before-gpu", {
@@ -335,72 +478,6 @@ const fixtures = [
   )
 ];
 
-const v31ArticleFixtures = [
-  article("ai-platform-before-gpu", {
-    publishedAt: "2026-07-22",
-    excerpt: nativeArticleExcerpt
-  }),
-  article("workload-shape-over-model-name", {
-    editorialFormat: "note",
-    publishedAt: "2026-07-22"
-  }),
-  article("prefix-cache-the-code", {
-    kind: "external-note",
-    slug: null,
-    editorialFormat: null,
-    externalType: "authored-article",
-    sourceName: "Журнал «Код» / Яндекс Практикум",
-    sourceUrl: "https://thecode.media/prefix-cache-promt-ai-agenty/",
-    sourceAuthorProfileUrl: "https://thecode.media/authors/sergey-notevskiy/",
-    participationLabel: pilotExternalArticleContract["prefix-cache-the-code"].participationLabel,
-    publishedAt: "2026-06-18"
-  }),
-  article("prefix-cache-habr", {
-    kind: "external-note",
-    slug: null,
-    editorialFormat: null,
-    externalType: "authored-article",
-    sourceName: "Хабр · блог Битрикс24",
-    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1033822/",
-    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
-    participationLabel: pilotExternalArticleContract["prefix-cache-habr"].participationLabel,
-    publishedAt: "2026-05-12"
-  }),
-  article("effective-cost-habr", {
-    kind: "external-note",
-    slug: null,
-    editorialFormat: null,
-    externalType: "authored-article",
-    sourceName: "Хабр · блог Битрикс24",
-    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/1008320/",
-    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
-    participationLabel: pilotExternalArticleContract["effective-cost-habr"].participationLabel,
-    publishedAt: "2026-03-10"
-  }),
-  article("agent-skills-habr", {
-    kind: "external-note",
-    slug: null,
-    editorialFormat: null,
-    externalType: "authored-article",
-    sourceName: "Хабр · блог Битрикс24",
-    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/980654/",
-    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
-    participationLabel: pilotExternalArticleContract["agent-skills-habr"].participationLabel,
-    publishedAt: "2025-12-26"
-  }),
-  article("prompt-engineering-vc", {
-    kind: "external-note",
-    slug: null,
-    editorialFormat: null,
-    externalType: "expert-comment",
-    sourceName: "vc.ru · Битрикс24",
-    sourceUrl: "https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu",
-    sourceAuthorProfileUrl: null,
-    participationLabel: pilotExternalArticleContract["prompt-engineering-vc"].participationLabel,
-    publishedAt: "2025-04-28"
-  })
-];
-
 describe("v3 generated-entry source adapter", () => {
   it("accepts the flattened Fumadocs runtime shape without leaking runtime fields", () => {
     const source = createV3Source([flattenedRuntimeEntry]);
@@ -448,8 +525,7 @@ describe("v3 generated-entry source adapter", () => {
   });
 
   it("exposes the native and external v3.1 pilot article inventory", () => {
-    const source = createV3Source(v31ArticleFixtures);
-    const publicArticles = source.listPublic("article", "ru");
+    const publicArticles = actualV3Source.listPublic("article", "ru");
     const nativeIds = publicArticles
       .filter((record) => record.type === "article" && record.kind === "native")
       .map((record) => record.entityId);
@@ -461,42 +537,92 @@ describe("v3 generated-entry source adapter", () => {
       expect.arrayContaining(["ai-platform-before-gpu", "workload-shape-over-model-name"])
     );
     expect(externalIds).toEqual(
-      expect.arrayContaining(Object.keys(pilotExternalArticleContract))
+      expect.arrayContaining(requiredPilotExternalIds)
     );
     expect(externalIds.length).toBeGreaterThanOrEqual(5);
   });
 
-  it("orders the v3.1 external pilot in reverse chronological order", () => {
-    const source = createV3Source(v31ArticleFixtures);
-    const external = source
+  it("orders all external records by date and preserves the relative pilot chronology", () => {
+    const external = actualV3Source
       .listPublic("article", "ru")
       .filter(isExternalArticle);
+    const externalIds = external.map((record) => record.entityId);
+    const externalDates = external.map((record) => record.publishedAt);
+    const pilotSequence = externalIds.filter((entityId) =>
+      requiredPilotExternalIds.includes(entityId)
+    );
 
-    expect(external.map((record) => record.entityId)).toEqual([
+    expect(externalIds.length).toBeGreaterThanOrEqual(5);
+    expect(pilotSequence).toEqual([
       "prefix-cache-the-code",
       "prefix-cache-habr",
       "effective-cost-habr",
       "agent-skills-habr",
       "prompt-engineering-vc"
     ]);
+    for (let index = 1; index < externalDates.length; index += 1) {
+      expect(externalDates[index - 1]! >= externalDates[index]!).toBe(true);
+    }
   });
 
-  it("keeps every v3.1 external record metadata-only and outside local canonicals", () => {
-    const source = createV3Source(v31ArticleFixtures);
-    const publicArticles = source.listPublic("article", "ru");
+  it("reads exact pilot metadata from real MDX and keeps it outside local canonicals", () => {
+    const publicArticles = actualV3Source.listPublic("article", "ru");
     const external = publicArticles.filter(
       (record): record is V3SourceItem<V3Article> =>
         isExternalArticle(record) && record.entityId in pilotExternalArticleContract
     );
     const localIds = new Set(
-      source.listLocalCanonical("article", "ru").map((record) => record.entityId)
+      actualV3Source.listLocalCanonical("article", "ru").map((record) => record.entityId)
     );
 
     expect(
       Object.fromEntries(
-        external.map(({ entityId, externalType, participationLabel }) => [
+        external.map(({
           entityId,
-          { externalType, participationLabel }
+          type,
+          locale,
+          kind,
+          slug,
+          editorialFormat,
+          title,
+          publicationStatus,
+          reviewStatus,
+          publishedAt,
+          updatedAt,
+          reviewedAt,
+          reviewCycleDays,
+          sourceName,
+          sourceUrl,
+          sourceAuthorProfileUrl,
+          excerpt,
+          externalType,
+          participationLabel,
+          supersedes,
+          supersededBy
+        }) => [
+          entityId,
+          {
+            type,
+            locale,
+            kind,
+            slug,
+            editorialFormat,
+            title,
+            publicationStatus,
+            reviewStatus,
+            publishedAt,
+            updatedAt,
+            reviewedAt,
+            reviewCycleDays,
+            sourceName,
+            sourceUrl,
+            sourceAuthorProfileUrl,
+            excerpt,
+            externalType,
+            participationLabel,
+            supersedes,
+            supersededBy
+          }
         ])
       )
     ).toEqual(pilotExternalArticleContract);
@@ -504,6 +630,32 @@ describe("v3 generated-entry source adapter", () => {
       expect(record.slug).toBeNull();
       expect(localIds.has(record.entityId)).toBe(false);
     }
+  });
+
+  it("reads the exact compact native note and author profile from source files", () => {
+    const note = actualV3Source
+      .listPublic("article", "ru")
+      .find((record) => record.entityId === workloadShapeNoteContract.entityId);
+    const noteDocument = actualV3Documents.find(
+      (document) => document.sourcePath === "blog/workload-shape-over-model-name.mdx"
+    );
+
+    expect(note).toMatchObject(workloadShapeNoteContract);
+    expect(noteDocument?.content).toBe(workloadShapeNoteBody);
+    expect(AUTHOR_PROFILE).toEqual({
+      id: "https://notevskii.tech/about/#person",
+      name: "Сергей Нотевский",
+      role: "AI Platform Lead",
+      company: "Битрикс24",
+      url: "https://notevskii.tech/about/",
+      sameAs: [
+        "https://habr.com/ru/users/Ser_no/",
+        "https://github.com/sernote",
+        "https://t.me/sergeinotevskii"
+      ],
+      aboutIntro:
+        "В 2024 году я выступал как продакт-менеджер и AI-евангелист Битрикс24, в 2025-м — как AI-евангелист и разработчик команды CoPilot. Сейчас моя публичная роль — AI Platform Lead. Я отвечаю за направление LLM-моделей: поиск, анализ, адаптацию и тестирование на сценариях Битрикс24."
+    });
   });
 
   it("generates params only for public local records", () => {

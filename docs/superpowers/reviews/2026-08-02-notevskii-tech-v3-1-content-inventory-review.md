@@ -100,4 +100,50 @@ Manifest: 101 records = 67 keep + 34 static-alias
 Discovery: 16 sitemap URLs, 7 RSS items
 ```
 
+## Исправление по итогам spec review
+
+Spec review выявил два пробела в тестах: v3.1 inventory проверял отдельные синтетические fixtures, а chronology assertion фиксировал ровно пять external IDs. Production-контент мог пройти schema validation с неверным, но валидным title, date, source URL, excerpt или participation label; лишний абзац native note тоже не проверялся дословно.
+
+Исправление ограничено тестами:
+
+- `source.test.ts` рекурсивно читает реальные `content/v3/**/*.mdx` через Fumadocs `frontmatter` и передаёт metadata в существующий `createV3Source`; таким образом, inventory проходит тот же Zod/registry/source path, что и production collection;
+- отдельный `v31ArticleFixtures` удалён, а синтетические fixtures сохранены только для unit-тестов `source-core` и view models;
+- для пяти обязательных external records проверяются точные lifecycle-поля, title, date, source name/URL/profile URL, excerpt, external type и participation label; canonical assertion работает на реальном source;
+- native note проверяется по полному frontmatter contract и точному MDX body, а `AUTHOR_PROFILE` — прямым импортом production-объекта;
+- chronology допускает будущие external additions: обязательные пять записей проверяются как подмножество в нужном относительном порядке, `externalIds.length >= 5`, а вся фактическая external sequence должна быть non-increasing по `publishedAt`.
+
+Mutation RED выполнен на реальном `content/v3/blog/workload-shape-over-model-name.mdx`: после временного добавления четвёртого абзаца команда
+
+```text
+corepack pnpm vitest run tests/content-v3/source.test.ts -t "reads the exact compact native note and author profile from source files"
+Test Files: 1 failed
+Tests: 1 failed, 41 skipped
+```
+
+упала на exact-body assertion и показала добавленную строку в diff. После восстановления MDX та же команда дала `1 passed, 41 skipped`.
+
+Финальная follow-up проверка:
+
+```text
+corepack pnpm lint
+PASS
+
+corepack pnpm typecheck
+PASS
+
+corepack pnpm vitest run tests/content-v3
+Test Files: 5 passed
+Tests: 143 passed
+
+corepack pnpm build
+PASS: 106 static pages generated, 34 aliases materialized
+
+corepack pnpm vitest run tests/build/static-export-contract.test.ts
+Test Files: 1 passed
+Tests: 41 passed
+
+git diff --check
+PASS
+```
+
 Итог review: **PASS**. Source limitations описаны выше; противоречий заданным title, date, platform, authorship или role evidence нет.
