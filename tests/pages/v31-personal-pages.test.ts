@@ -19,11 +19,9 @@ const EXTERNAL_PUBLICATION_IDS = [
 ] as const;
 
 const ABOUT_EVIDENCE_IDS = [
-  "prefix-cache-the-code",
-  "prefix-cache-habr",
+  "agent-skills-habr",
   "maas-vs-self-hosted-roii",
-  "audit-prompt-caching",
-  "agent-skills-habr"
+  "audit-prompt-caching"
 ] as const;
 
 const body = () => createElement("p", null, "Fixture");
@@ -252,7 +250,7 @@ describe("v3.1 personal-page view models", () => {
     }
   });
 
-  it("resolves the five selected About evidence items from public source entities", () => {
+  it("resolves the three selected About evidence items from public source entities", () => {
     const model = getAboutViewModel(v3Source);
     const publicIds = new Set(
       v3Source.listPublic(undefined, "ru").map(({ entityId }) => entityId)

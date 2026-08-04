@@ -298,6 +298,48 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
   );
 }
 
+const aboutSectionClassName =
+  "grid gap-8 border-t border-border py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14";
+
+function AboutEvidenceRow({ item }: { item: AboutViewModel["evidence"][number] }) {
+  const content = (
+    <>
+      <span>
+        <span className="block font-medium group-hover:text-primary">{item.title}</span>
+        <span className="mt-1 block max-w-3xl text-base leading-6 text-muted-foreground">
+          {item.description}
+        </span>
+      </span>
+      <span className="text-sm text-muted-foreground md:whitespace-nowrap md:text-right">
+        {item.meta}
+      </span>
+    </>
+  );
+  const rowClassName =
+    "group grid gap-2 border-b border-border py-5 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8";
+
+  if (item.linkKind === "external") {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noreferrer"
+        data-about-evidence={item.entityId}
+        className={rowClassName}
+      >
+        {content}
+        <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
+      </a>
+    );
+  }
+
+  return (
+    <Link href={item.href} data-about-evidence={item.entityId} className={rowClassName}>
+      {content}
+    </Link>
+  );
+}
+
 export function AboutPageContent({ model }: { model: AboutViewModel }) {
   return (
     <EditorialShell currentPath="/about">
@@ -316,66 +358,71 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
           </p>
         </header>
 
-        <section className="grid gap-8 border-t border-border py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Фокус</h2>
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
-            <div>
-              <h3 className="text-lg font-semibold">Инженерный фокус</h3>
-              <p className="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
-                Проверяемые контракты, границы данных, runtime evidence, качество, SLO и стоимость принятого результата.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Лидерский фокус</h3>
-              <p className="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
-                Распределение ответственности, критерии выпуска и решения, которые связывают продуктовые сценарии с общей платформенной поверхностью.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="grid gap-7 border-t border-border py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Публикации и выступления</h2>
-          <div className="border-t border-border">
-            {model.evidence.map((item) => (
-              <Link
-                key={item.entityId}
-                href={item.href}
-                data-about-evidence={item.entityId}
-                className="grid min-h-16 gap-2 border-b border-border py-4 hover:text-primary md:grid-cols-[minmax(0,1fr)_auto] md:gap-8"
-              >
-                <span className="font-medium">{item.title}</span>
-                <span className="text-sm text-muted-foreground">{item.meta}</span>
-              </Link>
+        <section className={aboutSectionClassName}>
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">За что отвечаю</h2>
+          <div className="grid gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-9">
+            {AUTHOR_PROFILE.responsibilities.map((item) => (
+              <div key={item.title} data-about-responsibility>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
+                  {item.body}
+                </p>
+              </div>
             ))}
           </div>
         </section>
 
-        <section className="grid gap-8 py-12 md:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)] md:gap-12 md:py-14">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Редакционные принципы</h2>
-          <div className="space-y-4 text-base leading-7 text-muted-foreground">
-            <p>Отделяю проверенный факт от рабочей гипотезы и прямо обозначаю границы применимости.</p>
-            <p>Не публикую внутренние данные, закрытую архитектуру и цифры, которые нельзя подтвердить публичным источником.</p>
-            <p>Предпочитаю решение и его компромиссы перечню инструментов или универсальной формуле.</p>
+        <section className={aboutSectionClassName}>
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">На чём я стою</h2>
+          <ul className="border-t border-border">
+            {AUTHOR_PROFILE.positions.map((position) => (
+              <li
+                key={position}
+                data-about-position
+                className="max-w-[52rem] border-b border-border py-5 text-base leading-7 text-foreground md:text-lg md:leading-8"
+              >
+                {position}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={aboutSectionClassName}>
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">
+            Что почитать и посмотреть
+          </h2>
+          <div>
+            <div className="border-t border-border">
+              {model.evidence.map((item) => (
+                <AboutEvidenceRow key={item.entityId} item={item} />
+              ))}
+            </div>
+            <EditorialLink href="/materials" className="mt-5 min-h-11">
+              Все материалы
+            </EditorialLink>
           </div>
         </section>
 
-        <section className="border-y border-border bg-[var(--surface-subtle)] px-5 py-8 md:px-8 md:py-10">
-          <h2 className="text-sm font-semibold text-primary">Короткая биография для организаторов</h2>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-foreground">
-            Сергей Нотевский — AI Platform Lead в Битрикс24. Работает с выбором и адаптацией LLM, инфраструктурой инференса, качеством и эксплуатацией AI-сценариев. В публичных материалах разбирает production AI как систему инженерных решений и ответственности.
+        <section className="mt-6 border-y border-border bg-[var(--surface-subtle)] px-5 py-8 md:px-8 md:py-10">
+          <h2 className="text-sm font-semibold text-primary">
+            Telegram-канал «{AUTHOR_PROFILE.channelName}»
+          </h2>
+          <p className="mt-3 max-w-3xl text-base leading-7 text-foreground">
+            {AUTHOR_PROFILE.channelPitch}
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-7">
+            <ExternalEditorialLink href={siteLinks.telegram}>Читать канал</ExternalEditorialLink>
+            <a
+              href={siteLinks.telegramDm}
+              className="inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline"
+            >
+              Написать в Telegram <ArrowUpRight aria-hidden="true" className="size-4" />
+            </a>
+          </div>
+          <p className="mt-5 max-w-3xl border-t border-border pt-5 text-sm leading-6 text-muted-foreground">
+            {AUTHOR_PROFILE.organizerNote}
           </p>
         </section>
-
-        <div className="flex flex-col gap-3 py-8 sm:flex-row sm:items-center sm:gap-7">
-          <a
-            href={siteLinks.telegramDm}
-            className="inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline"
-          >
-            Написать в Telegram <ArrowUpRight aria-hidden="true" className="size-4" />
-          </a>
-          <EditorialLink href="/materials" className="min-h-11">Все материалы</EditorialLink>
-        </div>
       </div>
     </EditorialShell>
   );

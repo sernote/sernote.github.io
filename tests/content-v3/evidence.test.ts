@@ -41,22 +41,73 @@ describe("agent-session cache-reuse evidence recipe", () => {
 
 describe("v3.1 public content evidence", () => {
   it("defines the frozen source-backed author profile contract", () => {
-    expect(AUTHOR_PROFILE).toEqual({
-      id: "https://notevskii.tech/about/#person",
-      name: "Сергей Нотевский",
-      role: "AI Platform Lead",
-      company: "Битрикс24",
-      url: "https://notevskii.tech/about/",
-      sameAs: [
-        "https://habr.com/ru/users/Ser_no/",
-        "https://github.com/sernote",
-        "https://t.me/sergeinotevskii"
-      ],
-      aboutIntro:
-        "В 2024 году я выступал как продакт-менеджер и AI-евангелист Битрикс24, в 2025-м — как AI-евангелист и разработчик команды CoPilot. Сейчас моя публичная роль — AI Platform Lead. Я отвечаю за направление LLM-моделей: поиск, анализ, адаптацию и тестирование на сценариях Битрикс24."
-    });
+    expect(AUTHOR_PROFILE.id).toBe("https://notevskii.tech/about/#person");
+    expect(AUTHOR_PROFILE.name).toBe("Сергей Нотевский");
+    expect(AUTHOR_PROFILE.role).toBe("AI Platform Lead");
+    expect(AUTHOR_PROFILE.company).toBe("Битрикс24");
+    expect(AUTHOR_PROFILE.url).toBe("https://notevskii.tech/about/");
+    expect(AUTHOR_PROFILE.sameAs).toEqual([
+      "https://habr.com/ru/users/Ser_no/",
+      "https://github.com/sernote",
+      "https://t.me/sergeinotevskii"
+    ]);
+    expect(AUTHOR_PROFILE.aboutIntro).toBe(
+      "Мы ушли с внешних API на свои GPU. Всё, что было чужой проблемой за чужим SLA, стало моей."
+    );
+    expect(AUTHOR_PROFILE.channelName).toBe("AI да парень!");
+
+    expect(AUTHOR_PROFILE.responsibilities.map(({ title }) => title)).toEqual([
+      "Инференс и мощности",
+      "Шлюз и доступ",
+      "Модели",
+      "Качество",
+      "Стоимость и задержка",
+      "Эксплуатация"
+    ]);
+    expect(AUTHOR_PROFILE.positions).toHaveLength(6);
+
+    const aboutCopy = [
+      AUTHOR_PROFILE.aboutIntro,
+      AUTHOR_PROFILE.channelPitch,
+      AUTHOR_PROFILE.organizerNote,
+      ...AUTHOR_PROFILE.positions,
+      ...AUTHOR_PROFILE.responsibilities.flatMap(({ title, body }) => [title, body])
+    ];
+
+    // The "не просто X, а Y" / "не только X, но и Y" negative parallelism is the single most
+    // detectable LLM tell in Russian copy. Keep it out of the About page.
+    for (const line of aboutCopy) {
+      expect(line.trim().length).toBeGreaterThan(0);
+      expect(line).not.toMatch(/не\s+просто\s+[^,.]+,\s*а\s/i);
+      expect(line).not.toMatch(/не\s+только\s+[^,.]+,\s*но\s+и\s/i);
+      expect(line).not.toMatch(/\b(?:является|данн(?:ый|ая|ое|ые))\b/i);
+      expect(line).not.toMatch(/стоит\s+отметить|важно\s+понимать|таким\s+образом/i);
+    }
+
+    // AGENTS.md forbids publishing Bitrix24 internal scale, topology and cost. The About copy
+    // must stay free of request volumes, fleet or headcount claims.
+    const allCopy = JSON.stringify(AUTHOR_PROFILE);
+    for (const forbidden of [
+      /\d[\d\s.,]*\s*млн/i,
+      /\d+\s*(?:млн|млрд|K|тыс)\+/i,
+      /\d+\+\s*GPU/i,
+      /GPU\s*(?:в\s*парке|-\s*нод)/i,
+      /\d+\s*инженер/i,
+      /\d+\s*(?:FTE|команд)/i,
+      /запросов\s*(?:в|за)\s*(?:месяц|сутки|день)/i
+    ]) {
+      expect(allCopy).not.toMatch(forbidden);
+    }
+
     expect(Object.isFrozen(AUTHOR_PROFILE)).toBe(true);
     expect(Object.isFrozen(AUTHOR_PROFILE.sameAs)).toBe(true);
+
+    for (const collection of [AUTHOR_PROFILE.responsibilities, AUTHOR_PROFILE.positions]) {
+      expect(Object.isFrozen(collection)).toBe(true);
+      for (const entry of collection) {
+        expect(Object.isFrozen(entry)).toBe(true);
+      }
+    }
   });
 
   it("keeps the exact compact native workload note", () => {
