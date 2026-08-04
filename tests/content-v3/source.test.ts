@@ -653,20 +653,19 @@ describe("v3 generated-entry source adapter", () => {
 
     expect(note).toMatchObject(workloadShapeNoteContract);
     expect(noteDocument?.content).toBe(workloadShapeNoteBody);
-    expect(AUTHOR_PROFILE).toEqual({
-      id: "https://notevskii.tech/about/#person",
-      name: "Сергей Нотевский",
-      role: "AI Platform Lead",
-      company: "Битрикс24",
-      url: "https://notevskii.tech/about/",
-      sameAs: [
-        "https://habr.com/ru/users/Ser_no/",
-        "https://github.com/sernote",
-        "https://t.me/sergeinotevskii"
-      ],
-      aboutIntro:
-        "В 2024 году я выступал как продакт-менеджер и AI-евангелист Битрикс24, в 2025-м — как AI-евангелист и разработчик команды CoPilot. Сейчас моя публичная роль — AI Platform Lead. Я отвечаю за направление LLM-моделей: поиск, анализ, адаптацию и тестирование на сценариях Битрикс24."
-    });
+
+    // The exact About copy contract lives in tests/content-v3/evidence.test.ts; here we only
+    // lock the identity fields the source and SEO layers read.
+    expect(AUTHOR_PROFILE.id).toBe("https://notevskii.tech/about/#person");
+    expect(AUTHOR_PROFILE.name).toBe("Сергей Нотевский");
+    expect(AUTHOR_PROFILE.role).toBe("AI Platform Lead");
+    expect(AUTHOR_PROFILE.company).toBe("Битрикс24");
+    expect(AUTHOR_PROFILE.url).toBe("https://notevskii.tech/about/");
+    expect(AUTHOR_PROFILE.sameAs).toEqual([
+      "https://habr.com/ru/users/Ser_no/",
+      "https://github.com/sernote",
+      "https://t.me/sergeinotevskii"
+    ]);
   });
 
   it("generates params only for public local records", () => {

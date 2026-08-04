@@ -558,11 +558,9 @@ const MATERIALS_EXTERNAL_IDS = [
 ] as const;
 
 const ABOUT_EVIDENCE_IDS = [
-  ["article", "prefix-cache-the-code", "external-note"],
-  ["article", "prefix-cache-habr", "external-note"],
+  ["article", "agent-skills-habr", "external-note"],
   ["talk", "maas-vs-self-hosted-roii"],
-  ["project", "audit-prompt-caching"],
-  ["article", "agent-skills-habr", "external-note"]
+  ["project", "audit-prompt-caching"]
 ] as const;
 
 export function getMaterialsViewModel(source: V3Source): MaterialsViewModel {

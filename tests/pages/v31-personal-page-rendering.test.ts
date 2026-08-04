@@ -54,7 +54,10 @@ const materialsModel: MaterialsViewModel = {
 };
 
 const aboutModel: AboutViewModel = {
-  evidence: Array.from({ length: 5 }, (_, index) => listItem(`evidence-${index}`, `Материал ${index}`, `/materials#${index}`))
+  evidence: [
+    { ...listItem("evidence-external", "Внешняя публикация", "https://example.com/external"), linkKind: "external" as const },
+    ...Array.from({ length: 2 }, (_, index) => listItem(`evidence-${index}`, `Материал ${index}`, `/materials#${index}`))
+  ]
 };
 
 function count(html: string, pattern: RegExp): number {
@@ -110,18 +113,30 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain('href="/projects"');
   });
 
-  it("renders About from the verified profile and exactly five evidence links", () => {
+  it("renders About from the verified profile with responsibilities, positions and evidence", () => {
     const html = renderToStaticMarkup(
       createElement(AboutPageContent, { model: aboutModel })
     );
 
     expect(html).toContain(AUTHOR_PROFILE.aboutIntro);
-    expect(count(html, /data-about-evidence=/g)).toBe(5);
-    expect(html).toContain("Инженерный фокус");
-    expect(html).toContain("Лидерский фокус");
-    expect(html).toContain("Короткая биография для организаторов");
+    expect(count(html, /data-about-evidence=/g)).toBe(aboutModel.evidence.length);
+    expect(count(html, /data-about-responsibility/g)).toBe(
+      AUTHOR_PROFILE.responsibilities.length
+    );
+    expect(count(html, /data-about-position/g)).toBe(AUTHOR_PROFILE.positions.length);
+    expect(html).toContain(AUTHOR_PROFILE.organizerNote);
+    for (const { title } of AUTHOR_PROFILE.responsibilities) {
+      expect(html).toContain(title);
+    }
+    expect(html).not.toContain("Редакционные принципы");
+    expect(html).not.toContain("Короткая биография для организаторов");
+    expect(html).not.toContain("Как здесь оказался");
+    expect(html).not.toContain("Кем не являюсь");
     expect(count(html, /Написать в Telegram/g)).toBe(1);
     expect(html).toContain('href="/materials"');
+    expect(html).toMatch(
+      /<a[^>]+href="https:\/\/example\.com\/external"[^>]+target="_blank"[^>]+rel="noreferrer"/
+    );
   });
 });
 
