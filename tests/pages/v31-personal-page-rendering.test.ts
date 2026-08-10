@@ -113,21 +113,25 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain('href="/projects"');
   });
 
-  it("renders About from the verified profile with responsibilities, positions and evidence", () => {
+  it("renders About from the verified first-person profile and source-driven evidence", () => {
     const html = renderToStaticMarkup(
       createElement(AboutPageContent, { model: aboutModel })
     );
 
     expect(html).toContain(AUTHOR_PROFILE.aboutIntro);
-    expect(count(html, /data-about-evidence=/g)).toBe(aboutModel.evidence.length);
-    expect(count(html, /data-about-responsibility/g)).toBe(
-      AUTHOR_PROFILE.responsibilities.length
-    );
-    expect(count(html, /data-about-position/g)).toBe(AUTHOR_PROFILE.positions.length);
-    expect(html).toContain(AUTHOR_PROFILE.organizerNote);
-    for (const { title } of AUTHOR_PROFILE.responsibilities) {
-      expect(html).toContain(title);
+    expect(html).toContain(AUTHOR_PROFILE.currentWork);
+    expect(html).toContain("Как я пришёл к AI Platform");
+    expect(html).toContain(AUTHOR_PROFILE.career);
+    expect(html).toContain("Что я здесь собираю");
+    for (const paragraph of AUTHOR_PROFILE.sitePurpose) {
+      expect(html).toContain(paragraph);
     }
+    expect(count(html, /data-about-evidence=/g)).toBe(aboutModel.evidence.length);
+    expect(html).not.toContain("За что отвечаю");
+    expect(html).not.toContain("На чём я стою");
+    expect(html).not.toContain("внешних API");
+    expect(html).not.toContain("внешним моделям");
+    expect(html).toContain(AUTHOR_PROFILE.organizerNote);
     expect(html).not.toContain("Редакционные принципы");
     expect(html).not.toContain("Короткая биография для организаторов");
     expect(html).not.toContain("Как здесь оказался");
