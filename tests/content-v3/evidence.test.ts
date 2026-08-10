@@ -52,26 +52,27 @@ describe("v3.1 public content evidence", () => {
       "https://t.me/sergeinotevskii"
     ]);
     expect(AUTHOR_PROFILE.aboutIntro).toBe(
-      "Мы ушли с внешних API на свои GPU. Всё, что было чужой проблемой за чужим SLA, стало моей."
+      "Я руковожу направлением AI Platform и командой в Битрикс24. Мы делаем платформу для AI-сценариев продуктов компании и поддерживаем её в работе."
     );
-    expect(AUTHOR_PROFILE.channelName).toBe("AI да парень!");
-
-    expect(AUTHOR_PROFILE.responsibilities.map(({ title }) => title)).toEqual([
-      "Инференс и мощности",
-      "Шлюз и доступ",
-      "Модели",
-      "Качество",
-      "Стоимость и задержка",
-      "Эксплуатация"
+    expect(AUTHOR_PROFILE.currentWork).toBe(
+      "Мы занимаемся инфраструктурой инференса, маршрутизацией и очередями, качеством, наблюдаемостью, мощностями и стоимостью. Я отвечаю за технические решения и работу команды."
+    );
+    expect(AUTHOR_PROFILE.career).toBe(
+      "В 2024 году я работал продакт-менеджером и AI-евангелистом Битрикс24. В 2025-м перешёл в разработку CoPilot. Сейчас руковожу AI Platform. Путь получился не самым прямым, зато я успел посмотреть на AI-продукты с разных сторон: от пользовательского сценария до эксплуатации."
+    );
+    expect(AUTHOR_PROFILE.sitePurpose).toEqual([
+      "Здесь я разбираю задачи, с которыми сталкиваюсь в работе: локальный инференс, устройство control plane, качество моделей и агентов, capacity, стоимость и кэширование.",
+      "Одни темы становятся статьями или докладами. Другие превращаются в код: так появился audit-prompt-caching. Большие разборы постепенно складываются в раздел AI Platform."
     ]);
-    expect(AUTHOR_PROFILE.positions).toHaveLength(6);
+    expect(AUTHOR_PROFILE.channelName).toBe("AI да парень!");
 
     const aboutCopy = [
       AUTHOR_PROFILE.aboutIntro,
+      AUTHOR_PROFILE.currentWork,
+      AUTHOR_PROFILE.career,
+      ...AUTHOR_PROFILE.sitePurpose,
       AUTHOR_PROFILE.channelPitch,
-      AUTHOR_PROFILE.organizerNote,
-      ...AUTHOR_PROFILE.positions,
-      ...AUTHOR_PROFILE.responsibilities.flatMap(({ title, body }) => [title, body])
+      AUTHOR_PROFILE.organizerNote
     ];
 
     // The "не просто X, а Y" / "не только X, но и Y" negative parallelism is the single most
@@ -88,6 +89,17 @@ describe("v3.1 public content evidence", () => {
     // must stay free of request volumes, fleet or headcount claims.
     const allCopy = JSON.stringify(AUTHOR_PROFILE);
     for (const forbidden of [
+      "внешних API",
+      "внешним моделям",
+      "За что отвечаю",
+      "На чём я стою",
+      "выбираю, адаптирую",
+      "Исключений нет"
+    ]) {
+      expect(allCopy).not.toContain(forbidden);
+    }
+
+    for (const forbidden of [
       /\d[\d\s.,]*\s*млн/i,
       /\d+\s*(?:млн|млрд|K|тыс)\+/i,
       /\d+\+\s*GPU/i,
@@ -101,13 +113,7 @@ describe("v3.1 public content evidence", () => {
 
     expect(Object.isFrozen(AUTHOR_PROFILE)).toBe(true);
     expect(Object.isFrozen(AUTHOR_PROFILE.sameAs)).toBe(true);
-
-    for (const collection of [AUTHOR_PROFILE.responsibilities, AUTHOR_PROFILE.positions]) {
-      expect(Object.isFrozen(collection)).toBe(true);
-      for (const entry of collection) {
-        expect(Object.isFrozen(entry)).toBe(true);
-      }
-    }
+    expect(Object.isFrozen(AUTHOR_PROFILE.sitePurpose)).toBe(true);
   });
 
   it("keeps the exact compact native workload note", () => {

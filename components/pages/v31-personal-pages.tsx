@@ -353,38 +353,34 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
               {AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}
             </p>
           </div>
-          <p className="max-w-[48rem] text-lg leading-8 text-foreground md:text-xl md:leading-9">
-            {AUTHOR_PROFILE.aboutIntro}
-          </p>
+          <div>
+            <p className="max-w-3xl text-base leading-7 text-muted-foreground">
+              {AUTHOR_PROFILE.aboutIntro}
+            </p>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
+              {AUTHOR_PROFILE.currentWork}
+            </p>
+          </div>
         </header>
 
         <section className={aboutSectionClassName}>
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">За что отвечаю</h2>
-          <div className="grid gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-9">
-            {AUTHOR_PROFILE.responsibilities.map((item) => (
-              <div key={item.title} data-about-responsibility>
-                <h3 className="text-lg font-semibold">{item.title}</h3>
-                <p className="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
-                  {item.body}
-                </p>
-              </div>
-            ))}
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Как я пришёл к AI Platform</h2>
+          <div>
+            <p className="max-w-3xl text-base leading-7 text-muted-foreground">
+              {AUTHOR_PROFILE.career}
+            </p>
           </div>
         </section>
 
         <section className={aboutSectionClassName}>
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">На чём я стою</h2>
-          <ul className="border-t border-border">
-            {AUTHOR_PROFILE.positions.map((position) => (
-              <li
-                key={position}
-                data-about-position
-                className="max-w-[52rem] border-b border-border py-5 text-base leading-7 text-foreground md:text-lg md:leading-8"
-              >
-                {position}
-              </li>
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">Что я здесь собираю</h2>
+          <div className="space-y-4">
+            {AUTHOR_PROFILE.sitePurpose.map((paragraph) => (
+              <p key={paragraph} className="max-w-3xl text-base leading-7 text-muted-foreground">
+                {paragraph}
+              </p>
             ))}
-          </ul>
+          </div>
         </section>
 
         <section className={aboutSectionClassName}>
