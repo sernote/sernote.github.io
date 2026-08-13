@@ -77,7 +77,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
               onClick={() => setOpen(false)}
               className="flex min-h-14 items-center border-b border-border text-lg font-medium text-primary"
             >
-              Написать
+              Написать в Telegram
             </a>
           </nav>
         </Dialog.Content>

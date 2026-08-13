@@ -244,7 +244,7 @@ const HOME_ENTRANCES: HomeViewModel["entrances"] = Object.freeze([
     id: "ai-platform",
     index: "03",
     label: "AI Platform",
-    description: "Карта и практический reference по production AI platform.",
+    description: "Карта и практический справочник по production AI-платформам.",
     href: "/ai-platform"
   })
 ]);

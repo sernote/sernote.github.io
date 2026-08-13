@@ -108,7 +108,7 @@ describe("v3.1 personal pages", () => {
     expect(html).toContain("Публикации на внешних площадках");
     expect(html).toContain("maas-vs-self-hosted.jpg");
     expect(count(html, /data-publication=/g)).toBe(model.publications.length);
-    expect(count(html, /Написать в Telegram/g)).toBe(1);
+    expect(count(html, /Написать в Telegram/g)).toBe(2);
     expect(html).not.toContain('href="/talks"');
     expect(html).not.toContain('href="/projects"');
   });
@@ -136,7 +136,7 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Короткая биография для организаторов");
     expect(html).not.toContain("Как здесь оказался");
     expect(html).not.toContain("Кем не являюсь");
-    expect(count(html, /Написать в Telegram/g)).toBe(1);
+    expect(count(html, /Написать в Telegram/g)).toBe(2);
     expect(html).toContain('href="/materials"');
     expect(html).toMatch(
       /<a[^>]+href="https:\/\/example\.com\/external"[^>]+target="_blank"[^>]+rel="noreferrer"/
