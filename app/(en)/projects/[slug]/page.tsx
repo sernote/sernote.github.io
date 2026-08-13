@@ -12,7 +12,6 @@ import { getMDXComponents } from "@/components/mdx";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
 import { v3Source } from "@/lib/content-v3/source";
-import { formatRussianDate } from "@/lib/content-v3/view-models";
 import { projectMetadata } from "@/lib/metadata";
 import { buildProjectStructuredData } from "@/lib/seo/structured-data";
 
@@ -53,17 +52,7 @@ export default async function ProjectPage({
   const facts: DetailFact[] = [
     ...(release
       ? [
-          { label: "Проверенный релиз", value: release.version },
-          {
-            label: "Релиз опубликован",
-            value: formatRussianDate(release.publishedAt),
-            dateTime: release.publishedAt
-          },
-          {
-            label: "Проверено",
-            value: formatRussianDate(release.verifiedAt),
-            dateTime: release.verifiedAt
-          }
+          { label: "Версия", value: release.version }
         ]
       : []),
     { label: "Лицензия", value: "MIT" }
@@ -88,18 +77,6 @@ export default async function ProjectPage({
         related={related}
         contactLabel="Обсудить проект"
       >
-        <section>
-          <h2>Как работает</h2>
-          <p><strong>Для кого.</strong> {record.audience.join(" ")}</p>
-          <p><strong>Вход.</strong> Код сборки запроса, сохранённые payloads, usage-данные или конфигурация маршрутизации.</p>
-          <p><strong>Результат.</strong> Проверяемые гипотезы о причинах cache miss и список доказательств, которые нужно подтвердить в runtime telemetry.</p>
-          <h3>Быстрый старт</h3>
-          <pre><code>{record.quickStart}</code></pre>
-          <h3>Граница доказательств</h3>
-          <p>{record.evidence.join(" ")} {record.supportBoundary}</p>
-          <h3>Данные и приватность</h3>
-          <p>{record.privacyBoundary}</p>
-        </section>
         <DocsBody className="[&_code]:break-all [&_pre_code]:break-normal">
           <MDX components={getMDXComponents({ a: EditorialMdxLink })} />
         </DocsBody>

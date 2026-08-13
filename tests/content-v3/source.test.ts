@@ -1345,7 +1345,7 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(talkText).not.toMatch(/слайдов (?:нет|не было)/i);
   });
 
-  it("keeps the project quick start, release evidence, data boundary, and safe claim strength", () => {
+  it("keeps the project quick start, practical data boundary, and safe claim strength", () => {
     const projectText = readFileSync(
       join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"),
       "utf8"
@@ -1357,15 +1357,21 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(projectText).toContain('version: "v0.1.3"');
     expect(projectText).toContain('publishedAt: "2026-07-20"');
     expect(projectText).toContain('verifiedAt: "2026-07-22"');
-    expect(projectText).toContain("cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23");
     expect(projectText).toContain("лицензии MIT");
-    expect(projectText).toContain("## Локальность и границы данных");
-    expect(projectText).toContain("## Проверенный снимок релиза");
-    expect(projectText).toContain("помогает искать вероятные причины");
-    expect(projectText).toContain("собирать доказательства");
-    expect(projectText).toContain(
-      "границу данных определяют его runtime, разрешения инструментов и подключённые сервисы"
-    );
+    expect(projectText).toContain("## Данные");
+    expect(projectText).toContain("## Когда пригодится");
+    expect(projectText).toContain("## Как запустить");
+    expect(projectText).toContain("## Что получится");
+    expect(projectText).not.toContain("## Для кого");
+    expect(projectText).not.toContain("## Быстрый старт");
+    expect(projectText).not.toContain("## Ограничения");
+    expect(projectText).not.toContain("## Проверенный снимок релиза");
+    expect(projectText).not.toContain("cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23");
+    expect(projectText).not.toContain("support SLA");
+    expect(projectText).not.toContain("production guarantee");
+    expect(projectText).toContain("помогает найти");
+    expect(projectText).toContain("результат оформляют как гипотезы");
+    expect(projectText.match(/не захватывает live traffic/g)).toHaveLength(1);
     expect(projectText).not.toMatch(/гарант(?:ирует|ирован)|всегда находит|данные никогда не/i);
   });
 });

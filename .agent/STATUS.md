@@ -6,6 +6,10 @@ V3.1 was released to GitHub Pages on 2 August 2026. The live site now uses the a
 
 ## Completed
 
+- Corrected the `/about/` career paragraph to establish technical product work before the 2024 product role, AI development and implementation after ChatGPT appeared, and the confirmed 2024 → 2025 → current AI Platform sequence, without an exact earlier title or confidential details. Focused Vitest passed (2 files / 13 tests); two independent reviews approved; lint, typecheck, and the 107-page static build passed.
+
+- Simplified the `audit-prompt-caching` public surface: removed the duplicated generated «Как работает» block, service-style release dates and snapshot section, repeated SLA/fixture/billing caveats, and the technical evidence line from the Materials card. The project body now answers when the skill is useful, what it checks, how to run it, what it returns, and what data is needed. The last project row no longer adds a second line before the next section; separators remain only between multiple project rows.
+
 - Applied the post-release copy polish from the live-site review: the Home AI Platform entrance now says «Карта и практический справочник по production AI-платформам», and the desktop/mobile contact action is explicitly labelled «Написать в Telegram». TDD RED reproduced both stale contracts before the change; focused GREEN passed, then full Vitest passed (21 files, 360 tests, 6 skipped), ESLint, MDX generation, route typegen, TypeScript, the 107-page static build, the 47-test export contracts, the 6-file/16-transition reference audit, and the static export audit (102 routes, 35 aliases, 54 archives, 13 sitemap URLs).
 
 - Corrected `/about/`: removed the incorrect external-API claim, responsibility catalogue, and position manifesto; replaced them with the first-person current-role, career-path, and site-purpose narrative while retaining the source-driven evidence list and Telegram contact. Focused Vitest passed (2 files, 12 tests), along with `pnpm lint`, `pnpm typecheck`, `git diff --check`, the 107-page static production build, and exported About-copy inspection.

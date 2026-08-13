@@ -228,8 +228,12 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
         <section className="border-b border-border py-10 md:py-12">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">Открытые проекты</h2>
           <div className="mt-6 border-t border-border">
-            {model.projects.map((project) => (
-              <article key={project.entityId} className="grid gap-5 border-b border-border py-6 lg:grid-cols-[minmax(13rem,0.7fr)_minmax(20rem,1.15fr)_minmax(10rem,0.45fr)] lg:gap-10">
+            {model.projects.map((project, index) => (
+              <article
+                key={project.entityId}
+                data-project-separator={index < model.projects.length - 1 ? "true" : undefined}
+                className={`grid gap-5 py-6 lg:grid-cols-[minmax(13rem,0.7fr)_minmax(20rem,1.15fr)_minmax(10rem,0.45fr)] lg:gap-10 ${index < model.projects.length - 1 ? "border-b border-border" : ""}`}
+              >
                 <div>
                   <h3 className="text-xl font-semibold tracking-[-0.025em]">{project.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -238,7 +242,6 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
                 </div>
                 <div>
                   <p className="text-base leading-7">{project.description}</p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{project.evidenceBoundary}</p>
                 </div>
                 <div className="flex flex-col items-start">
                   <EditorialLink href={project.href} className="min-h-11">Открыть проект</EditorialLink>

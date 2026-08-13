@@ -113,6 +113,27 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain('href="/projects"');
   });
 
+  it("keeps project separators only between project rows", () => {
+    const oneProjectHtml = renderToStaticMarkup(
+      createElement(MaterialsPageContent, { model: materialsModel })
+    );
+    const twoProjectsHtml = renderToStaticMarkup(
+      createElement(MaterialsPageContent, {
+        model: {
+          ...materialsModel,
+          projects: [
+            ...materialsModel.projects,
+            { ...materialsModel.projects[0], entityId: "project-2", title: "Второй проект" }
+          ]
+        }
+      })
+    );
+
+    expect(count(oneProjectHtml, /data-project-separator=/g)).toBe(0);
+    expect(count(twoProjectsHtml, /data-project-separator=/g)).toBe(1);
+    expect(oneProjectHtml).not.toContain(materialsModel.projects[0].evidenceBoundary);
+  });
+
   it("renders About from the verified first-person profile and source-driven evidence", () => {
     const html = renderToStaticMarkup(
       createElement(AboutPageContent, { model: aboutModel })
