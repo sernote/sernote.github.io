@@ -47,7 +47,7 @@ export function EditorialShell({
               href={siteLinks.telegramDm}
               className="inline-flex min-h-10 items-center text-sm font-medium text-primary hover:underline"
             >
-              Написать
+              Написать в Telegram
             </a>
           </div>
           <MobileNavigation currentPath={currentPath} contactHref={siteLinks.telegramDm} />

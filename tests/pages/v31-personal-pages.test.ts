@@ -192,6 +192,9 @@ describe("v3.1 personal-page view models", () => {
       "/materials",
       "/ai-platform"
     ]);
+    expect(model.entrances[2]?.description).toBe(
+      "Карта и\u00a0практический справочник по production AI-платформам."
+    );
     expect(model.featured.map(({ item }) => item.entityId)).toEqual([
       "ai-platform-before-gpu",
       "maas-vs-self-hosted-roii",
