@@ -56,7 +56,7 @@ Use `kind: external-note`, `slug: null`, `publishedAt: "2025-12-15"`, `updatedAt
 
 - [ ] **Step 2: Add the record to the required Materials inventory**
 
-Insert `context-window-habr` in `MATERIALS_EXTERNAL_IDS`. Do not add a route, route-manifest record, RSS item or new component.
+Insert `context-window-habr` in `MATERIALS_EXTERNAL_IDS`. Do not add a route, route-manifest record or new component. The existing RSS builder automatically includes the external article and links to its Habr URL.
 
 - [ ] **Step 3: Run focused tests and verify GREEN**
 
@@ -90,7 +90,7 @@ Expected: lint, TypeScript, Vitest, static build, integration export tests, refe
 
 - [ ] **Step 3: Inspect the static export**
 
-Confirm `out/materials/index.html` contains the title, `15 декабря 2025 года`, the Habr URL and author contribution. Confirm the source registry resolves the Prefix Cache relation and `out/rss.xml` does not contain the external publication.
+Confirm `out/materials/index.html` contains the title, `15 декабря 2025 года`, the Habr URL and author contribution. Confirm the source registry resolves the Prefix Cache relation and `out/rss.xml` contains the external publication with the Habr URL.
 
 - [ ] **Step 4: Commit, push and monitor Pages**
 

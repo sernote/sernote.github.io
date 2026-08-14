@@ -134,23 +134,24 @@ describe("v3.1 public content evidence", () => {
     expect(noteText.match(/^## /gm)).toBeNull();
   });
 
-  it("replaces the old external note with the five verified publication records", () => {
+  it("keeps the six verified external publication records", () => {
     const publicationDir = join(process.cwd(), "content/v3/publications");
     const expectedFiles = [
-      "prefix-cache-the-code.mdx",
-      "prefix-cache-habr.mdx",
-      "effective-cost-habr.mdx",
-      "agent-skills-habr.mdx",
-      "prompt-engineering-vc.mdx"
-    ];
+      ["prefix-cache-the-code.mdx", "2026-08-02"],
+      ["prefix-cache-habr.mdx", "2026-08-02"],
+      ["effective-cost-habr.mdx", "2026-08-02"],
+      ["agent-skills-habr.mdx", "2026-08-02"],
+      ["context-window-habr.mdx", "2026-08-14"],
+      ["prompt-engineering-vc.mdx", "2026-08-02"]
+    ] as const;
 
-    for (const fileName of expectedFiles) {
+    for (const [fileName, updatedAt] of expectedFiles) {
       const text = readRequiredFile(join(publicationDir, fileName));
       expect(text).toContain("kind: external-note");
       expect(text).toContain("slug: null");
       expect(text).toContain("editorialFormat: null");
       expect(text).toContain("publicationStatus: published");
-      expect(text).toContain('updatedAt: "2026-08-02"');
+      expect(text).toContain(`updatedAt: "${updatedAt}"`);
       expect(text).toContain("supersedes: null");
       expect(text).toContain("supersededBy: null");
     }

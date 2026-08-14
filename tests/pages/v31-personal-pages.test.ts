@@ -15,6 +15,7 @@ const EXTERNAL_PUBLICATION_IDS = [
   "prefix-cache-habr",
   "effective-cost-habr",
   "agent-skills-habr",
+  "context-window-habr",
   "prompt-engineering-vc"
 ] as const;
 
@@ -97,6 +98,7 @@ const records = [
   nativeArticle("ai-platform-before-gpu", "article", "2026-07-22"),
   externalArticle("prompt-engineering-vc", "2025-04-28", "expert-comment"),
   externalArticle("agent-skills-habr", "2025-12-26"),
+  externalArticle("context-window-habr", "2025-12-15"),
   externalArticle("effective-cost-habr", "2026-03-10"),
   externalArticle("prefix-cache-habr", "2026-05-12"),
   externalArticle("prefix-cache-the-code", "2026-06-18"),

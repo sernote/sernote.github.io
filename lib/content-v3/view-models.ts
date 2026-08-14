@@ -600,6 +600,7 @@ const MATERIALS_EXTERNAL_IDS = [
   "prefix-cache-habr",
   "effective-cost-habr",
   "agent-skills-habr",
+  "context-window-habr",
   "prompt-engineering-vc"
 ] as const;
 

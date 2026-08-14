@@ -359,6 +359,28 @@ const pilotExternalArticleContract = {
     mdxBody:
       "Это внешняя авторская статья об Agent Skills как переносимых инструкциях, критериях и\u00a0ресурсах для AI-агента. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/980654/)."
   },
+  "context-window-habr": {
+    ...externalArticleSharedContract,
+    entityId: "context-window-habr",
+    title:
+      "Синдром бесконечного окна: почему 1 миллион токенов в LLM не решает ваши проблемы (пока)",
+    description:
+      "Публичная аннотация к\u00a0статье о\u00a0разнице между заявленным и\u00a0рабочим контекстом: context rot, управление историей агента, RAG и\u00a0prefix cache.",
+    publishedAt: "2025-12-15",
+    updatedAt: "2026-08-14",
+    topics: ["context-engineering", "long-context", "context-rot", "prefix-cache", "rag"],
+    relations: { platformEntityIds: ["prefix-cache"] },
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/976528/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    excerpt:
+      "Почему миллион токенов в спецификации модели не гарантирует качество и как с этим связаны context rot, история агента, RAG и prefix cache",
+    externalType: "authored-article",
+    participationLabel:
+      "Вклад Сергея: автор статьи и практических рекомендаций по работе с длинным контекстом",
+    mdxBody:
+      "Это внешняя авторская статья о\u00a0том, почему заявленный размер контекстного окна не равен рабочему: context rot, RAG, управление историей агента и\u00a0экономика prefix cache. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/976528/)."
+  },
   "prompt-engineering-vc": {
     ...externalArticleSharedContract,
     entityId: "prompt-engineering-vc",
@@ -609,7 +631,7 @@ describe("v3 generated-entry source adapter", () => {
     expect(externalIds).toEqual(
       expect.arrayContaining(requiredPilotExternalIds)
     );
-    expect(externalIds.length).toBeGreaterThanOrEqual(5);
+    expect(externalIds.length).toBeGreaterThanOrEqual(6);
   });
 
   it("orders all external records by date and preserves the relative pilot chronology", () => {
@@ -622,12 +644,13 @@ describe("v3 generated-entry source adapter", () => {
       requiredPilotExternalIds.includes(entityId)
     );
 
-    expect(externalIds.length).toBeGreaterThanOrEqual(5);
+    expect(externalIds.length).toBeGreaterThanOrEqual(6);
     expect(pilotSequence).toEqual([
       "prefix-cache-the-code",
       "prefix-cache-habr",
       "effective-cost-habr",
       "agent-skills-habr",
+      "context-window-habr",
       "prompt-engineering-vc"
     ]);
     for (let index = 1; index < externalDates.length; index += 1) {
@@ -654,6 +677,18 @@ describe("v3 generated-entry source adapter", () => {
       expect(record.slug).toBeNull();
       expect(localIds.has(record.entityId)).toBe(false);
     }
+  });
+
+  it("connects the long-context article to Prefix Cache through the source registry", () => {
+    const article = actualV3Source
+      .listPublic("article", "ru")
+      .find((record) => record.entityId === "context-window-habr");
+
+    if (article === undefined) throw new Error("Long-context Habr article is missing");
+
+    expect(
+      actualV3Source.getRelatedForPage(article).map((record) => record.entityId)
+    ).toContain("prefix-cache");
   });
 
   it("reads the exact compact native note and author profile from source files", () => {

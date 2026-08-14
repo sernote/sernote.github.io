@@ -89,6 +89,13 @@ const publicRegistryArticles: readonly V3Article[] = [
   },
   {
     ...externalArticle,
+    entityId: "context-window-habr",
+    title: "Синдром бесконечного окна",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/976528/",
+    publishedAt: "2025-12-15"
+  },
+  {
+    ...externalArticle,
     entityId: "prompt-engineering-vc",
     title: "Промпт-инжиниринг как часть архитектуры AI-продукта",
     externalType: "expert-comment",
@@ -119,13 +126,13 @@ describe("RSS builder", () => {
     );
   });
 
-  it("contains all seven public article records from the registry", () => {
+  it("contains all eight public article records from the registry", () => {
     const route = readFileSync(join(process.cwd(), "app/rss.xml/route.ts"), "utf8");
     const xml = buildRssFeed(publicRegistryArticles);
 
     expect(route).toMatch(/v3Source\s*\.listPublic\("article", "ru"\)/);
-    expect(publicRegistryArticles).toHaveLength(7);
-    expect(xml.match(/<item>/g)).toHaveLength(7);
+    expect(publicRegistryArticles).toHaveLength(8);
+    expect(xml.match(/<item>/g)).toHaveLength(8);
     for (const article of publicRegistryArticles) {
       const expectedUrl =
         article.kind === "native"
