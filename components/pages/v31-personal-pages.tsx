@@ -213,11 +213,8 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
                   <p className="mt-4 max-w-[44rem] text-base leading-7 text-muted-foreground md:text-lg">
                     {talk.description}
                   </p>
-                  {talk.recordingLabel ? (
-                    <p className="mt-3 text-sm text-muted-foreground">58:10 · YouTube</p>
-                  ) : null}
                   <EditorialLink href={talk.href} className="mt-3 min-h-11">
-                    Открыть выступление
+                    {`Открыть ${talk.formatLabel.toLocaleLowerCase("ru-RU")}`}
                   </EditorialLink>
                 </div>
               </article>

@@ -547,10 +547,10 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 102 records split 13 keep / 35 alias / 54 archive", () => {
+  it.runIf(hasExport)("has exactly 103 records split 14 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(102);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(13);
+    expect(records).toHaveLength(103);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(14);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
     expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
     expect(records).toContainEqual({
@@ -591,12 +591,13 @@ describe("static export audit — production integration", () => {
     expect((rssXml.match(/<item>/g) ?? []).length).toBe(7);
   });
 
-  it.runIf(hasExport)("emits exactly 16 JSON-LD scripts matching the schema matrix", () => {
+  it.runIf(hasExport)("emits exactly 18 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
       "index.html": ["WebSite"],
       "about/index.html": ["ProfilePage"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
+      "talks/bitrix24-ai-platform-podcast/index.html": ["VideoObject", "BreadcrumbList"],
       "talks/maas-vs-self-hosted/index.html": ["VideoObject", "BreadcrumbList"],
       "projects/audit-prompt-caching/index.html": ["SoftwareSourceCode", "BreadcrumbList"],
       "ai-platform/areas/inference-plane/index.html": ["TechArticle", "BreadcrumbList"],
@@ -612,6 +613,6 @@ describe("static export audit — production integration", () => {
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
     }
-    expect(total).toBe(16);
+    expect(total).toBe(18);
   });
 });

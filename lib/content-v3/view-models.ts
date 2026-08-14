@@ -225,6 +225,16 @@ export function formatRussianDate(value: string): string {
   return `${day} ${RUSSIAN_MONTHS[month - 1]} ${year} года`;
 }
 
+export function formatTimestampLabel(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
+  const remainder = (seconds % 60).toString().padStart(2, "0");
+
+  return hours > 0
+    ? `${hours}:${minutes}:${remainder}`
+    : `${minutes}:${remainder}`;
+}
+
 const HOME_ENTRANCES: HomeViewModel["entrances"] = Object.freeze([
   Object.freeze({
     id: "blog",
@@ -542,7 +552,7 @@ const EXTERNAL_TYPE_LABELS = {
   "media-mention": "Упоминание"
 } as const;
 
-const TALK_FORMAT_LABELS = {
+export const TALK_FORMAT_LABELS = {
   talk: "Доклад",
   webinar: "Вебинар",
   podcast: "Подкаст",

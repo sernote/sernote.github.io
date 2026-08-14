@@ -1,4 +1,6 @@
 import { createElement } from "react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -10,11 +12,12 @@ import {
 } from "../../components/pages/v31-personal-pages";
 import { V31ContentDetailPage } from "../../components/pages/v31-content-detail-page";
 import { AUTHOR_PROFILE } from "../../lib/author-profile";
-import type {
-  AboutViewModel,
-  BlogViewModel,
-  HomeViewModel,
-  MaterialsViewModel
+import {
+  formatTimestampLabel,
+  type AboutViewModel,
+  type BlogViewModel,
+  type HomeViewModel,
+  type MaterialsViewModel
 } from "../../lib/content-v3/view-models";
 
 const listItem = (entityId: string, title: string, href: string) => ({
@@ -48,7 +51,36 @@ const blogModel: BlogViewModel = {
 };
 
 const materialsModel: MaterialsViewModel = {
-  talks: [{ entityId: "talk", title: "Свои ИИ-модели или API по подписке?", venue: "ROИИ 2026", eventDateLabel: "19 февраля 2026 года", formatLabel: "Доклад", description: "Описание выступления", recordingLabel: "Смотреть запись", thumbnail: { path: "/media/talks/maas-vs-self-hosted.jpg", alt: "Кадр доклада" }, href: "/talks/example" }],
+  talks: [
+    {
+      entityId: "podcast",
+      title: "Зачем Битрикс24 своя AI-платформа?",
+      venue: "«Куда расти?» · Максим Ульянов",
+      eventDateLabel: "11 августа 2026 года",
+      formatLabel: "Подкаст",
+      description: "Описание подкаста",
+      recordingLabel: "Смотреть запись",
+      thumbnail: {
+        path: "/media/talks/bitrix24-ai-platform-podcast.jpg",
+        alt: "Кадр из подкаста об AI-платформе"
+      },
+      href: "/talks/bitrix24-ai-platform-podcast"
+    },
+    {
+      entityId: "talk",
+      title: "Свои ИИ-модели или API по подписке?",
+      venue: "ROИИ 2026",
+      eventDateLabel: "19 февраля 2026 года",
+      formatLabel: "Доклад",
+      description: "Описание выступления",
+      recordingLabel: "Смотреть запись",
+      thumbnail: {
+        path: "/media/talks/maas-vs-self-hosted.jpg",
+        alt: "Кадр доклада"
+      },
+      href: "/talks/example"
+    }
+  ],
   projects: [{ entityId: "project", title: "audit-prompt-caching", typeLabel: "Открытый проект", releaseLabel: "v0.1.3", description: "Описание проекта", evidenceBoundary: "Требуется runtime telemetry", href: "/projects/example", repositoryUrl: "https://github.com/sernote/audit-prompt-caching" }],
   publications: Array.from({ length: 5 }, (_, index) => ({ entityId: `publication-${index}`, externalTypeLabel: "Авторская статья" as const, sourceName: "Хабр", publishedLabel: "12 мая 2026 года", title: `Публикация ${index}`, excerpt: "Аннотация публикации", participationLabel: "Вклад Сергея: автор материала", href: `https://example.com/${index}` }))
 };
@@ -65,6 +97,36 @@ function count(html: string, pattern: RegExp): number {
 }
 
 describe("v3.1 personal pages", () => {
+  it("uses the shared localized talk labels in the detail page", () => {
+    const viewModels = readFileSync(
+      join(process.cwd(), "lib/content-v3/view-models.ts"),
+      "utf8"
+    );
+    const talkPage = readFileSync(
+      join(process.cwd(), "app/(en)/talks/[slug]/page.tsx"),
+      "utf8"
+    );
+
+    expect(viewModels).toContain("export const TALK_FORMAT_LABELS");
+    expect(talkPage).toContain("TALK_FORMAT_LABELS");
+    expect(talkPage).toContain('value: TALK_FORMAT_LABELS[record.format]');
+    expect(talkPage).toContain('kindLabel={TALK_FORMAT_LABELS[record.format]}');
+    expect(talkPage).toContain('label: "Запись опубликована"');
+    expect(talkPage).toContain("record.recordingUploadedAt !== record.eventDate");
+    expect(talkPage).toContain(
+      'item.type === "talk" ? TALK_FORMAT_LABELS[item.format] : "AI Platform"'
+    );
+    expect(talkPage).toContain("formatTimestampLabel(takeaway.timestampSeconds)");
+    expect(talkPage).toContain(
+      'contactLabel={record.format === "podcast" ? "Обсудить выпуск" : "Пригласить выступить"}'
+    );
+  });
+
+  it("formats talk timestamps on both sides of one hour", () => {
+    expect(formatTimestampLabel(2006)).toBe("33:26");
+    expect(formatTimestampLabel(4236)).toBe("1:10:36");
+  });
+
   it("renders Home as three entrances and one quiet current selection", () => {
     const html = renderToStaticMarkup(
       createElement(HomePageContent, { model: homeModel })
@@ -107,6 +169,11 @@ describe("v3.1 personal pages", () => {
     expect(html).toContain("Открытые проекты");
     expect(html).toContain("Публикации на внешних площадках");
     expect(html).toContain("maas-vs-self-hosted.jpg");
+    expect(html).toContain("bitrix24-ai-platform-podcast.jpg");
+    expect(html).toContain("Открыть подкаст");
+    expect(html).toContain("Открыть доклад");
+    expect(html).not.toContain("Открыть выступление");
+    expect(html).not.toContain("58:10 · YouTube");
     expect(count(html, /data-publication=/g)).toBe(model.publications.length);
     expect(count(html, /Написать в Telegram/g)).toBe(2);
     expect(html).not.toContain('href="/talks"');

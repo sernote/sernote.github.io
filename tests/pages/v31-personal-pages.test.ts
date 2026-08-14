@@ -100,6 +100,32 @@ const records = [
   externalArticle("prefix-cache-the-code", "2026-06-18"),
   {
     ...base,
+    entityId: "bitrix24-ai-platform-podcast",
+    type: "talk",
+    slug: "bitrix24-ai-platform-podcast",
+    title: "Зачем Битрикс24 своя AI-платформа?",
+    venue: "«Куда расти?» · Максим Ульянов",
+    eventDate: "2026-08-11",
+    format: "podcast",
+    recordingUrl: "https://www.youtube.com/watch?v=vFleE0MLh_w",
+    recordingUploadedAt: "2026-08-11",
+    abstract: "Разговор о том, зачем компании своя AI-платформа.",
+    takeaways: [
+      { label: "Платформа", text: "Разобрать границы AI Platform.", timestampSeconds: 2006 },
+      { label: "MaaS", text: "Сравнить MaaS и self-hosted.", timestampSeconds: 4236 },
+      { label: "Команда", text: "Обсудить роли команды.", timestampSeconds: 7011 }
+    ],
+    slidesUrl: null,
+    thumbnail: {
+      path: "/media/talks/bitrix24-ai-platform-podcast.jpg",
+      sourceUrl: "https://example.com/podcast.jpg",
+      capturedAt: "2026-08-14",
+      alt: "Кадр из подкаста об AI-платформе"
+    },
+    sourcePath: "talks/bitrix24-ai-platform-podcast.mdx"
+  },
+  {
+    ...base,
     entityId: "maas-vs-self-hosted-roii",
     type: "talk",
     slug: "maas-vs-self-hosted",
@@ -239,7 +265,10 @@ describe("v3.1 personal-page view models", () => {
     expect(model.talks).toHaveLength(publicTalks.length);
     expect(model.projects).toHaveLength(publicProjects.length);
     expect(model.publications).toHaveLength(publicExternal.length);
-    expect(model.talks.map(({ entityId }) => entityId)).toContain("maas-vs-self-hosted-roii");
+    expect(model.talks.map(({ entityId, formatLabel }) => [entityId, formatLabel])).toEqual([
+      ["bitrix24-ai-platform-podcast", "Подкаст"],
+      ["maas-vs-self-hosted-roii", "Доклад"]
+    ]);
     expect(model.projects.map(({ entityId }) => entityId)).toContain("audit-prompt-caching");
     expect(model.publications.map(({ entityId }) => entityId)).toEqual(
       expect.arrayContaining([...EXTERNAL_PUBLICATION_IDS])

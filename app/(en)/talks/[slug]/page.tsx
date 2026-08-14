@@ -13,7 +13,11 @@ import { getMDXComponents } from "@/components/mdx";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
 import { v3Source } from "@/lib/content-v3/source";
-import { formatRussianDate } from "@/lib/content-v3/view-models";
+import {
+  formatRussianDate,
+  formatTimestampLabel,
+  TALK_FORMAT_LABELS
+} from "@/lib/content-v3/view-models";
 import { talkMetadata } from "@/lib/metadata";
 import { buildTalkStructuredData } from "@/lib/seo/structured-data";
 
@@ -52,16 +56,16 @@ export default async function TalkPage({
   const MDX = record.body;
   const facts: DetailFact[] = [
     { label: "Площадка", value: record.venue },
-    { label: "Формат", value: record.format === "talk" ? "Доклад" : record.format },
+    { label: "Формат", value: TALK_FORMAT_LABELS[record.format] },
     {
-      label: "Дата выступления",
+      label: record.format === "podcast" ? "Дата выпуска" : "Дата выступления",
       value: formatRussianDate(record.eventDate),
       dateTime: record.eventDate
     },
-    ...(record.recordingUploadedAt
+    ...(record.recordingUploadedAt && record.recordingUploadedAt !== record.eventDate
       ? [
           {
-            label: "Видео опубликовано",
+            label: "Запись опубликована",
             value: formatRussianDate(record.recordingUploadedAt),
             dateTime: record.recordingUploadedAt
           }
@@ -71,21 +75,15 @@ export default async function TalkPage({
   const related: DetailRelatedItem[] = v3Source.getRelatedForPage(record, 3).map((item) => ({
     href: getCanonicalUrl(item),
     title: item.title,
-    meta: item.type === "article" ? "Блог" : item.type === "project" ? "Открытый проект" : "AI Platform"
+    meta: item.type === "article" ? "Блог" : item.type === "project" ? "Открытый проект" : item.type === "talk" ? TALK_FORMAT_LABELS[item.format] : "AI Platform"
   }));
-
-  function timestampLabel(seconds: number): string {
-    const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
-    const remainder = (seconds % 60).toString().padStart(2, "0");
-    return `${minutes}:${remainder}`;
-  }
 
   return (
     <>
       <JsonLd data={buildTalkStructuredData(record)} />
       <V31ContentDetailPage
         currentPath={`/talks/${record.slug}`}
-        kindLabel="Выступление"
+        kindLabel={TALK_FORMAT_LABELS[record.format]}
         title={record.title}
         lead={record.abstract}
         authorHref="/about"
@@ -111,7 +109,7 @@ export default async function TalkPage({
         ) : null}
         primaryAction={record.recordingUrl ? { label: "Смотреть запись", href: record.recordingUrl, external: true } : undefined}
         related={related}
-        contactLabel="Пригласить выступить"
+        contactLabel={record.format === "podcast" ? "Обсудить выпуск" : "Пригласить выступить"}
       >
         <section>
           <h2>Ключевые выводы</h2>
@@ -121,7 +119,7 @@ export default async function TalkPage({
                 <strong>{takeaway.label}.</strong> {takeaway.text}{" "}
                 {takeaway.timestampSeconds !== null && record.recordingUrl ? (
                   <a href={`${record.recordingUrl}&t=${takeaway.timestampSeconds}s`} target="_blank" rel="noreferrer">
-                    {timestampLabel(takeaway.timestampSeconds)}
+                    {formatTimestampLabel(takeaway.timestampSeconds)}
                   </a>
                 ) : null}
               </li>

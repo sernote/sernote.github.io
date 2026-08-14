@@ -674,6 +674,12 @@
     "locale": "ru"
   },
   {
+    "source": "/talks/bitrix24-ai-platform-podcast",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/talks/maas-vs-self-hosted",
     "destination": null,
     "behavior": "keep",

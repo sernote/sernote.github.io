@@ -6,6 +6,10 @@ V3.1 was released to GitHub Pages on 2 August 2026. The live site now uses the a
 
 ## Completed
 
+- Added a short personal Claude for Open Source note to `audit-prompt-caching`: the August 2026 acceptance, six months of Claude Max 20x, and the Codex-first framing, without presenting the grant as an Anthropic endorsement.
+
+- Added the local podcast «Зачем Битрикс24 своя AI-платформа?» to Materials: a concise first-person page with seven timestamped takeaways, five listening platforms, a verified local cover, related talk/project/component, canonical route and VideoObject metadata. Materials now labels entries by format and no longer shows a hardcoded duration. Focused and full Vitest, ESLint, TypeScript, the 108-page static export, and manifest/sitemap/JSON-LD audits passed.
+
 - Corrected the `/about/` career paragraph to establish technical product work before the 2024 product role, AI development and implementation after ChatGPT appeared, and the confirmed 2024 → 2025 → current AI Platform sequence, without an exact earlier title or confidential details. Focused Vitest passed (2 files / 13 tests); two independent reviews approved; lint, typecheck, and the 107-page static build passed.
 
 - Simplified the `audit-prompt-caching` public surface: removed the duplicated generated «Как работает» block, service-style release dates and snapshot section, repeated SLA/fixture/billing caveats, and the technical evidence line from the Materials card. The project body now answers when the skill is useful, what it checks, how to run it, what it returns, and what data is needed. The last project row no longer adds a second line before the next section; separators remain only between multiple project rows.

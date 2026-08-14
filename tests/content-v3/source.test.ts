@@ -496,6 +496,19 @@ const fixtures = [
     excerpt: externalArticleExcerpt,
     relations: { platformEntityIds: ["prefix-cache"] }
   }),
+  talk("bitrix24-ai-platform-podcast", {
+    title: "Зачем Битрикс24 своя AI-платформа?",
+    venue: "«Куда расти?» · Максим Ульянов",
+    eventDate: "2026-08-11",
+    format: "podcast",
+    recordingUrl: "https://www.youtube.com/watch?v=vFleE0MLh_w",
+    recordingUploadedAt: "2026-08-11",
+    abstract: "Разговор о том, зачем компании своя AI-платформа.",
+    publishedAt: "2026-08-14",
+    updatedAt: "2026-08-14",
+    topics: ["ai-platform", "maas", "self-hosted", "inference", "evals", "prefix-cache", "engineering-career"],
+    relations: {}
+  }),
   talk("maas-vs-self-hosted-roii"),
   project("audit-prompt-caching", {
     relations: { platformEntityIds: ["prefix-cache"] },
@@ -679,6 +692,7 @@ describe("v3 generated-entry source adapter", () => {
       "ai-platform-before-gpu"
     );
     expect(source.generateParams("talk", "ru")).toEqual([
+      { slug: "bitrix24-ai-platform-podcast" },
       { slug: "maas-vs-self-hosted" }
     ]);
     expect(source.generateParams("project", "ru")).toEqual([
@@ -815,6 +829,12 @@ describe("v3 personal-site view models", () => {
     const projects = getProjectsViewModel(source);
 
     expect(talks.items).toEqual([
+      expect.objectContaining({
+        entityId: "bitrix24-ai-platform-podcast",
+        href: "/talks/bitrix24-ai-platform-podcast",
+        description: "Разговор о том, зачем компании своя AI-платформа.",
+        eyebrow: "«Куда расти?» · 11 августа 2026 года"
+      }),
       expect.objectContaining({
         entityId: "maas-vs-self-hosted-roii",
         href: "/talks/maas-vs-self-hosted",
@@ -1322,6 +1342,63 @@ describe("native Blog article editorial contract", () => {
 });
 
 describe("Talk and project exemplar editorial contract", () => {
+  it("adds the public AI Platform podcast as a concise local material", () => {
+    const podcast = actualV3Source.getBySlug(
+      "talk",
+      "bitrix24-ai-platform-podcast",
+      "ru"
+    );
+    const podcastDocument = actualV3Documents.find(
+      (document) => document.sourcePath === "talks/bitrix24-ai-platform-podcast.mdx"
+    );
+
+    if (podcast === null || podcast.type !== "talk") {
+      throw new Error("Podcast source record is missing or has an invalid type");
+    }
+
+    expect(podcast).toMatchObject({
+      entityId: "bitrix24-ai-platform-podcast",
+      type: "talk",
+      locale: "ru",
+      publicationStatus: "published",
+      reviewStatus: "unreviewed",
+      publishedAt: "2026-08-14",
+      updatedAt: "2026-08-14",
+      venue: "«Куда расти?» · Максим Ульянов",
+      eventDate: "2026-08-11",
+      format: "podcast",
+      recordingUrl: "https://www.youtube.com/watch?v=vFleE0MLh_w",
+      recordingUploadedAt: "2026-08-11",
+      thumbnail: {
+        path: "/media/talks/bitrix24-ai-platform-podcast.jpg",
+        sourceUrl: "https://pic.rtbcdn.ru/video/2026-08-10/43/08/4308aad5ad815984721a2018362261b0.jpg?size=l",
+        capturedAt: "2026-08-14"
+      }
+    });
+    expect(podcast.takeaways).toHaveLength(7);
+    expect(podcast.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
+      2006, 4236, 4528, 5634, 6185, 7011, 7442
+    ]);
+    expect(podcast.relations).toEqual({
+      talkIds: ["maas-vs-self-hosted-roii"],
+      projectIds: ["audit-prompt-caching"],
+      platformEntityIds: ["prefix-cache"]
+    });
+    expect(podcastDocument?.content).toContain("## Как устроен разговор");
+    expect(podcastDocument?.content).toContain("## Смотреть и слушать");
+    for (const url of [
+      "https://www.youtube.com/watch?v=vFleE0MLh_w",
+      "https://rutube.ru/video/9896c5b261372c95c4fb2b8ecbd88fdb/",
+      "https://music.yandex.ru/album/31008129/track/154663403",
+      "https://vkvideo.ru/video-225769067_456239046",
+      "https://howtogrowup.mave.digital/ep-18"
+    ]) {
+      expect(podcastDocument?.content).toContain(url);
+    }
+    expect(podcastDocument?.content).not.toContain("Проверенные источники");
+    expect(podcastDocument?.content).not.toContain("до 95%");
+  });
+
   it("keeps the talk dates, venue, recording, and five timestamped takeaways distinct", () => {
     const talkText = readFileSync(
       join(process.cwd(), "content/v3/talks/maas-vs-self-hosted.mdx"),
@@ -1373,5 +1450,19 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(projectText).toContain("результат оформляют как гипотезы");
     expect(projectText.match(/не захватывает live traffic/g)).toHaveLength(1);
     expect(projectText).not.toMatch(/гарант(?:ирует|ирован)|всегда находит|данные никогда не/i);
+  });
+
+  it("records the Claude for Open Source grant as a project milestone", () => {
+    const projectText = readFileSync(
+      join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"),
+      "utf8"
+    );
+
+    expect(projectText).toContain(
+      "https://claude.com/contact-sales/claude-for-oss"
+    );
+    expect(projectText).toContain("В августе 2026 года");
+    expect(projectText).toContain("бесплатный Claude Max 20x на шесть месяцев");
+    expect(projectText).toMatch(/skill[^.\n]*Codex|Codex[^.\n]*skill/i);
   });
 });
