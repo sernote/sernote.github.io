@@ -123,7 +123,8 @@ describe("v3.1 public content evidence", () => {
 
     expect(noteText).toContain("entityId: workload-shape-over-model-name");
     expect(noteText).toContain("editorialFormat: note");
-    expect(noteText).toContain('publishedAt: "2026-07-22"');
+    expect(noteText).toContain('publishedAt: "2026-08-02"');
+    expect(noteText).toContain('updatedAt: "2026-08-02"');
     expect(noteText).toContain(
       "Название модели почти ничего не говорит о том, как будет работать конкретный сервис."
     );

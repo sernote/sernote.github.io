@@ -6,6 +6,8 @@ V3.1 was released to GitHub Pages on 2 August 2026. The live site now uses the a
 
 ## Completed
 
+- Replaced the hardcoded Home «Сейчас» selection with the latest published item from each top-level surface: Blog, Materials and AI Platform. Ranking uses `publishedAt`, ignores stale records and does not promote minor edits by `updatedAt`; the mixed-section header no longer links only to Materials. Corrected the publication date of the native `workload-shape-over-model-name` note to its 2 August 2026 release.
+
 - Added a short personal Claude for Open Source note to `audit-prompt-caching`: the August 2026 acceptance, six months of Claude Max 20x, and the Codex-first framing, without presenting the grant as an Anthropic endorsement.
 
 - Added the local podcast «Зачем Битрикс24 своя AI-платформа?» to Materials: a concise first-person page with seven timestamped takeaways, five listening platforms, a verified local cover, related talk/project/component, canonical route and VideoObject metadata. Materials now labels entries by format and no longer shows a hardcoded duration. Focused and full Vitest, ESLint, TypeScript, the 108-page static export, and manifest/sitemap/JSON-LD audits passed.

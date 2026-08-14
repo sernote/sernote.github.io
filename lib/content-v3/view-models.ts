@@ -26,7 +26,7 @@ export type HomeViewModel = Readonly<{
     href: string;
   }>[];
   featured: readonly Readonly<{
-    surface: "blog" | "materials";
+    surface: "blog" | "materials" | "ai-platform";
     label: string;
     item: V3ListItemViewModel;
   }>[];
@@ -441,32 +441,67 @@ function requireEligibleEntity(
   return record;
 }
 
-export function getHomeViewModel(source: V3Source): HomeViewModel {
-  const article = requireEligibleEntity(
-    source,
-    "article",
-    "ai-platform-before-gpu",
-    "native"
+type HomeSurface = HomeViewModel["featured"][number]["surface"];
+
+function belongsToHomeSurface(record: V3SourceItem, surface: HomeSurface): boolean {
+  if (surface === "blog") {
+    return record.type === "article" && record.kind === "native";
+  }
+  if (surface === "materials") {
+    return (
+      record.type === "talk" ||
+      record.type === "project" ||
+      (record.type === "article" && record.kind === "external-note")
+    );
+  }
+  return (
+    record.type === "platform-area" ||
+    record.type === "platform-component" ||
+    record.type === "case"
   );
-  const talk = requireEligibleEntity(source, "talk", "maas-vs-self-hosted-roii");
-  const project = requireEligibleEntity(source, "project", "audit-prompt-caching");
-  const featured: HomeViewModel["featured"] = Object.freeze([
-    Object.freeze({
-      surface: "blog",
-      label: "Статья",
-      item: normalizeListItem(article)
-    }),
-    Object.freeze({
-      surface: "materials",
-      label: "Выступление",
-      item: normalizeListItem(talk)
-    }),
-    Object.freeze({
-      surface: "materials",
-      label: "Открытый проект",
-      item: normalizeListItem(project)
+}
+
+function selectLatestHomeItem(source: V3Source, surface: HomeSurface): V3SourceItem {
+  const candidates = source
+    .listFeatured(undefined, "ru")
+    .filter(
+      (record): record is V3SourceItem & { publishedAt: string } =>
+        record.publishedAt !== null && belongsToHomeSurface(record, surface)
+    )
+    .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
+  const latest = candidates[0];
+
+  if (latest === undefined) {
+    throw new Error(`Home surface ${surface} has no published items`);
+  }
+  return latest;
+}
+
+function homeItemLabel(record: V3SourceItem, surface: HomeSurface): string {
+  if (surface === "blog" && record.type === "article") {
+    return record.editorialFormat === "note" ? "Заметка" : "Статья";
+  }
+  if (surface === "materials") {
+    if (record.type === "talk") return TALK_FORMAT_LABELS[record.format];
+    if (record.type === "project") return "Открытый проект";
+    if (record.type === "article" && record.externalType !== null) {
+      return EXTERNAL_TYPE_LABELS[record.externalType];
+    }
+  }
+  return "AI Platform";
+}
+
+export function getHomeViewModel(source: V3Source): HomeViewModel {
+  const featured: HomeViewModel["featured"] = Object.freeze(
+    (["blog", "materials", "ai-platform"] as const).map((surface) => {
+      const item = selectLatestHomeItem(source, surface);
+      return Object.freeze({
+        surface,
+        label: homeItemLabel(item, surface),
+        item: normalizeListItem(item)
+      });
     })
-  ]);
+  );
 
   return Object.freeze({ entrances: HOME_ENTRANCES, featured });
 }

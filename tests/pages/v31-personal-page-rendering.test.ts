@@ -37,9 +37,9 @@ const homeModel: HomeViewModel = {
     { id: "ai-platform", index: "03", label: "AI Platform", description: "Система знаний", href: "/ai-platform" }
   ],
   featured: [
-    { surface: "blog", label: "Статья", item: listItem("ai-platform-before-gpu", "ИИ-платформа начинается не с GPU", "/blog/ai-platform-before-gpu") },
-    { surface: "materials", label: "Выступление", item: { ...listItem("talk", "Свои ИИ-модели или API?", "/talks/example"), contentType: "talk" } },
-    { surface: "materials", label: "Открытый проект", item: { ...listItem("project", "audit-prompt-caching", "/projects/example"), contentType: "project" } }
+    { surface: "blog", label: "Заметка", item: listItem("workload-shape-over-model-name", "Workload shape важнее названия модели", "/blog/workload-shape-over-model-name") },
+    { surface: "materials", label: "Подкаст", item: { ...listItem("podcast", "Зачем Битрикс24 своя AI-платформа?", "/talks/bitrix24-ai-platform-podcast"), contentType: "talk" } },
+    { surface: "ai-platform", label: "AI Platform", item: { ...listItem("prefix-cache", "Prefix Cache", "/ai-platform/components/prefix-cache"), contentType: "platform-component" } }
   ]
 };
 
@@ -138,7 +138,12 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Статьи, выступления и рабочая система знаний об AI Platform.");
     expect(html).not.toContain('data-home-intro=""');
     expect(html).toContain("Сейчас");
-    expect(html).toContain("Все материалы");
+    expect(html).not.toContain("Все материалы");
+    expect(html).toContain("Workload shape важнее названия модели");
+    expect(html).toContain("Заметка · Блог");
+    expect(html).toContain("Читать заметку");
+    expect(html).toContain("Зачем Битрикс24 своя AI-платформа?");
+    expect(html).toContain("Prefix Cache");
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/materials"');
     expect(html).toContain('href="/ai-platform"');

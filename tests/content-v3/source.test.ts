@@ -29,8 +29,8 @@ const published = {
   description: "Проверяемое описание элемента production AI platform.",
   publicationStatus: "published",
   reviewStatus: "unreviewed",
-  publishedAt: "2026-07-22",
-  updatedAt: "2026-07-22",
+  publishedAt: "2026-08-02",
+  updatedAt: "2026-08-02",
   reviewedAt: null,
   reviewCycleDays: null,
   topics: ["ai-platform"],
@@ -395,8 +395,8 @@ const workloadShapeNoteContract = {
     "Почему модель и GPU нельзя выбирать по среднему RPS без распределения контекста, ответа, concurrency и cache reuse.",
   publicationStatus: "published",
   reviewStatus: "unreviewed",
-  publishedAt: "2026-07-22",
-  updatedAt: "2026-07-22",
+  publishedAt: "2026-08-02",
+  updatedAt: "2026-08-02",
   reviewedAt: null,
   reviewCycleDays: null,
   topics: ["inference", "workload-shape", "capacity"],
@@ -862,7 +862,7 @@ describe("v3 personal-site view models", () => {
     expect(getProjectsViewModel(createV3Source([...fixtures].reverse()))).toEqual(projects);
   });
 
-  it("builds the exact home entrances and explicit selected artifacts", () => {
+  it("builds the Home entrances and selects the latest published item per surface", () => {
     const model = getHomeViewModel(createV3Source(fixtures));
 
     expect(model.entrances.map(({ id, href }) => [id, href])).toEqual([
@@ -872,13 +872,13 @@ describe("v3 personal-site view models", () => {
     ]);
     expect(model.featured.map(({ surface, item }) => [surface, item.entityId])).toEqual([
       ["blog", "ai-platform-before-gpu"],
-      ["materials", "maas-vs-self-hosted-roii"],
-      ["materials", "audit-prompt-caching"]
+      ["materials", "bitrix24-ai-platform-podcast"],
+      ["ai-platform", "inference-plane"]
     ]);
     expect(model.featured.map(({ item }) => [item.href, item.linkKind])).toEqual([
       ["/blog/ai-platform-before-gpu", "internal"],
-      ["/talks/maas-vs-self-hosted", "internal"],
-      ["/projects/audit-prompt-caching", "internal"]
+      ["/talks/bitrix24-ai-platform-podcast", "internal"],
+      ["/ai-platform/areas/inference-plane", "internal"]
     ]);
   });
 
@@ -941,7 +941,7 @@ describe("v3 personal-site view models", () => {
     );
   });
 
-  it("fails closed when an explicit selection is a draft", () => {
+  it("ignores a draft record when choosing the latest Home material", () => {
     const withDraftProject = fixtures
       .filter((item) => item.entityId !== "agent-session-cache-reuse")
       .map((item) =>
@@ -953,12 +953,12 @@ describe("v3 personal-site view models", () => {
           : item
       );
 
-    expect(() => getHomeViewModel(createV3Source(withDraftProject))).toThrow(
-      /audit-prompt-caching.*not available/i
-    );
+    expect(
+      getHomeViewModel(createV3Source(withDraftProject)).featured[1]?.item.entityId
+    ).toBe("bitrix24-ai-platform-podcast");
   });
 
-  it("fails closed when a selected material is stale", () => {
+  it("ignores a stale record when choosing the latest Home material", () => {
     const withStaleTalk = fixtures.map((item) =>
       item.entityId === "maas-vs-self-hosted-roii"
         ? talk("maas-vs-self-hosted-roii", {
@@ -969,9 +969,9 @@ describe("v3 personal-site view models", () => {
         : item
     );
 
-    expect(() => getHomeViewModel(createV3Source(withStaleTalk))).toThrow(
-      /maas-vs-self-hosted-roii.*not available/i
-    );
+    expect(
+      getHomeViewModel(createV3Source(withStaleTalk)).featured[1]?.item.entityId
+    ).toBe("bitrix24-ai-platform-podcast");
   });
 
   it("fails closed when an explicit selection has the wrong content kind", () => {

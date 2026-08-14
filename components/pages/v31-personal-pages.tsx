@@ -55,7 +55,7 @@ function HomeEntrance({ entrance }: { entrance: HomeViewModel["entrances"][numbe
 }
 
 export function HomePageContent({ model }: { model: HomeViewModel }) {
-  const [article, talk, project] = model.featured;
+  const [article, material, platform] = model.featured;
 
   return (
     <EditorialShell currentPath="/">
@@ -81,13 +81,10 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
       </section>
 
       <section className={`${frameClassName} pb-16 pt-8 md:pb-20 md:pt-10 lg:pb-24 lg:pt-12`}>
-        <SectionHeading
-          title="Сейчас"
-          action={{ href: "/materials", label: "Все материалы" }}
-        />
+        <SectionHeading title="Сейчас" />
         <div className="grid gap-2 lg:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] lg:gap-16">
           <article className="border-b border-border py-8 lg:border-b-0 lg:py-10">
-            <p className="text-sm text-muted-foreground">Статья · Блог</p>
+            <p className="text-sm text-muted-foreground">{article.label} · Блог</p>
             <h2 className="mt-3 max-w-3xl text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.035em] md:text-[2rem]">
               {article.item.title}
             </h2>
@@ -95,11 +92,11 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
               {article.item.description}
             </p>
             <EditorialLink href={article.item.href} className="mt-4 min-h-11">
-              Читать статью
+              {article.label === "Заметка" ? "Читать заметку" : "Читать статью"}
             </EditorialLink>
           </article>
           <div className="border-t border-border lg:mt-10">
-            {[talk, project].map((entry) => (
+            {[material, platform].map((entry) => (
               <article key={entry.item.entityId} className="border-b border-border py-6">
                 <p className="text-sm text-muted-foreground">{entry.label}</p>
                 <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">

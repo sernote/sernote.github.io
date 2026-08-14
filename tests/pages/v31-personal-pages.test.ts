@@ -41,7 +41,8 @@ const base = {
 
 function nativeArticle(
   entityId: string,
-  editorialFormat: "article" | "note"
+  editorialFormat: "article" | "note",
+  publishedAt: string
 ): V3SourceItem {
   return {
     ...base,
@@ -51,7 +52,8 @@ function nativeArticle(
     slug: entityId,
     editorialFormat,
     title: `Текст ${entityId}`,
-    publishedAt: "2026-07-22",
+    publishedAt,
+    updatedAt: publishedAt,
     excerpt: `Аннотация ${entityId}`,
     externalType: null,
     sourceName: null,
@@ -91,8 +93,8 @@ function externalArticle(
 }
 
 const records = [
-  nativeArticle("workload-shape-over-model-name", "note"),
-  nativeArticle("ai-platform-before-gpu", "article"),
+  nativeArticle("workload-shape-over-model-name", "note", "2026-08-02"),
+  nativeArticle("ai-platform-before-gpu", "article", "2026-07-22"),
   externalArticle("prompt-engineering-vc", "2025-04-28", "expert-comment"),
   externalArticle("agent-skills-habr", "2025-12-26"),
   externalArticle("effective-cost-habr", "2026-03-10"),
@@ -109,6 +111,8 @@ const records = [
     format: "podcast",
     recordingUrl: "https://www.youtube.com/watch?v=vFleE0MLh_w",
     recordingUploadedAt: "2026-08-11",
+    publishedAt: "2026-08-14",
+    updatedAt: "2026-08-14",
     abstract: "Разговор о том, зачем компании своя AI-платформа.",
     takeaways: [
       { label: "Платформа", text: "Разобрать границы AI Platform.", timestampSeconds: 2006 },
@@ -151,6 +155,8 @@ const records = [
     type: "project",
     slug: "audit-prompt-caching",
     title: "audit-prompt-caching",
+    publishedAt: "2026-07-22",
+    updatedAt: "2026-08-14",
     repositoryUrl: "https://github.com/sernote/audit-prompt-caching",
     verifiedRelease: {
       version: "v0.1.3",
@@ -164,6 +170,28 @@ const records = [
     evidence: ["Публичный репозиторий"],
     supportBoundary: "Не подтверждает runtime cache hit.",
     sourcePath: "projects/audit-prompt-caching.mdx"
+  },
+  {
+    ...base,
+    entityId: "inference-plane",
+    type: "platform-area",
+    slug: "inference-plane",
+    title: "Inference Plane",
+    reviewStatus: "reviewed",
+    publishedAt: "2026-07-22",
+    updatedAt: "2026-08-20",
+    sourcePath: "ai-platform/areas/inference-plane.mdx"
+  },
+  {
+    ...base,
+    entityId: "prefix-cache",
+    type: "platform-component",
+    slug: "prefix-cache",
+    title: "Prefix Cache",
+    reviewStatus: "reviewed",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    sourcePath: "ai-platform/components/prefix-cache.mdx"
   }
 ] as unknown as V3SourceItem[];
 
@@ -209,8 +237,35 @@ function publicEntity(entityId: string): V3SourceItem {
   return record;
 }
 
+function withoutHomeSurface(
+  source: V3Source,
+  surface: "blog" | "materials" | "ai-platform"
+): V3Source {
+  const belongsToSurface = (record: V3SourceItem) => {
+    if (surface === "blog") {
+      return record.type === "article" && record.kind === "native";
+    }
+    if (surface === "materials") {
+      return record.type === "talk" ||
+        record.type === "project" ||
+        (record.type === "article" && record.kind === "external-note");
+    }
+    return record.type === "platform-area" ||
+      record.type === "platform-component" ||
+      record.type === "case";
+  };
+
+  return {
+    ...source,
+    listPublic: (type, locale) =>
+      source.listPublic(type, locale).filter((record) => !belongsToSurface(record)),
+    listFeatured: (type, locale) =>
+      source.listFeatured(type, locale).filter((record) => !belongsToSurface(record))
+  };
+}
+
 describe("v3.1 personal-page view models", () => {
-  it("builds the three Home entrances and the exact Сейчас selection", () => {
+  it("selects the latest published item from each Home surface", () => {
     const model = getHomeViewModel(v3Source);
 
     expect(model.entrances.map(({ href }) => href)).toEqual([
@@ -221,14 +276,14 @@ describe("v3.1 personal-page view models", () => {
     expect(model.entrances[2]?.description).toBe(
       "Карта и\u00a0практический справочник по production AI-платформам."
     );
-    expect(model.featured.map(({ item }) => item.entityId)).toEqual([
-      "ai-platform-before-gpu",
-      "maas-vs-self-hosted-roii",
-      "audit-prompt-caching"
+    expect(model.featured.map(({ surface, item }) => [surface, item.entityId])).toEqual([
+      ["blog", "workload-shape-over-model-name"],
+      ["materials", "bitrix24-ai-platform-podcast"],
+      ["ai-platform", "prefix-cache"]
     ]);
   });
 
-  it("keeps every public native text in Blog, excludes external publications and orders article before note on a tie", () => {
+  it("keeps every public native text in Blog, excludes external publications and orders newest first", () => {
     const model = getBlogViewModel(v3Source);
     const publicNativeIds = v3Source
       .listPublic("article", "ru")
@@ -243,13 +298,13 @@ describe("v3.1 personal-page view models", () => {
     expect(ids).toEqual(
       expect.arrayContaining(["ai-platform-before-gpu", "workload-shape-over-model-name"])
     );
-    expect(ids.indexOf("ai-platform-before-gpu")).toBeLessThan(
-      ids.indexOf("workload-shape-over-model-name")
+    expect(ids.indexOf("workload-shape-over-model-name")).toBeLessThan(
+      ids.indexOf("ai-platform-before-gpu")
     );
     expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
     expect(model.items.map(({ editorialFormat }) => editorialFormat)).toEqual([
-      "article",
-      "note"
+      "note",
+      "article"
     ]);
     expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);
   });
@@ -294,8 +349,14 @@ describe("v3.1 personal-page view models", () => {
 
   it("fails closed when a mandatory selection is missing or ineligible", () => {
     expect(() =>
-      getHomeViewModel(replacePublicEntity(v3Source, "maas-vs-self-hosted-roii", null))
-    ).toThrow(/maas-vs-self-hosted-roii.*not available/i);
+      getHomeViewModel(withoutHomeSurface(v3Source, "blog"))
+    ).toThrow(/home surface blog.*no published items/i);
+    expect(() =>
+      getHomeViewModel(withoutHomeSurface(v3Source, "materials"))
+    ).toThrow(/home surface materials.*no published items/i);
+    expect(() =>
+      getHomeViewModel(withoutHomeSurface(v3Source, "ai-platform"))
+    ).toThrow(/home surface ai-platform.*no published items/i);
 
     const draftProject = {
       ...publicEntity("audit-prompt-caching"),
@@ -317,14 +378,5 @@ describe("v3.1 personal-page view models", () => {
       )
     ).toThrow(/maas-vs-self-hosted-roii.*not available/i);
 
-    const wrongKind = {
-      ...publicEntity("prefix-cache-habr"),
-      entityId: "ai-platform-before-gpu"
-    } as V3SourceItem;
-    expect(() =>
-      getHomeViewModel(
-        replacePublicEntity(v3Source, "ai-platform-before-gpu", wrongKind)
-      )
-    ).toThrow(/ai-platform-before-gpu.*native/i);
   });
 });
