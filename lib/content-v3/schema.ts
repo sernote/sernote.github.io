@@ -136,7 +136,7 @@ const talkSchema = z
     slug: kebabCaseId,
     venue: nonEmptyText,
     eventDate: calendarDate,
-    format: z.enum(["talk", "webinar", "podcast", "interview"]),
+    format: z.enum(["talk", "webinar", "podcast", "interview", "stream"]),
     recordingUrl: httpsUrl.nullable(),
     recordingUploadedAt: calendarDate.nullable(),
     abstract: nonEmptyText,

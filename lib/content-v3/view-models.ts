@@ -591,7 +591,8 @@ export const TALK_FORMAT_LABELS = {
   talk: "Доклад",
   webinar: "Вебинар",
   podcast: "Подкаст",
-  interview: "Интервью"
+  interview: "Интервью",
+  stream: "Стрим"
 } as const;
 
 const MATERIALS_EXTERNAL_IDS = [

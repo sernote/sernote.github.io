@@ -174,6 +174,12 @@ describe("v3 frontmatter record variants", () => {
     expect(v3FrontmatterSchema.parse(record)).toMatchObject({ type: _type });
   });
 
+  it("accepts a stream as a public talk format", () => {
+    expect(
+      v3FrontmatterSchema.parse({ ...talk, format: "stream" })
+    ).toMatchObject({ type: "talk", format: "stream" });
+  });
+
   it.each(["synthetic", "composite", "public"])("accepts caseKind %s", (caseKind) => {
     expect(v3FrontmatterSchema.safeParse({ ...caseRecord, caseKind }).success).toBe(true);
   });

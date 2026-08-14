@@ -6,6 +6,8 @@ V3.1 was released to GitHub Pages on 2 August 2026. The live site now uses the a
 
 ## Completed
 
+- Added the stream «Каждый токен на счету» to Materials as a source-driven local page dated 27 May 2026. The page identifies Sergey's block at 59:10 and the AI Platform section at 1:00:14, includes six timestamped takeaways, a verified local 1280×720 cover, the related prefix-cache project/component, stream-specific labels, canonical route and VideoObject metadata. TDD caught the missing format, route, sitemap and export snapshots before implementation. Final validation passed: ESLint, TypeScript, 22 Vitest files / 368 tests with 6 intentional skips, the 109-page static build, 44 production export tests, the 6-file/16-transition reference audit and the static export audit (104 routes, 35 aliases, 54 archives, 15 sitemap URLs). Export inspection confirmed the page, Materials card, image, timestamps and sitemap entry; RSS correctly remains article-only.
+
 - Replaced the hardcoded Home «Сейчас» selection with the latest published item from each top-level surface: Blog, Materials and AI Platform. Ranking uses `publishedAt`, ignores stale records and does not promote minor edits by `updatedAt`; the mixed-section header no longer links only to Materials. Corrected the publication date of the native `workload-shape-over-model-name` note to its 2 August 2026 release.
 
 - Added a short personal Claude for Open Source note to `audit-prompt-caching`: the August 2026 acceptance, six months of Claude Max 20x, and the Codex-first framing, without presenting the grant as an Anthropic endorsement.

@@ -547,10 +547,10 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 103 records split 14 keep / 35 alias / 54 archive", () => {
+  it.runIf(hasExport)("has exactly 104 records split 15 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(103);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(14);
+    expect(records).toHaveLength(104);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(15);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
     expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
     expect(records).toContainEqual({

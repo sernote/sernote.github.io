@@ -1342,6 +1342,54 @@ describe("native Blog article editorial contract", () => {
 });
 
 describe("Talk and project exemplar editorial contract", () => {
+  it("adds the token-economics stream with the real release date and Sergey start time", () => {
+    const stream = actualV3Source.getBySlug("talk", "every-token-counts", "ru");
+    const streamDocument = actualV3Documents.find(
+      (document) => document.sourcePath === "talks/every-token-counts.mdx"
+    );
+
+    if (stream === null || stream.type !== "talk") {
+      throw new Error("Token-economics stream is missing or has an invalid type");
+    }
+
+    expect(stream).toMatchObject({
+      entityId: "every-token-counts",
+      type: "talk",
+      locale: "ru",
+      publicationStatus: "published",
+      reviewStatus: "unreviewed",
+      publishedAt: "2026-05-27",
+      updatedAt: "2026-08-14",
+      venue: "YouTube · Константин Доронин",
+      eventDate: "2026-05-27",
+      format: "stream",
+      recordingUrl: "https://www.youtube.com/watch?v=X71ZfXMKslo",
+      recordingUploadedAt: "2026-05-27",
+      thumbnail: {
+        path: "/media/talks/every-token-counts.jpg",
+        sourceUrl: "https://i.ytimg.com/vi/X71ZfXMKslo/maxresdefault.jpg",
+        capturedAt: "2026-08-14"
+      }
+    });
+    expect(stream.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
+      3614, 3926, 4676, 5083, 6327, 6572
+    ]);
+    expect(stream.relations).toEqual({
+      talkIds: ["bitrix24-ai-platform-podcast"],
+      projectIds: ["audit-prompt-caching"],
+      platformEntityIds: ["prefix-cache"]
+    });
+    expect(streamDocument?.content).toContain("## О чём стрим");
+    expect(streamDocument?.content).toContain("## Что разбираю я");
+    expect(streamDocument?.content).toContain("## Смотреть");
+    expect(streamDocument?.content).toContain("Мой блок — с [59:10]");
+    expect(streamDocument?.content).toContain("&t=3550s");
+    expect(streamDocument?.content).toContain(
+      "К AI Platform и prefix cache перехожу в [1:00:14]"
+    );
+    expect(streamDocument?.content).not.toContain("Проверенные источники");
+  });
+
   it("adds the public AI Platform podcast as a concise local material", () => {
     const podcast = actualV3Source.getBySlug(
       "talk",

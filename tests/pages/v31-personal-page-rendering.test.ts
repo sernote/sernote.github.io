@@ -109,6 +109,8 @@ describe("v3.1 personal pages", () => {
 
     expect(viewModels).toContain("export const TALK_FORMAT_LABELS");
     expect(talkPage).toContain("TALK_FORMAT_LABELS");
+    expect(talkPage).toContain('record.format === "stream" ? "Дата эфира"');
+    expect(talkPage).toContain('record.format === "stream" ? "Обсудить стрим"');
     expect(talkPage).toContain('value: TALK_FORMAT_LABELS[record.format]');
     expect(talkPage).toContain('kindLabel={TALK_FORMAT_LABELS[record.format]}');
     expect(talkPage).toContain('label: "Запись опубликована"');
@@ -117,9 +119,9 @@ describe("v3.1 personal pages", () => {
       'item.type === "talk" ? TALK_FORMAT_LABELS[item.format] : "AI Platform"'
     );
     expect(talkPage).toContain("formatTimestampLabel(takeaway.timestampSeconds)");
-    expect(talkPage).toContain(
-      'contactLabel={record.format === "podcast" ? "Обсудить выпуск" : "Пригласить выступить"}'
-    );
+    expect(talkPage).toContain('record.format === "podcast"');
+    expect(talkPage).toContain('"Обсудить выпуск"');
+    expect(talkPage).toContain('"Пригласить выступить"');
   });
 
   it("formats talk timestamps on both sides of one hour", () => {

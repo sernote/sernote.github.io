@@ -58,7 +58,10 @@ export default async function TalkPage({
     { label: "Площадка", value: record.venue },
     { label: "Формат", value: TALK_FORMAT_LABELS[record.format] },
     {
-      label: record.format === "podcast" ? "Дата выпуска" : "Дата выступления",
+      label:
+        record.format === "podcast"
+          ? "Дата выпуска"
+          : record.format === "stream" ? "Дата эфира" : "Дата выступления",
       value: formatRussianDate(record.eventDate),
       dateTime: record.eventDate
     },
@@ -109,7 +112,11 @@ export default async function TalkPage({
         ) : null}
         primaryAction={record.recordingUrl ? { label: "Смотреть запись", href: record.recordingUrl, external: true } : undefined}
         related={related}
-        contactLabel={record.format === "podcast" ? "Обсудить выпуск" : "Пригласить выступить"}
+        contactLabel={
+          record.format === "podcast"
+            ? "Обсудить выпуск"
+            : record.format === "stream" ? "Обсудить стрим" : "Пригласить выступить"
+        }
       >
         <section>
           <h2>Ключевые выводы</h2>

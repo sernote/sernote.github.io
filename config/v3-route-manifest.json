@@ -680,6 +680,12 @@
     "locale": "ru"
   },
   {
+    "source": "/talks/every-token-counts",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/talks/maas-vs-self-hosted",
     "destination": null,
     "behavior": "keep",

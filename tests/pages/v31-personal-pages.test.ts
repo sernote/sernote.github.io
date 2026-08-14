@@ -130,6 +130,29 @@ const records = [
   },
   {
     ...base,
+    entityId: "every-token-counts",
+    type: "talk",
+    slug: "every-token-counts",
+    title: "«Каждый токен на счету»",
+    venue: "YouTube · Константин Доронин",
+    eventDate: "2026-05-27",
+    format: "stream",
+    recordingUrl: "https://www.youtube.com/watch?v=X71ZfXMKslo",
+    recordingUploadedAt: "2026-05-27",
+    publishedAt: "2026-05-27",
+    updatedAt: "2026-08-14",
+    abstract: "Как управлять контекстом и расходом токенов в AI-агентах.",
+    takeaways: [
+      { label: "Контекст", text: "Связать кэш с профилем запросов.", timestampSeconds: 3614 },
+      { label: "Стоимость", text: "Посчитать effective cost.", timestampSeconds: 5083 },
+      { label: "Аудит", text: "Найти причины cache misses.", timestampSeconds: 6572 }
+    ],
+    slidesUrl: null,
+    thumbnail: null,
+    sourcePath: "talks/every-token-counts.mdx"
+  },
+  {
+    ...base,
     entityId: "maas-vs-self-hosted-roii",
     type: "talk",
     slug: "maas-vs-self-hosted",
@@ -322,6 +345,7 @@ describe("v3.1 personal-page view models", () => {
     expect(model.publications).toHaveLength(publicExternal.length);
     expect(model.talks.map(({ entityId, formatLabel }) => [entityId, formatLabel])).toEqual([
       ["bitrix24-ai-platform-podcast", "Подкаст"],
+      ["every-token-counts", "Стрим"],
       ["maas-vs-self-hosted-roii", "Доклад"]
     ]);
     expect(model.projects.map(({ entityId }) => entityId)).toContain("audit-prompt-caching");

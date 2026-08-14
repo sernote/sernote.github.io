@@ -1,0 +1,78 @@
+---
+entityId: every-token-counts
+type: talk
+locale: ru
+slug: every-token-counts
+title: "«Каждый токен на счету» — как экономить токены при создании AI-агентов"
+description: "Стрим об управлении контекстом и расходом токенов в AI-агентах. Мой блок — о prefix cache: устройстве, экономике, метриках, типичных cache misses и аудите проекта."
+publicationStatus: published
+reviewStatus: unreviewed
+publishedAt: "2026-05-27"
+updatedAt: "2026-08-14"
+reviewedAt: null
+reviewCycleDays: null
+topics:
+  - ai-platform
+  - prefix-cache
+  - llm-economics
+  - context-engineering
+  - agents
+  - rag
+relations:
+  talkIds:
+    - bitrix24-ai-platform-podcast
+  projectIds:
+    - audit-prompt-caching
+  platformEntityIds:
+    - prefix-cache
+venue: "YouTube · Константин Доронин"
+eventDate: "2026-05-27"
+format: stream
+recordingUrl: "https://www.youtube.com/watch?v=X71ZfXMKslo"
+recordingUploadedAt: "2026-05-27"
+abstract: "Разговор о двух способах экономить токены в AI-агентах: управлении контекстом через RAG и семантический поиск, а также правильной работе с prefix cache."
+takeaways:
+  - label: "Контекст AI Platform"
+    text: "Prefix cache имеет смысл рассматривать вместе с инференсом, стоимостью и реальным профилем запросов."
+    timestampSeconds: 3614
+  - label: "Зачем нужен prefix cache"
+    text: "Повторно используемый префикс сокращает стоимость и время обработки длинных запросов, если его структура остаётся стабильной."
+    timestampSeconds: 3926
+  - label: "Три правила кэшируемого запроса"
+    text: "Статическую часть ставим первой, динамическую — в конец, а одинаковые данные сериализуем одинаково."
+    timestampSeconds: 4676
+  - label: "Effective cost"
+    text: "Стоимость модели нужно считать с учётом цены кэшированных токенов и фактического cache hit rate."
+    timestampSeconds: 5083
+  - label: "Диагностика cache misses"
+    text: "Одного общего hit rate мало: изменения префикса нужно связывать с конкретными участками запроса и релизами."
+    timestampSeconds: 6327
+  - label: "Аудит проекта"
+    text: "audit-prompt-caching собирает проверяемые признаки проблем с кэшем и помогает не держать все правила провайдеров в голове."
+    timestampSeconds: 6572
+slidesUrl: null
+thumbnail:
+  path: "/media/talks/every-token-counts.jpg"
+  sourceUrl: "https://i.ytimg.com/vi/X71ZfXMKslo/maxresdefault.jpg"
+  capturedAt: "2026-08-14"
+  alt: "Сергей Нотевский, Константин Доронин и Родион Мостовой на стриме «Каждый токен на счету»"
+---
+
+## О чём стрим
+
+В первой части Родион Мостовой показывает, как CodeAlive использует RAG и семантический поиск, чтобы точнее собирать контекст по кодовой базе и тратить меньше токенов. Во второй я разбираю prefix cache: как он устроен, где ломается и что меняет в экономике AI-агента.
+
+Мой блок — с [59:10](https://www.youtube.com/watch?v=X71ZfXMKslo&t=3550s). К AI Platform и prefix cache перехожу в [1:00:14](https://www.youtube.com/watch?v=X71ZfXMKslo&t=3614s).
+
+## Что разбираю я
+
+- место prefix cache в контуре AI Platform;
+- как расположение динамических данных и порядок tools влияют на cache hit rate;
+- почему модель нужно сравнивать по effective cost с учётом кэшированных токенов;
+- какие метрики помогают искать cache misses;
+- как [audit-prompt-caching](/projects/audit-prompt-caching) собирает признаки проблемы в коде и конфигурации.
+
+## Смотреть
+
+- [Полная запись на YouTube](https://www.youtube.com/watch?v=X71ZfXMKslo)
+- [Смотреть с моего блока](https://www.youtube.com/watch?v=X71ZfXMKslo&t=3550s)
