@@ -37,14 +37,14 @@ thumbnail: {
 - Delete: `public/media/talks/llm-selection-ural-digital-weekend.jpg`
 - Modify: `content/v3/talks/llm-selection-ural-digital-weekend.mdx`
 
-- [ ] Generate the exact 16:9 crop from the supplied attachment:
+- [ ] Generate the exact 16:9 crop from the supplied attachment. Keep crop and resize as separate `sips` invocations because a combined invocation applies the operations in an unsuitable order:
 
 ```bash
-sips \
-  --cropToHeightWidth 480 853 \
-  --cropOffset 260 0 \
-  --resampleHeightWidth 720 1280 \
+preview_tmp=$(mktemp -d /tmp/ural-talk-photo.XXXXXX)
+sips --cropToHeightWidth 480 853 --cropOffset 260 0 \
   "/tmp/codex-remote-attachments/019f8688-86f0-7411-b38d-77491051182f/EC0BEEB9-1BB5-4AD1-8153-1A0AE4429EB0/1-Фото-1.jpg" \
+  --out "$preview_tmp/crop.jpg"
+sips --resampleHeightWidth 720 1280 "$preview_tmp/crop.jpg" \
   --out "public/media/talks/llm-selection-ural-digital-weekend-speaker.jpg"
 ```
 

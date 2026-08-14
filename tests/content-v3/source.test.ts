@@ -1582,16 +1582,18 @@ describe("Talk and project exemplar editorial contract", () => {
       publicationStatus: "published",
       reviewStatus: "unreviewed",
       publishedAt: "2025-08-01",
-      updatedAt: "2026-08-14",
+      updatedAt: "2026-08-15",
       venue: "Ural Digital Weekend 2025 · Пермь",
       eventDate: "2025-08-01",
       format: "talk",
       recordingUrl: "https://www.youtube.com/watch?v=2RvzgMYrX0o",
       recordingUploadedAt: "2025-08-01",
       thumbnail: {
-        path: "/media/talks/llm-selection-ural-digital-weekend.jpg",
-        sourceUrl: "https://i.ytimg.com/vi/2RvzgMYrX0o/maxresdefault.jpg",
-        capturedAt: "2026-08-14"
+        path: "/media/talks/llm-selection-ural-digital-weekend-speaker.jpg",
+        sourceUrl:
+          "https://notevskii.tech/media/talks/llm-selection-ural-digital-weekend-speaker.jpg",
+        capturedAt: "2026-08-15",
+        alt: "Сергей Нотевский выступает на Ural Digital Weekend 2025 рядом со слайдом о выборе LLM"
       }
     });
     expect(talk.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
