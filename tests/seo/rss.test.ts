@@ -96,6 +96,18 @@ const publicRegistryArticles: readonly V3Article[] = [
   },
   {
     ...externalArticle,
+    entityId: "gpt5-rb-expert-comment",
+    title: "Российские ИИ-эксперты о новой GPT-5",
+    externalType: "expert-comment",
+    sourceName: "RB.RU",
+    sourceUrl:
+      "https://rb.ru/news/ne-magicheskij-skachok-praktichnoe-uluchshenie-rossijskie-ii-eksperty-o-novoj-gpt-5/",
+    sourceAuthorProfileUrl: null,
+    participationLabel: "Экспертные комментарии",
+    publishedAt: "2025-08-08"
+  },
+  {
+    ...externalArticle,
     entityId: "prompt-engineering-vc",
     title: "Промпт-инжиниринг как часть архитектуры AI-продукта",
     externalType: "expert-comment",
@@ -104,6 +116,36 @@ const publicRegistryArticles: readonly V3Article[] = [
     sourceAuthorProfileUrl: null,
     participationLabel: "Основной эксперт материала",
     publishedAt: "2025-04-28"
+  },
+  {
+    ...externalArticle,
+    entityId: "llm-style-ranking-habr",
+    title: "Как стиль ответа меняет рейтинг LLM",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/904092/",
+    publishedAt: "2025-04-24"
+  },
+  {
+    ...externalArticle,
+    entityId: "grok3-snob-expert-comment",
+    title: "Grok 3 против всех",
+    externalType: "expert-comment",
+    sourceName: "Сноб",
+    sourceUrl:
+      "https://snob.ru/science/grok-3-protiv-vsekh-chem-neiroset-ilona-maska-luchshe-i-khuzhe-konkurentov/",
+    sourceAuthorProfileUrl: null,
+    participationLabel: "Основной эксперт материала",
+    publishedAt: "2025-03-20"
+  },
+  {
+    ...externalArticle,
+    entityId: "ai-employee-rbc-trends",
+    title: "Почему нанимать искусственный интеллект будут не скоро",
+    externalType: "expert-comment",
+    sourceName: "РБК Тренды",
+    sourceUrl: "https://trends.rbc.ru/trends/industry/66ab8d2b9a7947e539dbdd98",
+    sourceAuthorProfileUrl: null,
+    participationLabel: "Эксперт материала",
+    publishedAt: "2024-08-01"
   }
 ];
 
@@ -126,13 +168,13 @@ describe("RSS builder", () => {
     );
   });
 
-  it("contains all eight public article records from the registry", () => {
+  it("contains all twelve public article records from the registry", () => {
     const route = readFileSync(join(process.cwd(), "app/rss.xml/route.ts"), "utf8");
     const xml = buildRssFeed(publicRegistryArticles);
 
     expect(route).toMatch(/v3Source\s*\.listPublic\("article", "ru"\)/);
-    expect(publicRegistryArticles).toHaveLength(8);
-    expect(xml.match(/<item>/g)).toHaveLength(8);
+    expect(publicRegistryArticles).toHaveLength(12);
+    expect(xml.match(/<item>/g)).toHaveLength(12);
     for (const article of publicRegistryArticles) {
       const expectedUrl =
         article.kind === "native"

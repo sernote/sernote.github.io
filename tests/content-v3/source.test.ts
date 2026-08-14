@@ -381,6 +381,29 @@ const pilotExternalArticleContract = {
     mdxBody:
       "Это внешняя авторская статья о\u00a0том, почему заявленный размер контекстного окна не равен рабочему: context rot, RAG, управление историей агента и\u00a0экономика prefix cache. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/976528/)."
   },
+  "gpt5-rb-expert-comment": {
+    ...externalArticleSharedContract,
+    entityId: "gpt5-rb-expert-comment",
+    title:
+      "«Не магический скачок, а практичное улучшение»: российские ИИ-эксперты — о новой GPT-5",
+    description:
+      "Публичная аннотация к\u00a0материалу RB.RU с\u00a0комментариями о\u00a0достоверности GPT-5, длинном контексте и\u00a0AI-агентах.",
+    publishedAt: "2025-08-08",
+    updatedAt: "2026-08-14",
+    topics: ["gpt-5", "hallucinations", "long-context", "agents"],
+    relations: { articleIds: ["context-window-habr"] },
+    sourceName: "RB.RU",
+    sourceUrl:
+      "https://rb.ru/news/ne-magicheskij-skachok-praktichnoe-uluchshenie-rossijskie-ii-eksperty-o-novoj-gpt-5/",
+    sourceAuthorProfileUrl: null,
+    excerpt:
+      "Что в GPT-5 изменилось в работе с достоверностью и длинным контекстом и почему эти улучшения важны для AI-агентов",
+    externalType: "expert-comment",
+    participationLabel:
+      "Вклад Сергея: экспертные комментарии о достоверности ответов GPT-5 и потерях контекста",
+    mdxBody:
+      "Это внешний материал с\u00a0экспертными комментариями о\u00a0достоверности GPT-5 и\u00a0работе модели с\u00a0длинным контекстом. На сайте хранится только оригинальная аннотация; полный текст опубликован на [RB.RU](https://rb.ru/news/ne-magicheskij-skachok-praktichnoe-uluchshenie-rossijskie-ii-eksperty-o-novoj-gpt-5/)."
+  },
   "prompt-engineering-vc": {
     ...externalArticleSharedContract,
     entityId: "prompt-engineering-vc",
@@ -400,6 +423,70 @@ const pilotExternalArticleContract = {
       "Вклад Сергея: основной эксперт материала; объясняет пользовательский и продуктовый контекст промпт-инжиниринга",
     mdxBody:
       "Это внешний материал с\u00a0экспертным комментарием о\u00a0промпте как части пользовательской задачи и\u00a0архитектуры AI-продукта. На сайте хранится только оригинальная аннотация; полный текст опубликован на [vc.ru](https://vc.ru/ai/1952426-promt-inzhiniring-v-2024-godu)."
+  },
+  "llm-style-ranking-habr": {
+    ...externalArticleSharedContract,
+    entityId: "llm-style-ranking-habr",
+    title: "От улыбки рейтинг наш светлей: Как фильтры стиля и настроения меняют рейтинг LLM",
+    description:
+      "Публичная аннотация к\u00a0статье о\u00a0том, как стиль, настроение и\u00a0форма ответа влияют на\u00a0сравнение языковых моделей.",
+    publishedAt: "2025-04-24",
+    updatedAt: "2026-08-14",
+    topics: ["model-evaluation", "llm", "response-style", "benchmarks"],
+    relations: { talkIds: ["llm-selection-ural-digital-weekend"] },
+    sourceName: "Хабр · блог Битрикс24",
+    sourceUrl: "https://habr.com/ru/companies/bitrix/articles/904092/",
+    sourceAuthorProfileUrl: "https://habr.com/ru/users/Ser_no/",
+    excerpt:
+      "Почему субъективная привлекательность ответа может сместить рейтинг модели и что учитывать при сравнении LLM",
+    externalType: "authored-article",
+    participationLabel:
+      "Вклад Сергея: автор статьи и разбора влияния стиля ответа на оценку моделей",
+    mdxBody:
+      "Это внешняя авторская статья о\u00a0том, как стиль, настроение и\u00a0форма ответа влияют на\u00a0оценку языковой модели. На сайте хранится только оригинальная аннотация; полный текст опубликован на [Хабре](https://habr.com/ru/companies/bitrix/articles/904092/)."
+  },
+  "grok3-snob-expert-comment": {
+    ...externalArticleSharedContract,
+    entityId: "grok3-snob-expert-comment",
+    title: "Grok 3 против всех: чем нейросеть Илона Маска лучше (и хуже) конкурентов",
+    description:
+      "Публичная аннотация к\u00a0материалу «Сноба» о\u00a0возможностях и\u00a0ограничениях Grok 3 на\u00a0фоне других языковых моделей.",
+    publishedAt: "2025-03-20",
+    updatedAt: "2026-08-14",
+    topics: ["grok-3", "model-selection", "llm", "ai-market"],
+    relations: { talkIds: ["choosing-ai-model-bitrix24"] },
+    sourceName: "Сноб",
+    sourceUrl:
+      "https://snob.ru/science/grok-3-protiv-vsekh-chem-neiroset-ilona-maska-luchshe-i-khuzhe-konkurentov/",
+    sourceAuthorProfileUrl: null,
+    excerpt:
+      "Чем Grok 3 отличается от других языковых моделей, где у него сильные стороны и какие ограничения важны для продукта",
+    externalType: "expert-comment",
+    participationLabel:
+      "Вклад Сергея: основной эксперт материала; разбирает возможности и ограничения Grok 3",
+    mdxBody:
+      "Это внешний материал о\u00a0месте Grok 3 среди других языковых моделей, его возможностях и\u00a0ограничениях. На сайте хранится только оригинальная аннотация; полный текст опубликован в\u00a0[«Снобе»](https://snob.ru/science/grok-3-protiv-vsekh-chem-neiroset-ilona-maska-luchshe-i-khuzhe-konkurentov/)."
+  },
+  "ai-employee-rbc-trends": {
+    ...externalArticleSharedContract,
+    entityId: "ai-employee-rbc-trends",
+    title: "Почему нанимать на работу искусственный интеллект будут не скоро",
+    description:
+      "Публичная аннотация к\u00a0материалу РБК Трендов о\u00a0границе между AI-ассистентом и\u00a0полноценным сотрудником.",
+    publishedAt: "2024-08-01",
+    updatedAt: "2026-08-14",
+    topics: ["ai-assistants", "future-of-work", "automation", "ai-products"],
+    relations: {},
+    sourceName: "РБК Тренды",
+    sourceUrl: "https://trends.rbc.ru/trends/industry/66ab8d2b9a7947e539dbdd98",
+    sourceAuthorProfileUrl: null,
+    excerpt:
+      "Какие рабочие задачи уже можно поручить AI-ассистенту и почему до полноценного цифрового сотрудника ещё далеко",
+    externalType: "expert-comment",
+    participationLabel:
+      "Вклад Сергея: эксперт материала; объясняет границу между AI-ассистентом и сотрудником",
+    mdxBody:
+      "Это внешний материал об\u00a0AI-ассистентах, их рабочих задачах и\u00a0границе между помощником и\u00a0полноценным сотрудником. На сайте хранится только оригинальная аннотация; полный текст опубликован в\u00a0[РБК Трендах](https://trends.rbc.ru/trends/industry/66ab8d2b9a7947e539dbdd98)."
   }
 } as const;
 
@@ -631,7 +718,7 @@ describe("v3 generated-entry source adapter", () => {
     expect(externalIds).toEqual(
       expect.arrayContaining(requiredPilotExternalIds)
     );
-    expect(externalIds.length).toBeGreaterThanOrEqual(6);
+    expect(externalIds.length).toBeGreaterThanOrEqual(10);
   });
 
   it("orders all external records by date and preserves the relative pilot chronology", () => {
@@ -644,14 +731,18 @@ describe("v3 generated-entry source adapter", () => {
       requiredPilotExternalIds.includes(entityId)
     );
 
-    expect(externalIds.length).toBeGreaterThanOrEqual(6);
+    expect(externalIds.length).toBeGreaterThanOrEqual(10);
     expect(pilotSequence).toEqual([
       "prefix-cache-the-code",
       "prefix-cache-habr",
       "effective-cost-habr",
       "agent-skills-habr",
       "context-window-habr",
-      "prompt-engineering-vc"
+      "gpt5-rb-expert-comment",
+      "prompt-engineering-vc",
+      "llm-style-ranking-habr",
+      "grok3-snob-expert-comment",
+      "ai-employee-rbc-trends"
     ]);
     for (let index = 1; index < externalDates.length; index += 1) {
       expect(externalDates[index - 1]! >= externalDates[index]!).toBe(true);

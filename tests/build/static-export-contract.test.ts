@@ -586,9 +586,9 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly eight RSS items", () => {
+  it.runIf(hasExport)("has exactly twelve RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(8);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(12);
   });
 
   it.runIf(hasExport)("emits exactly 18 JSON-LD scripts matching the schema matrix", () => {

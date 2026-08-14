@@ -16,7 +16,11 @@ const EXTERNAL_PUBLICATION_IDS = [
   "effective-cost-habr",
   "agent-skills-habr",
   "context-window-habr",
-  "prompt-engineering-vc"
+  "gpt5-rb-expert-comment",
+  "prompt-engineering-vc",
+  "llm-style-ranking-habr",
+  "grok3-snob-expert-comment",
+  "ai-employee-rbc-trends"
 ] as const;
 
 const ABOUT_EVIDENCE_IDS = [
@@ -102,6 +106,10 @@ const records = [
   externalArticle("effective-cost-habr", "2026-03-10"),
   externalArticle("prefix-cache-habr", "2026-05-12"),
   externalArticle("prefix-cache-the-code", "2026-06-18"),
+  externalArticle("gpt5-rb-expert-comment", "2025-08-08", "expert-comment"),
+  externalArticle("llm-style-ranking-habr", "2025-04-24"),
+  externalArticle("grok3-snob-expert-comment", "2025-03-20", "expert-comment"),
+  externalArticle("ai-employee-rbc-trends", "2024-08-01", "expert-comment"),
   {
     ...base,
     entityId: "bitrix24-ai-platform-podcast",
