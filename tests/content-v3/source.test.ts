@@ -1377,6 +1377,100 @@ describe("native Blog article editorial contract", () => {
 });
 
 describe("Talk and project exemplar editorial contract", () => {
+  it("adds the Ural Digital Weekend talk with its official topic and start time", () => {
+    const talk = actualV3Source.getBySlug(
+      "talk",
+      "llm-selection-ural-digital-weekend",
+      "ru"
+    );
+    const talkDocument = actualV3Documents.find(
+      (document) =>
+        document.sourcePath === "talks/llm-selection-ural-digital-weekend.mdx"
+    );
+
+    if (talk === null || talk.type !== "talk") {
+      throw new Error("Ural Digital Weekend talk is missing or has an invalid type");
+    }
+
+    expect(talk).toMatchObject({
+      entityId: "llm-selection-ural-digital-weekend",
+      type: "talk",
+      locale: "ru",
+      publicationStatus: "published",
+      reviewStatus: "unreviewed",
+      publishedAt: "2025-08-01",
+      updatedAt: "2026-08-14",
+      venue: "Ural Digital Weekend 2025 · Пермь",
+      eventDate: "2025-08-01",
+      format: "talk",
+      recordingUrl: "https://www.youtube.com/watch?v=2RvzgMYrX0o",
+      recordingUploadedAt: "2025-08-01",
+      thumbnail: {
+        path: "/media/talks/llm-selection-ural-digital-weekend.jpg",
+        sourceUrl: "https://i.ytimg.com/vi/2RvzgMYrX0o/maxresdefault.jpg",
+        capturedAt: "2026-08-14"
+      }
+    });
+    expect(talk.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
+      11102, null, null, null, null
+    ]);
+    expect(talk.relations).toEqual({
+      talkIds: ["choosing-ai-model-bitrix24", "maas-vs-self-hosted-roii"]
+    });
+    expect(talkDocument?.content).toContain("## О чём доклад");
+    expect(talkDocument?.content).toContain("## Пять вопросов перед выбором модели");
+    expect(talkDocument?.content).toContain("## Смотреть");
+    expect(talkDocument?.content).toContain("[3:05:02]");
+    expect(talkDocument?.content).toContain("&t=11102s");
+    expect(talkDocument?.content).not.toContain("Проверенные источники");
+  });
+
+  it("adds the Mad Brains interview with its release date and provided entry point", () => {
+    const interview = actualV3Source.getBySlug(
+      "talk",
+      "choosing-ai-model-bitrix24",
+      "ru"
+    );
+    const interviewDocument = actualV3Documents.find(
+      (document) => document.sourcePath === "talks/choosing-ai-model-bitrix24.mdx"
+    );
+
+    if (interview === null || interview.type !== "talk") {
+      throw new Error("Mad Brains interview is missing or has an invalid type");
+    }
+
+    expect(interview).toMatchObject({
+      entityId: "choosing-ai-model-bitrix24",
+      type: "talk",
+      locale: "ru",
+      publicationStatus: "published",
+      reviewStatus: "unreviewed",
+      publishedAt: "2025-03-21",
+      updatedAt: "2026-08-14",
+      venue: "Mad Brains · Small talk с техдиром",
+      eventDate: "2025-03-21",
+      format: "interview",
+      recordingUrl: "https://www.youtube.com/watch?v=NrvGciRm8Ps",
+      recordingUploadedAt: "2025-03-21",
+      thumbnail: {
+        path: "/media/talks/choosing-ai-model-bitrix24.jpg",
+        sourceUrl: "https://i.ytimg.com/vi/NrvGciRm8Ps/maxresdefault.jpg",
+        capturedAt: "2026-08-14"
+      }
+    });
+    expect(interview.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
+      1992, null, null
+    ]);
+    expect(interview.relations).toEqual({
+      talkIds: ["maas-vs-self-hosted-roii"]
+    });
+    expect(interviewDocument?.content).toContain("## О чём разговор");
+    expect(interviewDocument?.content).toContain("## Смотреть");
+    expect(interviewDocument?.content).toContain("[фрагменту с 33:12]");
+    expect(interviewDocument?.content).toContain("&t=1992s");
+    expect(interviewDocument?.content).not.toContain("Проверенные источники");
+  });
+
   it("adds the token-economics stream with the real release date and Sergey start time", () => {
     const stream = actualV3Source.getBySlug("talk", "every-token-counts", "ru");
     const streamDocument = actualV3Documents.find(

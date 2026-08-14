@@ -49,7 +49,9 @@ const expectedKeepPaths = [
   "/materials",
   "/projects/audit-prompt-caching",
   "/talks/bitrix24-ai-platform-podcast",
+  "/talks/choosing-ai-model-bitrix24",
   "/talks/every-token-counts",
+  "/talks/llm-selection-ural-digital-weekend",
   "/talks/maas-vs-self-hosted"
 ] as const;
 
@@ -252,7 +254,7 @@ describe("public SEO URLs", () => {
     const urls = entries.map((entry) => entry.url);
 
     expect(urls).toEqual(expectedKeepPaths.map(canonicalUrl));
-    expect(urls).toHaveLength(15);
+    expect(urls).toHaveLength(17);
     expect(urls.every((url) => url.endsWith("/"))).toBe(true);
     expect(urls.some((url) => url.includes("habr.com"))).toBe(false);
     expect(urls).not.toContain("https://notevskii.tech/ru/");

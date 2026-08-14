@@ -21,7 +21,9 @@ const keep = new Set([
   "/materials",
   "/projects/audit-prompt-caching",
   "/talks/bitrix24-ai-platform-podcast",
+  "/talks/choosing-ai-model-bitrix24",
   "/talks/every-token-counts",
+  "/talks/llm-selection-ural-digital-weekend",
   "/talks/maas-vs-self-hosted"
 ]);
 
@@ -64,9 +66,9 @@ const aliases = new Map<string, string>([
 ]);
 
 describe("v3.1 route decision set", () => {
-  it("contains exactly 104 non-service route decisions", () => {
-    expect(manifest).toHaveLength(104);
-    expect(new Set(manifest.map((record) => record.source)).size).toBe(104);
+  it("contains exactly 106 non-service route decisions", () => {
+    expect(manifest).toHaveLength(106);
+    expect(new Set(manifest.map((record) => record.source)).size).toBe(106);
   });
 
   it("matches the accepted keep and direct-alias sets", () => {

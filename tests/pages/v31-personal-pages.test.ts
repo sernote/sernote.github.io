@@ -176,6 +176,54 @@ const records = [
   },
   {
     ...base,
+    entityId: "choosing-ai-model-bitrix24",
+    type: "talk",
+    slug: "choosing-ai-model-bitrix24",
+    title: "Как выбрать нейросеть: опыт Битрикс24",
+    venue: "Mad Brains · Small talk с техдиром",
+    eventDate: "2025-03-21",
+    format: "interview",
+    recordingUrl: "https://www.youtube.com/watch?v=NrvGciRm8Ps",
+    recordingUploadedAt: "2025-03-21",
+    publishedAt: "2025-03-21",
+    updatedAt: "2026-08-14",
+    abstract: "Разговор о выборе и внедрении языковых моделей.",
+    takeaways: [
+      { label: "Внедрение", text: "Разобрать опыт Битрикс24.", timestampSeconds: 1992 },
+      { label: "Выбор", text: "Сравнить критерии выбора модели.", timestampSeconds: null },
+      { label: "Интеграция", text: "Обсудить сложности внедрения.", timestampSeconds: null }
+    ],
+    slidesUrl: null,
+    thumbnail: null,
+    sourcePath: "talks/choosing-ai-model-bitrix24.mdx"
+  },
+  {
+    ...base,
+    entityId: "llm-selection-ural-digital-weekend",
+    type: "talk",
+    slug: "llm-selection-ural-digital-weekend",
+    title: "Подходы к выбору языковых моделей для встраивания в продукты и услуги",
+    venue: "Ural Digital Weekend 2025 · Пермь",
+    eventDate: "2025-08-01",
+    format: "talk",
+    recordingUrl: "https://www.youtube.com/watch?v=2RvzgMYrX0o",
+    recordingUploadedAt: "2025-08-01",
+    publishedAt: "2025-08-01",
+    updatedAt: "2026-08-14",
+    abstract: "Как выбрать языковую модель для продукта.",
+    takeaways: [
+      { label: "Рынок", text: "Оценить исходную ситуацию.", timestampSeconds: 11102 },
+      { label: "Критерии", text: "Сопоставить характеристики модели.", timestampSeconds: null },
+      { label: "MaaS", text: "Сравнить способы доступа.", timestampSeconds: null },
+      { label: "Тренды", text: "Учесть изменения рынка.", timestampSeconds: null },
+      { label: "Вопросы", text: "Собрать проверочный список.", timestampSeconds: null }
+    ],
+    slidesUrl: null,
+    thumbnail: null,
+    sourcePath: "talks/llm-selection-ural-digital-weekend.mdx"
+  },
+  {
+    ...base,
     entityId: "audit-prompt-caching",
     type: "project",
     slug: "audit-prompt-caching",
@@ -348,7 +396,9 @@ describe("v3.1 personal-page view models", () => {
     expect(model.talks.map(({ entityId, formatLabel }) => [entityId, formatLabel])).toEqual([
       ["bitrix24-ai-platform-podcast", "Подкаст"],
       ["every-token-counts", "Стрим"],
-      ["maas-vs-self-hosted-roii", "Доклад"]
+      ["maas-vs-self-hosted-roii", "Доклад"],
+      ["llm-selection-ural-digital-weekend", "Доклад"],
+      ["choosing-ai-model-bitrix24", "Интервью"]
     ]);
     expect(model.projects.map(({ entityId }) => entityId)).toContain("audit-prompt-caching");
     expect(model.publications.map(({ entityId }) => entityId)).toEqual(

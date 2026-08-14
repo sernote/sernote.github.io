@@ -680,7 +680,19 @@
     "locale": "ru"
   },
   {
+    "source": "/talks/choosing-ai-model-bitrix24",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/talks/every-token-counts",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/talks/llm-selection-ural-digital-weekend",
     "destination": null,
     "behavior": "keep",
     "locale": "ru"
