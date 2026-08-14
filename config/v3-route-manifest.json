@@ -54,6 +54,12 @@
     "locale": "ru"
   },
   {
+    "source": "/blog/roles-in-llm-prompts",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/blog/workload-shape-over-model-name",
     "destination": null,
     "behavior": "keep",

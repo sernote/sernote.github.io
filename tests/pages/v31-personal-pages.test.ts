@@ -100,6 +100,7 @@ function externalArticle(
 const records = [
   nativeArticle("workload-shape-over-model-name", "note", "2026-08-02"),
   nativeArticle("ai-platform-before-gpu", "article", "2026-07-22"),
+  nativeArticle("roles-in-llm-prompts", "article", "2025-12-14"),
   externalArticle("prompt-engineering-vc", "2025-04-28", "expert-comment"),
   externalArticle("agent-skills-habr", "2025-12-26"),
   externalArticle("context-window-habr", "2025-12-15"),
@@ -377,14 +378,22 @@ describe("v3.1 personal-page view models", () => {
     expect(model.items).toHaveLength(publicNativeIds.length);
     const ids = model.items.map(({ entityId }) => entityId);
     expect(ids).toEqual(
-      expect.arrayContaining(["ai-platform-before-gpu", "workload-shape-over-model-name"])
+      expect.arrayContaining([
+        "ai-platform-before-gpu",
+        "workload-shape-over-model-name",
+        "roles-in-llm-prompts"
+      ])
     );
     expect(ids.indexOf("workload-shape-over-model-name")).toBeLessThan(
       ids.indexOf("ai-platform-before-gpu")
     );
+    expect(ids.indexOf("ai-platform-before-gpu")).toBeLessThan(
+      ids.indexOf("roles-in-llm-prompts")
+    );
     expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
     expect(model.items.map(({ editorialFormat }) => editorialFormat)).toEqual([
       "note",
+      "article",
       "article"
     ]);
     expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);

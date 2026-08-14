@@ -64,6 +64,14 @@ const publicRegistryArticles: readonly V3Article[] = [
     publishedAt: "2026-08-02",
     updatedAt: "2026-08-02"
   },
+  {
+    ...nativeArticle,
+    entityId: "roles-in-llm-prompts",
+    slug: "roles-in-llm-prompts",
+    title: "Роли больше не нужны. Но это не точно",
+    publishedAt: "2025-12-14",
+    updatedAt: "2026-08-15"
+  },
   externalArticle,
   {
     ...externalArticle,
@@ -168,13 +176,13 @@ describe("RSS builder", () => {
     );
   });
 
-  it("contains all twelve public article records from the registry", () => {
+  it("contains all thirteen public article records from the registry", () => {
     const route = readFileSync(join(process.cwd(), "app/rss.xml/route.ts"), "utf8");
     const xml = buildRssFeed(publicRegistryArticles);
 
     expect(route).toMatch(/v3Source\s*\.listPublic\("article", "ru"\)/);
-    expect(publicRegistryArticles).toHaveLength(12);
-    expect(xml.match(/<item>/g)).toHaveLength(12);
+    expect(publicRegistryArticles).toHaveLength(13);
+    expect(xml.match(/<item>/g)).toHaveLength(13);
     for (const article of publicRegistryArticles) {
       const expectedUrl =
         article.kind === "native"
