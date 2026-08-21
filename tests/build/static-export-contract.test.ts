@@ -547,14 +547,20 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 107 records split 18 keep / 35 alias / 54 archive", () => {
+  it.runIf(hasExport)("has exactly 108 records split 19 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(107);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(18);
+    expect(records).toHaveLength(108);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(19);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
     expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
     expect(records).toContainEqual({
       source: "/blog/workload-shape-over-model-name",
+      destination: null,
+      behavior: "keep",
+      locale: "ru"
+    });
+    expect(records).toContainEqual({
+      source: "/blog/hybrid-reasoners-in-production",
       destination: null,
       behavior: "keep",
       locale: "ru"
@@ -592,16 +598,17 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly thirteen RSS items", () => {
+  it.runIf(hasExport)("has exactly fourteen RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(13);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(14);
   });
 
-  it.runIf(hasExport)("emits exactly 20 JSON-LD scripts matching the schema matrix", () => {
+  it.runIf(hasExport)("emits exactly 22 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
       "index.html": ["WebSite"],
       "about/index.html": ["ProfilePage"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/hybrid-reasoners-in-production/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/roles-in-llm-prompts/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
       "talks/bitrix24-ai-platform-podcast/index.html": ["VideoObject", "BreadcrumbList"],
@@ -620,6 +627,6 @@ describe("static export audit — production integration", () => {
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
     }
-    expect(total).toBe(20);
+    expect(total).toBe(22);
   });
 });

@@ -98,6 +98,7 @@ function externalArticle(
 }
 
 const records = [
+  nativeArticle("hybrid-reasoners-in-production", "article", "2026-08-21"),
   nativeArticle("workload-shape-over-model-name", "note", "2026-08-02"),
   nativeArticle("ai-platform-before-gpu", "article", "2026-07-22"),
   nativeArticle("roles-in-llm-prompts", "article", "2025-12-14"),
@@ -359,7 +360,7 @@ describe("v3.1 personal-page view models", () => {
       "Карта и\u00a0практический справочник по production AI-платформам."
     );
     expect(model.featured.map(({ surface, item }) => [surface, item.entityId])).toEqual([
-      ["blog", "workload-shape-over-model-name"],
+      ["blog", "hybrid-reasoners-in-production"],
       ["materials", "bitrix24-ai-platform-podcast"],
       ["ai-platform", "prefix-cache"]
     ]);
@@ -380,9 +381,13 @@ describe("v3.1 personal-page view models", () => {
     expect(ids).toEqual(
       expect.arrayContaining([
         "ai-platform-before-gpu",
+        "hybrid-reasoners-in-production",
         "workload-shape-over-model-name",
         "roles-in-llm-prompts"
       ])
+    );
+    expect(ids.indexOf("hybrid-reasoners-in-production")).toBeLessThan(
+      ids.indexOf("workload-shape-over-model-name")
     );
     expect(ids.indexOf("workload-shape-over-model-name")).toBeLessThan(
       ids.indexOf("ai-platform-before-gpu")
@@ -392,6 +397,7 @@ describe("v3.1 personal-page view models", () => {
     );
     expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
     expect(model.items.map(({ editorialFormat }) => editorialFormat)).toEqual([
+      "article",
       "note",
       "article",
       "article"

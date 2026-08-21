@@ -57,6 +57,14 @@ const publicRegistryArticles: readonly V3Article[] = [
   nativeArticle,
   {
     ...nativeArticle,
+    entityId: "hybrid-reasoners-in-production",
+    slug: "hybrid-reasoners-in-production",
+    title: "Гибридная reasoning-модель удобна. Но нагрузку всё равно придётся разделять",
+    publishedAt: "2026-08-21",
+    updatedAt: "2026-08-21"
+  },
+  {
+    ...nativeArticle,
     entityId: "workload-shape-over-model-name",
     slug: "workload-shape-over-model-name",
     editorialFormat: "note",
@@ -176,13 +184,13 @@ describe("RSS builder", () => {
     );
   });
 
-  it("contains all thirteen public article records from the registry", () => {
+  it("contains all fourteen public article records from the registry", () => {
     const route = readFileSync(join(process.cwd(), "app/rss.xml/route.ts"), "utf8");
     const xml = buildRssFeed(publicRegistryArticles);
 
     expect(route).toMatch(/v3Source\s*\.listPublic\("article", "ru"\)/);
-    expect(publicRegistryArticles).toHaveLength(13);
-    expect(xml.match(/<item>/g)).toHaveLength(13);
+    expect(publicRegistryArticles).toHaveLength(14);
+    expect(xml.match(/<item>/g)).toHaveLength(14);
     for (const article of publicRegistryArticles) {
       const expectedUrl =
         article.kind === "native"

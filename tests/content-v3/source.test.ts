@@ -529,6 +529,35 @@ const workloadShapeNoteBody = [
   "Сравнивать варианты стоит на replay или синтетическом профиле, который сохраняет эту форму нагрузки. Название модели и спецификация ускорителя остаются входными данными, но решение подтверждает только измерение на целевом workload. Подробнее границы этого решения разобраны в [Inference Plane](/ai-platform/areas/inference-plane)."
 ].join("\n");
 
+const hybridReasonersArticleContract = {
+  entityId: "hybrid-reasoners-in-production",
+  type: "article",
+  locale: "ru",
+  kind: "native",
+  slug: "hybrid-reasoners-in-production",
+  editorialFormat: "article",
+  title: "Гибридная reasoning-модель удобна. Но нагрузку всё равно придётся разделять",
+  description:
+    "Почему переключатель thinking-режима не отменяет раздельные inference-пулы, маршрутизацию и настройки serving под разные профили нагрузки.",
+  publicationStatus: "published",
+  reviewStatus: "unreviewed",
+  publishedAt: "2026-08-21",
+  updatedAt: "2026-08-21",
+  reviewedAt: null,
+  reviewCycleDays: null,
+  topics: ["reasoning-models", "inference", "routing", "capacity"],
+  relations: { platformEntityIds: ["inference-plane"] },
+  excerpt:
+    "Один checkpoint может отвечать и с reasoning, и без него. Но короткие ответы и длинные рассуждения по-разному нагружают inference, поэтому один endpoint ещё не означает один общий пул.",
+  externalType: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceAuthorProfileUrl: null,
+  participationLabel: null,
+  supersedes: null,
+  supersededBy: null
+} as const;
+
 const rolesInLlmPromptsContract = {
   entityId: "roles-in-llm-prompts",
   type: "article",
@@ -885,6 +914,28 @@ describe("v3 generated-entry source adapter", () => {
       "https://github.com/sernote",
       "https://t.me/sergeinotevskii"
     ]);
+  });
+
+  it("reads the hybrid reasoners article with its production boundary and primary sources", () => {
+    const article = actualV3Source
+      .listPublic("article", "ru")
+      .find((record) => record.entityId === hybridReasonersArticleContract.entityId);
+    const articleDocument = actualV3Documents.find(
+      (document) => document.sourcePath === "blog/hybrid-reasoners-in-production.mdx"
+    );
+
+    expect(article).toMatchObject(hybridReasonersArticleContract);
+    expect(articleDocument?.content).toContain(
+      "Гибридность удобна как интерфейс модели. Но serving-архитектуру определяет форма нагрузки"
+    );
+    expect(articleDocument?.content).toContain("Qwen3.5");
+    expect(articleDocument?.content).toContain("https://qwenlm.github.io/blog/qwen3/");
+    expect(articleDocument?.content).toContain(
+      "https://docs.vllm.ai/en/latest/configuration/optimization/"
+    );
+    expect(articleDocument?.content).not.toMatch(
+      /Битрикс24|внутренняя архитектура|наш(?:а|и|ей) инфраструктур/i
+    );
   });
 
   it("reads the exact expanded roles article from the native Blog source", () => {
