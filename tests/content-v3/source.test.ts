@@ -536,9 +536,9 @@ const hybridReasonersArticleContract = {
   kind: "native",
   slug: "hybrid-reasoners-in-production",
   editorialFormat: "article",
-  title: "Гибридная reasoning-модель удобна. Но нагрузку всё равно придётся разделять",
+  title: "Ловушка гибридных резонеров",
   description:
-    "Почему переключатель thinking-режима не отменяет раздельные inference-пулы, маршрутизацию и настройки serving под разные профили нагрузки.",
+    "Почему один checkpoint с thinking и non-thinking режимами не превращается в универсальный inference-инстанс и когда общий пул всё же имеет смысл.",
   publicationStatus: "published",
   reviewStatus: "unreviewed",
   publishedAt: "2026-08-21",
@@ -548,7 +548,7 @@ const hybridReasonersArticleContract = {
   topics: ["reasoning-models", "inference", "routing", "capacity"],
   relations: { platformEntityIds: ["inference-plane"] },
   excerpt:
-    "Один checkpoint может отвечать и с reasoning, и без него. Но короткие ответы и длинные рассуждения по-разному нагружают inference, поэтому один endpoint ещё не означает один общий пул.",
+    "Гибридный checkpoint упрощает выбор режима, но длинные reasoning-запросы и короткие ответы конкурируют за scheduler, KV cache и токенный бюджет. Разбираю, когда нагрузку нужно делить, а когда один инстанс разумнее.",
   externalType: null,
   sourceName: null,
   sourceUrl: null,
@@ -926,10 +926,18 @@ describe("v3 generated-entry source adapter", () => {
 
     expect(article).toMatchObject(hybridReasonersArticleContract);
     expect(articleDocument?.content).toContain(
-      "Гибридность удобна как интерфейс модели. Но serving-архитектуру определяет форма нагрузки"
+      "Один checkpoint поддерживает два режима. Из этого не следует, что оба режима нужно обслуживать одним inference-инстансом"
     );
     expect(articleDocument?.content).toContain("Qwen3.5");
+    expect(articleDocument?.content).toContain("Qwen3.8-27B");
+    expect(articleDocument?.content).toContain("Qwen3.8-2.4T-A95B");
     expect(articleDocument?.content).toContain("https://qwenlm.github.io/blog/qwen3/");
+    expect(articleDocument?.content).toContain(
+      "https://huggingface.co/Qwen/Qwen3.8-27B"
+    );
+    expect(articleDocument?.content).toContain(
+      "https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B"
+    );
     expect(articleDocument?.content).toContain(
       "https://docs.vllm.ai/en/latest/configuration/optimization/"
     );
