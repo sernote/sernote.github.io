@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { EditorialLink } from "@/components/editorial/editorial-link";
 import { SectionHeading } from "@/components/editorial/section-heading";
+import { ReadingJourney, SelectedReadingCards } from "@/components/editorial/selected-reading";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import { AUTHOR_PROFILE } from "@/lib/author-profile";
 import type {
@@ -11,7 +12,10 @@ import type {
   BlogListItemViewModel,
   BlogViewModel,
   HomeViewModel,
-  MaterialsViewModel
+  ReadingStep,
+  MaterialsViewModel,
+  TalkSummaryViewModel,
+  ExternalPublicationViewModel
 } from "@/lib/content-v3/view-models";
 import { siteLinks } from "@/lib/i18n";
 
@@ -54,64 +58,79 @@ function HomeEntrance({ entrance }: { entrance: HomeViewModel["entrances"][numbe
   );
 }
 
-export function HomePageContent({ model }: { model: HomeViewModel }) {
-  const [article, material, platform] = model.featured;
+function CacheReadingPath({ steps }: { steps: readonly ReadingStep[] }) {
+  if (!steps.length) return null;
+  return (
+    <nav aria-label="Разобраться с префиксным кэшем" className="mt-8 border-t border-border pt-5">
+      <p className="text-sm font-semibold">От разбора к проверке</p>
+      <ol className="mt-4 grid list-none gap-6 p-0 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <li key={step.entityId}>
+            <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
+            <Link href={step.href} className="mt-1 flex min-h-11 items-center gap-2 font-semibold text-primary hover:underline">{step.action}<ArrowRight aria-hidden="true" className="size-4" /></Link>
+            <p className="text-sm leading-6 text-muted-foreground">{step.outcome}</p>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
 
+export function HomePageContent({ model }: { model: HomeViewModel }) {
+  const selected = model.readingPath?.find((step) => step.contentType === "article");
+  const latest = model.featured.find((entry) => entry.surface === "blog");
+  const lead = selected ?? latest?.item;
+  const current = model.featured.filter(({ item }) =>
+    item.entityId !== lead?.entityId || item.contentType !== lead?.contentType
+  );
   return (
     <EditorialShell currentPath="/">
       <section className="bg-[var(--surface-subtle)]">
-        <div className={`${frameClassName} pt-10 md:pt-16 lg:pt-20`}>
-          <div className="pb-10 md:pb-12 lg:pb-14">
-            <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem] lg:text-[4.5rem]">
-              Сергей Нотевский
-            </h1>
-            <p className="mt-4 text-sm font-semibold text-primary md:text-base">
-              AI Platform Lead в Битрикс24
-            </p>
-          </div>
-          <nav
-            aria-label="Основные разделы"
-            className="grid border-t border-border md:grid-cols-3 md:gap-12"
-          >
-            {model.entrances.map((entrance) => (
-              <HomeEntrance key={entrance.id} entrance={entrance} />
-            ))}
-          </nav>
+        <div className={`${frameClassName} py-10 md:py-16`}>
+          <header className="grid gap-7 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
+            <div>
+              <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">{AUTHOR_PROFILE.name}</h1>
+              <p className="mt-4 text-sm font-semibold text-primary md:text-base">{AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}</p>
+            </div>
+            <div className="max-w-2xl self-end">
+              <p className="text-base leading-7 md:text-lg">{AUTHOR_PROFILE.aboutIntro}</p>
+              <EditorialLink href="/about" className="mt-3 min-h-11">Подробнее обо мне</EditorialLink>
+            </div>
+          </header>
         </div>
       </section>
-
-      <section className={`${frameClassName} pb-16 pt-8 md:pb-20 md:pt-10 lg:pb-24 lg:pt-12`}>
-        <SectionHeading title="Сейчас" />
-        <div className="grid gap-2 lg:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] lg:gap-16">
-          <article className="border-b border-border py-8 lg:border-b-0 lg:py-10">
-            <p className="text-sm text-muted-foreground">{article.label} · Блог</p>
-            <h2 className="mt-3 max-w-3xl text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.035em] md:text-[2rem]">
-              {article.item.title}
+      <section className={`${frameClassName} py-10 md:py-16`}>
+        {lead ? (
+          <article className="border-l-2 border-primary pl-5 md:pl-8">
+            <p className="text-sm font-medium text-primary">{selected ? "Начните с этого разбора" : latest?.label}</p>
+            <h2 className="mt-4 max-w-4xl text-[2.2rem] font-semibold leading-[1.08] tracking-[-0.045em] md:text-[3.5rem]">
+              <Link href={lead.href} className="hover:text-primary">{lead.title}</Link>
             </h2>
-            <p className="mt-4 max-w-[46rem] text-base leading-7 text-muted-foreground md:text-lg">
-              {article.item.description}
-            </p>
-            <EditorialLink href={article.item.href} className="mt-4 min-h-11">
-              {article.label === "Заметка" ? "Читать заметку" : "Читать статью"}
-            </EditorialLink>
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{lead.description}</p>
+            <EditorialLink href={lead.href} className="mt-4 min-h-11">Читать {latest?.label === "Заметка" && !selected ? "заметку" : "статью"}</EditorialLink>
           </article>
-          <div className="border-t border-border lg:mt-10">
-            {[material, platform].map((entry) => (
-              <article key={entry.item.entityId} className="border-b border-border py-6">
-                <p className="text-sm text-muted-foreground">{entry.label}</p>
-                <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">
-                  <Link href={entry.item.href} className="hover:text-primary">
-                    {entry.item.title}
-                  </Link>
-                </h2>
-                <p className="mt-2 text-base leading-6 text-muted-foreground">
-                  {entry.item.description}
-                </p>
-              </article>
-            ))}
-          </div>
+        ) : null}
+        <CacheReadingPath steps={model.readingPath ?? []} />
+      </section>
+      <div className={`${frameClassName} pb-10`}>
+        <nav aria-label="Основные разделы" className="grid border-y border-border md:grid-cols-3 md:gap-12">
+          {model.entrances.map((entrance) => <HomeEntrance key={entrance.id} entrance={entrance} />)}
+        </nav>
+      </div>
+      {current.length > 0 ? (
+      <section className={`${frameClassName} pb-16 md:pb-20`}>
+        <SectionHeading title="Сейчас" />
+        <div className={`grid gap-x-12 ${current.length === 2 ? "md:grid-cols-2" : current.length > 2 ? "md:grid-cols-3" : ""}`}>
+          {current.map((entry) => (
+            <article key={entry.item.entityId} className="border-b border-border py-6">
+              <p className="text-sm text-muted-foreground">{entry.label}</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]"><Link href={entry.item.href} className="hover:text-primary">{entry.item.title}</Link></h2>
+              <p className="mt-3 text-base leading-7 text-muted-foreground">{entry.item.description}</p>
+            </article>
+          ))}
         </div>
       </section>
+      ) : null}
     </EditorialShell>
   );
 }
@@ -123,21 +142,18 @@ function BlogEntry({ item }: { item: BlogListItemViewModel }) {
       <p className="text-sm text-muted-foreground">
         {isArticle ? "Статья" : "Короткая заметка"} · {item.publishedLabel}
       </p>
-      <h2
+      <h3
         className={
           isArticle
             ? "mt-4 max-w-4xl text-[1.8rem] font-semibold leading-[1.12] tracking-[-0.035em] md:text-[2.1rem]"
             : "mt-3 max-w-3xl text-[1.35rem] font-semibold leading-[1.2] tracking-[-0.025em] md:text-[1.55rem]"
         }
       >
-        {item.title}
-      </h2>
+        <Link href={item.href} className="hover:text-primary hover:underline underline-offset-4">{item.title}</Link>
+      </h3>
       <p className={`mt-4 max-w-[48rem] text-base leading-7 text-muted-foreground ${isArticle ? "md:text-lg" : ""}`}>
         {item.description}
       </p>
-      {item.topics?.length ? (
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">{item.topics.join(" · ")}</p>
-      ) : null}
       <EditorialLink href={item.href} className="mt-3 min-h-11">
         {isArticle ? "Читать статью" : "Читать заметку"}
       </EditorialLink>
@@ -154,20 +170,123 @@ export function BlogPageContent({ model }: { model: BlogViewModel }) {
             Блог
           </h1>
           <p className="max-w-[40rem] text-base leading-7 text-muted-foreground md:text-lg">
-            Собственные статьи и короткие заметки о production AI-платформах: архитектуре, инференсе, качестве и эксплуатации.
+            Пишу о том, как устроены AI-платформы: что происходит с запросами, где теряется время и как меняется стоимость. Здесь собрал несколько текстов, с которых можно начать.
           </p>
         </header>
-        <div>
+        <SelectedReadingCards items={model.selected ?? []} />
+        <ReadingJourney items={model.journey ?? []} />
+        <section aria-labelledby="blog-archive-heading" className="pt-10 md:pt-12">
+          <h2 id="blog-archive-heading" className="text-2xl font-semibold tracking-[-0.03em]">Все тексты на сайте</h2>
           {model.items.map((item) => (
             <BlogEntry key={item.entityId} item={item} />
           ))}
+        </section>
+        <div className="pt-8 md:pt-10">
+          <p className="text-base leading-7 text-muted-foreground">Новые тексты и короткие заметки — в Telegram. Статьи с сайта можно читать через RSS.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-7">
+            <ExternalEditorialLink href={siteLinks.telegram}>Читать Telegram</ExternalEditorialLink>
+            <EditorialLink href="/rss.xml" className="min-h-11">Подписаться на RSS</EditorialLink>
+          </div>
         </div>
       </div>
     </EditorialShell>
   );
 }
 
+function TalkSummary({ talk, featured = false }: { talk: TalkSummaryViewModel; featured?: boolean }) {
+  const layout = !talk.thumbnail
+    ? ""
+    : featured
+      ? "md:grid-cols-2 md:gap-10 lg:gap-12"
+      : "grid-cols-[7rem_minmax(0,1fr)] sm:grid-cols-[9rem_minmax(0,1fr)]";
+  return (
+    <article
+      data-talk={talk.entityId}
+      data-featured-talk={featured ? "true" : undefined}
+      className={`grid min-w-0 gap-5 ${layout} ${featured ? "" : "border-t border-border pt-6"}`}
+    >
+      {talk.thumbnail ? (
+        <Link href={talk.href} className="block min-h-11 self-start">
+          <Image
+            src={talk.thumbnail.path}
+            alt={talk.thumbnail.alt}
+            width={featured ? 1280 : 320}
+            height={featured ? 720 : 180}
+            sizes={featured ? "(max-width: 767px) 100vw, 50vw" : "(max-width: 639px) 112px, 144px"}
+            className="aspect-video h-auto w-full object-cover"
+            priority={featured}
+            loading={featured ? undefined : "lazy"}
+          />
+        </Link>
+      ) : null}
+      <div className={`min-w-0 self-start ${!featured && talk.thumbnail ? "max-sm:contents sm:block" : ""}`}>
+        {featured ? <p className="mb-3 text-sm font-medium leading-6 text-primary">Разговор о платформе и работе команды</p> : null}
+        <p className="text-sm leading-6 text-muted-foreground">
+          {talk.formatLabel} · {talk.venue} · {talk.eventDateLabel}
+        </p>
+        <div className={!featured && talk.thumbnail ? "col-span-2 sm:col-span-1" : undefined}>
+          <h3 className={`font-semibold tracking-[-0.03em] ${!featured && talk.thumbnail ? "sm:mt-3" : "mt-3"} ${featured ? "text-[1.75rem] leading-[1.15] lg:text-[2rem]" : "text-xl leading-7"}`}>
+            <Link href={talk.href} className="hover:text-primary hover:underline underline-offset-4">{talk.title}</Link>
+          </h3>
+          <p className={`mt-3 max-w-[44rem] leading-7 text-muted-foreground ${featured ? "text-base lg:text-lg" : "text-sm sm:text-base"}`}>
+            {talk.description}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-5">
+            <EditorialLink href={talk.href} className="min-h-11">
+              {`Открыть ${talk.formatLabel.toLocaleLowerCase("ru-RU")}`}
+            </EditorialLink>
+            {talk.recordingUrl ? <ExternalEditorialLink href={talk.recordingUrl}>Смотреть запись</ExternalEditorialLink> : null}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function PublicationGroup({ id, title, publications }: {
+  id: string;
+  title: string;
+  publications: readonly ExternalPublicationViewModel[];
+}) {
+  if (publications.length === 0) return null;
+  return (
+    <div role="group" aria-labelledby={id} className="mt-8">
+      <h3 id={id} className="text-lg font-semibold tracking-[-0.02em]">{title}</h3>
+      <div className="mt-4 border-t border-border">
+        {publications.map((publication) => (
+          <article
+            key={publication.entityId}
+            data-publication={publication.entityId}
+            className="grid gap-4 border-b border-border py-6 lg:grid-cols-[minmax(10rem,0.5fr)_minmax(0,1.5fr)] lg:gap-10"
+          >
+            <p className="text-sm leading-6 text-muted-foreground">
+              {publication.externalTypeLabel}<br />
+              {publication.sourceName}<br />
+              {publication.publishedLabel}
+            </p>
+            <div>
+              <h4 className="text-xl font-semibold leading-7 tracking-[-0.025em]">
+                {publication.title}
+              </h4>
+              <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
+                {publication.excerpt}
+              </p>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {publication.participationLabel}
+              </p>
+              <ExternalEditorialLink href={publication.href}>Открыть публикацию</ExternalEditorialLink>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
+  const otherTalks = model.talks.filter((talk) => talk.entityId !== model.featuredTalk?.entityId);
+  const authoredPublications = model.publications.filter((publication) => publication.externalTypeLabel === "Авторская статья");
+  const otherPublications = model.publications.filter((publication) => publication.externalTypeLabel !== "Авторская статья");
   return (
     <EditorialShell currentPath="/materials">
       <div className={`${frameClassName} py-10 md:py-16 lg:py-16`}>
@@ -180,46 +299,32 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
           </p>
         </header>
 
-        <section className="border-b border-border py-10 md:py-12">
+        <nav aria-label="Разделы материалов" className="flex flex-wrap gap-x-8 border-b border-border py-3">
+          <EditorialLink href="#watching" className="min-h-11">Смотреть</EditorialLink>
+          <EditorialLink href="#reading" className="min-h-11">Читать</EditorialLink>
+          <EditorialLink href="#projects" className="min-h-11">Попробовать</EditorialLink>
+        </nav>
+        <section id="watching" className="scroll-mt-24 border-b border-border py-10 md:py-12">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">
             Выступления, интервью и подкасты
           </h2>
-          <div className="mt-7 space-y-12">
-            {model.talks.map((talk) => (
-              <article key={talk.entityId} className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.25fr)] lg:gap-12">
-                {talk.thumbnail ? (
-                  <Link href={talk.href} className="block min-h-11">
-                    <Image
-                      src={talk.thumbnail.path}
-                      alt={talk.thumbnail.alt}
-                      width={1280}
-                      height={720}
-                      sizes="(max-width: 1023px) 100vw, 45vw"
-                      className="aspect-video h-auto w-full object-cover"
-                      priority
-                    />
-                  </Link>
-                ) : null}
-                <div className="self-start">
-                  <p className="text-sm text-muted-foreground">
-                    {talk.formatLabel} · {talk.venue} · {talk.eventDateLabel}
-                  </p>
-                  <h3 className="mt-3 text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.035em]">
-                    {talk.title}
-                  </h3>
-                  <p className="mt-4 max-w-[44rem] text-base leading-7 text-muted-foreground md:text-lg">
-                    {talk.description}
-                  </p>
-                  <EditorialLink href={talk.href} className="mt-3 min-h-11">
-                    {`Открыть ${talk.formatLabel.toLocaleLowerCase("ru-RU")}`}
-                  </EditorialLink>
-                </div>
-              </article>
-            ))}
+          {model.featuredTalk ? (
+            <div className="mt-7"><TalkSummary talk={model.featuredTalk} featured /></div>
+          ) : null}
+          <div className="mt-8 grid gap-x-10 gap-y-7 lg:grid-cols-2 lg:gap-x-12">
+            {otherTalks.map((talk) => <TalkSummary key={talk.entityId} talk={talk} />)}
           </div>
         </section>
 
-        <section className="border-b border-border py-10 md:py-12">
+        <section id="reading" className="scroll-mt-24 border-b border-border py-10 md:py-12">
+          <h2 className="text-2xl font-semibold tracking-[-0.03em]">
+            Публикации на внешних площадках
+          </h2>
+          <PublicationGroup id="authored-publications-heading" title="Авторские статьи" publications={authoredPublications} />
+          <PublicationGroup id="comment-publications-heading" title="Комментарии и интервью" publications={otherPublications} />
+        </section>
+
+        <section id="projects" className="scroll-mt-24 border-b border-border py-10 md:py-12">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">Открытые проекты</h2>
           <div className="mt-6 border-t border-border">
             {model.projects.map((project, index) => (
@@ -240,39 +345,6 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
                 <div className="flex flex-col items-start">
                   <EditorialLink href={project.href} className="min-h-11">Открыть проект</EditorialLink>
                   <ExternalEditorialLink href={project.repositoryUrl}>GitHub</ExternalEditorialLink>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="py-10 md:py-12">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">
-            Публикации на внешних площадках
-          </h2>
-          <div className="mt-6 border-t border-border">
-            {model.publications.map((publication) => (
-              <article
-                key={publication.entityId}
-                data-publication={publication.entityId}
-                className="grid gap-4 border-b border-border py-6 lg:grid-cols-[minmax(10rem,0.5fr)_minmax(0,1.5fr)] lg:gap-10"
-              >
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {publication.externalTypeLabel}<br />
-                  {publication.sourceName}<br />
-                  {publication.publishedLabel}
-                </p>
-                <div>
-                  <h3 className="text-xl font-semibold leading-7 tracking-[-0.025em]">
-                    {publication.title}
-                  </h3>
-                  <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
-                    {publication.excerpt}
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    {publication.participationLabel}
-                  </p>
-                  <ExternalEditorialLink href={publication.href}>Открыть публикацию</ExternalEditorialLink>
                 </div>
               </article>
             ))}
@@ -341,7 +413,10 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
   return (
     <EditorialShell currentPath="/about">
       <div className={`${frameClassName} py-10 md:py-16 lg:py-16`}>
-        <header className="grid gap-9 pb-12 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-10 md:pb-16 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(24rem,1.3fr)] lg:gap-16">
+        <header
+          data-about-intro
+          className={`grid gap-9 pb-12 md:gap-10 md:pb-16 lg:gap-16 ${model.photo ? "md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]" : ""}`}
+        >
           <div>
             <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.5rem]">
               {AUTHOR_PROFILE.name}
@@ -349,15 +424,31 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
             <p className="mt-4 text-base font-semibold text-primary">
               {AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}
             </p>
-          </div>
-          <div>
-            <p className="max-w-3xl text-base leading-7 text-muted-foreground">
+            <p className="mt-7 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8">
               {AUTHOR_PROFILE.aboutIntro}
             </p>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
+            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8">
               {AUTHOR_PROFILE.currentWork}
             </p>
           </div>
+          {model.photo ? (
+            <figure className="w-full max-w-md md:justify-self-end">
+              <Link href={model.photo.href} className="block aspect-[4/5] overflow-hidden">
+                <Image
+                  src={model.photo.path}
+                  alt={model.photo.alt}
+                  width={1280}
+                  height={720}
+                  sizes="(max-width: 767px) 100vw, 40vw"
+                  className="h-full w-full object-cover object-[40%_center]"
+                  priority
+                />
+              </Link>
+              <figcaption className="mt-3 text-sm leading-6 text-muted-foreground">
+                <Link href={model.photo.href} className="hover:text-primary hover:underline underline-offset-4">{model.photo.caption}</Link>
+              </figcaption>
+            </figure>
+          ) : null}
         </header>
 
         <section className={aboutSectionClassName}>

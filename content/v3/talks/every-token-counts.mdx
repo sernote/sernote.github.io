@@ -8,7 +8,7 @@ description: "Стрим об управлении контекстом и ра�
 publicationStatus: published
 reviewStatus: unreviewed
 publishedAt: "2026-05-27"
-updatedAt: "2026-08-14"
+updatedAt: "2026-09-05"
 reviewedAt: null
 reviewCycleDays: null
 topics:
@@ -19,17 +19,17 @@ topics:
   - agents
   - rag
 relations:
-  talkIds:
-    - bitrix24-ai-platform-podcast
-  projectIds:
-    - audit-prompt-caching
+  articleIds:
+    - sticky-sessions-vs-prefix-routing
+    - what-cache-router-knows
+    - kv-offload-economics
   platformEntityIds:
     - prefix-cache
 venue: "YouTube · Константин Доронин"
-eventDate: "2026-05-27"
+eventDate: "2026-06-04"
 format: stream
 recordingUrl: "https://www.youtube.com/watch?v=X71ZfXMKslo"
-recordingUploadedAt: "2026-05-27"
+recordingUploadedAt: null
 abstract: "Разговор о двух способах экономить токены в AI-агентах: управлении контекстом через RAG и семантический поиск, а также правильной работе с prefix cache."
 takeaways:
   - label: "Контекст AI Platform"
@@ -38,9 +38,9 @@ takeaways:
   - label: "Зачем нужен prefix cache"
     text: "Повторно используемый префикс сокращает стоимость и время обработки длинных запросов, если его структура остаётся стабильной."
     timestampSeconds: 3926
-  - label: "Три правила кэшируемого запроса"
-    text: "Статическую часть ставим первой, динамическую — в конец, а одинаковые данные сериализуем одинаково."
-    timestampSeconds: 4676
+  - label: "Три условия повторного использования"
+    text: "Префикс должен совпасть, запрос — попасть к доступному KV, а нужные блоки — сохраниться до повторного обращения."
+    timestampSeconds: 4684
   - label: "Effective cost"
     text: "Стоимость модели нужно считать с учётом цены кэшированных токенов и фактического cache hit rate."
     timestampSeconds: 5083
@@ -49,7 +49,10 @@ takeaways:
     timestampSeconds: 6327
   - label: "Аудит проекта"
     text: "audit-prompt-caching собирает проверяемые признаки проблем с кэшем и помогает не держать все правила провайдеров в голове."
-    timestampSeconds: 6572
+    timestampSeconds: 6565
+  - label: "Куда продолжить: KV offload"
+    text: "Общий кэш и перенос KV в память CPU продолжают тему собственного инференса, но требуют отдельной проверки совместимости и стоимости."
+    timestampSeconds: 6911
 slidesUrl: null
 thumbnail:
   path: "/media/talks/every-token-counts.jpg"
@@ -70,7 +73,11 @@ thumbnail:
 - как расположение динамических данных и порядок tools влияют на cache hit rate;
 - почему модель нужно сравнивать по effective cost с учётом кэшированных токенов;
 - какие метрики помогают искать cache misses;
-- как [audit-prompt-caching](/projects/audit-prompt-caching) собирает признаки проблемы в коде и конфигурации.
+- как [начать аудит проекта](/projects/audit-prompt-caching#first-audit) и собрать признаки проблемы в коде и конфигурации.
+
+## Продолжить после эфира
+
+[Глава о префиксном кэше](/ai-platform/components/prefix-cache) собирает общую модель и метрики. Дальше можно отдельно сравнить [sticky sessions с маршрутизацией по префиксу](/blog/sticky-sessions-vs-prefix-routing), разобрать [состояние кэш-роутера](/blog/what-cache-router-knows) или посчитать [экономику KV offload](/blog/kv-offload-economics).
 
 ## Смотреть
 

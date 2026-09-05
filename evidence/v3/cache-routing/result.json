@@ -1,0 +1,108 @@
+{
+  "synthetic": true,
+  "formula": "queueMs + remainingPrefillMs",
+  "excludes": [
+    "decode",
+    "network",
+    "GPU prediction",
+    "end-to-end latency"
+  ],
+  "cases": [
+    {
+      "name": "warm-replica-wins",
+      "input": {
+        "coldQueueMs": 100,
+        "coldPrefillMs": 600,
+        "warmPrefillMs": 80,
+        "prefixAvailable": true,
+        "warmQueueMs": 100
+      },
+      "result": {
+        "candidateA": {
+          "queueMs": 100,
+          "prefillMs": 80,
+          "totalMs": 180
+        },
+        "candidateB": {
+          "queueMs": 100,
+          "prefillMs": 600,
+          "totalMs": 700
+        },
+        "winner": "A",
+        "warmQueueBreakEvenMs": 620
+      }
+    },
+    {
+      "name": "cold-replica-wins",
+      "input": {
+        "coldQueueMs": 100,
+        "coldPrefillMs": 600,
+        "warmPrefillMs": 80,
+        "prefixAvailable": true,
+        "warmQueueMs": 900
+      },
+      "result": {
+        "candidateA": {
+          "queueMs": 900,
+          "prefillMs": 80,
+          "totalMs": 980
+        },
+        "candidateB": {
+          "queueMs": 100,
+          "prefillMs": 600,
+          "totalMs": 700
+        },
+        "winner": "B",
+        "warmQueueBreakEvenMs": 620
+      }
+    },
+    {
+      "name": "break-even-tie",
+      "input": {
+        "coldQueueMs": 100,
+        "coldPrefillMs": 600,
+        "warmPrefillMs": 80,
+        "prefixAvailable": true,
+        "warmQueueMs": 620
+      },
+      "result": {
+        "candidateA": {
+          "queueMs": 620,
+          "prefillMs": 80,
+          "totalMs": 700
+        },
+        "candidateB": {
+          "queueMs": 100,
+          "prefillMs": 600,
+          "totalMs": 700
+        },
+        "winner": "tie",
+        "warmQueueBreakEvenMs": 620
+      }
+    },
+    {
+      "name": "prefix-absent",
+      "input": {
+        "coldQueueMs": 100,
+        "coldPrefillMs": 600,
+        "warmPrefillMs": 80,
+        "prefixAvailable": false,
+        "warmQueueMs": 100
+      },
+      "result": {
+        "candidateA": {
+          "queueMs": 100,
+          "prefillMs": 600,
+          "totalMs": 700
+        },
+        "candidateB": {
+          "queueMs": 100,
+          "prefillMs": 600,
+          "totalMs": 700
+        },
+        "winner": "tie",
+        "warmQueueBreakEvenMs": 100
+      }
+    }
+  ]
+}

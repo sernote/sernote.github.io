@@ -54,7 +54,21 @@ const landingModel: PlatformLandingViewModel = Object.freeze({
     Object.freeze({ entityId: "prefix-cache", index: "02", title: "Prefix Cache", meta: "Компонент", href: "/ai-platform/components/prefix-cache", statusLabel: "Проверено" }),
     Object.freeze({ entityId: "agent-session-cache-reuse", index: "03", title: "Agent session cache reuse", meta: "Кейс", href: "/ai-platform/cases/agent-session-cache-reuse", statusLabel: "Синтетический кейс" }),
     Object.freeze({ entityId: "audit-prompt-caching", index: "04", title: "audit-prompt-caching", meta: "Проект", href: "/projects/audit-prompt-caching", statusLabel: "Открытый проект" })
-  ])
+  ]),
+  introduction: Object.freeze({
+    entityId: "ai-platform-before-gpu", contentType: "article", title: "Исходный заголовок введения",
+    description: "Введение", meta: "Авторская статья", href: "/blog/ai-platform-before-gpu", linkKind: "internal"
+  }),
+  questions: Object.freeze([
+    ["shared-pool", "/blog/hybrid-reasoners-in-production"],
+    ["cache-latency", "/ai-platform/components/prefix-cache#метрики"],
+    ["replica-choice", "/ai-platform/components/prefix-cache#experiment"],
+    ["prompt-drift", "/ai-platform/cases/agent-session-cache-reuse"]
+  ].map(([id, href]) => Object.freeze({
+    id, entityId: id, contentType: "article" as const, title: `Источник ${id}`,
+    question: `Вопрос ${id}`, outcome: `Разбор ${id}`, action: `Открыть ${id}`,
+    description: "Описание", meta: "Формат", href, linkKind: "internal" as const
+  })))
 });
 
 const primaryArea: ReferenceBreadcrumbItemViewModel = Object.freeze({
@@ -104,23 +118,44 @@ function count(html: string, pattern: RegExp): number {
 }
 
 describe("v3.1 AI Platform landing", () => {
-  it("contains the complete beginner-to-reference entry without a technology winner", () => {
+  it("puts direct answers and the complete reading sequence before the planned map", () => {
     const html = renderToStaticMarkup(
       createElement(AiPlatformPageContent, { model: landingModel, mapModel })
     );
 
     expect(count(html, /<main\b/g)).toBe(1);
     expect(count(html, /<h1\b/g)).toBe(1);
-    expect(count(html, /data-platform-signal=/g)).toBe(6);
-    expect(count(html, /data-maturity-step=/g)).toBe(5);
-    expect(count(html, /data-execution-mode=/g)).toBe(3);
-    expect(count(html, /data-situational-entry=/g)).toBe(4);
+    expect(count(html, /data-platform-question=/g)).toBe(4);
     expect(count(html, /data-platform-area-summary=/g)).toBe(7);
     expect(count(html, /data-vertical-node=/g)).toBe(4);
     expect(html).toContain('data-platform-hero=""');
-    expect(html).toContain("без универсального победителя");
     expect(html).toContain('href="/ai-platform/map"');
     expect(html).toContain('href="/blog/ai-platform-before-gpu"');
+    expect(html).toContain("Исходный заголовок введения");
+    for (const question of landingModel.questions ?? []) {
+      const section = html.match(new RegExp(`<a[^>]*data-platform-question="${question.id}"[\\s\\S]*?<\\/a>`))?.[0] ?? "";
+      expect(section).not.toBe("");
+      expect(section).toContain(`href="${question.href}"`);
+      expect(section).toContain(question.question);
+      expect(section).toContain(question.outcome);
+    }
+    expect(html.indexOf('id="handbook-questions"')).toBeLessThan(html.indexOf('id="current-vertical"'));
+    expect(html.indexOf('id="current-vertical"')).toBeLessThan(html.indexOf('id="platform-areas-heading"'));
+    expect(html).toContain("Синтетический кейс");
+    expect(count(html, /data-platform-area-status="Запланировано"/g)).toBe(6);
+  });
+
+  it("omits empty optional entry blocks and exposes stale reference status", () => {
+    const html = renderToStaticMarkup(createElement(AiPlatformPageContent, {
+      model: { ...landingModel, questions: [], introduction: null,
+        vertical: landingModel.vertical.map((node) => node.entityId === "prefix-cache"
+          ? { ...node, statusLabel: "Нужна проверка" as const } : node) }, mapModel
+    }));
+    expect(html).not.toContain('id="handbook-questions"');
+    expect(html).not.toContain('href="#handbook-questions"');
+    expect(html).not.toContain('href="/blog/ai-platform-before-gpu"');
+    expect(html).toContain("Нужна проверка");
+    expect(count(html, /data-vertical-node=/g)).toBe(4);
   });
 });
 
@@ -160,11 +195,11 @@ describe("v3.1 AI Platform reference shells", () => {
     );
 
     expect(html[0]).toContain('data-reference-type="platform-area"');
-    expect(html[0]).toContain("Граница области");
+    expect(html[0]).not.toContain('aria-label="Назначение и граница"');
     expect(html[1]).toContain('data-reference-type="platform-component"');
-    expect(html[1]).toContain("Ответственность компонента");
+    expect(html[1]).not.toContain('aria-label="Назначение и граница"');
     expect(html[2]).toContain('data-reference-type="case"');
-    expect(html[2]).toContain("Доказательная граница кейса");
+    expect(html[2]).not.toContain('aria-label="Назначение и граница"');
     for (const output of html) {
       const text = output.replace(/<[^>]+>/g, "");
       expect(text).toContain("Автор — Сергей Нотевский");

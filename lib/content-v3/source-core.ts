@@ -1,7 +1,10 @@
+import type { ReactNode } from "react";
 import type { MDXContent } from "mdx/types";
 
 import { createRegistry, type Locale, type V3Type } from "./registry";
 import type { V3Frontmatter, V3PlatformArea } from "./schema";
+
+export type ContentToc = readonly Readonly<{ title: ReactNode; url: string; depth: number }>[];
 
 type GeneratedV3Entry = {
   body: MDXContent;
@@ -9,7 +12,7 @@ type GeneratedV3Entry = {
     path?: string;
     fullPath?: string;
   };
-  toc?: unknown;
+  toc?: ContentToc;
   structuredData?: unknown;
   _exports?: unknown;
   extractedReferences?: unknown;
@@ -20,6 +23,7 @@ type GeneratedV3Entry = {
 export type V3SourceItem<T extends V3Frontmatter = V3Frontmatter> = T & {
   body: MDXContent;
   sourcePath: string;
+  toc: ContentToc;
 };
 
 export type V3RouteParam = {
@@ -40,6 +44,7 @@ type NormalizedEntry = {
   metadata: Record<string, unknown>;
   body: MDXContent;
   sourcePath: string;
+  toc: ContentToc;
 };
 
 const GENERATED_RUNTIME_KEYS = [
@@ -72,7 +77,7 @@ function normalizeEntry<T extends GeneratedV3Entry>(entry: T): NormalizedEntry {
     delete metadata[key];
   }
 
-  return { metadata, body: entry.body, sourcePath: safeSourcePath(entry.info) };
+  return { metadata, body: entry.body, sourcePath: safeSourcePath(entry.info), toc: Object.freeze([...(entry.toc ?? [])]) };
 }
 
 function sourceIdentity(record: Pick<V3Frontmatter, "type" | "locale" | "entityId">): string {
@@ -95,7 +100,7 @@ export function createV3Source<T extends GeneratedV3Entry>(entries: readonly T[]
       throw new Error(`Missing generated source entry for ${sourceIdentity(record)}`);
     }
     return Object.freeze(
-      Object.assign({}, record, { body: entry.body, sourcePath: entry.sourcePath })
+      Object.assign({}, record, { body: entry.body, sourcePath: entry.sourcePath, toc: entry.toc })
     );
   }
 

@@ -1,6 +1,7 @@
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
+import { CacheRoutingLab } from "@/components/tools/cache-routing-lab";
 import { Callout } from "@/components/handbook/callout";
 import { Checklist } from "@/components/handbook/checklist";
 import { DecisionMatrix } from "@/components/handbook/decision-matrix";
@@ -12,6 +13,7 @@ export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
     Callout,
+    CacheRoutingLab,
     Checklist,
     DecisionMatrix,
     FlowDiagram,

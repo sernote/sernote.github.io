@@ -61,7 +61,7 @@ describe("v3.1 public content evidence", () => {
       "До перехода в продуктовую роль я уже несколько лет работал на технической стороне продукта. После выхода ChatGPT начал разрабатывать и внедрять AI-сценарии. В 2024 году к этой работе добавились продуктовая роль и AI-евангелизм в Битрикс24. В 2025-м я перешёл в разработку CoPilot, а сейчас руковожу AI Platform."
     );
     expect(AUTHOR_PROFILE.sitePurpose).toEqual([
-      "Здесь я разбираю задачи, с которыми сталкиваюсь в работе: локальный инференс, устройство control plane, качество моделей и агентов, capacity, стоимость и кэширование.",
+      "Здесь я разбираю задачи, с которыми сталкиваюсь в работе: локальный инференс, устройство контура управления, качество моделей и агентов, планирование мощностей, стоимость и кэширование.",
       "Одни темы становятся статьями или докладами. Другие превращаются в код: так появился audit-prompt-caching. Большие разборы постепенно складываются в раздел AI Platform."
     ]);
     expect(AUTHOR_PROFILE.channelName).toBe("AI да парень!");
@@ -116,7 +116,7 @@ describe("v3.1 public content evidence", () => {
     expect(Object.isFrozen(AUTHOR_PROFILE.sitePurpose)).toBe(true);
   });
 
-  it("keeps the exact compact native workload note", () => {
+  it("keeps the compact workload note identity, publication date and reading connections", () => {
     const noteText = readRequiredFile(
       join(process.cwd(), "content/v3/blog/workload-shape-over-model-name.mdx")
     );
@@ -124,13 +124,9 @@ describe("v3.1 public content evidence", () => {
     expect(noteText).toContain("entityId: workload-shape-over-model-name");
     expect(noteText).toContain("editorialFormat: note");
     expect(noteText).toContain('publishedAt: "2026-08-02"');
-    expect(noteText).toContain('updatedAt: "2026-08-02"');
-    expect(noteText).toContain(
-      "Название модели почти ничего не говорит о том, как будет работать конкретный сервис."
-    );
-    expect(noteText).toContain(
-      "Подробнее границы этого решения разобраны в [Inference Plane](/ai-platform/areas/inference-plane)."
-    );
+    expect(noteText).toContain('updatedAt: "2026-09-05"');
+    expect(noteText).toContain("(/blog/hybrid-reasoners-in-production/)");
+    expect(noteText).toContain("(/ai-platform/areas/inference-plane/)");
     expect(noteText.match(/^## /gm)).toBeNull();
   });
 

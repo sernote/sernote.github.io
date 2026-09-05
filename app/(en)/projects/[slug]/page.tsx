@@ -52,7 +52,7 @@ export default async function ProjectPage({
   const facts: DetailFact[] = [
     ...(release
       ? [
-          { label: "Версия", value: release.version }
+          { label: "Стабильный релиз", value: release.version }
         ]
       : []),
     { label: "Лицензия", value: "MIT" }
@@ -73,7 +73,10 @@ export default async function ProjectPage({
         lead={record.description}
         authorHref="/about"
         facts={facts}
-        primaryAction={{ label: "Открыть на GitHub", href: record.repositoryUrl, external: true }}
+        primaryAction={record.entityId === "audit-prompt-caching"
+          ? { label: "Повторить пример", href: "#first-audit" }
+          : { label: "Открыть на GitHub", href: record.repositoryUrl, external: true }}
+        toc={record.toc}
         related={related}
         contactLabel="Обсудить проект"
       >

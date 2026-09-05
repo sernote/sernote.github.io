@@ -295,6 +295,18 @@ const v3Source = {
       .filter((record) => record.type !== "article" || record.kind === "native")
 } as V3Source;
 
+const cacheArticle = nativeArticle("cache-locality-is-a-routing-problem", "article", "2026-09-05");
+const discoverySource: V3Source = {
+  ...v3Source,
+  listPublic: (type, locale) => [
+    ...v3Source.listPublic(type, locale),
+    ...((type === undefined || type === "article") && (locale === undefined || locale === "ru")
+      ? [cacheArticle]
+      : [])
+  ],
+  listFeatured: (type, locale) => discoverySource.listPublic(type, locale)
+};
+
 function replacePublicEntity(
   source: V3Source,
   entityId: string,
@@ -405,6 +417,83 @@ describe("v3.1 personal-page view models", () => {
     expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);
   });
 
+  it("builds ordered reading selections without changing external canonical URLs or native chronology", () => {
+    const model = getBlogViewModel(discoverySource);
+    const externalCost = publicEntity("effective-cost-habr");
+
+    expect(model.selected?.map(({ entityId }) => entityId)).toEqual([
+      "hybrid-reasoners-in-production",
+      "cache-locality-is-a-routing-problem",
+      "effective-cost-habr"
+    ]);
+    expect(model.journey?.map(({ entityId }) => entityId)).toEqual([
+      "workload-shape-over-model-name",
+      "hybrid-reasoners-in-production",
+      "cache-locality-is-a-routing-problem",
+      "effective-cost-habr"
+    ]);
+    if (externalCost.type !== "article") throw new Error("Expected external article fixture");
+    expect(model.selected?.at(-1)).toMatchObject({
+      href: externalCost.sourceUrl,
+      sourceName: externalCost.sourceName,
+      linkKind: "external"
+    });
+    expect(model.items.map(({ entityId }) => entityId)).toEqual([
+      "cache-locality-is-a-routing-problem",
+      "hybrid-reasoners-in-production",
+      "workload-shape-over-model-name",
+      "ai-platform-before-gpu",
+      "roles-in-llm-prompts"
+    ]);
+    expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
+    expect(Object.isFrozen(model.selected)).toBe(true);
+    expect(Object.isFrozen(model.journey)).toBe(true);
+    expect(model.selected?.every(Object.isFrozen)).toBe(true);
+    expect(model.journey?.every(Object.isFrozen)).toBe(true);
+  });
+
+  it.each([
+    ["draft", { publicationStatus: "draft" }],
+    ["archived", { publicationStatus: "archived" }],
+    ["stale", { reviewStatus: "stale" }],
+    ["comment", { externalType: "expert-comment" }],
+    ["wrong type", { type: "talk" }]
+  ])("excludes a %s reading choice even when the source features it", (_label, patch) => {
+    const source = replacePublicEntity(discoverySource, "effective-cost-habr", {
+      ...publicEntity("effective-cost-habr"),
+      ...patch
+    } as V3SourceItem);
+    const model = getBlogViewModel(source);
+
+    expect(model.selected?.map(({ entityId }) => entityId)).toEqual([
+      "hybrid-reasoners-in-production", "cache-locality-is-a-routing-problem"
+    ]);
+    expect(model.journey?.map(({ entityId }) => entityId)).toEqual([
+      "workload-shape-over-model-name", "hybrid-reasoners-in-production", "cache-locality-is-a-routing-problem"
+    ]);
+  });
+
+  it("requires reading choices to be both public and featured, and omits a one-step journey", () => {
+    for (const method of ["listPublic", "listFeatured"] as const) {
+      const source: V3Source = {
+        ...discoverySource,
+        [method]: (...args: Parameters<V3Source["listPublic"]>) => discoverySource[method](...args)
+          .filter(({ entityId }) => entityId !== "effective-cost-habr")
+      };
+      const model = getBlogViewModel(source);
+      expect(model.selected?.some(({ entityId }) => entityId === "effective-cost-habr")).toBe(false);
+      expect(model.journey?.some(({ entityId }) => entityId === "effective-cost-habr")).toBe(false);
+    }
+
+    let source = discoverySource;
+    for (const entityId of ["hybrid-reasoners-in-production", "cache-locality-is-a-routing-problem", "effective-cost-habr"]) {
+      source = replacePublicEntity(source, entityId, null);
+    }
+    const model = getBlogViewModel(source);
+    expect(model.selected).toEqual([]);
+    expect(model.journey).toEqual([]);
+  });
+
   it("builds complete Materials groups and keeps external publications newest first without local routes", () => {
     const model = getMaterialsViewModel(v3Source);
     const publicTalks = v3Source.listPublic("talk", "ru");
@@ -436,6 +525,45 @@ describe("v3.1 personal-page view models", () => {
     }
   });
 
+  it("resolves the featured recording from the complete talk list and preserves recording destinations", () => {
+    const model = getMaterialsViewModel(v3Source);
+
+    expect(model.featuredTalk).toBe(model.talks[0]);
+    expect(model.featuredTalk?.entityId).toBe("bitrix24-ai-platform-podcast");
+    expect(model.featuredTalk?.recordingUrl).toBe("https://www.youtube.com/watch?v=vFleE0MLh_w");
+    for (const talk of model.talks) {
+      const record = publicEntity(talk.entityId);
+      if (record.type !== "talk") throw new Error("Expected talk fixture");
+      expect(talk.recordingUrl).toBe(record.recordingUrl);
+    }
+    expect(Object.isFrozen(model.featuredTalk)).toBe(true);
+
+    const noRecording = getMaterialsViewModel(replacePublicEntity(v3Source, "bitrix24-ai-platform-podcast", {
+      ...publicEntity("bitrix24-ai-platform-podcast"), recordingUrl: null
+    } as V3SourceItem));
+    expect(noRecording.featuredTalk?.recordingUrl).toBeNull();
+    expect(noRecording.featuredTalk?.recordingLabel).toBeNull();
+  });
+
+  it("omits an unavailable featured recording while preserving the remaining public catalogue", () => {
+    const entityId = "bitrix24-ai-platform-podcast";
+    for (const patch of [{ publicationStatus: "draft" }, { publicationStatus: "archived" }, { reviewStatus: "stale" }]) {
+      const source = replacePublicEntity(v3Source, entityId, { ...publicEntity(entityId), ...patch } as V3SourceItem);
+      expect(getMaterialsViewModel(source).featuredTalk).toBeNull();
+    }
+    for (const method of ["listPublic", "listFeatured"] as const) {
+      const source: V3Source = {
+        ...v3Source,
+        [method]: (...args: Parameters<V3Source["listPublic"]>) => v3Source[method](...args).filter((record) => record.entityId !== entityId)
+      };
+      const model = getMaterialsViewModel(source);
+      expect(model.featuredTalk).toBeNull();
+      expect(model.talks.map((talk) => talk.entityId)).toEqual(source.listPublic("talk", "ru")
+        .sort((left, right) => left.type === "talk" && right.type === "talk" ? right.eventDate.localeCompare(left.eventDate) : 0)
+        .map((record) => record.entityId));
+    }
+  });
+
   it("resolves the three selected About evidence items from public source entities", () => {
     const model = getAboutViewModel(v3Source);
     const publicIds = new Set(
@@ -446,16 +574,45 @@ describe("v3.1 personal-page view models", () => {
     expect(model.evidence.every(({ entityId }) => publicIds.has(entityId))).toBe(true);
   });
 
+  it("derives the About photo, caption and destination from the eligible talk", () => {
+    const entityId = "llm-selection-ural-digital-weekend";
+    const source = replacePublicEntity(v3Source, entityId, {
+      ...publicEntity(entityId),
+      thumbnail: {
+        path: "/media/talks/ural-speaker.jpg",
+        alt: "Сергей выступает на Ural Digital Weekend",
+        sourceUrl: "https://example.com/ural-speaker.jpg",
+        capturedAt: "2026-08-15"
+      }
+    } as V3SourceItem);
+    const model = getAboutViewModel(source);
+
+    expect(model.photo).toEqual({
+      path: "/media/talks/ural-speaker.jpg",
+      alt: "Сергей выступает на Ural Digital Weekend",
+      caption: "Ural Digital Weekend 2025 · Пермь · 1 августа 2025 года",
+      href: "/talks/llm-selection-ural-digital-weekend"
+    });
+    expect(Object.isFrozen(model.photo)).toBe(true);
+    expect(model.evidence.map(({ entityId }) => entityId)).toEqual(ABOUT_EVIDENCE_IDS);
+
+    for (const patch of [{ publicationStatus: "draft" }, { publicationStatus: "archived" }, { reviewStatus: "stale" }, { thumbnail: null }]) {
+      const record = source.listPublic("talk", "ru").find((item) => item.entityId === entityId)!;
+      expect(getAboutViewModel(replacePublicEntity(source, entityId, { ...record, ...patch } as V3SourceItem)).photo).toBeNull();
+    }
+    for (const method of ["listPublic", "listFeatured"] as const) {
+      expect(getAboutViewModel({
+        ...source,
+        [method]: (...args: Parameters<V3Source["listPublic"]>) => source[method](...args).filter((record) => record.entityId !== entityId)
+      }).photo).toBeNull();
+    }
+    expect(getAboutViewModel(v3Source).photo).toBeNull();
+  });
+
   it("fails closed when a mandatory selection is missing or ineligible", () => {
-    expect(() =>
-      getHomeViewModel(withoutHomeSurface(v3Source, "blog"))
-    ).toThrow(/home surface blog.*no published items/i);
-    expect(() =>
-      getHomeViewModel(withoutHomeSurface(v3Source, "materials"))
-    ).toThrow(/home surface materials.*no published items/i);
-    expect(() =>
-      getHomeViewModel(withoutHomeSurface(v3Source, "ai-platform"))
-    ).toThrow(/home surface ai-platform.*no published items/i);
+    for (const surface of ["blog", "materials", "ai-platform"] as const) {
+      expect(getHomeViewModel(withoutHomeSurface(v3Source, surface)).featured.some((entry) => entry.surface === surface)).toBe(false);
+    }
 
     const draftProject = {
       ...publicEntity("audit-prompt-caching"),

@@ -75,6 +75,7 @@ export default async function ArticlePage({
         publishedAt={record.publishedAt!}
         updatedAt={record.updatedAt}
         compactIntro={isNote}
+        toc={record.toc}
         related={related}
         contactLabel="Обсудить материал"
       >

@@ -45,8 +45,12 @@ const expectedKeepPaths = [
   "/ai-platform/map",
   "/blog",
   "/blog/ai-platform-before-gpu",
+  "/blog/cache-locality-is-a-routing-problem",
   "/blog/hybrid-reasoners-in-production",
+  "/blog/kv-offload-economics",
   "/blog/roles-in-llm-prompts",
+  "/blog/sticky-sessions-vs-prefix-routing",
+  "/blog/what-cache-router-knows",
   "/blog/workload-shape-over-model-name",
   "/materials",
   "/projects/audit-prompt-caching",
@@ -256,7 +260,7 @@ describe("public SEO URLs", () => {
     const urls = entries.map((entry) => entry.url);
 
     expect(urls).toEqual(expectedKeepPaths.map(canonicalUrl));
-    expect(urls).toHaveLength(19);
+    expect(urls).toHaveLength(23);
     expect(urls.every((url) => url.endsWith("/"))).toBe(true);
     expect(urls.some((url) => url.includes("habr.com"))).toBe(false);
     expect(urls).not.toContain("https://notevskii.tech/ru/");
@@ -381,6 +385,21 @@ describe("JSON-LD builders", () => {
         recordingUrl: "https://videos.example.com/watch?v=RHbbeHKGh6I"
       })
     ).toThrow(/supported YouTube URL/);
+  });
+
+  it("keeps breadcrumbs without inventing a video upload date from other dates", () => {
+    const data = buildTalkStructuredData({
+      ...talk,
+      recordingUploadedAt: null
+    });
+
+    expect(data.map((item) => item["@type"])).toEqual(["BreadcrumbList"]);
+    expect(data[0]["itemListElement"]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: talk.title, item: canonicalUrl("/talks/maas-vs-self-hosted") })
+      ])
+    );
+    expect(serializeJsonLd(data[0])).not.toContain("uploadDate");
   });
 
   it("uses verified release dates rather than editorial page dates for software", () => {

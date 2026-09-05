@@ -27,6 +27,7 @@ vi.mock("@/lib/content-v3/source", () => ({
       evidence: ["Публичный репозиторий"],
       supportBoundary: "Без support SLA.",
       privacyBoundary: "Используйте очищенные данные.",
+      toc: [{ title: "Первый полезный аудит", url: "#первый-полезный-аудит", depth: 2 }],
       body: () => null
     }),
     getRelatedForPage: () => []
@@ -54,5 +55,19 @@ describe("v3.1 project page", () => {
     expect(html).toContain("v0.1.3");
     expect(html).not.toContain("Релиз опубликован");
     expect(html).not.toContain("Проверено");
+  });
+
+  it("opens the first audit locally and renders the project's compiled contents", async () => {
+    const { default: ProjectPage } = await import("../../app/(en)/projects/[slug]/page");
+    const html = renderToStaticMarkup(await ProjectPage({
+      params: Promise.resolve({ slug: "audit-prompt-caching" })
+    }));
+
+    const action = html.match(/<a\b[^>]*href="#first-audit"[^>]*>[\s\S]*?<\/a>/)?.[0];
+    expect(action).toContain("Повторить пример");
+    expect(action).not.toContain("target=");
+    expect(html).toContain('aria-label="В этой статье"');
+    expect(html).toContain('href="#первый-полезный-аудит"');
+    expect(html).toContain("Стабильный релиз");
   });
 });

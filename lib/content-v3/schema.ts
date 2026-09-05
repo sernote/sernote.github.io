@@ -189,6 +189,14 @@ const platformComponentSchema = z
     ...sharedBaseShape,
     ...referenceEvidenceShape,
     type: z.literal("platform-component"),
+    section: nonEmptyText.optional(),
+    level: nonEmptyText.optional(),
+    status: z.enum(["draft", "published", "archived"]).optional(),
+    audience: z.array(nonEmptyText).min(1).optional(),
+    tags: z.array(nonEmptyText).optional(),
+    related: z.array(kebabCaseId).optional(),
+    published: calendarDate.nullable().optional(),
+    updated: calendarDate.optional(),
     slug: kebabCaseId,
     primaryAreaId: kebabCaseId,
     relatedAreaIds: z.array(kebabCaseId),
@@ -220,6 +228,17 @@ export const v3FrontmatterSchema = z
     caseSchema
   ])
   .superRefine((record, context) => {
+    if (record.type === "platform-component") {
+      const fields = ["section", "level", "status", "audience", "tags", "related", "published", "updated"] as const;
+      if (fields.some((field) => record[field] !== undefined)) {
+        for (const field of fields) {
+          if (record[field] === undefined) context.addIssue({ code: "custom", path: [field], message: "Chapter metadata must be complete" });
+        }
+        for (const [alias, canonical] of [["status", "publicationStatus"], ["published", "publishedAt"], ["updated", "updatedAt"]] as const) {
+          if (record[alias] !== record[canonical]) context.addIssue({ code: "custom", path: [alias], message: `Must match ${canonical}` });
+        }
+      }
+    }
     if (record.publicationStatus !== "draft" && record.publishedAt === null) {
       context.addIssue({
         code: "custom",

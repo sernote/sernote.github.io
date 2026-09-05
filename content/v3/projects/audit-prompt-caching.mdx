@@ -4,11 +4,11 @@ type: project
 locale: ru
 slug: audit-prompt-caching
 title: "audit-prompt-caching"
-description: "Открытый Codex skill и набор локальных скриптов, которые помогают искать вероятные причины промахов prompt, prefix и KV cache и собирать доказательства."
+description: "Открытый Codex skill и локальные Python-скрипты для первого воспроизводимого аудита prompt, prefix и KV cache."
 publicationStatus: published
 reviewStatus: unreviewed
 publishedAt: "2026-07-22"
-updatedAt: "2026-08-14"
+updatedAt: "2026-09-05"
 reviewedAt: null
 reviewCycleDays: null
 topics:
@@ -21,10 +21,10 @@ relations:
     - prefix-cache
 repositoryUrl: "https://github.com/sernote/audit-prompt-caching"
 verifiedRelease:
-  version: "v0.1.3"
-  publishedAt: "2026-07-20"
-  url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.3"
-  verifiedAt: "2026-07-22"
+  version: "v0.1.15"
+  publishedAt: "2026-08-24"
+  url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.15"
+  verifiedAt: "2026-09-05"
 audience:
   - "AI- и backend-инженеры, которые разбирают cache misses и длинный TTFT"
   - "Разработчики агентов с tools, MCP, compaction и многошаговыми сессиями"
@@ -34,49 +34,213 @@ privacyBoundary: "Для аудита используйте репрезент�
 evidence:
   - "Публичный репозиторий и MIT license"
   - "Dependency-free Python scripts и source-controlled fixtures"
-  - "Проверенный релиз v0.1.3 и закреплённый коммит для синтетического кейса"
-supportBoundary: "Результаты статического аудита нужно подтвердить по runtime telemetry."
+  - "Проверенный релиз v0.1.15 и закреплённый коммит чернового первого аудита"
+supportBoundary: "Статическая проверка находит место для расследования; вывод о cache reuse, задержке или экономии подтверждают по runtime telemetry и billing."
 ---
 
-`audit-prompt-caching` помогает найти, где повторяющиеся LLM-запросы теряют prefix cache. Он проверяет форму запросов, порядок сообщений и tools, динамические поля и маршрут до модели.
+`audit-prompt-caching` помогает пройти путь от «кэш будто бы перестал работать» до проверяемой гипотезы. Skill начинает с кода и конфигурации, которые собирают и маршрутизируют LLM-запрос, а затем сопоставляет форму входа с usage и runtime-наблюдениями, если они есть.
 
-В репозитории — Codex skill и небольшие Python-скрипты без сторонних зависимостей. Они работают с файлами проекта и сохранёнными запросами, а результат оформляют как гипотезы, которые можно проверить по telemetry.
+В [репозитории](https://github.com/sernote/audit-prompt-caching) лежат Codex skill и небольшие Python-скрипты без сторонних зависимостей. Они не подключаются к провайдеру и не захватывают трафик сами.
 
 ## Когда пригодится
 
-Используйте skill, если выросли стоимость или time to first token, поле cached tokens остаётся нулевым либо соседние шаги одной агентной сессии показывают разный cache hit.
+Начните аудит, если выросли стоимость или время до первого токена, provider usage перестал показывать чтение кэша либо соседние шаги одной агентной сессии ведут себя по-разному.
 
-Для проверки пригодятся код сборки запроса, два готовых payload, usage-данные или конфигурация маршрутизации. Если таких данных пока нет, skill подскажет, что собрать.
+Первый вопрос проще предполагаемой причины: совпадает ли начало двух запросов после настоящего шаблона и сериализации? Если оно расходится раньше стабильных инструкций, разбираться с роутером и вытеснением KV пока рано.
 
-## Что проверяет аудит
+<div id="first-audit" className="scroll-mt-28" />
 
-В исходниках skill ищет динамические timestamp и request identifiers в раннем префиксе, нестабильную сериализацию tools, изменение schema между шагами, перестановку system и user blocks, truncation и compaction.
+## Первый полезный аудит
 
-В конфигурации маршрутизации он проверяет причины потери локальности кэша: разные provider paths, replicas и правила распределения запросов.
+В [черновом PR № 21](https://github.com/sernote/audit-prompt-caching/pull/21) из ветки `codex/cache-first-audit` есть маленький пример с двумя обращениями в поддержку. PR пока не слит. В варианте «до» меняющийся контекст стоит первым:
 
-В usage-данных он сопоставляет cache fields, токены и latency. Это помогает отделить изменение payload от маршрутизации или вытеснения KV blocks.
+```text
+Request context:
+Timestamp: 2026-09-05T09:15:00Z
+Ticket: SUP-1042
+Customer message: The export has been running for twenty minutes.
 
-## Как запустить
+Task instructions:
+Review the support request.
+Return three sections: summary, likely cause, and next safe check.
+Do not invent system state.
+Call out evidence that is missing.
+Keep the answer under 120 words.
+```
 
-Установите skill:
+В варианте «после» те же строки переставлены: сначала идут стабильные инструкции, затем timestamp, ticket и сообщение клиента.
+
+```text
+Task instructions:
+Review the support request.
+Return three sections: summary, likely cause, and next safe check.
+Do not invent system state.
+Call out evidence that is missing.
+Keep the answer under 120 words.
+
+Request context:
+Timestamp: 2026-09-05T09:15:00Z
+Ticket: SUP-1042
+Customer message: The export has been running for twenty minutes.
+```
+
+Содержание сохранено, изменился только порядок. Для двух разных обращений скрипт получил такой результат:
+
+```text
+до:    stable=false, stable_prefix_bytes=43,  exit=1
+после: stable=false, stable_prefix_bytes=254, exit=1
+```
+
+`43 → 254` — длина общего начала двух отрендеренных файлов в UTF-8 байтах. Это не токены, не cache hit и не измеренная экономия. Код `1` здесь ожидаем: полные запросы по-прежнему различаются, потому что у них разные timestamp, ticket и сообщение.
+
+### Повторить по закреплённому коммиту
+
+На 5 сентября 2026 года PR открыт как draft и не слит. Поэтому команды явно закреплены за коммитом [`54f333f`](https://github.com/sernote/audit-prompt-caching/commit/54f333fd06fafc7a8428aab7242682548c5891af), а не за движущейся веткой или `main`:
+
+```bash
+git clone --no-checkout https://github.com/sernote/audit-prompt-caching.git audit-prompt-caching-pr21
+cd audit-prompt-caching-pr21
+git switch --detach 54f333fd06fafc7a8428aab7242682548c5891af
+python3 --version
+python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
+  examples/first-audit/before-a.txt examples/first-audit/before-b.txt
+python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
+  examples/first-audit/after-a.txt examples/first-audit/after-b.txt
+```
+
+Проверенный запуск использовал Python 3.14.3. Скрипты требуют Python 3.10 или новее. Оба сравнения печатают JSON и ожидаемо возвращают `exit 1`; полезные поля — `stable_prefix_bytes: 43` и `stable_prefix_bytes: 254`.
+
+Текущий проверенный стабильный релиз — [v0.1.15 от 24 августа 2026 года](https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.15). В его [README](https://github.com/sernote/audit-prompt-caching/blob/v0.1.15/README.md#quick-start) уже есть публичная команда установки skill:
 
 ```bash
 npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching
 ```
 
-Начните новую сессию Codex и вызовите его явно:
+Сам пошаговый пример и его четыре файла появились только в PR № 21. Пока PR не слит, используйте закреплённый коммит выше.
+
+Получили те же 43 и 254 байта — можно [перейти к своему проекту](#your-project): найти место сборки запроса и сравнить два обычных обращения одного сценария.
+
+<div id="your-project" className="scroll-mt-28" />
+
+## Проверить свой проект
+
+Начать можно без логов. Откройте проект в новой сессии Codex и укажите skill, код сборки запроса и границу маршрутизации:
 
 ```text
-Use $audit-prompt-caching to audit this repo for prompt-cache misses,
-unstable prompt prefixes, dynamic tools/schemas, routing issues,
-and deployment cache-locality problems.
+Use $audit-prompt-caching to audit this project. Start with the code and
+configuration that build and route LLM requests. Explain the first prefix
+divergence, decide whether a change is justified, and list the telemetry needed
+before claiming provider cache reuse, KV reuse, lower latency, or savings.
 ```
 
-Команда и остальные способы запуска описаны в [README](https://github.com/sernote/audit-prompt-caching#quick-start).
+Если приложение умеет сохранять точный отрендеренный вход, возьмите два запроса одного сценария с обычными изменениями времени, идентификатора или пользовательского сообщения:
 
-## Что получится
+```bash
+python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
+  path/to/render-a.txt path/to/render-b.txt
+```
 
-Skill покажет возможные места дрейфа и объяснит, какие payloads, route labels и usage fields нужны для проверки. Он не обещает найти одну автоматическую причину: cache miss может возникнуть в форме запроса, маршрутизации, политике провайдера или из-за вытеснения кэша.
+По умолчанию скрипт сравнивает исходные байты, поэтому замечает и порядок ключей JSON. Флаг `--canonical-json` уместен только тогда, когда сортировка ключей действительно входит в контракт приложения.
+
+Для полного разбора пригодятся четыре группы входов:
+
+| Вход | Что он помогает проверить |
+| --- | --- |
+| Prompt builders, tool registry, schemas, history и provider calls | Где меняется начало запроса и почему |
+| Два отрендеренных payload одного сценария | Первое байтовое расхождение после сериализации |
+| Provider usage и billing export | Было ли документированное чтение или запись кэша и как посчитана стоимость |
+| Router/deployment config и связанный trace | Куда попал запрос, что знал роутер и что произошло на worker |
+
+Удалите credentials, customer content, внутренние URL и идентификаторы либо замените их синтетическими значениями. Обоснованный вывод «изменение не требуется» тоже результат, если за ним стоят проверенные входы.
+
+<div id="provider-usage" className="scroll-mt-28" />
+
+## Данные провайдера: что доказывают поля API
+
+Одинаковое начало создаёт возможность для reuse, но не подтверждает его. Дальше нужен контракт конкретного API, модели и версии: названия cache read/write fields, минимальный пригодный префикс, TTL и правила тарификации различаются.
+
+| Наблюдение | Допустимый вывод | Чего оно не доказывает |
+| --- | --- | --- |
+| `stable_prefix_bytes` вырос | Два локальных файла дольше совпадают с начала | Совпадение токенов после шаблона или cache hit у провайдера |
+| Документированное поле чтения кэша имеет положительное значение | Провайдер сообщил чтение кэша в границах этого API-вызова | Причину промаха в другом запросе или состояние self-hosted KV |
+| Billing export содержит cached-input ставку и объём | Можно пересчитать стоимость по правилам этого экспорта | Снижение TTFT или экономию всей системы |
+| Связанный клиентский TTFT изменился | Изменился наблюдаемый путь до первого полезного токена | Что причиной был именно кэш без сопоставимого trace |
+
+Нулевое значение чтения или положительное значение создания кэша не подтверждает повторного использования. Версионные шпаргалки проекта помогают найти нужное поле, но перед точным выводом сверяйте официальную документацию провайдера. В стабильном v0.1.15 есть отдельные references для [OpenAI](https://github.com/sernote/audit-prompt-caching/blob/v0.1.15/audit-prompt-caching/references/openai.md), [Anthropic](https://github.com/sernote/audit-prompt-caching/blob/v0.1.15/audit-prompt-caching/references/anthropic.md), [Bedrock](https://github.com/sernote/audit-prompt-caching/blob/v0.1.15/audit-prompt-caching/references/bedrock.md) и других путей.
+
+<div id="routing-audit" className="scroll-mt-28" />
+
+## Аудит маршрутизации: связать решение и результат
+
+Вспомогательный скрипт из PR № 21 принимает нормализованный JSONL и соединяет `decision` с `outcome` по тройке `run_id`, `request_id`, `attempt_id`. Это не парсер сырых логов vllm-router: экспортёр должен сам определить границы измерений, источник и provenance.
+
+До подготовки экспорта проверьте endpoint, версию роутера и строку, которую реально получает политика. Она может оказаться ключом сессии или пустой строкой при непустом `messages`. Для потокового ответа отдельно сохраните клиентские признаки завершения: HTTP 200 и `success` circuit breaker их не заменяют. Эти границы разобраны в [статье о состоянии кэш-роутера](/blog/what-cache-router-knows). Скрипт ниже не восстанавливает отсутствующие события SSE из счётчиков HTTP.
+
+Команды ниже запускаются из каталога репозитория на том же закреплённом коммите PR № 21. Если пришли сразу в этот раздел, сначала [подготовьте checkout по инструкции первого аудита](#first-audit).
+
+Первый синтетический пример показывает reuse вместе с превышением заданного лимита клиентского TTFT:
+
+```bash
+python3 audit-prompt-caching/scripts/analyze_routing_logs.py \
+  fixtures/routing/slow-with-reuse.jsonl --attempt-ttft-limit-ms 500
+```
+
+```text
+status: ok
+join_status: matched
+reused_tokens: 900 из 1000 input tokens
+client_ttft_ms: 1200 при лимите 500
+reuse_with_ttft_violation: true
+exit: 0
+```
+
+Код `0` означает, что вход валиден и отчёт построен. Он не означает, что попытка уложилась в лимит. Неверный параметр или невалидный JSONL возвращает JSON со `status: error` и `exit 2`.
+
+Ещё две фикстуры фиксируют границы вывода:
+
+```bash
+python3 audit-prompt-caching/scripts/analyze_routing_logs.py \
+  fixtures/routing/within-limit.jsonl --attempt-ttft-limit-ms 500
+python3 audit-prompt-caching/scripts/analyze_routing_logs.py \
+  fixtures/routing/insufficient-evidence.jsonl --attempt-ttft-limit-ms 500
+```
+
+Обе команды возвращают `exit 0`. В первой `reuse_with_ttft_violation: false`; во второй нет outcome, поэтому `ttft_assessment` остаётся `unknown`, а `reuse_with_ttft_violation` — `null`. Прогноз `900/1000 characters` хранится отдельно от наблюдаемых `900/1000 tokens`, а worker прогноза — отдельно от фактически выбранного worker.
+
+Эти фикстуры проверяют контракт анализатора. Они не доказывают размещение кэша, причину задержки, преимущество политики, доступную ёмкость или результат production-развёртывания.
+
+<div id="router-observation" className="scroll-mt-28" />
+
+## Повторить наблюдение с реальным роутером
+
+В [черновом PR № 22](https://github.com/sernote/audit-prompt-caching/pull/22) есть отдельный пример: неизменённый vllm-router на коммите `1d10e71` и один синтетический HTTP-worker без модели и KV-кэша. На 5 сентября PR открыт и не слит; он продолжает PR № 21. Ссылки на пример ниже закреплены за коммитом `b53cd3f`.
+
+Пример отправляет три одинаковых chat-запроса. Два потока завершаются по контракту примера, в третьем worker намеренно пропускает завершающие события. В сохранённом прогоне все три ответа имеют HTTP 200 и дают три `success` в счётчике circuit breaker. Вход политики при этом пуст: chat-путь этой версии берёт `session_id` либо пустую строку; содержимое `messages` в него не попадает.
+
+Сначала получите версию с этим примером в отдельный каталог. В коммите первого аудита из PR № 21 его ещё нет:
+
+```bash
+git clone --no-checkout \
+  https://github.com/sernote/audit-prompt-caching.git audit-prompt-caching-pr22 &&
+cd audit-prompt-caching-pr22 &&
+git switch --detach b53cd3f3fc69f044952d99cd6046f274a80f1ee2
+```
+
+Команды сборки из инструкции ниже запускаются из этого каталога:
+
+- [Запустить пример](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/examples/router-observation/README.md): нужны Python 3.10+ и среда сборки Rust/Cargo. Сборка скачивает исходники и зависимости; сам прогон работает на `127.0.0.1`.
+- [Разобрать сохранённый прогон](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/examples/router-observation/recorded/2026-09-05/README.md): запросы и события SSE, журнал роутера, метрики, параметры запуска и хэши файлов.
+- [Собрать наблюдения своего развёртывания](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/docs/pilots/native-routing-capture.md): связать решение, попытку, worker и клиентский результат, сохранив пробелы в данных.
+
+Этот пример не создаёт нормализованный JSONL для анализатора выше. Он помогает проверить границы наблюдений; чтение KV, работа GPU и преимущество политики остаются за его пределами.
+
+Для реальной задачи есть [инструкция первого пилота](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/docs/pilots/README.md): закреплённая установка, путь от кода сборки запроса либо готового нормализованного экспорта и проверка результата. Успехом может быть найденная проблема, обоснованное отсутствие изменений или конкретное следующее измерение. Демонстрационный прогон не считается результатом пилота. Обратная связь добровольная; достаточно краткого итога без исходников, промптов и полных логов.
+
+## Обратная связь и продолжение
+
+В `main` пока нет шаблона первого аудита: он добавлен только в незамёрженный PR. Поэтому рабочий путь сейчас — [создать обычный GitHub Issue](https://github.com/sernote/audit-prompt-caching/issues/new?title=Audit%20feedback%3A%20), а структуру взять из [чернового шаблона на закреплённом commit](https://github.com/sernote/audit-prompt-caching/blob/54f333fd06fafc7a8428aab7242682548c5891af/.github/ISSUE_TEMPLATE/audit-result.md). Укажите версию, входы, результат или недостающее измерение; перед вложением примера удалите закрытые данные.
+
+Дальше полезны [полный walkthrough первого аудита](https://github.com/sernote/audit-prompt-caching/blob/54f333fd06fafc7a8428aab7242682548c5891af/examples/first-audit/README.md), [контракт routing evidence](https://github.com/sernote/audit-prompt-caching/blob/54f333fd06fafc7a8428aab7242682548c5891af/audit-prompt-caching/references/routing-evidence.md) и глава [«Префиксный кэш»](/ai-platform/components/prefix-cache). Разбор [«Тёплый кэш — ещё не быстрый ответ»](/blog/cache-locality-is-a-routing-problem) объясняет, почему высокий reuse может соседствовать с очередью.
 
 ## Claude for Open Source
 
@@ -84,10 +248,4 @@ Skill покажет возможные места дрейфа и объясн�
 
 Забавно, что в описании проекта на первом месте всё равно skill для Codex.
 
-## Данные
-
-Проект не захватывает live traffic и не подключается к провайдеру сам. Для аудита нужны сохранённые запросы, usage-данные или конфигурация маршрутизации. Перед запуском удалите customer content, credentials, идентификаторы и закрытые URL либо замените их синтетическими значениями.
-
-Результат статического аудита подтверждают по provider response fields, traces и billing export. Правила зависят от API и версии, поэтому перед изменением layout сверяйте документацию провайдера и проверяйте результат на повторяемой выборке. Проект распространяется по [лицензии MIT](https://github.com/sernote/audit-prompt-caching/blob/v0.1.3/LICENSE).
-
-Связанный reference-компонент: [Prefix Cache](/ai-platform/components/prefix-cache). Он объясняет ответственность и runtime signals, а проект даёт локальные проверки части request path.
+Проект распространяется по [лицензии MIT](https://github.com/sernote/audit-prompt-caching/blob/v0.1.15/LICENSE).

@@ -441,3 +441,15 @@ describe("v3 navigated path and URL safety", () => {
     expect(v3FrontmatterSchema.safeParse({ ...talk, thumbnail }).success).toBe(false);
   });
 });
+
+it("requires a complete, consistent chapter contract when any chapter field is supplied", () => {
+  const chapter = { ...platformComponent, section: "inference", level: "intermediate", status: platformComponent.publicationStatus, audience: ["Engineers"], tags: ["cache"], related: [], published: platformComponent.publishedAt, updated: platformComponent.updatedAt };
+  expect(v3FrontmatterSchema.safeParse(chapter).success).toBe(true);
+  for (const field of ["section", "level", "status", "audience", "tags", "related", "published", "updated"]) {
+    const partial: Record<string, unknown> = { ...chapter };
+    delete partial[field];
+    expect(v3FrontmatterSchema.safeParse(partial).success).toBe(false);
+  }
+  expect(v3FrontmatterSchema.safeParse({ ...chapter, updated: "2026-01-01" }).success).toBe(false);
+  expect(v3FrontmatterSchema.safeParse({ ...chapter, status: "archived" }).success).toBe(false);
+});

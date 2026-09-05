@@ -239,14 +239,21 @@ export function buildArticleStructuredData(
 
 export function buildTalkStructuredData(talk: V3Talk): readonly StructuredData[] {
   requirePublished(talk, "Talk");
-  if (
-    talk.recordingUrl === null ||
-    talk.recordingUploadedAt === null ||
-    talk.thumbnail === null
-  ) {
+  if (talk.recordingUrl === null || talk.thumbnail === null) {
     throw new Error(`Talk structured data requires verified recording evidence: ${talk.entityId}`);
   }
   const videoId = youtubeVideoId(talk.recordingUrl, talk.entityId);
+  const trail = breadcrumbs([
+    { name: "Главная", path: "/" },
+    { name: "Материалы", path: "/materials" },
+    { name: talk.title, path: getCanonicalUrl(talk) }
+  ]);
+
+  // Video rich results require the actual upload date. Event and editorial
+  // dates are different evidence; keep the page usable until upload is verified.
+  if (talk.recordingUploadedAt === null) {
+    return Object.freeze([trail]);
+  }
 
   const video = validated({
     "@context": "https://schema.org",
@@ -263,14 +270,7 @@ export function buildTalkStructuredData(talk: V3Talk): readonly StructuredData[]
     author: personReference()
   });
 
-  return Object.freeze([
-    video,
-    breadcrumbs([
-      { name: "Главная", path: "/" },
-      { name: "Материалы", path: "/materials" },
-      { name: talk.title, path: getCanonicalUrl(talk) }
-    ])
-  ]);
+  return Object.freeze([video, trail]);
 }
 
 export function buildProjectStructuredData(

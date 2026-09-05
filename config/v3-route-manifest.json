@@ -54,13 +54,37 @@
     "locale": "ru"
   },
   {
+    "source": "/blog/cache-locality-is-a-routing-problem",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/blog/hybrid-reasoners-in-production",
     "destination": null,
     "behavior": "keep",
     "locale": "ru"
   },
   {
+    "source": "/blog/kv-offload-economics",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/blog/roles-in-llm-prompts",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/blog/sticky-sessions-vs-prefix-routing",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
+    "source": "/blog/what-cache-router-knows",
     "destination": null,
     "behavior": "keep",
     "locale": "ru"
