@@ -630,13 +630,17 @@ describe("static export audit — production integration", () => {
   it.runIf(hasExport)("publishes each new article once with its author, canonical and feed entry", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
     const sitemapXml = readFileSync(join(outDir, "sitemap.xml"), "utf8");
-    for (const slug of ["sticky-sessions-vs-prefix-routing", "what-cache-router-knows", "kv-offload-economics"]) {
+    for (const [slug, dateModified] of [
+      ["sticky-sessions-vs-prefix-routing", "2026-09-05"],
+      ["what-cache-router-knows", "2026-09-06"],
+      ["kv-offload-economics", "2026-09-05"]
+    ]) {
       const url = `${ORIGIN}/blog/${slug}/`;
       const html = readFileSync(join(outDir, "blog", slug, "index.html"), "utf8");
       const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
         .map((match) => JSON.parse(match[1]));
       expect(data.find((item) => item["@type"] === "BlogPosting")).toMatchObject({
-        url, inLanguage: "ru", datePublished: "2026-09-05", dateModified: "2026-09-05",
+        url, inLanguage: "ru", datePublished: "2026-09-05", dateModified,
         author: { "@id": `${ORIGIN}/about/#person` }
       });
       expect(html.split(`<link rel="canonical" href="${url}"`).length - 1).toBe(1);
