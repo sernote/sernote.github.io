@@ -1878,14 +1878,14 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(talkText).not.toMatch(/слайдов (?:нет|не было)/i);
   });
 
-  it("separates the stable project release from its pinned draft walkthrough", () => {
+  it("keeps a usable project quick start and existing reader destinations", () => {
     const project = actualV3Source.getBySlug("project", "audit-prompt-caching", "ru");
     const projectText = readFileSync(
       join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"), "utf8"
     );
     expect(project).toMatchObject({
       publishedAt: "2026-07-22",
-      updatedAt: "2026-09-05",
+      updatedAt: "2026-09-06",
       verifiedRelease: {
         version: "v0.1.15",
         publishedAt: "2026-08-24",
@@ -1893,9 +1893,11 @@ describe("Talk and project exemplar editorial contract", () => {
         url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.15"
       }
     });
-    expect(projectText).toContain("git switch --detach 54f333fd06fafc7a8428aab7242682548c5891af");
-    expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/pull/21");
-    for (const anchor of ["first-audit", "your-project", "provider-usage", "routing-audit"]) {
+    expect(projectText).toContain("git clone --depth 1 https://github.com/sernote/audit-prompt-caching.git");
+    expect(projectText).toContain("examples/first-audit/before-a.txt examples/first-audit/before-b.txt");
+    expect(projectText).toContain("examples/first-audit/after-a.txt examples/first-audit/after-b.txt");
+    expect(projectText).not.toMatch(/git switch --detach|\/pull\/\d+/);
+    for (const anchor of ["first-audit", "your-project", "provider-usage", "routing-audit", "router-observation"]) {
       expect(projectText).toContain(`id="${anchor}"`);
     }
     expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/issues/new?");
@@ -1910,7 +1912,7 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(projectText).toContain(
       "https://claude.com/contact-sales/claude-for-oss"
     );
-    expect(projectText).toContain("В августе 2026 года");
+    expect(projectText).toMatch(/В\s+августе 2026 года/);
     expect(projectText).toContain("бесплатный Claude Max 20x на шесть месяцев");
     expect(projectText).toMatch(/skill[^.\n]*Codex|Codex[^.\n]*skill/i);
   });

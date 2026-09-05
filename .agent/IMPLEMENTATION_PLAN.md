@@ -2,7 +2,7 @@
 
 ## Current editorial work — September 2026
 
-The completed changes are pushed on `codex/cache-editorial-exemplar` in [draft PR 10](https://github.com/sernote/sernote.github.io/pull/10). The isolated PR source tree passed a frozen-lockfile install and full verification; the cumulative release review has no actionable blockers. The prior local hybrid-reasoners draft and local settings are excluded. Release evidence and handoff state: `.agent/SITE_RELEASE_QA_2026-09-05.md` and `.agent/STATUS.md`. Merging and production deployment remain separate from this handoff.
+The September baseline was merged in [PR 10](https://github.com/sernote/sernote.github.io/pull/10). The 6 September follow-up on `codex/project-page-editorial-fix` corrects the public project copy and the router article's practical outro: reader task and working installation first, detailed sources by link, no release-process narrative in the page. Implementation, command reproduction, editorial/integration review and full verification are complete; see `.agent/PROJECT_EDITORIAL_QA_2026-09-06.md`. The prior local hybrid-reasoners draft and local settings remain preserved in the original checkout. Hand off the correction through a feature PR; publication follows its merge.
 
 Continue the approved product audit and completed cache/author-discovery milestones. The current handbook entrance acceptance is recorded in `.agent/HANDBOOK_ENTRY_QA_2026-09-05.md`.
 
