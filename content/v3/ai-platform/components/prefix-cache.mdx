@@ -8,7 +8,7 @@ description: "Как сохранить повторное использова�
 publicationStatus: published
 reviewStatus: reviewed
 publishedAt: "2026-07-22"
-updatedAt: "2026-09-05"
+updatedAt: "2026-09-06"
 reviewedAt: "2026-09-05"
 reviewCycleDays: 90
 section: inference
@@ -24,7 +24,7 @@ related:
   - inference-plane
   - agent-session-cache-reuse
 published: "2026-07-22"
-updated: "2026-09-05"
+updated: "2026-09-06"
 topics:
   - prefix-cache
   - kv-cache
@@ -87,7 +87,7 @@ failureModes:
 
 | Задача | Куда перейти |
 | --- | --- |
-| Нестабильны инструкции, tools или schema | Начать с [первого аудита](/projects/audit-prompt-caching#first-audit), затем воспроизвести [кейс с перестановкой инструментов](/ai-platform/cases/agent-session-cache-reuse) |
+| Меняются инструкции, описания инструментов или схемы | [Проверить кэш в своём проекте](/projects/audit-prompt-caching#your-project), затем воспроизвести [кейс с перестановкой инструментов](/ai-platform/cases/agent-session-cache-reuse) |
 | Непонятны правила API или поля usage | Разделить форму входа и [сигналы провайдера](/projects/audit-prompt-caching#provider-usage) |
 | Повтор попадает не на ту реплику или упирается в очередь | Сравнить [sticky sessions и маршрутизацию по префиксу](/blog/sticky-sessions-vs-prefix-routing), затем проверить границу в [учебном эксперименте](#experiment) |
 | Индекс KV отстаёт от событий или теряется после отказа | Разобрать, [что знает кэш-роутер](/blog/what-cache-router-knows), и подготовить вход для [аудита маршрута](/projects/audit-prompt-caching#routing-audit) |

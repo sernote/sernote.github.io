@@ -1900,7 +1900,7 @@ describe("Talk and project exemplar editorial contract", () => {
     for (const anchor of ["first-audit", "your-project", "provider-usage", "routing-audit", "router-observation"]) {
       expect(projectText).toContain(`id="${anchor}"`);
     }
-    expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/issues/new?");
+    expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/issues/new?template=audit-result.md");
   });
 
   it("records the Claude for Open Source grant as a project milestone", () => {

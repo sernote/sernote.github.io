@@ -2,7 +2,7 @@
 
 ## Current editorial work — September 2026
 
-The September baseline was merged in [PR 10](https://github.com/sernote/sernote.github.io/pull/10). The 6 September follow-up on `codex/project-page-editorial-fix` corrects the public project copy and the router article's practical outro: reader task and working installation first, detailed sources by link, no release-process narrative in the page. Implementation, command reproduction, editorial/integration review and full verification are complete; see `.agent/PROJECT_EDITORIAL_QA_2026-09-06.md`. The prior local hybrid-reasoners draft and local settings remain preserved in the original checkout. Hand off the correction through a feature PR; publication follows its merge.
+The September baseline and project-copy correction were merged in [PR 10](https://github.com/sernote/sernote.github.io/pull/10) and [PR 11](https://github.com/sernote/sernote.github.io/pull/11). The current follow-up on `codex/cache-audit-reader-path` aligns the project, cache articles and handbook with the approved own-project audit path and optional feedback. Implementation, source-link verification, independent review and full site verification are complete; see `.agent/CACHE_AUDIT_READER_PATH_QA_2026-09-06.md`. The prior local hybrid-reasoners draft and local settings remain preserved in the original checkout. Hand off this continuation through a feature PR; publication follows its merge.
 
 Continue the approved product audit and completed cache/author-discovery milestones. The current handbook entrance acceptance is recorded in `.agent/HANDBOOK_ENTRY_QA_2026-09-05.md`.
 

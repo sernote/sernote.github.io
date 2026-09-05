@@ -57,14 +57,14 @@ describe("v3.1 project page", () => {
     expect(html).not.toContain("Проверено");
   });
 
-  it("opens the first audit locally and renders the project's compiled contents", async () => {
+  it("opens the reader's own project audit and renders the project's compiled contents", async () => {
     const { default: ProjectPage } = await import("../../app/(en)/projects/[slug]/page");
     const html = renderToStaticMarkup(await ProjectPage({
       params: Promise.resolve({ slug: "audit-prompt-caching" })
     }));
 
-    const action = html.match(/<a\b[^>]*href="#first-audit"[^>]*>[\s\S]*?<\/a>/)?.[0];
-    expect(action).toContain("Повторить пример");
+    const action = html.match(/<a\b[^>]*href="#your-project"[^>]*>[\s\S]*?<\/a>/)?.[0];
+    expect(action).toContain("Проверить кэш в своём проекте");
     expect(action).not.toContain("target=");
     expect(html).toContain('aria-label="В этой статье"');
     expect(html).toContain('href="#первый-полезный-аудит"');
