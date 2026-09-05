@@ -2,7 +2,7 @@
 
 ## Current editorial work — September 2026
 
-The completed changes are prepared for the user-requested feature-branch push and draft PR on `codex/cache-editorial-exemplar`. The isolated PR source tree passed a frozen-lockfile install and full verification; the cumulative release review has no actionable blockers. The prior local hybrid-reasoners draft and local settings are excluded. Release evidence and handoff state: `.agent/SITE_RELEASE_QA_2026-09-05.md` and `.agent/STATUS.md`. Merging and production deployment remain separate from this handoff.
+The completed changes are pushed on `codex/cache-editorial-exemplar` in [draft PR 10](https://github.com/sernote/sernote.github.io/pull/10). The isolated PR source tree passed a frozen-lockfile install and full verification; the cumulative release review has no actionable blockers. The prior local hybrid-reasoners draft and local settings are excluded. Release evidence and handoff state: `.agent/SITE_RELEASE_QA_2026-09-05.md` and `.agent/STATUS.md`. Merging and production deployment remain separate from this handoff.
 
 Continue the approved product audit and completed cache/author-discovery milestones. The current handbook entrance acceptance is recorded in `.agent/HANDBOOK_ENTRY_QA_2026-09-05.md`.
 

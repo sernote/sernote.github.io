@@ -1,6 +1,6 @@
 # Editorial and cache-series release QA — 5 September 2026
 
-Status: verified and ready for a feature-branch push and draft PR. Production has not been deployed by this handoff.
+Status: verified and pushed in [draft PR 10](https://github.com/sernote/sernote.github.io/pull/10). Implementation commit: `f71261bd84a7bee356a9b5350a933844906a8fb9`; the following handoff update changes release documentation only. Production has not been deployed by this handoff.
 
 ## Scope
 
@@ -36,7 +36,7 @@ Results:
 
 The initial offline install lacked a cached tarball; a registry timeout during the first network attempt was resolved by retrying with lower concurrency. The lockfile stayed unchanged. The fresh build emitted the existing Fumadocs/webpack dynamic-import cache-dependency warning and completed successfully. Default pnpm dependency-script policy was unchanged.
 
-Release-status documentation was added after the successful verification; runtime, content and test files were not changed afterward. The staged source is compared against the verified tree before commit.
+Release-status documentation was added after the successful verification; runtime, content and test files were not changed afterward. All 57 staged files were compared byte-for-byte against the verified tree, including the subsequent release-status documentation, before the implementation commit. Protected working files retained their original hashes.
 
 ## Review and publication boundaries
 
