@@ -56,7 +56,7 @@ describe("AI Platform exemplar build-time structure gate", () => {
         headings: observed.headings.slice(1),
         markers: observed.markers
       })
-    ).toThrow(/missing.*Проблема и контекст/i);
+    ).toThrow(/missing.*Проблема/i);
   });
 
   it("fails closed when the synthetic case disclosure is missing", () => {

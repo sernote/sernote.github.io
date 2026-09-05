@@ -499,19 +499,19 @@ const workloadShapeNoteContract = {
   kind: "native",
   slug: "workload-shape-over-model-name",
   editorialFormat: "note",
-  title: "Workload shape важнее названия модели",
+  title: "Профиль нагрузки важнее названия модели",
   description:
-    "Почему модель и GPU нельзя выбирать по среднему RPS без распределения контекста, ответа, concurrency и cache reuse.",
+    "Что нужно знать о длине запросов и ответов, параллелизме и повторном использовании кэша до выбора модели и GPU.",
   publicationStatus: "published",
   reviewStatus: "unreviewed",
   publishedAt: "2026-08-02",
-  updatedAt: "2026-08-02",
+  updatedAt: "2026-09-05",
   reviewedAt: null,
   reviewCycleDays: null,
   topics: ["inference", "workload-shape", "capacity"],
   relations: { platformEntityIds: ["inference-plane"] },
   excerpt:
-    "Одинаковая модель ведёт себя по-разному на коротких чатах, длинном prefill и агентных циклах. Решение начинается с профиля запросов, а не с названия модели.",
+    "Одна модель может справляться с короткими чатами и собирать очередь на длинных документах. Прежде чем выбирать сервер, я бы разобрался, какие запросы ему предстоит обслуживать.",
   sourceName: null,
   sourceUrl: null,
   externalType: null,
@@ -520,14 +520,6 @@ const workloadShapeNoteContract = {
   supersedes: null,
   supersededBy: null
 } as const;
-
-const workloadShapeNoteBody = [
-  "Название модели почти ничего не говорит о том, как будет работать конкретный сервис. Одна и та же модель может уверенно обслуживать поток коротких чатов и упереться в очередь на длинных документах: prefill, decode, длина ответа и повторное использование KV cache нагружают runtime по-разному.",
-  "",
-  "Поэтому среднего RPS недостаточно. До выбора модели, GPU и схемы serving нужны хотя бы распределения входных и выходных токенов, concurrency, характер прихода запросов, latency-класс, возможность batching и фактический cache reuse. Для агента к этому добавляются число шагов и стабильность префикса между ними.",
-  "",
-  "Сравнивать варианты стоит на replay или синтетическом профиле, который сохраняет эту форму нагрузки. Название модели и спецификация ускорителя остаются входными данными, но решение подтверждает только измерение на целевом workload. Подробнее границы этого решения разобраны в [Inference Plane](/ai-platform/areas/inference-plane)."
-].join("\n");
 
 const hybridReasonersArticleContract = {
   entityId: "hybrid-reasoners-in-production",
@@ -687,6 +679,7 @@ function externalArticleSnapshot(record: V3SourceItem<V3Article>) {
   const sourceOwned: Record<string, unknown> = { ...record };
   delete sourceOwned.body;
   delete sourceOwned.sourcePath;
+  delete sourceOwned.toc;
   const document = actualV3Documents.find(
     (candidate) => candidate.sourcePath === record.sourcePath
   );
@@ -779,7 +772,6 @@ describe("v3 generated-entry source adapter", () => {
     expect(item?.sourcePath).toBe("blog/fumadocs-runtime-shape.mdx");
     for (const runtimeKey of [
       "info",
-      "toc",
       "structuredData",
       "_exports",
       "extractedReferences",
@@ -891,16 +883,11 @@ describe("v3 generated-entry source adapter", () => {
     ).toContain("prefix-cache");
   });
 
-  it("reads the exact compact native note and author profile from source files", () => {
+  it("reads the native note contract and author identity from source files", () => {
     const note = actualV3Source
       .listPublic("article", "ru")
       .find((record) => record.entityId === workloadShapeNoteContract.entityId);
-    const noteDocument = actualV3Documents.find(
-      (document) => document.sourcePath === "blog/workload-shape-over-model-name.mdx"
-    );
-
     expect(note).toMatchObject(workloadShapeNoteContract);
-    expect(noteDocument?.content).toBe(workloadShapeNoteBody);
 
     // The exact About copy contract lives in tests/content-v3/evidence.test.ts; here we only
     // lock the identity fields the source and SEO layers read.
@@ -1367,6 +1354,55 @@ describe("AI Platform map and reference view models", () => {
     expect(() => getPlatformMapViewModel(createV3Source(unexpected))).toThrow(/unexpected|canonical/i);
   });
 
+  it("resolves working questions to their actual articles and reference fragments", () => {
+    const source = createV3Source([...fixtures, article("hybrid-reasoners-in-production", {
+      slug: "pool-choice", title: "Source-owned pool title"
+    })]);
+    const model = getPlatformLandingViewModel(source);
+
+    expect(model.questions?.map(({ id, href }) => [id, href])).toEqual([
+      ["shared-pool", "/blog/pool-choice"],
+      ["cache-latency", "/ai-platform/components/prefix-cache#метрики"],
+      ["replica-choice", "/ai-platform/components/prefix-cache#experiment"],
+      ["prompt-drift", "/ai-platform/cases/agent-session-cache-reuse"]
+    ]);
+    expect(model.questions?.[0].title).toBe("Source-owned pool title");
+    expect(model.introduction?.href).toBe("/blog/ai-platform-before-gpu");
+    expect(Object.isFrozen(model.questions)).toBe(true);
+    expect(model.questions?.every(Object.isFrozen)).toBe(true);
+  });
+
+  it("omits a missing optional article without inventing a fallback question URL", () => {
+    const model = getPlatformLandingViewModel(createV3Source(fixtures));
+    expect(model.questions?.map(({ id }) => id)).toEqual([
+      "cache-latency", "replica-choice", "prompt-drift"
+    ]);
+    expect(model.vertical).toHaveLength(4);
+  });
+
+  it("keeps hidden picks out of questions while preserving the complete reference path", () => {
+    const source = createV3Source([...fixtures, article("hybrid-reasoners-in-production")]);
+    const model = getPlatformLandingViewModel({
+      ...source,
+      listFeatured: (type, locale) => source.listFeatured(type, locale).filter(
+        ({ entityId }) => !["prefix-cache", "agent-session-cache-reuse", "ai-platform-before-gpu"].includes(entityId)
+      )
+    });
+    expect(model.questions?.map(({ id }) => id)).toEqual(["shared-pool"]);
+    expect(model.introduction).toBeNull();
+    expect(model.vertical).toHaveLength(4);
+  });
+
+  it("does not recommend stale cache guidance but still labels it in the reference path", () => {
+    const source = createV3Source(fixtures.map((item) => item.entityId === "prefix-cache"
+      ? component("prefix-cache", "inference-plane", {
+        reviewStatus: "stale", reviewedAt: "2026-01-01", reviewCycleDays: 30
+      }) : item));
+    const model = getPlatformLandingViewModel(source);
+    expect(model.questions?.map(({ id }) => id)).toEqual(["prompt-drift"]);
+    expect(model.vertical.find(({ entityId }) => entityId === "prefix-cache")?.statusLabel).toBe("Нужна проверка");
+  });
+
   it("builds exactly two entry modes and the complete four-node pilot vertical", () => {
     const model = getPlatformLandingViewModel(createV3Source(fixtures));
 
@@ -1715,7 +1751,7 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(interviewDocument?.content).not.toContain("Проверенные источники");
   });
 
-  it("adds the token-economics stream with the real release date and Sergey start time", () => {
+  it("separates the stream event from editorial and unknown upload dates", () => {
     const stream = actualV3Source.getBySlug("talk", "every-token-counts", "ru");
     const streamDocument = actualV3Documents.find(
       (document) => document.sourcePath === "talks/every-token-counts.mdx"
@@ -1732,12 +1768,12 @@ describe("Talk and project exemplar editorial contract", () => {
       publicationStatus: "published",
       reviewStatus: "unreviewed",
       publishedAt: "2026-05-27",
-      updatedAt: "2026-08-14",
+      updatedAt: "2026-09-05",
       venue: "YouTube · Константин Доронин",
-      eventDate: "2026-05-27",
+      eventDate: "2026-06-04",
       format: "stream",
       recordingUrl: "https://www.youtube.com/watch?v=X71ZfXMKslo",
-      recordingUploadedAt: "2026-05-27",
+      recordingUploadedAt: null,
       thumbnail: {
         path: "/media/talks/every-token-counts.jpg",
         sourceUrl: "https://i.ytimg.com/vi/X71ZfXMKslo/maxresdefault.jpg",
@@ -1745,11 +1781,10 @@ describe("Talk and project exemplar editorial contract", () => {
       }
     });
     expect(stream.takeaways.map(({ timestampSeconds }) => timestampSeconds)).toEqual([
-      3614, 3926, 4676, 5083, 6327, 6572
+      3614, 3926, 4684, 5083, 6327, 6565, 6911
     ]);
     expect(stream.relations).toEqual({
-      talkIds: ["bitrix24-ai-platform-podcast"],
-      projectIds: ["audit-prompt-caching"],
+      articleIds: ["sticky-sessions-vs-prefix-routing", "what-cache-router-knows", "kv-offload-economics"],
       platformEntityIds: ["prefix-cache"]
     });
     expect(streamDocument?.content).toContain("## О чём стрим");
@@ -1758,9 +1793,9 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(streamDocument?.content).toContain("Мой блок — с [59:10]");
     expect(streamDocument?.content).toContain("&t=3550s");
     expect(streamDocument?.content).toContain(
-      "К AI Platform и prefix cache перехожу в [1:00:14]"
+      "&t=3614s"
     );
-    expect(streamDocument?.content).not.toContain("Проверенные источники");
+    expect(streamDocument?.content).toContain("/projects/audit-prompt-caching#first-audit");
   });
 
   it("adds the public AI Platform podcast as a concise local material", () => {
@@ -1843,34 +1878,27 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(talkText).not.toMatch(/слайдов (?:нет|не было)/i);
   });
 
-  it("keeps the project quick start, practical data boundary, and safe claim strength", () => {
+  it("separates the stable project release from its pinned draft walkthrough", () => {
+    const project = actualV3Source.getBySlug("project", "audit-prompt-caching", "ru");
     const projectText = readFileSync(
-      join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"),
-      "utf8"
+      join(process.cwd(), "content/v3/projects/audit-prompt-caching.mdx"), "utf8"
     );
-    const quickStart =
-      "npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-prompt-caching";
-
-    expect(projectText).toContain(quickStart);
-    expect(projectText).toContain('version: "v0.1.3"');
-    expect(projectText).toContain('publishedAt: "2026-07-20"');
-    expect(projectText).toContain('verifiedAt: "2026-07-22"');
-    expect(projectText).toContain("лицензии MIT");
-    expect(projectText).toContain("## Данные");
-    expect(projectText).toContain("## Когда пригодится");
-    expect(projectText).toContain("## Как запустить");
-    expect(projectText).toContain("## Что получится");
-    expect(projectText).not.toContain("## Для кого");
-    expect(projectText).not.toContain("## Быстрый старт");
-    expect(projectText).not.toContain("## Ограничения");
-    expect(projectText).not.toContain("## Проверенный снимок релиза");
-    expect(projectText).not.toContain("cbf216e73b0b49064e44e7a9ed1a174d1c5dbd23");
-    expect(projectText).not.toContain("support SLA");
-    expect(projectText).not.toContain("production guarantee");
-    expect(projectText).toContain("помогает найти");
-    expect(projectText).toContain("результат оформляют как гипотезы");
-    expect(projectText.match(/не захватывает live traffic/g)).toHaveLength(1);
-    expect(projectText).not.toMatch(/гарант(?:ирует|ирован)|всегда находит|данные никогда не/i);
+    expect(project).toMatchObject({
+      publishedAt: "2026-07-22",
+      updatedAt: "2026-09-05",
+      verifiedRelease: {
+        version: "v0.1.15",
+        publishedAt: "2026-08-24",
+        verifiedAt: "2026-09-05",
+        url: "https://github.com/sernote/audit-prompt-caching/releases/tag/v0.1.15"
+      }
+    });
+    expect(projectText).toContain("git switch --detach 54f333fd06fafc7a8428aab7242682548c5891af");
+    expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/pull/21");
+    for (const anchor of ["first-audit", "your-project", "provider-usage", "routing-audit"]) {
+      expect(projectText).toContain(`id="${anchor}"`);
+    }
+    expect(projectText).toContain("https://github.com/sernote/audit-prompt-caching/issues/new?");
   });
 
   it("records the Claude for Open Source grant as a project milestone", () => {
@@ -1886,4 +1914,24 @@ describe("Talk and project exemplar editorial contract", () => {
     expect(projectText).toContain("бесплатный Claude Max 20x на шесть месяцев");
     expect(projectText).toMatch(/skill[^.\n]*Codex|Codex[^.\n]*skill/i);
   });
+});
+
+it("preserves compiled heading anchors as runtime TOC data", () => {
+  const source = createV3Source([flattenedRuntimeEntry]);
+  expect(source.getBySlug("article", "fumadocs-runtime-shape", "ru")?.toc).toEqual(flattenedRuntimeEntry.toc);
+});
+it("offers a published cache reading path without inventing missing entries", () => {
+  const sparse = getBlogViewModel(createV3Source([flattenedRuntimeEntry]));
+  expect(sparse.readingPath).toEqual([]);
+  const source = createV3Source(readActualV3Documents().map((document) => entry(document.data, document.sourcePath)));
+  expect(getHomeViewModel(source).readingPath?.map((step) => step.href)).toEqual([
+    "/blog/cache-locality-is-a-routing-problem",
+    "/ai-platform/components/prefix-cache#experiment",
+    "/projects/audit-prompt-caching"
+  ]);
+});
+it("keeps the homepage usable when a small source has no materials or reference entries", () => {
+  const model = getHomeViewModel(createV3Source([flattenedRuntimeEntry]));
+  expect(model.featured.map((entry) => entry.surface)).toEqual(["blog"]);
+  expect(model.readingPath).toEqual([]);
 });

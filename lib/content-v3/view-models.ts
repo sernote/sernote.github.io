@@ -1,4 +1,4 @@
-import type { V3Source, V3SourceItem } from "./source-core";
+import type { ContentToc, V3Source, V3SourceItem } from "./source-core";
 import { getCanonicalUrl, type V3Type } from "./registry";
 
 export type V3ListItemViewModel = Readonly<{
@@ -17,7 +17,16 @@ export type ReferenceBreadcrumbItemViewModel = V3ListItemViewModel &
     slug: string;
   }>;
 
+export type ReadingStep = V3ListItemViewModel & Readonly<{ action: string; outcome: string }>;
+
+export type SelectedReading = V3ListItemViewModel & Readonly<{
+  reason: string;
+  label: string;
+  sourceName: string | null;
+}>;
+
 export type HomeViewModel = Readonly<{
+  readingPath?: readonly ReadingStep[];
   entrances: readonly Readonly<{
     id: "blog" | "materials" | "ai-platform";
     index: string;
@@ -55,6 +64,7 @@ export type TalkSummaryViewModel = Readonly<{
   formatLabel: string;
   description: string;
   recordingLabel: string | null;
+  recordingUrl?: string | null;
   thumbnail: { path: string; alt: string } | null;
   href: string;
 }>;
@@ -72,12 +82,14 @@ export type ProjectSummaryViewModel = Readonly<{
 
 export type MaterialsViewModel = Readonly<{
   talks: readonly TalkSummaryViewModel[];
+  featuredTalk?: TalkSummaryViewModel | null;
   projects: readonly ProjectSummaryViewModel[];
   publications: readonly ExternalPublicationViewModel[];
 }>;
 
 export type AboutViewModel = Readonly<{
   evidence: readonly V3ListItemViewModel[];
+  photo?: Readonly<{ path: string; alt: string; caption: string; href: string }> | null;
 }>;
 
 export type WorkViewModel = Readonly<{
@@ -103,6 +115,9 @@ export type BlogListItemViewModel = V3ListItemViewModel &
   }>;
 
 export type BlogViewModel = Readonly<{
+  readingPath?: readonly ReadingStep[];
+  selected?: readonly SelectedReading[];
+  journey?: readonly SelectedReading[];
   items: readonly BlogListItemViewModel[];
 }>;
 
@@ -137,7 +152,16 @@ export type PlatformMapViewModel = Readonly<{
   }>[];
 }>;
 
+export type PlatformQuestionViewModel = V3ListItemViewModel & Readonly<{
+  id: string;
+  question: string;
+  outcome: string;
+  action: string;
+}>;
+
 export type PlatformLandingViewModel = Readonly<{
+  questions?: readonly PlatformQuestionViewModel[];
+  introduction?: V3ListItemViewModel | null;
   entryModes: readonly Readonly<{
     id: "map" | "vertical";
     index: string;
@@ -156,12 +180,14 @@ export type PlatformLandingViewModel = Readonly<{
       | "Нужна проверка"
       | "Синтетический кейс"
       | "Открытый проект";
+    outcome?: string;
   }>[];
 }>;
 
 export type ReferenceContentType = "platform-area" | "platform-component" | "case";
 
 export type ReferenceDetailViewModel = Readonly<{
+  toc?: ContentToc;
   entityId: string;
   contentType: ReferenceContentType;
   title: string;
@@ -461,7 +487,7 @@ function belongsToHomeSurface(record: V3SourceItem, surface: HomeSurface): boole
   );
 }
 
-function selectLatestHomeItem(source: V3Source, surface: HomeSurface): V3SourceItem {
+function selectLatestHomeItem(source: V3Source, surface: HomeSurface): V3SourceItem | null {
   const candidates = source
     .listFeatured(undefined, "ru")
     .filter(
@@ -471,10 +497,7 @@ function selectLatestHomeItem(source: V3Source, surface: HomeSurface): V3SourceI
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
   const latest = candidates[0];
 
-  if (latest === undefined) {
-    throw new Error(`Home surface ${surface} has no published items`);
-  }
-  return latest;
+  return latest ?? null;
 }
 
 function homeItemLabel(record: V3SourceItem, surface: HomeSurface): string {
@@ -491,19 +514,33 @@ function homeItemLabel(record: V3SourceItem, surface: HomeSurface): string {
   return "AI Platform";
 }
 
+export function getCacheReadingPath(source: V3Source): readonly ReadingStep[] {
+  const choices = [
+    ["article", "cache-locality-is-a-routing-problem", "Читать разбор", "Почему тёплая реплика может ответить позже холодной.", ""],
+    ["platform-component", "prefix-cache", "Изменить условия", "Сравнить очередь и оставшуюся обработку входа в учебном примере.", "#experiment"],
+    ["project", "audit-prompt-caching", "Проверить свой запрос", "Найти изменения в начале запроса с помощью открытого линтера.", ""]
+  ] as const;
+  return Object.freeze(choices.flatMap(([type, id, action, outcome, anchor]) => {
+    const record = source.listFeatured(type, "ru").find((item) => item.entityId === id);
+    if (!record) return [];
+    return [Object.freeze({ ...normalizeListItem(record), href: `${getCanonicalUrl(record)}${anchor}`, action, outcome })];
+  }));
+}
+
 export function getHomeViewModel(source: V3Source): HomeViewModel {
   const featured: HomeViewModel["featured"] = Object.freeze(
-    (["blog", "materials", "ai-platform"] as const).map((surface) => {
+    (["blog", "materials", "ai-platform"] as const).flatMap((surface) => {
       const item = selectLatestHomeItem(source, surface);
-      return Object.freeze({
+      if (item === null) return [];
+      return [Object.freeze({
         surface,
         label: homeItemLabel(item, surface),
         item: normalizeListItem(item)
-      });
+      })];
     })
   );
 
-  return Object.freeze({ entrances: HOME_ENTRANCES, featured });
+  return Object.freeze({ entrances: HOME_ENTRANCES, featured, readingPath: getCacheReadingPath(source) });
 }
 
 export function getWorkViewModel(source: V3Source): WorkViewModel {
@@ -538,6 +575,83 @@ export function getWorkViewModel(source: V3Source): WorkViewModel {
   ]);
 
   return Object.freeze({ groups });
+}
+
+function findEligibleFeatured(
+  source: V3Source,
+  type: V3Type,
+  entityId: string
+): V3SourceItem | null {
+  const record = source.listPublic(type, "ru").find((candidate) => candidate.entityId === entityId);
+  if (
+    record === undefined ||
+    record.type !== type ||
+    record.publicationStatus !== "published" ||
+    record.reviewStatus === "stale" ||
+    !source.listFeatured(type, "ru").some((candidate) => candidate.type === type && candidate.entityId === entityId)
+  ) return null;
+
+  return record;
+}
+
+type ReadingChoice = readonly [entityId: string, label: string, reason: string];
+
+const BLOG_SELECTED_READINGS = [
+  [
+    "hybrid-reasoners-in-production",
+    "Когда одной модели нужен не один сервер",
+    "Разбираю, почему короткие ответы и длинные рассуждения мешают друг другу — и когда общий пул всё же разумен."
+  ],
+  [
+    "cache-locality-is-a-routing-problem",
+    "Как кэш меняет маршрутизацию",
+    "Совпавший префикс ещё не гарантирует быстрый ответ. Смотрю, как выбор реплики и очередь меняют результат."
+  ],
+  [
+    "effective-cost-habr",
+    "Что считать в стоимости модели",
+    "Сравниваю стоимость запросов с учётом попаданий в кэш. Цена миллиона токенов оказывается только частью расчёта."
+  ]
+] as const satisfies readonly ReadingChoice[];
+
+const BLOG_READING_JOURNEY = [
+  [
+    "workload-shape-over-model-name",
+    "Описать нагрузку",
+    "Длина входа и ответа, параллельные запросы и повторы задают требования к инференсу."
+  ],
+  [
+    "hybrid-reasoners-in-production",
+    "Выбрать общий или отдельный пул",
+    "Затем разбираю, когда разные запросы могут делить один пул, а когда начинают мешать друг другу."
+  ],
+  [
+    "cache-locality-is-a-routing-problem",
+    "Учесть кэш и очередь",
+    "Внутри пула смотрю на выбор реплики: что даст повторное использование префикса и сколько придётся ждать."
+  ],
+  [
+    "effective-cost-habr",
+    "Пересчитать стоимость",
+    "С учётом попаданий в кэш возвращаюсь к расчёту стоимости запросов."
+  ]
+] as const satisfies readonly ReadingChoice[];
+
+function selectReadings(source: V3Source, choices: readonly ReadingChoice[]): readonly SelectedReading[] {
+  return Object.freeze(choices.flatMap(([entityId, label, reason]) => {
+    const record = findEligibleFeatured(source, "article", entityId);
+    if (
+      record?.type !== "article" ||
+      (record.kind !== "native" && !(record.kind === "external-note" && record.externalType === "authored-article"))
+    ) return [];
+
+    return [Object.freeze({
+      ...normalizeListItem(record),
+      label,
+      reason,
+      sourceName: record.sourceName
+    })];
+  }));
 }
 
 export function getBlogViewModel(source: V3Source): BlogViewModel {
@@ -577,7 +691,13 @@ export function getBlogViewModel(source: V3Source): BlogViewModel {
       })
   );
 
-  return Object.freeze({ items });
+  const journey = selectReadings(source, BLOG_READING_JOURNEY);
+  return Object.freeze({
+    items,
+    readingPath: getCacheReadingPath(source),
+    selected: selectReadings(source, BLOG_SELECTED_READINGS),
+    journey: journey.length >= 2 ? journey : Object.freeze([])
+  });
 }
 
 const EXTERNAL_TYPE_LABELS = {
@@ -639,6 +759,7 @@ export function getMaterialsViewModel(source: V3Source): MaterialsViewModel {
           formatLabel: TALK_FORMAT_LABELS[record.format],
           description: record.abstract,
           recordingLabel: record.recordingUrl === null ? null : "Смотреть запись",
+          recordingUrl: record.recordingUrl,
           thumbnail:
             record.thumbnail === null
               ? null
@@ -699,7 +820,12 @@ export function getMaterialsViewModel(source: V3Source): MaterialsViewModel {
       })
   );
 
-  return Object.freeze({ talks, projects, publications });
+  const featuredRecord = findEligibleFeatured(source, "talk", "bitrix24-ai-platform-podcast");
+  const featuredTalk = featuredRecord === null
+    ? null
+    : talks.find((talk) => talk.entityId === featuredRecord.entityId) ?? null;
+
+  return Object.freeze({ talks, featuredTalk, projects, publications });
 }
 
 export function getAboutViewModel(source: V3Source): AboutViewModel {
@@ -708,7 +834,17 @@ export function getAboutViewModel(source: V3Source): AboutViewModel {
       normalizeListItem(requireEligibleEntity(source, type, entityId, articleKind))
     )
   );
-  return Object.freeze({ evidence });
+  const photoSource = findEligibleFeatured(source, "talk", "llm-selection-ural-digital-weekend");
+  const photo = photoSource?.type === "talk" && photoSource.thumbnail !== null
+    ? Object.freeze({
+      path: photoSource.thumbnail.path,
+      alt: photoSource.thumbnail.alt,
+      caption: `${photoSource.venue} · ${formatRussianDate(photoSource.eventDate)}`,
+      href: getCanonicalUrl(photoSource)
+    })
+    : null;
+
+  return Object.freeze({ evidence, photo });
 }
 
 export function getTalksViewModel(source: V3Source): TalksViewModel {
@@ -798,6 +934,50 @@ export function getPlatformMapViewModel(source: V3Source): PlatformMapViewModel 
   return Object.freeze({ areas, intersections: PLATFORM_INTERSECTIONS });
 }
 
+const PLATFORM_QUESTIONS = [
+  {
+    id: "shared-pool", type: "article", entityId: "hybrid-reasoners-in-production", fragment: "",
+    question: "Можно ли держать разные сценарии в одном пуле?",
+    outcome: "Когда короткие ответы и длинные рассуждения мешают друг другу, а когда общий пул всё же разумен.",
+    action: "Разобрать выбор пула", format: "Авторский разбор"
+  },
+  {
+    id: "cache-latency", type: "platform-component", entityId: "prefix-cache", fragment: "#метрики",
+    question: "Кэш сработал. Почему первый токен всё равно приходит поздно?",
+    outcome: "Какие наблюдения связывают чтение кэша, выбранную реплику и время ожидания.",
+    action: "Перейти к метрикам", format: "Глава · метрики"
+  },
+  {
+    id: "replica-choice", type: "platform-component", entityId: "prefix-cache", fragment: "#experiment",
+    question: "Отправить запрос к тёплой или свободной реплике?",
+    outcome: "Измените очередь и долю общего префикса в учебном расчёте. Посмотрите, где меняется выбор маршрута.",
+    action: "Сравнить маршруты", format: "Интерактивный расчёт"
+  },
+  {
+    id: "prompt-drift", type: "case", entityId: "agent-session-cache-reuse", fragment: "",
+    question: "Инструменты те же, порядок другой. Что изменилось для кэша?",
+    outcome: "Проверка двух запросов локальным анализатором. Показывает изменение входа; модель и кэш в этом примере не запускаются.",
+    action: "Повторить проверку", format: "Синтетический кейс"
+  }
+] as const;
+
+function getPlatformQuestions(source: V3Source): readonly PlatformQuestionViewModel[] {
+  return Object.freeze(PLATFORM_QUESTIONS.flatMap((choice) => {
+    const record = findEligibleFeatured(source, choice.type, choice.entityId);
+    if (record === null || (record.type === "article" && record.kind !== "native")) return [];
+    if (record.type === "case" && record.caseKind !== "synthetic") return [];
+    return [Object.freeze({
+      ...normalizeListItem(record),
+      id: choice.id,
+      question: choice.question,
+      outcome: choice.outcome,
+      action: choice.action,
+      meta: choice.format,
+      href: `${getCanonicalUrl(record)}${choice.fragment}`
+    })];
+  }));
+}
+
 export function getPlatformLandingViewModel(source: V3Source): PlatformLandingViewModel {
   const area = requirePublicEntity(source, "platform-area", "inference-plane");
   const component = requirePublicEntity(source, "platform-component", "prefix-cache");
@@ -819,10 +999,10 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
     Object.freeze({
       id: "vertical",
       index: "02",
-      title: "Текущий вертикальный срез",
+      title: "Разобраться по порядку",
       description: hasStaleReference
-        ? "Один опубликованный путь от области инференса к компоненту, синтетическому кейсу и открытому проекту; часть reference-материалов требует повторной проверки."
-        : "Один проверенный путь от области инференса к компоненту, синтетическому кейсу и открытому проекту.",
+        ? "От исполнения запросов к префиксному кэшу, синтетическому примеру и локальной проверке. Часть материалов требует повторной проверки."
+        : "Проверенные материалы об исполнении запросов и префиксном кэше, синтетический пример и инструмент для локальной проверки.",
       href: "#current-vertical"
     })
   ]);
@@ -833,6 +1013,7 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       index: "01",
       title: area.title,
       meta: "Область",
+      outcome: "Разделить обязанности: что решают шлюз, планировщик и сервер модели. Понять, где искать очередь, память и кэш.",
       href: getCanonicalUrl(area),
       statusLabel: area.reviewStatus === "stale" ? "Нужна проверка" : "Проверено"
     }),
@@ -841,6 +1022,7 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       index: "02",
       title: component.title,
       meta: "Компонент",
+      outcome: "Разобрать повторное использование префикса, выбор реплики и метрики. Сравнить маршруты на учебном расчёте.",
       href: getCanonicalUrl(component),
       statusLabel:
         component.reviewStatus === "stale" ? "Нужна проверка" : "Проверено"
@@ -850,6 +1032,7 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       index: "03",
       title: caseRecord.title,
       meta: "Кейс",
+      outcome: "Повторить проверку порядка инструментов на двух подготовленных запросах. Это проверка формы входа без запуска модели.",
       href: getCanonicalUrl(caseRecord),
       statusLabel:
         caseRecord.reviewStatus === "stale" ? "Нужна проверка" : "Синтетический кейс"
@@ -859,12 +1042,20 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       index: "04",
       title: project.title,
       meta: "Проект",
+      outcome: "Запустить локальный аудит своего запроса и собрать данные для дальнейшей диагностики кэша.",
       href: getCanonicalUrl(project),
       statusLabel: "Открытый проект"
     })
   ]);
 
-  return Object.freeze({ entryModes, vertical });
+  const introduction = findEligibleFeatured(source, "article", "ai-platform-before-gpu");
+  return Object.freeze({
+    entryModes,
+    vertical,
+    questions: getPlatformQuestions(source),
+    introduction: introduction?.type === "article" && introduction.kind === "native"
+      ? normalizeListItem(introduction) : null
+  });
 }
 
 function referenceTypeLabel(
@@ -939,6 +1130,7 @@ export function getReferenceDetailViewModel(
   const model: ReferenceDetailViewModel = Object.freeze({
     entityId: record.entityId,
     contentType: type,
+    toc: record.toc,
     title: record.title,
     description: record.description,
     href: getCanonicalUrl(record),

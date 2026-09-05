@@ -16,9 +16,13 @@ const keep = new Set([
   "/ai-platform/components/prefix-cache",
   "/ai-platform/map",
   "/blog",
+  "/blog/cache-locality-is-a-routing-problem",
   "/blog/ai-platform-before-gpu",
   "/blog/hybrid-reasoners-in-production",
+  "/blog/kv-offload-economics",
   "/blog/roles-in-llm-prompts",
+  "/blog/sticky-sessions-vs-prefix-routing",
+  "/blog/what-cache-router-knows",
   "/blog/workload-shape-over-model-name",
   "/materials",
   "/projects/audit-prompt-caching",
@@ -68,9 +72,9 @@ const aliases = new Map<string, string>([
 ]);
 
 describe("v3.1 route decision set", () => {
-  it("contains exactly 108 non-service route decisions", () => {
-    expect(manifest).toHaveLength(108);
-    expect(new Set(manifest.map((record) => record.source)).size).toBe(108);
+  it("contains exactly 112 non-service route decisions", () => {
+    expect(manifest).toHaveLength(112);
+    expect(new Set(manifest.map((record) => record.source)).size).toBe(112);
   });
 
   it("matches the accepted keep and direct-alias sets", () => {

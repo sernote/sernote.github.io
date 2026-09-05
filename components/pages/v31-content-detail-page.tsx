@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { ContentToc } from "@/components/editorial/content-toc";
+import type { ContentToc as Toc } from "@/lib/content-v3/source-core";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import { formatRussianDate } from "@/lib/content-v3/view-models";
 import { siteLinks } from "@/lib/i18n";
@@ -25,6 +27,7 @@ type DetailAction = Readonly<{
 }>;
 
 type V31ContentDetailPageProps = Readonly<{
+  toc?: Toc;
   currentPath: string;
   kindLabel: string;
   title: string;
@@ -59,6 +62,7 @@ function Action({ action }: { action: DetailAction }) {
 }
 
 export function V31ContentDetailPage({
+  toc,
   currentPath,
   kindLabel,
   title,
@@ -111,7 +115,7 @@ export function V31ContentDetailPage({
         </header>
 
         <div className="prose prose-neutral mt-10 max-w-none prose-headings:tracking-[-0.025em] prose-a:text-primary prose-pre:max-w-full prose-pre:overflow-x-auto md:prose-lg">
-          {children}
+          <ContentToc toc={toc} />{children}
         </div>
 
         {related.length ? (

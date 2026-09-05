@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 
 import { PlatformMap, getAreaPresentation } from "@/components/ai-platform/platform-map";
+import { ContentToc } from "@/components/editorial/content-toc";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import type {
   PlatformLandingViewModel,
@@ -13,60 +14,6 @@ import type {
 import { cn } from "@/lib/utils";
 
 const frameClassName = "mx-auto w-full max-w-[1440px] px-5 md:px-10 lg:px-[72px]";
-
-const PLATFORM_SIGNALS = Object.freeze([
-  "Несколько команд используют общие модели или провайдеров.",
-  "Качество и выпуск изменений требуют общих критериев.",
-  "Появились стабильные имена моделей, маршруты, политики и лимиты.",
-  "Очередь, capacity, SLO и деградация стали общей эксплуатационной задачей.",
-  "Нужно одинаково соблюдать границы данных и доступа.",
-  "Стоимость и ответственность нужно связывать с конкретными сценариями."
-]);
-
-const MATURITY_STEPS = Object.freeze([
-  ["Отдельный сценарий", "Один продукт, один провайдер, локальные правила."],
-  ["Общие контракты", "Стабильные имена, лимиты и границы данных."],
-  ["Control plane", "Доступ, маршруты, политики и выпуск конфигурации."],
-  ["Управляемый inference", "Пулы ресурсов, планирование, память и кэш."],
-  ["Качество и эксплуатация", "Evals, SLO, инциденты и стоимость результата."]
-]);
-
-const EXECUTION_MODES = Object.freeze([
-  Object.freeze({
-    id: "maas",
-    title: "MaaS",
-    facts: Object.freeze([
-      ["Что покупает команда", "Готовый serving и часть масштабирования."],
-      ["Что остаётся у команды", "Интеграция, данные, качество, лимиты и деградация."],
-      ["Когда рассматривать", "Небольшой или нерегулярный спрос, допустимая внешняя граница."]
-    ])
-  }),
-  Object.freeze({
-    id: "self-hosted",
-    title: "Self-hosted",
-    facts: Object.freeze([
-      ["Что получает команда", "Контроль над runtime и размещением."],
-      ["Что добавляется", "Capacity, обновления, наблюдаемость, дежурство и лицензии."],
-      ["Когда рассматривать", "Проверенный workload, подходящая граница данных и готовность владеть serving."]
-    ])
-  }),
-  Object.freeze({
-    id: "hybrid",
-    title: "Hybrid",
-    facts: Object.freeze([
-      ["Что даёт", "Разные execution paths для разных классов данных и задач."],
-      ["Что добавляется", "Routing policy, объяснимость маршрута и две эксплуатационные поверхности."],
-      ["Когда рассматривать", "Требования и workload действительно различаются."]
-    ])
-  })
-]);
-
-const SITUATIONAL_ENTRIES = Object.freeze([
-  ["Один сценарий работает через MaaS, общей платформы пока нет.", "Что зафиксировать до появления второго сценария?"],
-  ["Несколько команд делят модели, политики и лимиты.", "С каких контрактов начинается control plane?"],
-  ["Компания рассматривает локальный inference.", "Какая загрузка и ответственность делают self-hosted оправданным?"],
-  ["Платформа уже работает, но её нужно эксплуатировать и развивать.", "Как связать качество, стоимость и инциденты в один контур ответственности?"]
-]);
 
 function InlineLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -95,112 +42,89 @@ export function AiPlatformPageContent({
   model: PlatformLandingViewModel;
   mapModel: PlatformMapViewModel;
 }) {
+  const questions = model.questions ?? [];
   const mapEntry = model.entryModes.find((entry) => entry.id === "map");
   const verticalEntry = model.entryModes.find((entry) => entry.id === "vertical");
 
   return (
     <EditorialShell currentPath="/ai-platform">
       <div className={`${frameClassName} py-10 md:py-12 lg:py-14`}>
-        <header data-platform-hero="" className="max-w-[820px] pb-4 md:pb-8">
-          <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">
+        <header data-platform-hero="" className="max-w-[820px]">
+          <p className="text-sm font-medium text-primary">Инженерный хэндбук</p>
+          <h1 className="mt-4 text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">
             AI Platform
           </h1>
           <p className="mt-7 max-w-[48rem] text-xl leading-[1.45] tracking-[-0.015em] md:text-[1.5rem] md:leading-[1.45]">
-            AI-платформа — набор общих контрактов и возможностей, который помогает нескольким продуктовым сценариям безопасно проходить путь от запроса до наблюдаемого результата.
+            Как проектировать и эксплуатировать AI-платформу: разбирать задержки, выбирать пулы и проверять, что оптимизация действительно помогает.
           </p>
-          <p className="mt-4 text-base leading-7 text-muted-foreground md:text-lg">
-            Модель и инфраструктура входят в платформу, но не заменяют правила работы с данными, критерии качества, SLO, маршрутизацию и ответственность.
+          <p className="mt-4 max-w-[43rem] text-base leading-7 text-muted-foreground">
+            Начинаю с исполнения запросов и кэша. Здесь собраны главы, авторские разборы и воспроизводимые проверки.
           </p>
-          <div className="mt-5 flex flex-col gap-x-8 sm:flex-row">
+          <nav aria-label="Как читать хэндбук" className="mt-5 flex flex-wrap gap-x-8">
+            {questions.length > 0 ? <InlineLink href="#handbook-questions">Выбрать вопрос</InlineLink> : null}
+            <InlineLink href={verticalEntry?.href ?? "#current-vertical"}>Читать по порядку</InlineLink>
             <InlineLink href={mapEntry?.href ?? "/ai-platform/map"}>Открыть карту</InlineLink>
-            <InlineLink href={verticalEntry?.href ?? "#current-vertical"}>С чего начать</InlineLink>
-          </div>
+          </nav>
         </header>
 
-        <section aria-labelledby="platform-signals-heading" className="mt-12 border-t border-border pt-9 md:mt-16 md:pt-10">
-          <SectionTitle>
-            <span id="platform-signals-heading">Признаки, что одного API уже недостаточно</span>
-          </SectionTitle>
-          <ul className="m-0 mt-6 grid list-none gap-x-16 p-0 md:grid-cols-2">
-            {PLATFORM_SIGNALS.map((signal) => (
-              <li key={signal} data-platform-signal="" className="border-t border-border py-4 text-base leading-7">
-                {signal}
-              </li>
-            ))}
-          </ul>
-        </section>
+        {questions.length > 0 ? (
+          <section id="handbook-questions" aria-labelledby="handbook-questions-heading" className="mt-10 scroll-mt-24 md:mt-14">
+            <SectionTitle><span id="handbook-questions-heading">С каким вопросом вы пришли</span></SectionTitle>
+            <div className="mt-6 grid border-l border-t border-border md:grid-cols-2">
+              {questions.map((question) => (
+                <Link
+                  key={question.id}
+                  href={question.href}
+                  data-platform-question={question.id}
+                  className="group flex min-w-0 flex-col border-b border-r border-border px-5 py-6 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:bg-[var(--surface-subtle)] md:p-7"
+                >
+                  <p className="text-xs font-medium text-muted-foreground">{question.meta}</p>
+                  <h3 className="mt-3 text-xl font-semibold leading-[1.3] tracking-[-0.02em] group-hover:text-primary group-focus-visible:text-primary">{question.question}</h3>
+                  <p className="mb-5 mt-3 text-sm leading-6 text-muted-foreground">{question.outcome}</p>
+                  <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                    {question.action}<ArrowRight aria-hidden="true" className="size-4 shrink-0" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-        <section aria-labelledby="platform-maturity-heading" className="mt-14 md:mt-20">
-          <SectionTitle>
-            <span id="platform-maturity-heading">От отдельного сценария к платформе</span>
-          </SectionTitle>
-          <ol className="m-0 mt-7 grid list-none gap-x-14 gap-y-2 p-0 md:grid-cols-2">
-            {MATURITY_STEPS.map(([title, description], index) => (
-              <li
-                key={title}
-                data-maturity-step=""
-                className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-t border-border py-5"
-              >
-                <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <h3 className="text-base font-semibold leading-5">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-                </div>
+        <section id="current-vertical" aria-labelledby="platform-vertical-heading" className="mt-14 scroll-mt-24 md:mt-20">
+          <SectionTitle><span id="platform-vertical-heading">Разобраться по порядку</span></SectionTitle>
+          <p className="mt-3 max-w-[760px] text-base leading-7 text-muted-foreground">{verticalEntry?.description}</p>
+          <ol className="m-0 mt-7 list-none border-t border-border p-0">
+            {model.vertical.map((node, index) => (
+              <li key={node.entityId} data-vertical-node={node.entityId} className="border-b border-border">
+                <Link href={node.href} className="group grid min-h-11 grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 gap-y-3 py-6 md:grid-cols-[2rem_minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-x-7">
+                  <span className="pt-1 font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{node.meta} · {node.statusLabel}</p>
+                    <h3 className="mt-2 text-lg font-semibold leading-6 group-hover:text-primary group-focus-visible:text-primary">
+                      {node.title}<ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />
+                    </h3>
+                  </div>
+                  {node.outcome ? <p className="col-start-2 text-sm leading-6 text-muted-foreground md:col-start-3 md:self-center">{node.outcome}</p> : null}
+                </Link>
               </li>
             ))}
           </ol>
+          {model.introduction ? (
+            <aside className="mt-6 border-l-2 border-primary pl-5">
+              <p className="text-sm leading-6 text-muted-foreground">Если общая платформа ещё только обсуждается, начните с границ, качества и ответственности.</p>
+              <InlineLink href={model.introduction.href}>{model.introduction.title}</InlineLink>
+            </aside>
+          ) : null}
         </section>
 
-        <section aria-labelledby="execution-modes-heading" className="mt-14 md:mt-20">
-          <SectionTitle>
-            <span id="execution-modes-heading">Три способа исполнения — без универсального победителя</span>
-          </SectionTitle>
-          <div className="mt-7 border-t border-border">
-            {EXECUTION_MODES.map((mode) => (
-              <article
-                key={mode.id}
-                data-execution-mode={mode.id}
-                className="grid gap-5 border-b border-border py-7 md:grid-cols-[minmax(11rem,0.45fr)_minmax(0,1.55fr)] md:gap-12"
-              >
-                <h3 className="text-xl font-semibold">{mode.title}</h3>
-                <dl className="grid gap-5 lg:grid-cols-3">
-                  {mode.facts.map(([term, description]) => (
-                    <div key={term}>
-                      <dt className="text-sm text-muted-foreground">{term}</dt>
-                      <dd className="mt-1 text-base leading-6">{description}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </article>
-            ))}
+        <section aria-labelledby="platform-areas-heading" className="mt-14 border-t border-border pt-8 md:mt-20">
+          <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-2">
+            <SectionTitle><span id="platform-areas-heading">Что ещё входит в AI-платформу</span></SectionTitle>
+            <InlineLink href={mapEntry?.href ?? "/ai-platform/map"}>Карта с границами ответственности</InlineLink>
           </div>
-        </section>
-
-        <section aria-labelledby="situational-entries-heading" className="mt-14 md:mt-20">
-          <SectionTitle>
-            <span id="situational-entries-heading">Где вы сейчас</span>
-          </SectionTitle>
-          <div className="mt-7 border-t border-border">
-            {SITUATIONAL_ENTRIES.map(([situation, question]) => (
-              <article
-                key={situation}
-                data-situational-entry=""
-                className="grid gap-3 border-b border-border py-6 md:grid-cols-[minmax(16rem,0.9fr)_minmax(18rem,1.1fr)] md:gap-12"
-              >
-                <h3 className="text-base font-semibold leading-6">{situation}</h3>
-                <div>
-                  <p className="text-sm leading-6 text-muted-foreground">{question}</p>
-                  <InlineLink href="/ai-platform/map">Открыть маршрут</InlineLink>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section aria-labelledby="platform-areas-heading" className="mt-14 md:mt-20">
-          <SectionTitle>
-            <span id="platform-areas-heading">Области AI Platform</span>
-          </SectionTitle>
+          <p className="mt-3 max-w-[760px] text-sm leading-6 text-muted-foreground">
+            Карта задаёт устройство справочника. По ссылкам открываются опубликованные области; будущие отмечены отдельно.
+          </p>
           <div className="mt-7 border-t border-border">
             {mapModel.areas.map((area) => {
               const presentation = getAreaPresentation(area);
@@ -212,57 +136,18 @@ export function AiPlatformPageContent({
                       {presentation.title}
                       {area.href === null ? null : <ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />}
                     </h3>
-                    <p className="mt-2 text-xs text-muted-foreground">{status}</p>
+                    <p data-platform-area-status={status} className="mt-2 text-xs text-muted-foreground">{status}</p>
                   </div>
                   <p className="text-sm leading-6 text-muted-foreground">{area.purpose}</p>
                 </>
               );
-
+              const className = "grid min-w-0 gap-3 border-b border-border py-5 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12";
               return area.href === null ? (
-                <div
-                  key={area.entityId}
-                  data-platform-area-summary={area.entityId}
-                  className="grid gap-4 border-b border-border py-5 md:grid-cols-[minmax(15rem,0.8fr)_minmax(20rem,1.2fr)] md:gap-12"
-                >
-                  {content}
-                </div>
+                <div key={area.entityId} data-platform-area-summary={area.entityId} className={className}>{content}</div>
               ) : (
-                <Link
-                  key={area.entityId}
-                  href={area.href}
-                  data-platform-area-summary={area.entityId}
-                  className="group grid min-h-11 gap-4 border-b border-border py-5 md:grid-cols-[minmax(15rem,0.8fr)_minmax(20rem,1.2fr)] md:gap-12"
-                >
-                  {content}
-                </Link>
+                <Link key={area.entityId} href={area.href} data-platform-area-summary={area.entityId} className={`group min-h-11 ${className}`}>{content}</Link>
               );
             })}
-          </div>
-        </section>
-
-        <section id="current-vertical" aria-labelledby="platform-vertical-heading" className="mt-14 scroll-mt-24 md:mt-20">
-          <SectionTitle>
-            <span id="platform-vertical-heading">Один путь уже разобран полностью</span>
-          </SectionTitle>
-          <ol className="m-0 mt-7 grid list-none gap-x-14 p-0 md:grid-cols-2">
-            {model.vertical.map((node, index) => (
-              <li key={node.entityId} data-vertical-node={node.entityId} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-t border-border py-5">
-                <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
-                <Link href={node.href} className="group block min-h-11">
-                  <h3 className="text-base font-semibold leading-5 group-hover:text-primary group-focus-visible:text-primary">
-                    {node.title}
-                    <ArrowRight aria-hidden="true" className="ml-1 inline size-4 text-primary" />
-                  </h3>
-                  <p className="mt-2 text-sm leading-5 text-muted-foreground">{node.meta === "Область" ? "Где исполняется модельная нагрузка." : node.meta === "Компонент" ? "Когда повторный prefill становится платформенной ответственностью." : node.meta === "Кейс" ? "Как порядок tools меняет cache identity." : "Как проверить форму payload и собрать evidence."}</p>
-                </Link>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-2 flex flex-col gap-x-10 sm:flex-row sm:items-center">
-            <InlineLink href="/ai-platform/map">Открыть карту</InlineLink>
-            <p className="text-sm text-muted-foreground">
-              Вводный материал: <Link href="/blog/ai-platform-before-gpu" className="font-medium text-primary hover:underline">«AI-платформа начинается не с GPU»</Link>
-            </p>
           </div>
         </section>
       </div>
@@ -343,12 +228,6 @@ function Breadcrumb({ model }: { model: ReferenceDetailViewModel }) {
   );
 }
 
-const REFERENCE_LABELS = Object.freeze({
-  "platform-area": Object.freeze({ purpose: "Зачем существует", boundary: "Граница области" }),
-  "platform-component": Object.freeze({ purpose: "Ответственность компонента", boundary: "Что остаётся снаружи" }),
-  case: Object.freeze({ purpose: "Задача кейса", boundary: "Доказательная граница кейса" })
-});
-
 function RelatedReference({ item }: { item: V3ListItemViewModel }) {
   const body = (
     <>
@@ -404,7 +283,6 @@ export function AiPlatformReferencePage({
   model: ReferenceDetailViewModel;
   children?: ReactNode;
 }) {
-  const labels = REFERENCE_LABELS[model.contentType];
 
   return (
     <EditorialShell currentPath={model.href}>
@@ -433,16 +311,7 @@ export function AiPlatformReferencePage({
           </div>
         </header>
 
-        <section aria-label="Назначение и граница" className="mt-10 grid border-y border-border md:grid-cols-2">
-          <div className="py-5 md:border-r md:border-border md:pr-8">
-            <h2 className="text-sm font-semibold text-primary">{labels.purpose}</h2>
-            <p className="mt-2 text-base leading-7">{model.purpose}</p>
-          </div>
-          <div className="border-t border-border py-5 md:border-t-0 md:pl-8">
-            <h2 className="text-sm font-semibold text-primary">{labels.boundary}</h2>
-            <p className="mt-2 text-base leading-7">{model.boundary}</p>
-          </div>
-        </section>
+        <ContentToc toc={model.toc} />
 
         <div className="mt-10 min-w-0 max-w-[760px] [overflow-wrap:anywhere] md:mt-12">
           {children}

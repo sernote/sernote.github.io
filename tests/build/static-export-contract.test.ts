@@ -547,10 +547,10 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 108 records split 19 keep / 35 alias / 54 archive", () => {
+  it.runIf(hasExport)("has exactly 112 records split 23 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(108);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(19);
+    expect(records).toHaveLength(112);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(23);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
     expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
     expect(records).toContainEqual({
@@ -598,21 +598,71 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly fourteen RSS items", () => {
+  it.runIf(hasExport)("has exactly eighteen RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(14);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(18);
   });
 
-  it.runIf(hasExport)("emits exactly 22 JSON-LD scripts matching the schema matrix", () => {
+  it.runIf(hasExport)("connects cache explanations to exported practice anchors", () => {
+    const paths: Record<string, string[]> = {
+      "/blog/sticky-sessions-vs-prefix-routing": ["/ai-platform/components/prefix-cache", "/projects/audit-prompt-caching#first-audit"],
+      "/blog/what-cache-router-knows": ["/ai-platform/components/prefix-cache", "/projects/audit-prompt-caching#routing-audit"],
+      "/blog/kv-offload-economics": ["/projects/audit-prompt-caching#first-audit", "/projects/audit-prompt-caching#your-project"],
+      "/talks/every-token-counts": ["/ai-platform/components/prefix-cache", "/projects/audit-prompt-caching#first-audit"],
+      "/ai-platform/components/prefix-cache": ["/projects/audit-prompt-caching#first-audit", "/projects/audit-prompt-caching#provider-usage", "/blog/sticky-sessions-vs-prefix-routing", "/blog/what-cache-router-knows", "/blog/kv-offload-economics"],
+      "/projects/audit-prompt-caching": ["/projects/audit-prompt-caching#first-audit", "/projects/audit-prompt-caching#your-project"]
+    };
+    for (const [route, requiredTargets] of Object.entries(paths)) {
+      const html = readFileSync(join(outDir, route, "index.html"), "utf8");
+      const hrefs = [...html.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map((match) => match[1]);
+      const localUrls = hrefs.filter((href) => href.startsWith("/") || href.startsWith("#"))
+        .map((href) => new URL(href, `${ORIGIN}${route}/`));
+      const targets = localUrls.map((url) => `${url.pathname.replace(/\/$/, "")}${url.hash}`);
+      for (const target of requiredTargets) expect(targets, `${route} → ${target}`).toContain(target);
+      for (const url of localUrls.filter((url) => url.hash)) {
+        const targetHtml = readFileSync(join(outDir, url.pathname, "index.html"), "utf8");
+        const ids = [...targetHtml.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+        expect(ids, `${route} → ${url.pathname}${url.hash}`).toContain(decodeURIComponent(url.hash.slice(1)));
+      }
+    }
+  });
+
+  it.runIf(hasExport)("publishes each new article once with its author, canonical and feed entry", () => {
+    const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
+    const sitemapXml = readFileSync(join(outDir, "sitemap.xml"), "utf8");
+    for (const slug of ["sticky-sessions-vs-prefix-routing", "what-cache-router-knows", "kv-offload-economics"]) {
+      const url = `${ORIGIN}/blog/${slug}/`;
+      const html = readFileSync(join(outDir, "blog", slug, "index.html"), "utf8");
+      const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+        .map((match) => JSON.parse(match[1]));
+      expect(data.find((item) => item["@type"] === "BlogPosting")).toMatchObject({
+        url, inLanguage: "ru", datePublished: "2026-09-05", dateModified: "2026-09-05",
+        author: { "@id": `${ORIGIN}/about/#person` }
+      });
+      expect(html.split(`<link rel="canonical" href="${url}"`).length - 1).toBe(1);
+      const authors = [...html.matchAll(/<a\b[^>]*href="\/about\/?"[^>]*>([\s\S]*?)<\/a>/g)]
+        .map((match) => match[1]);
+      expect(authors).toContain("Сергей Нотевский");
+      expect(rssXml.split(`<link>${url}</link>`).length - 1).toBe(1);
+      expect(sitemapXml.split(`<loc>${url}</loc>`).length - 1).toBe(1);
+    }
+  });
+
+  it.runIf(hasExport)("emits exactly 31 JSON-LD scripts matching the schema matrix", () => {
     const matrix: Record<string, string[]> = {
       "index.html": ["WebSite"],
       "about/index.html": ["ProfilePage"],
+      "blog/cache-locality-is-a-routing-problem/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/ai-platform-before-gpu/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/hybrid-reasoners-in-production/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/sticky-sessions-vs-prefix-routing/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/what-cache-router-knows/index.html": ["BlogPosting", "BreadcrumbList"],
+      "blog/kv-offload-economics/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/roles-in-llm-prompts/index.html": ["BlogPosting", "BreadcrumbList"],
       "blog/workload-shape-over-model-name/index.html": ["BlogPosting", "BreadcrumbList"],
       "talks/bitrix24-ai-platform-podcast/index.html": ["VideoObject", "BreadcrumbList"],
       "talks/maas-vs-self-hosted/index.html": ["VideoObject", "BreadcrumbList"],
+      "talks/every-token-counts/index.html": ["BreadcrumbList"],
       "projects/audit-prompt-caching/index.html": ["SoftwareSourceCode", "BreadcrumbList"],
       "ai-platform/areas/inference-plane/index.html": ["TechArticle", "BreadcrumbList"],
       "ai-platform/components/prefix-cache/index.html": ["TechArticle", "BreadcrumbList"],
@@ -627,6 +677,6 @@ describe("static export audit — production integration", () => {
       const topTypes = scripts.map((m) => JSON.parse(m[1])["@type"]).sort();
       expect(topTypes, file).toEqual([...expectedTypes].sort());
     }
-    expect(total).toBe(22);
+    expect(total).toBe(31);
   });
 });

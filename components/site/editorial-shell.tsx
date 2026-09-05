@@ -67,6 +67,7 @@ export function EditorialShell({
         >
           <p>© 2026 Сергей Нотевский</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <a href="/rss.xml" className="inline-flex min-h-10 items-center hover:text-primary">RSS</a>
             <a href={siteLinks.telegram} className="inline-flex min-h-10 items-center hover:text-primary">
               Telegram
             </a>
