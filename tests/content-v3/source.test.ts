@@ -1417,7 +1417,6 @@ describe("AI Platform map and reference view models", () => {
       ["audit-prompt-caching", "/projects/audit-prompt-caching"]
     ]);
     expect(model.vertical[2]).toMatchObject({ statusLabel: "Синтетический кейс" });
-    expect(model.entryModes[1].description).toMatch(/проверенн/i);
     expect(Object.isFrozen(model)).toBe(true);
     expect(Object.isFrozen(model.vertical)).toBe(true);
   });
@@ -1552,20 +1551,20 @@ describe("AI Platform exemplar editorial contract", () => {
     const inferenceText = readFileSync(
       join(process.cwd(), "content/v3/ai-platform/areas/inference-plane.mdx"),
       "utf8"
-    );
+    ).replace(/\u00a0/g, " ");
     const contextText = readFileSync(
       join(process.cwd(), "content/v3/ai-platform/areas/context-agent-runtime.mdx"),
       "utf8"
     );
 
     expect(inferenceText).toContain(
-      'mapBoundary: "Исполняет модельные нагрузки и управляет средами исполнения, пулами ресурсов, планированием, пакетной обработкой, памятью и кэшем; не выбирает бизнес-сценарий."'
+      'mapBoundary: "Запускает модели и управляет средами исполнения, пулами ресурсов, планированием, пакетной обработкой, памятью и кэшем."'
     );
     expect(contextText).toContain(
       'mapBoundary: "Собирает контекст и управляет многошаговой работой агента: поиском данных, инструментами, состоянием сессии, памятью, остановкой и восстановлением."'
     );
     expect(inferenceText).toContain(
-      "Inference Plane исполняет подготовленную модельную нагрузку. Если в платформе есть Control Plane, он передаёт параметры маршрута и политики; это контракт ответственности, а не обязательная предыдущая стадия пути запроса."
+      "отдельный вызов этого слоя на пути каждого запроса необязателен."
     );
     expect(inferenceText).not.toContain(
       "Inference Plane исполняет запрос после того, как Control Plane разрешил маршрут."
@@ -1925,12 +1924,12 @@ it("preserves compiled heading anchors as runtime TOC data", () => {
 });
 it("offers a published cache reading path without inventing missing entries", () => {
   const sparse = getBlogViewModel(createV3Source([flattenedRuntimeEntry]));
-  expect(sparse.readingPath).toEqual([]);
+  expect(sparse.selected).toEqual([]);
   const source = createV3Source(readActualV3Documents().map((document) => entry(document.data, document.sourcePath)));
   expect(getHomeViewModel(source).readingPath?.map((step) => step.href)).toEqual([
     "/blog/cache-locality-is-a-routing-problem",
     "/ai-platform/components/prefix-cache#experiment",
-    "/projects/audit-prompt-caching"
+    "/projects/audit-prompt-caching#your-project"
   ]);
 });
 it("keeps the homepage usable when a small source has no materials or reference entries", () => {

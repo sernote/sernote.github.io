@@ -10,6 +10,7 @@ import { EditorialMdxLink } from "@/components/editorial/mdx-link";
 import { getMDXComponents } from "@/components/mdx";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCanonicalUrl } from "@/lib/content-v3/registry";
+import { getCacheSeries } from "@/lib/content-v3/cache-series";
 import { v3Source } from "@/lib/content-v3/source";
 import { articleMetadata } from "@/lib/metadata";
 import { buildArticleStructuredData } from "@/lib/seo/structured-data";
@@ -75,6 +76,7 @@ export default async function ArticlePage({
         publishedAt={record.publishedAt!}
         updatedAt={record.updatedAt}
         compactIntro={isNote}
+        series={getCacheSeries(v3Source, record.entityId)}
         toc={record.toc}
         related={related}
         contactLabel="Читать канал «AI да парень!»"

@@ -3,8 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { EditorialLink } from "@/components/editorial/editorial-link";
-import { SectionHeading } from "@/components/editorial/section-heading";
-import { ReadingJourney, SelectedReadingCards } from "@/components/editorial/selected-reading";
+import { SelectedReadingCards } from "@/components/editorial/selected-reading";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import { AUTHOR_PROFILE } from "@/lib/author-profile";
 import type {
@@ -63,7 +62,7 @@ function CacheReadingPath({ steps }: { steps: readonly ReadingStep[] }) {
   return (
     <nav aria-label="Разобраться с префиксным кэшем" className="mt-8 border-t border-border pt-5">
       <p className="text-sm font-semibold">От разбора к проверке</p>
-      <ol className="mt-4 grid list-none gap-6 p-0 md:grid-cols-3">
+      <ol className="mt-4 grid list-none gap-6 p-0 md:grid-cols-2">
         {steps.map((step, index) => (
           <li key={step.entityId}>
             <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
@@ -80,7 +79,10 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
   const selected = model.readingPath?.find((step) => step.contentType === "article");
   const latest = model.featured.find((entry) => entry.surface === "blog");
   const lead = selected ?? latest?.item;
-  const current = model.featured.filter(({ item }) =>
+  const continuation = (model.readingPath ?? []).filter((step) =>
+    step.entityId !== lead?.entityId || step.contentType !== lead?.contentType
+  );
+  const otherReading = (model.selected ?? []).filter((item) =>
     item.entityId !== lead?.entityId || item.contentType !== lead?.contentType
   );
   return (
@@ -110,27 +112,18 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
             <EditorialLink href={lead.href} className="mt-4 min-h-11">Читать {latest?.label === "Заметка" && !selected ? "заметку" : "статью"}</EditorialLink>
           </article>
         ) : null}
-        <CacheReadingPath steps={model.readingPath ?? []} />
+        <CacheReadingPath steps={continuation} />
       </section>
+      {otherReading.length > 0 ? (
+        <div className={`${frameClassName} pb-8 md:pb-10`}>
+          <SelectedReadingCards items={otherReading} title="Ещё почитать" />
+        </div>
+      ) : null}
       <div className={`${frameClassName} pb-10`}>
         <nav aria-label="Основные разделы" className="grid border-y border-border md:grid-cols-3 md:gap-12">
           {model.entrances.map((entrance) => <HomeEntrance key={entrance.id} entrance={entrance} />)}
         </nav>
       </div>
-      {current.length > 0 ? (
-      <section className={`${frameClassName} pb-16 md:pb-20`}>
-        <SectionHeading title="Сейчас" />
-        <div className={`grid gap-x-12 ${current.length === 2 ? "md:grid-cols-2" : current.length > 2 ? "md:grid-cols-3" : ""}`}>
-          {current.map((entry) => (
-            <article key={entry.item.entityId} className="border-b border-border py-6">
-              <p className="text-sm text-muted-foreground">{entry.label}</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]"><Link href={entry.item.href} className="hover:text-primary">{entry.item.title}</Link></h2>
-              <p className="mt-3 text-base leading-7 text-muted-foreground">{entry.item.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-      ) : null}
     </EditorialShell>
   );
 }
@@ -169,14 +162,16 @@ export function BlogPageContent({ model }: { model: BlogViewModel }) {
           <h1 className="text-[2.25rem] font-semibold leading-none tracking-[-0.045em] md:text-[2.75rem]">
             Блог
           </h1>
-          <p className="max-w-[40rem] text-base leading-7 text-muted-foreground md:text-lg">
-            Пишу о том, как устроены AI-платформы: что происходит с запросами, где теряется время и как меняется стоимость. Здесь собрал несколько текстов, с которых можно начать.
-          </p>
+          <div>
+            <p className="max-w-[40rem] text-base leading-7 text-muted-foreground md:text-lg">
+              Пишу о том, как устроены AI-платформы: что происходит с запросами, где теряется время и как меняется стоимость. Здесь собрал несколько текстов, с которых можно начать.
+            </p>
+            <EditorialLink href="#blog-archive-heading" className="mt-3 min-h-11">Все тексты</EditorialLink>
+          </div>
         </header>
         <SelectedReadingCards items={model.selected ?? []} />
-        <ReadingJourney items={model.journey ?? []} />
         <section aria-labelledby="blog-archive-heading" className="pt-10 md:pt-12">
-          <h2 id="blog-archive-heading" className="text-2xl font-semibold tracking-[-0.03em]">Все тексты на сайте</h2>
+          <h2 id="blog-archive-heading" className="scroll-mt-28 text-2xl font-semibold tracking-[-0.03em]">Все тексты на сайте</h2>
           {model.items.map((item) => (
             <BlogEntry key={item.entityId} item={item} />
           ))}

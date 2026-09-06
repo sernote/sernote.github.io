@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { ContentToc } from "@/components/editorial/content-toc";
+import { ArticleSeries } from "@/components/editorial/article-series";
+import type { CacheSeries } from "@/lib/content-v3/cache-series";
 import type { ContentToc as Toc } from "@/lib/content-v3/source-core";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import { formatRussianDate } from "@/lib/content-v3/view-models";
@@ -42,6 +44,7 @@ type V31ContentDetailPageProps = Readonly<{
   related?: readonly DetailRelatedItem[];
   contactLabel: string;
   compactIntro?: boolean;
+  series?: CacheSeries | null;
   children?: ReactNode;
 }>;
 
@@ -78,6 +81,7 @@ export function V31ContentDetailPage({
   related = [],
   contactLabel,
   compactIntro = false,
+  series = null,
   children
 }: V31ContentDetailPageProps) {
   if ((publishedAt === undefined) !== (updatedAt === undefined)) {
@@ -115,6 +119,8 @@ export function V31ContentDetailPage({
           {media ? <div className="mt-8">{media}</div> : null}
           {primaryAction ? <div className="mt-5"><Action action={primaryAction} /></div> : null}
         </header>
+
+        <ArticleSeries series={series} />
 
         <div className="prose prose-neutral mt-10 max-w-none prose-headings:tracking-[-0.025em] prose-a:text-primary prose-pre:max-w-full prose-pre:overflow-x-auto md:prose-lg">
           <ContentToc toc={toc} />{children}

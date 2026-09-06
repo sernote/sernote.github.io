@@ -296,12 +296,13 @@ const v3Source = {
 } as V3Source;
 
 const cacheArticle = nativeArticle("cache-locality-is-a-routing-problem", "article", "2026-09-05");
+const kvOffloadArticle = nativeArticle("kv-offload-economics", "article", "2026-09-05");
 const discoverySource: V3Source = {
   ...v3Source,
   listPublic: (type, locale) => [
     ...v3Source.listPublic(type, locale),
     ...((type === undefined || type === "article") && (locale === undefined || locale === "ru")
-      ? [cacheArticle]
+      ? [cacheArticle, kvOffloadArticle]
       : [])
   ],
   listFeatured: (type, locale) => discoverySource.listPublic(type, locale)
@@ -417,6 +418,34 @@ describe("v3.1 personal-page view models", () => {
     expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);
   });
 
+  it("selects Home reading with source titles, descriptions, dates and external destinations", () => {
+    const model = getHomeViewModel(discoverySource);
+
+    expect(model.selected?.map(({ entityId }) => entityId)).toEqual([
+      "kv-offload-economics",
+      "hybrid-reasoners-in-production",
+      "effective-cost-habr"
+    ]);
+    expect(model.selected?.[0]).toMatchObject({
+      title: kvOffloadArticle.title,
+      description: kvOffloadArticle.description,
+      publishedLabel: "5 сентября 2026 года"
+    });
+    const externalCost = publicEntity("effective-cost-habr");
+    if (externalCost.type !== "article") throw new Error("Expected external article fixture");
+    expect(model.selected?.at(-1)).toMatchObject({
+      href: externalCost.sourceUrl,
+      sourceName: externalCost.sourceName,
+      linkKind: "external",
+      publishedLabel: "10 марта 2026 года"
+    });
+    expect(Object.isFrozen(model.selected)).toBe(true);
+    expect(model.selected?.every(Object.isFrozen)).toBe(true);
+    expect(getHomeViewModel(replacePublicEntity(discoverySource, "kv-offload-economics", null)).selected?.map(({ entityId }) => entityId)).toEqual([
+      "hybrid-reasoners-in-production", "effective-cost-habr"
+    ]);
+  });
+
   it("builds ordered reading selections without changing external canonical URLs or native chronology", () => {
     const model = getBlogViewModel(discoverySource);
     const externalCost = publicEntity("effective-cost-habr");
@@ -426,12 +455,8 @@ describe("v3.1 personal-page view models", () => {
       "cache-locality-is-a-routing-problem",
       "effective-cost-habr"
     ]);
-    expect(model.journey?.map(({ entityId }) => entityId)).toEqual([
-      "workload-shape-over-model-name",
-      "hybrid-reasoners-in-production",
-      "cache-locality-is-a-routing-problem",
-      "effective-cost-habr"
-    ]);
+    expect(model).not.toHaveProperty("journey");
+    expect(model).not.toHaveProperty("readingPath");
     if (externalCost.type !== "article") throw new Error("Expected external article fixture");
     expect(model.selected?.at(-1)).toMatchObject({
       href: externalCost.sourceUrl,
@@ -440,6 +465,7 @@ describe("v3.1 personal-page view models", () => {
     });
     expect(model.items.map(({ entityId }) => entityId)).toEqual([
       "cache-locality-is-a-routing-problem",
+      "kv-offload-economics",
       "hybrid-reasoners-in-production",
       "workload-shape-over-model-name",
       "ai-platform-before-gpu",
@@ -447,9 +473,7 @@ describe("v3.1 personal-page view models", () => {
     ]);
     expect(model.items.every(({ articleKind }) => articleKind === "native")).toBe(true);
     expect(Object.isFrozen(model.selected)).toBe(true);
-    expect(Object.isFrozen(model.journey)).toBe(true);
     expect(model.selected?.every(Object.isFrozen)).toBe(true);
-    expect(model.journey?.every(Object.isFrozen)).toBe(true);
   });
 
   it.each([
@@ -468,12 +492,9 @@ describe("v3.1 personal-page view models", () => {
     expect(model.selected?.map(({ entityId }) => entityId)).toEqual([
       "hybrid-reasoners-in-production", "cache-locality-is-a-routing-problem"
     ]);
-    expect(model.journey?.map(({ entityId }) => entityId)).toEqual([
-      "workload-shape-over-model-name", "hybrid-reasoners-in-production", "cache-locality-is-a-routing-problem"
-    ]);
   });
 
-  it("requires reading choices to be both public and featured, and omits a one-step journey", () => {
+  it("requires reading choices to be both public and featured", () => {
     for (const method of ["listPublic", "listFeatured"] as const) {
       const source: V3Source = {
         ...discoverySource,
@@ -482,7 +503,6 @@ describe("v3.1 personal-page view models", () => {
       };
       const model = getBlogViewModel(source);
       expect(model.selected?.some(({ entityId }) => entityId === "effective-cost-habr")).toBe(false);
-      expect(model.journey?.some(({ entityId }) => entityId === "effective-cost-habr")).toBe(false);
     }
 
     let source = discoverySource;
@@ -491,7 +511,6 @@ describe("v3.1 personal-page view models", () => {
     }
     const model = getBlogViewModel(source);
     expect(model.selected).toEqual([]);
-    expect(model.journey).toEqual([]);
   });
 
   it("builds complete Materials groups and keeps external publications newest first without local routes", () => {
