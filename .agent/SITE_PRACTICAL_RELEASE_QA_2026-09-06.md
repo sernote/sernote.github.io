@@ -32,4 +32,4 @@
 - Финально просмотрены desktop/mobile Home и Blog, мобильная серия и переход из архива. Ранее в этом же проходе проверены reference и кейс на 390/768/1440 px, запись и меню на 390 px. Снимки: `/private/tmp/notevskii-site-home-desktop.png`, `/private/tmp/notevskii-site-home-mobile.png`. Предпросмотр: `http://127.0.0.1:4176/`.
 - Исходный checkout по-прежнему имеет только прежние правки hybrid-reasoners и source.test.ts, `.claude/` и `pnpm-workspace.yaml`; его HEAD/ветка не изменены. Тема кэша в границах этого выпуска закончена; новые материалы, поиск, RSS-модель и переводы остаются отдельной работой.
 
-Изменения сайта пока не опубликованы и не смержены.
+На момент завершения QA изменения оставались локальными. Затем пользователь явно разрешил push и публикацию; доставка отслеживается в PR ветки `codex/site-practical-first-release` и workflow `Deploy to GitHub Pages` для `main`.
