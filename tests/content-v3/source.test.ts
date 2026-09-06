@@ -1572,14 +1572,15 @@ describe("AI Platform exemplar editorial contract", () => {
     );
   });
 
-  it("keeps the case visibly synthetic in title and description", () => {
+  it("keeps the example's synthetic provenance explicit without overloading its title", () => {
     const caseText = readFileSync(
       join(process.cwd(), "content/v3/ai-platform/cases/agent-session-cache-reuse.mdx"),
       "utf8"
     );
 
-    expect(caseText).toMatch(/^title: .*синтетич/m);
-    expect(caseText).toMatch(/^description: .*Синтетич/m);
+    expect(actualV3Source.getBySlug("case", "agent-session-cache-reuse", "ru"))
+      .toMatchObject({ caseKind: "synthetic" });
+    expect(caseText).toMatch(/^description: .*учебн/m);
     expect(caseText).toContain("> **Синтетический кейс.**");
   });
 

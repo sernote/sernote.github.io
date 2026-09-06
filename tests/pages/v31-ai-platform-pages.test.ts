@@ -223,8 +223,8 @@ describe("v3.1 AI Platform reference shells", () => {
         }
       })
     );
-    expect(html.indexOf("Синтетический кейс: публичная демонстрация")).toBeGreaterThan(-1);
-    expect(html.indexOf("Синтетический кейс: публичная демонстрация")).toBeLessThan(
+    expect(html.indexOf("Учебный пример на специально подготовленных данных.")).toBeGreaterThan(-1);
+    expect(html.indexOf("Учебный пример на специально подготовленных данных.")).toBeLessThan(
       html.indexOf('<h1 id="reference-detail-title"')
     );
   });

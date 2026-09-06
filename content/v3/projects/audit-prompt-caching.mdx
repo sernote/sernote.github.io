@@ -116,7 +116,7 @@ python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
 
 Проверьте, куда попал повторный запрос, что роутер знал о кэше выбранной реплики и сколько времени запрос провёл в очереди.
 
-Экспериментальный скрипт `analyze_routing_logs.py` связывает решение роутера и результат попытки по `run_id`, `request_id` и `attempt_id`. Для него нужно подготовить JSONL в [описанном формате](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/audit-prompt-caching/references/routing-evidence.md). Готового адаптера обычных логов пока нет. Как получить нужные данные из своего развёртывания, разобрано в [инструкции по наблюдению за роутером](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/docs/routing-capture.md).
+Экспериментальный скрипт `analyze_routing_logs.py` связывает решение роутера и результат попытки по `run_id`, `request_id` и `attempt_id`. Данные из своих логов нужно привести к [формату JSONL для анализатора](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/audit-prompt-caching/references/routing-evidence.md). Как их собрать и подготовить, разобрано в [инструкции по наблюдению за роутером](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/docs/routing-capture.md).
 
 <div id="router-observation" className="scroll-mt-28" />
 
