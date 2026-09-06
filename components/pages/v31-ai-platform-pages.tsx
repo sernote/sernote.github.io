@@ -309,10 +309,13 @@ export function AiPlatformReferencePage({
           </div>
         </header>
 
-        <ContentToc toc={model.toc} />
-
-        <div className="mt-10 min-w-0 max-w-[760px] [overflow-wrap:anywhere] md:mt-12">
-          {children}
+        <div className="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12 xl:grid-cols-[minmax(0,760px)_16rem] xl:gap-16">
+          <div className="min-w-0 lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:self-start">
+            <ContentToc toc={model.toc} variant="reference" />
+          </div>
+          <div className="min-w-0 max-w-[760px] [overflow-wrap:anywhere] lg:col-start-1 lg:row-start-1">
+            {children}
+          </div>
         </div>
 
         <section aria-labelledby="reference-evidence-heading" className="mt-14 border-t border-border pt-7">
