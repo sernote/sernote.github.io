@@ -1,0 +1,50 @@
+[
+  {
+    "url": "https://notevskii.tech/en/",
+    "robots": [
+      "noindex, follow"
+    ],
+    "canonical": [
+      "https://notevskii.tech/en/"
+    ],
+    "archive_banner": true,
+    "current_links": [
+      {
+        "href": "/",
+        "text": "Current section"
+      }
+    ]
+  },
+  {
+    "url": "https://notevskii.tech/en/tools/prefix-cache-auditor/",
+    "robots": [
+      "noindex, follow"
+    ],
+    "canonical": [
+      "https://notevskii.tech/en/tools/prefix-cache-auditor/"
+    ],
+    "archive_banner": true,
+    "current_links": [
+      {
+        "href": "/materials/",
+        "text": "Current section"
+      }
+    ]
+  },
+  {
+    "url": "https://notevskii.tech/tools/llm-cost-calculator/",
+    "robots": [
+      "noindex, follow"
+    ],
+    "canonical": [
+      "https://notevskii.tech/tools/llm-cost-calculator/"
+    ],
+    "archive_banner": true,
+    "current_links": [
+      {
+        "href": "/materials/",
+        "text": "Актуальный раздел"
+      }
+    ]
+  }
+]
