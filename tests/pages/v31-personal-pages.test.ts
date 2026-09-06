@@ -418,7 +418,10 @@ describe("v3.1 personal-page view models", () => {
     expect(model.items.every(({ topics }) => (topics?.length ?? 0) > 0)).toBe(true);
   });
 
-  it("selects Home reading with source titles, descriptions, dates and external destinations", () => {
+  it("keeps canonical Home reading metadata while applying its own title and teasers", () => {
+    const externalCost = publicEntity("effective-cost-habr");
+    if (externalCost.type !== "article") throw new Error("Expected external article fixture");
+    const canonicalTitle = externalCost.title;
     const model = getHomeViewModel(discoverySource);
 
     expect(model.selected?.map(({ entityId }) => entityId)).toEqual([
@@ -429,11 +432,13 @@ describe("v3.1 personal-page view models", () => {
     expect(model.selected?.[0]).toMatchObject({
       title: kvOffloadArticle.title,
       description: kvOffloadArticle.description,
+      reason: "Перенос готового кэша тоже занимает время. Разбираю, когда он окупается.",
       publishedLabel: "5 сентября 2026 года"
     });
-    const externalCost = publicEntity("effective-cost-habr");
-    if (externalCost.type !== "article") throw new Error("Expected external article fixture");
     expect(model.selected?.at(-1)).toMatchObject({
+      title: externalCost.title,
+      displayTitle: "Погоди переезжать на дешёвую модель",
+      reason: "Считаем стоимость запроса с учётом попаданий в кэш.",
       href: externalCost.sourceUrl,
       sourceName: externalCost.sourceName,
       linkKind: "external",
@@ -441,9 +446,67 @@ describe("v3.1 personal-page view models", () => {
     });
     expect(Object.isFrozen(model.selected)).toBe(true);
     expect(model.selected?.every(Object.isFrozen)).toBe(true);
+    expect(getBlogViewModel(discoverySource).selected?.at(-1)).toMatchObject({
+      title: externalCost.title,
+      reason: "Как попадания в кэш меняют стоимость запроса."
+    });
+    expect(getBlogViewModel(discoverySource).selected?.at(-1)).not.toHaveProperty("displayTitle");
+    expect(publicEntity("effective-cost-habr").title).toBe(canonicalTitle);
     expect(getHomeViewModel(replacePublicEntity(discoverySource, "kv-offload-economics", null)).selected?.map(({ entityId }) => entityId)).toEqual([
       "hybrid-reasoners-in-production", "effective-cost-habr"
     ]);
+  });
+
+  it("builds frozen handbook links from eligible source chapters", () => {
+    const links = getHomeViewModel(v3Source).handbookLinks;
+
+    expect(links?.map(({ entityId, title, href }) => ({ entityId, title, href }))).toEqual([
+      { entityId: "inference-plane", title: "Исполнение моделей", href: "/ai-platform/areas/inference-plane" },
+      { entityId: "prefix-cache", title: "Префиксный кэш", href: "/ai-platform/components/prefix-cache" }
+    ]);
+    expect(Object.isFrozen(links)).toBe(true);
+    expect(links?.every(Object.isFrozen)).toBe(true);
+    expect(links?.every(({ linkKind }) => linkKind === "internal")).toBe(true);
+  });
+
+  it("omits missing, unpublished or stale Home chapters and projects even if the source features them", () => {
+    for (const entityId of ["inference-plane", "prefix-cache", "audit-prompt-caching"]) {
+      const entity = publicEntity(entityId);
+      const replacements = [null, ...[
+        { publicationStatus: "draft" },
+        { publicationStatus: "archived" },
+        { reviewStatus: "stale" },
+        { type: "talk" }
+      ].map((patch) => ({ ...entity, ...patch } as V3SourceItem))];
+
+      for (const replacement of replacements) {
+        const model = getHomeViewModel(replacePublicEntity(v3Source, entityId, replacement));
+        expect(model.handbookLinks?.some((item) => item.entityId === entityId)).toBe(false);
+        expect(model.readingPath?.some((item) => item.entityId === entityId)).toBe(false);
+      }
+      for (const method of ["listPublic", "listFeatured"] as const) {
+        const source: V3Source = {
+          ...v3Source,
+          [method]: (...args: Parameters<V3Source["listPublic"]>) => v3Source[method](...args)
+            .filter((record) => record.entityId !== entityId)
+        };
+        const model = getHomeViewModel(source);
+        expect(model.handbookLinks?.some((item) => item.entityId === entityId)).toBe(false);
+        expect(model.readingPath?.some((item) => item.entityId === entityId)).toBe(false);
+      }
+    }
+  });
+
+  it("falls back to an eligible native text when the preferred Home article is unavailable", () => {
+    let source = replacePublicEntity(discoverySource, "cache-locality-is-a-routing-problem", null);
+    source = replacePublicEntity(source, "kv-offload-economics", {
+      ...kvOffloadArticle, publicationStatus: "draft"
+    } as V3SourceItem);
+    const model = getHomeViewModel(source);
+
+    expect(model.readingPath?.some((item) => item.contentType === "article")).toBe(false);
+    expect(model.featured.find((entry) => entry.surface === "blog")?.item.entityId).toBe("hybrid-reasoners-in-production");
+    expect(model.selected?.some((item) => item.entityId === "kv-offload-economics")).toBe(false);
   });
 
   it("builds ordered reading selections without changing external canonical URLs or native chronology", () => {
