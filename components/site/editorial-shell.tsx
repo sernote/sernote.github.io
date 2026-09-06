@@ -44,13 +44,13 @@ export function EditorialShell({
               ))}
             </nav>
             <a
-              href={siteLinks.telegramDm}
+              href={siteLinks.telegram}
               className="inline-flex min-h-10 items-center text-sm font-medium text-primary hover:underline"
             >
-              Написать в Telegram
+              Telegram-канал
             </a>
           </div>
-          <MobileNavigation currentPath={currentPath} contactHref={siteLinks.telegramDm} />
+          <MobileNavigation currentPath={currentPath} contactHref={siteLinks.telegram} />
         </div>
       </header>
 

@@ -61,8 +61,8 @@ export function getAreaPresentation(area: PlatformMapAreaViewModel): AreaPresent
   );
 }
 
-function displayStatus(area: PlatformMapAreaViewModel): "Проверено" | "Нужна проверка" | "Запланировано" {
-  if (area.statusLabel === "Доступно") return "Проверено";
+function displayStatus(area: PlatformMapAreaViewModel): "Читать" | "Нужна проверка" | "Запланировано" {
+  if (area.statusLabel === "Доступно") return "Читать";
   if (area.statusLabel === "Нужна проверка") return "Нужна проверка";
   return "Запланировано";
 }

@@ -33,6 +33,7 @@ type V31ContentDetailPageProps = Readonly<{
   title: string;
   lead: string;
   authorHref: string;
+  bylineLabel?: string;
   publishedAt?: string;
   updatedAt?: string;
   facts?: readonly DetailFact[];
@@ -68,6 +69,7 @@ export function V31ContentDetailPage({
   title,
   lead,
   authorHref,
+  bylineLabel = "Автор",
   publishedAt,
   updatedAt,
   facts = [],
@@ -94,7 +96,7 @@ export function V31ContentDetailPage({
             {lead}
           </p>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <p>Автор — <Link href={authorHref} className="text-foreground hover:text-primary">Сергей Нотевский</Link></p>
+            <p>{bylineLabel} — <Link href={authorHref} className="text-foreground hover:text-primary">Сергей Нотевский</Link></p>
             {publishedAt ? <p>Опубликовано <time dateTime={publishedAt}>{formatRussianDate(publishedAt)}</time></p> : null}
             {updatedAt && updatedAt !== publishedAt ? <p>Обновлено <time dateTime={updatedAt}>{formatRussianDate(updatedAt)}</time></p> : null}
           </div>
@@ -133,7 +135,7 @@ export function V31ContentDetailPage({
         ) : null}
 
         <footer className="mt-12 border-t border-border pt-7">
-          <a href={siteLinks.telegramDm} className="inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline">
+          <a href={siteLinks.telegram} className="inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline">
             {contactLabel}<ArrowUpRight aria-hidden="true" className="size-4" />
           </a>
         </footer>

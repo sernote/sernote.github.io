@@ -78,7 +78,7 @@ export default async function ProjectPage({
           : { label: "Открыть на GitHub", href: record.repositoryUrl, external: true }}
         toc={record.toc}
         related={related}
-        contactLabel="Обсудить проект"
+        contactLabel="Читать канал «AI да парень!»"
       >
         <DocsBody className="[&_code]:break-all [&_pre_code]:break-normal">
           <MDX components={getMDXComponents({ a: EditorialMdxLink })} />

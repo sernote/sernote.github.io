@@ -77,7 +77,7 @@ export default async function ArticlePage({
         compactIntro={isNote}
         toc={record.toc}
         related={related}
-        contactLabel="Обсудить материал"
+        contactLabel="Читать канал «AI да парень!»"
       >
         <DocsBody>
           <MDX components={getMDXComponents({ a: EditorialMdxLink })} />

@@ -353,13 +353,13 @@ export function MaterialsPageContent({ model }: { model: MaterialsViewModel }) {
 
         <section className="mt-4 border-t border-border py-8 md:flex md:items-center md:justify-between md:gap-8">
           <p className="max-w-2xl text-base leading-7 text-muted-foreground">
-            Для приглашения на выступление, интервью или разговора о совместном материале.
+            Новые разборы и наблюдения из работы — в канале «{AUTHOR_PROFILE.channelName}».
           </p>
           <a
-            href={siteLinks.telegramDm}
+            href={siteLinks.telegram}
             className="mt-4 inline-flex min-h-11 shrink-0 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline md:mt-0"
           >
-            Написать в Telegram <ArrowUpRight aria-hidden="true" className="size-4" />
+            Читать канал <ArrowUpRight aria-hidden="true" className="size-4" />
           </a>
         </section>
       </div>
@@ -496,12 +496,6 @@ export function AboutPageContent({ model }: { model: AboutViewModel }) {
           </p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-7">
             <ExternalEditorialLink href={siteLinks.telegram}>Читать канал</ExternalEditorialLink>
-            <a
-              href={siteLinks.telegramDm}
-              className="inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-primary hover:underline"
-            >
-              Написать в Telegram <ArrowUpRight aria-hidden="true" className="size-4" />
-            </a>
           </div>
           <p className="mt-5 max-w-3xl border-t border-border pt-5 text-sm leading-6 text-muted-foreground">
             {AUTHOR_PROFILE.organizerNote}

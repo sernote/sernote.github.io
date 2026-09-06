@@ -90,6 +90,7 @@ export default async function TalkPage({
         title={record.title}
         lead={record.abstract}
         authorHref="/about"
+        bylineLabel="Участник"
         facts={facts}
         media={record.thumbnail !== null ? (
           <a
@@ -112,11 +113,7 @@ export default async function TalkPage({
         ) : null}
         primaryAction={record.recordingUrl ? { label: "Смотреть запись", href: record.recordingUrl, external: true } : undefined}
         related={related}
-        contactLabel={
-          record.format === "podcast"
-            ? "Обсудить выпуск"
-            : record.format === "stream" ? "Обсудить стрим" : "Пригласить выступить"
-        }
+        contactLabel="Читать канал «AI да парень!»"
       >
         <section>
           <h2>Ключевые выводы</h2>

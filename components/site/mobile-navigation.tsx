@@ -57,7 +57,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
 
           <Dialog.Title className="sr-only">Навигация</Dialog.Title>
           <Dialog.Description className="sr-only">
-            Основные разделы сайта и ссылка для связи.
+            Основные разделы сайта и Telegram-канал автора.
           </Dialog.Description>
 
           <nav aria-label="Мобильная навигация" className="mt-8 flex flex-col border-t border-border">
@@ -77,7 +77,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
               onClick={() => setOpen(false)}
               className="flex min-h-14 items-center border-b border-border text-lg font-medium text-primary"
             >
-              Написать в Telegram
+              Telegram-канал
             </a>
           </nav>
         </Dialog.Content>

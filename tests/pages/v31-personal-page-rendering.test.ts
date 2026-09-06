@@ -114,7 +114,6 @@ describe("v3.1 personal pages", () => {
     expect(viewModels).toContain("export const TALK_FORMAT_LABELS");
     expect(talkPage).toContain("TALK_FORMAT_LABELS");
     expect(talkPage).toContain('record.format === "stream" ? "Дата эфира"');
-    expect(talkPage).toContain('record.format === "stream" ? "Обсудить стрим"');
     expect(talkPage).toContain('value: TALK_FORMAT_LABELS[record.format]');
     expect(talkPage).toContain('kindLabel={TALK_FORMAT_LABELS[record.format]}');
     expect(talkPage).toContain('label: "Запись опубликована"');
@@ -123,9 +122,7 @@ describe("v3.1 personal pages", () => {
       'item.type === "talk" ? TALK_FORMAT_LABELS[item.format] : "AI Platform"'
     );
     expect(talkPage).toContain("formatTimestampLabel(takeaway.timestampSeconds)");
-    expect(talkPage).toContain('record.format === "podcast"');
-    expect(talkPage).toContain('"Обсудить выпуск"');
-    expect(talkPage).toContain('"Пригласить выступить"');
+    expect(talkPage).toContain('bylineLabel="Участник"');
   });
 
   it("formats talk timestamps on both sides of one hour", () => {
@@ -243,7 +240,7 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Открыть выступление");
     expect(html).not.toContain("58:10 · YouTube");
     expect(count(html, /data-publication=/g)).toBe(model.publications.length);
-    expect(count(html, /Написать в Telegram/g)).toBe(2);
+    expect(count(html, /Читать канал/g)).toBe(1);
     expect(html).not.toContain('href="/talks"');
     expect(html).not.toContain('href="/projects"');
   });
@@ -367,7 +364,7 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Короткая биография для организаторов");
     expect(html).not.toContain("Как здесь оказался");
     expect(html).not.toContain("Кем не являюсь");
-    expect(count(html, /Написать в Telegram/g)).toBe(2);
+    expect(count(html, /Читать канал/g)).toBe(1);
     expect(html).toContain('href="/materials"');
     expect(html).toMatch(
       /<a[^>]+href="https:\/\/example\.com\/external"[^>]+target="_blank"[^>]+rel="noreferrer"/
@@ -405,6 +402,26 @@ describe("v3.1 personal pages", () => {
 });
 
 describe("v3.1 content detail shell", () => {
+  it("distinguishes participation in a recording from authorship of an article", () => {
+    const props = {
+      currentPath: "/talks/example",
+      kindLabel: "Подкаст",
+      title: "Разговор о платформе",
+      lead: "Разбор решений команды.",
+      authorHref: "/about",
+      contactLabel: "Читать канал"
+    };
+    const participant = renderToStaticMarkup(createElement(V31ContentDetailPage, {
+      ...props, bylineLabel: "Участник"
+    })).replace(/<[^>]+>/g, "");
+    const author = renderToStaticMarkup(createElement(V31ContentDetailPage, props))
+      .replace(/<[^>]+>/g, "");
+
+    expect(participant).toContain("Участник — Сергей Нотевский");
+    expect(participant).not.toContain("Автор — Сергей Нотевский");
+    expect(author).toContain("Автор — Сергей Нотевский");
+  });
+
   it("keeps one main, calm authorship, related items and one contact action", () => {
     const html = renderToStaticMarkup(
       createElement(

@@ -518,7 +518,7 @@ export function getCacheReadingPath(source: V3Source): readonly ReadingStep[] {
   const choices = [
     ["article", "cache-locality-is-a-routing-problem", "Читать разбор", "Почему тёплая реплика может ответить позже холодной.", ""],
     ["platform-component", "prefix-cache", "Изменить условия", "Сравнить очередь и оставшуюся обработку входа в учебном примере.", "#experiment"],
-    ["project", "audit-prompt-caching", "Проверить свой запрос", "Найти изменения в начале запроса с помощью открытого линтера.", ""]
+    ["project", "audit-prompt-caching", "Проверить свой проект", "Разобрать сборку запросов с помощью скилла для Codex.", "#your-project"]
   ] as const;
   return Object.freeze(choices.flatMap(([type, id, action, outcome, anchor]) => {
     const record = source.listFeatured(type, "ru").find((item) => item.entityId === id);
@@ -950,7 +950,7 @@ const PLATFORM_QUESTIONS = [
   {
     id: "replica-choice", type: "platform-component", entityId: "prefix-cache", fragment: "#experiment",
     question: "Отправить запрос к тёплой или свободной реплике?",
-    outcome: "Измените очередь и долю общего префикса в учебном расчёте. Посмотрите, где меняется выбор маршрута.",
+    outcome: "Меняйте очередь, время обработки входа и доступность префикса. Посмотрите, когда выгоднее другая реплика.",
     action: "Сравнить маршруты", format: "Интерактивный расчёт"
   },
   {
@@ -1002,7 +1002,7 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       title: "Разобраться по порядку",
       description: hasStaleReference
         ? "От исполнения запросов к префиксному кэшу, синтетическому примеру и локальной проверке. Часть материалов требует повторной проверки."
-        : "Проверенные материалы об исполнении запросов и префиксном кэше, синтетический пример и инструмент для локальной проверки.",
+        : "От исполнения запроса к префиксному кэшу: механизм, учебный пример и проверка своего проекта.",
       href: "#current-vertical"
     })
   ]);
