@@ -74,7 +74,7 @@ export default async function ProjectPage({
         authorHref="/about"
         facts={facts}
         primaryAction={record.entityId === "audit-prompt-caching"
-          ? { label: "Повторить пример", href: "#first-audit" }
+          ? { label: "Проверить кэш в своём проекте", href: "#your-project" }
           : { label: "Открыть на GitHub", href: record.repositoryUrl, external: true }}
         toc={record.toc}
         related={related}

@@ -631,9 +631,9 @@ describe("static export audit — production integration", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
     const sitemapXml = readFileSync(join(outDir, "sitemap.xml"), "utf8");
     for (const [slug, dateModified] of [
-      ["sticky-sessions-vs-prefix-routing", "2026-09-05"],
+      ["sticky-sessions-vs-prefix-routing", "2026-09-06"],
       ["what-cache-router-knows", "2026-09-06"],
-      ["kv-offload-economics", "2026-09-05"]
+      ["kv-offload-economics", "2026-09-06"]
     ]) {
       const url = `${ORIGIN}/blog/${slug}/`;
       const html = readFileSync(join(outDir, "blog", slug, "index.html"), "utf8");

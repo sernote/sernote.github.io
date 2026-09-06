@@ -59,13 +59,13 @@ npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-pro
 ```text
 Проверь этот проект с $audit-prompt-caching.
 Начни с кода, который собирает и отправляет LLM-запросы.
-Найди, где меняется общий префикс, и объясни, что стоит исправить.
+Объясни, нужны ли изменения префикса, инструментов или маршрутизации.
 Укажи, по каким данным проверить результат.
 ```
 
 Скилл ищет меняющиеся поля в начале промпта, перестановки инструментов и схем, изменения истории между шагами. Затем проверяет настройки провайдера и роутера: одинаковые запросы могут попадать на разные реплики, каждая со своим кэшем.
 
-Код и остальные способы установки лежат [на GitHub](https://github.com/sernote/audit-prompt-caching).
+В [короткой инструкции](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/docs/first-audit.md) описано, как выбрать вопрос для аудита и проверить один его вывод. Ниже есть [пример сравнения двух запросов](#first-audit). Код и остальные способы установки лежат [на GitHub](https://github.com/sernote/audit-prompt-caching).
 
 <div id="first-audit" className="scroll-mt-28" />
 
@@ -116,19 +116,22 @@ python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
 
 Проверьте, куда попал повторный запрос, что роутер знал о кэше выбранной реплики и сколько времени запрос провёл в очереди.
 
-Скрипт `analyze_routing_logs.py` связывает решение роутера и результат попытки по `run_id`, `request_id` и `attempt_id`. Для него нужно подготовить JSONL в [описанном формате](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/routing-evidence.md). Там же есть примеры входных данных; произвольный лог роутера сначала придётся привести к этому формату.
+Экспериментальный скрипт `analyze_routing_logs.py` связывает решение роутера и результат попытки по `run_id`, `request_id` и `attempt_id`. Для него нужно подготовить JSONL в [описанном формате](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/audit-prompt-caching/references/routing-evidence.md). Готового адаптера обычных логов пока нет. Как получить нужные данные из своего развёртывания, разобрано в [инструкции по наблюдению за роутером](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/docs/routing-capture.md).
 
 <div id="router-observation" className="scroll-mt-28" />
 
-### Почему HTTP 200 недостаточно
+### Что видно в лабораторном примере
 
-В отдельном эксперименте vllm-router отправляет три запроса тестовому серверу. Два ответа приходят целиком, а в третьем сервер намеренно пропускает завершающие события. При этом у всех трёх HTTP 200, а счётчик circuit breaker у роутера отмечает три успешных обращения. Поэтому завершение ответа нужно проверять на стороне клиента.
+В [сохранённом прогоне](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/examples/router-observation/recorded/2026-09-05/README.md) vllm-router отправляет три запроса тестовому серверу. В этой версии и на этом HTTP-пути видно две вещи:
 
-[Устройство стенда](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/examples/router-observation/README.md) и [сохранённые события](https://github.com/sernote/audit-prompt-caching/blob/b53cd3f3fc69f044952d99cd6046f274a80f1ee2/examples/router-observation/recorded/2026-09-05/README.md) доступны в репозитории. Сервер имитирует ответы без модели и KV-кэша: этот эксперимент показывает поведение HTTP-потока. Подробнее о том, какие данные доступны роутеру, пишу в статье [«Что кэш-роутер знает о кэше»](/blog/what-cache-router-knows).
+- Chat-запросы содержат текст в `messages`, но не содержат `session_id`. Политика получает пустую строку и показывает `input_chars=0`. Этот счётчик не измеряет входные токены модели.
+- Два ответа приходят целиком, а в третьем сервер намеренно пропускает завершающие события. У всех трёх HTTP 200, и счётчик circuit breaker отмечает три успешных обращения. Завершение ответа нужно проверять на стороне клиента.
+
+[События и устройство стенда](https://github.com/sernote/audit-prompt-caching/blob/0914f211bc7ecedb0fdffae579acdafc05e06d18/examples/router-observation/README.md) можно разобрать без сборки; при желании там же есть инструкция повторного запуска. Сервер имитирует ответы без модели и KV-кэша. Механику разбираю в статье [«Что кэш-роутер знает о кэше»](/blog/what-cache-router-knows).
 
 ## Обратная связь
 
-Если попробовали скилл, [расскажите в GitHub Issues](https://github.com/sernote/audit-prompt-caching/issues/new?title=Audit%20feedback%3A%20), что проверяли, что он нашёл и удалось ли подтвердить результат. Особенно полезны случаи, когда рекомендация оказалась неверной или нужных данных не хватило. Перед публикацией примеров удалите ключи доступа, персональные данные и внутренние адреса.
+После проверки можно [оставить отзыв через форму](https://github.com/sernote/audit-prompt-caching/issues/new?template=audit-result.md): что проверяли, что помогло или запутало и удалось ли подтвердить результат. Это по желанию. Перед публикацией примеров удалите ключи доступа, персональные данные и внутренние адреса.
 
 Механику повторного использования KV разбираю в главе [«Префиксный кэш»](/ai-platform/components/prefix-cache).
 
