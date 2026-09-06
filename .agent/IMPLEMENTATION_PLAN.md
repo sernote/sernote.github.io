@@ -1,5 +1,7 @@
 # Implementation Plan
 
+Current Home correction: the Visualize composition approved by the user on 6 September 2026 is implemented and verified, following `docs/superpowers/plans/2026-09-06-home-reading-layout.md` and its design spec. Evidence: `.agent/HOME_READING_LAYOUT_QA_2026-09-06.md`. This supersedes only Home composition details in earlier releases; other surfaces and content contracts are preserved. Continue delivery of this verified correction.
+
 ## Current editorial work — September 2026
 
 On 6 September the user approved implementing the reviewed practical-first A/B/C release. The current task plan is `docs/superpowers/plans/2026-09-06-site-practical-first-release.md`, based on `.agent/SITE_PLAN_REVIEW_2026-09-06.md` and its consilium synthesis. In its stated scope it supersedes earlier literal area headings, review badges, TOC placement and discovery selections. Preserve the author-first v3.1 design, source metadata, lifecycle controls and static export. A, B and C are now complete locally; verification is recorded in `.agent/SITE_PRACTICAL_RELEASE_QA_2026-09-06.md`. New articles, tools, RSS changes and automatic publication are outside this release.

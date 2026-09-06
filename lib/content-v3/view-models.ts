@@ -20,6 +20,7 @@ export type ReferenceBreadcrumbItemViewModel = V3ListItemViewModel &
 export type ReadingStep = V3ListItemViewModel & Readonly<{ action: string; outcome: string }>;
 
 export type SelectedReading = V3ListItemViewModel & Readonly<{
+  displayTitle?: string;
   reason: string;
   label: string;
   sourceName: string | null;
@@ -29,6 +30,7 @@ export type SelectedReading = V3ListItemViewModel & Readonly<{
 export type HomeViewModel = Readonly<{
   readingPath?: readonly ReadingStep[];
   selected?: readonly SelectedReading[];
+  handbookLinks?: readonly V3ListItemViewModel[];
   entrances: readonly Readonly<{
     id: "blog" | "materials" | "ai-platform";
     index: string;
@@ -492,7 +494,8 @@ function selectLatestHomeItem(source: V3Source, surface: HomeSurface): V3SourceI
     .listFeatured(undefined, "ru")
     .filter(
       (record): record is V3SourceItem & { publishedAt: string } =>
-        record.publishedAt !== null && belongsToHomeSurface(record, surface)
+        record.publishedAt !== null && belongsToHomeSurface(record, surface) &&
+        findEligibleFeatured(source, record.type, record.entityId) !== null
     )
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
   const latest = candidates[0];
@@ -521,8 +524,8 @@ export function getCacheReadingPath(source: V3Source): readonly ReadingStep[] {
     ["project", "audit-prompt-caching", "Проверить свой проект", "Разобрать сборку запросов с помощью скилла для Codex.", "#your-project"]
   ] as const;
   return Object.freeze(choices.flatMap(([type, id, action, outcome, anchor]) => {
-    const record = source.listFeatured(type, "ru").find((item) => item.entityId === id);
-    if (!record) return [];
+    const record = findEligibleFeatured(source, type, id);
+    if (!record || (record.type === "article" && record.kind !== "native")) return [];
     return [Object.freeze({ ...normalizeListItem(record), href: `${getCanonicalUrl(record)}${anchor}`, action, outcome })];
   }));
 }
@@ -544,7 +547,14 @@ export function getHomeViewModel(source: V3Source): HomeViewModel {
     entrances: HOME_ENTRANCES,
     featured,
     readingPath: getCacheReadingPath(source),
-    selected: selectReadings(source, HOME_SELECTED_READINGS)
+    selected: selectReadings(source, HOME_SELECTED_READINGS),
+    handbookLinks: Object.freeze(([
+      ["platform-area", "inference-plane", "Исполнение моделей"],
+      ["platform-component", "prefix-cache", "Префиксный кэш"]
+    ] as const).flatMap(([type, entityId, title]) => {
+      const record = findEligibleFeatured(source, type, entityId);
+      return record ? [Object.freeze({ ...normalizeListItem(record), title })] : [];
+    }))
   });
 }
 
@@ -599,7 +609,7 @@ function findEligibleFeatured(
   return record;
 }
 
-type ReadingChoice = readonly [entityId: string, label: string, reason: string];
+type ReadingChoice = readonly [entityId: string, label: string, reason: string, displayTitle?: string];
 
 const BLOG_SELECTED_READINGS = [
   [
@@ -623,14 +633,19 @@ const HOME_SELECTED_READINGS = [
   [
     "kv-offload-economics",
     "Когда возвращать кэш на GPU",
-    "Загрузка KV, пересчёт и цена записи блоков, которые больше не понадобятся."
+    "Перенос готового кэша тоже занимает время. Разбираю, когда он окупается."
   ],
   BLOG_SELECTED_READINGS[0],
-  BLOG_SELECTED_READINGS[2]
+  [
+    "effective-cost-habr",
+    "Что считать в стоимости модели",
+    "Считаем стоимость запроса с учётом попаданий в кэш.",
+    "Погоди переезжать на дешёвую модель"
+  ]
 ] as const satisfies readonly ReadingChoice[];
 
 function selectReadings(source: V3Source, choices: readonly ReadingChoice[]): readonly SelectedReading[] {
-  return Object.freeze(choices.flatMap(([entityId, label, reason]) => {
+  return Object.freeze(choices.flatMap(([entityId, label, reason, displayTitle]) => {
     const record = findEligibleFeatured(source, "article", entityId);
     if (
       record?.type !== "article" ||
@@ -639,6 +654,7 @@ function selectReadings(source: V3Source, choices: readonly ReadingChoice[]): re
 
     return [Object.freeze({
       ...normalizeListItem(record),
+      ...(displayTitle === undefined ? {} : { displayTitle }),
       label,
       reason,
       sourceName: record.sourceName,

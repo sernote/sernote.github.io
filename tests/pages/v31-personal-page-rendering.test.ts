@@ -42,6 +42,10 @@ const homeModel: HomeViewModel = {
     { surface: "blog", label: "Заметка", item: listItem("workload-shape-over-model-name", "Workload shape важнее названия модели", "/blog/workload-shape-over-model-name") },
     { surface: "materials", label: "Подкаст", item: { ...listItem("podcast", "Зачем Битрикс24 своя AI-платформа?", "/talks/bitrix24-ai-platform-podcast"), contentType: "talk" } },
     { surface: "ai-platform", label: "AI Platform", item: { ...listItem("prefix-cache", "Prefix Cache", "/ai-platform/components/prefix-cache"), contentType: "platform-component" } }
+  ],
+  handbookLinks: [
+    { ...listItem("inference-plane", "Исполнение моделей", "/ai-platform/areas/inference-plane"), contentType: "platform-area" },
+    { ...listItem("prefix-cache", "Префиксный кэш", "/ai-platform/components/prefix-cache"), contentType: "platform-component" }
   ]
 };
 
@@ -130,7 +134,7 @@ describe("v3.1 personal pages", () => {
     expect(formatTimestampLabel(4236)).toBe("1:10:36");
   });
 
-  it("renders Home with three entrances, the author and an available lead without requiring selections", () => {
+  it("renders the author, a fallback reading and handbook links without requiring selections", () => {
     const html = renderToStaticMarkup(
       createElement(HomePageContent, { model: homeModel })
     );
@@ -142,11 +146,20 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain('data-home-intro=""');
     expect(html).not.toContain("Сейчас");
     expect(html).not.toContain('aria-labelledby="selected-reading-heading"');
-    expect(html).not.toContain("Все материалы");
+    expect(html).toContain("Все материалы");
     expect(html).toContain("Workload shape важнее названия модели");
     expect(html).toContain("Заметка");
-    expect(html).toContain(AUTHOR_PROFILE.aboutIntro);
+    expect(html).toContain("Здесь разбираю, как работают модели под нагрузкой");
+    expect(html).not.toContain(AUTHOR_PROFILE.aboutIntro);
     expect(html).toContain("Читать заметку");
+    expect(html).toContain(homeModel.featured[0].item.description);
+    expect(html).not.toContain("Почему запросу иногда выгоднее пересчитать префикс");
+    expect(html).toContain('href="/ai-platform/map"');
+    expect(html).toContain('href="/ai-platform/areas/inference-plane"');
+    expect(html).toContain('href="/ai-platform/components/prefix-cache"');
+    expect(html).not.toContain('aria-labelledby="home-project-heading"');
+    expect(html).not.toContain("От разбора к проверке");
+    expect(html).not.toContain("data-home-entrance");
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/materials"');
     expect(html).toContain('href="/ai-platform"');
@@ -154,12 +167,12 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Профессиональный контекст");
   });
 
-  it("shows one Home lead with two continuations and dated reading choices", () => {
-    const lead = listItem("lead", "Главный разбор", "/blog/lead");
+  it("shows one reading column with dated articles beside the handbook and eligible project", () => {
+    const lead = listItem("cache-locality-is-a-routing-problem", "Главный разбор", "/blog/cache-locality-is-a-routing-problem");
     const selected: SelectedReading[] = [
       { ...listItem("new", "Свежий разбор", "/blog/new"), label: "Хранение кэша", reason: "Загрузка или пересчёт", sourceName: null, publishedLabel: "5 сентября 2026 года" },
       { ...listItem("other", "Другой разбор", "/blog/other"), label: "Общий пул", reason: "Разные запросы в одном пуле", sourceName: null, publishedLabel: "21 августа 2026 года" },
-      { ...listItem("external", "Внешняя статья", "https://example.com/authored"), linkKind: "external", label: "Стоимость", reason: "Стоимость с учётом кэша", sourceName: "Хабр", publishedLabel: "10 марта 2026 года" }
+      { ...listItem("external", "Канонический заголовок внешней статьи", "https://example.com/authored"), displayTitle: "Внешняя статья", linkKind: "external", label: "Стоимость", reason: "Стоимость с учётом кэша", sourceName: "Хабр", publishedLabel: "10 марта 2026 года" }
     ];
     const html = renderToStaticMarkup(createElement(HomePageContent, {
       model: {
@@ -168,25 +181,32 @@ describe("v3.1 personal pages", () => {
         readingPath: [
           { ...lead, action: "Читать разбор", outcome: "Понять механизм" },
           { ...listItem("example", "Пример", "/ai-platform/components/prefix-cache#experiment"), contentType: "platform-component", action: "Изменить условия", outcome: "Сравнить варианты" },
-          { ...listItem("project", "Проект", "/projects/audit-prompt-caching#your-project"), contentType: "project", action: "Проверить проект", outcome: "Проверить запросы" }
+          { ...listItem("audit-prompt-caching", "Проект", "/projects/audit-prompt-caching#your-project"), contentType: "project", action: "Проверить проект", outcome: "Проверить запросы" }
         ]
       }
     }));
-    const continuation = html.match(/<nav[^>]*aria-label="Разобраться с префиксным кэшем"[\s\S]*?<\/nav>/)?.[0] ?? "";
-    const selectedSection = html.match(/<section[^>]*aria-labelledby="selected-reading-heading"[\s\S]*?<\/section>/)?.[0] ?? "";
+    const aside = html.match(/<aside[^>]*aria-label="Хэндбук и открытые проекты"[\s\S]*?<\/aside>/)?.[0] ?? "";
+    const articles = html.match(/<section[^>]*aria-labelledby="home-articles-heading"[\s\S]*?<\/section>/)?.[0] ?? "";
 
     expect(count(html, />Главный разбор</g)).toBe(1);
-    expect(continuation).not.toContain(`href="${lead.href}"`);
-    expect(count(continuation, /<a\b/g)).toBe(2);
-    expect(continuation).toContain('href="/ai-platform/components/prefix-cache#experiment"');
-    expect(continuation).toContain('href="/projects/audit-prompt-caching#your-project"');
-    expect(selectedSection).toContain("Ещё почитать");
+    expect(articles).toContain("Кэш и маршрутизация");
+    expect(articles).toContain("Почему запросу иногда выгоднее пересчитать префикс");
+    expect(articles).toContain("Читать разбор");
+    expect(count(articles, /<article\b/g)).toBe(4);
+    expect(aside).not.toContain(`href="${lead.href}"`);
+    expect(aside).toContain('href="/ai-platform/components/prefix-cache"');
+    expect(aside).toContain('href="/projects/audit-prompt-caching#your-project"');
+    expect(aside).toContain("Как запустить аудит");
+    expect(articles).toContain("Статьи");
     for (const item of selected) {
-      expect(selectedSection).toContain(item.title);
-      expect(selectedSection).toContain(item.reason);
-      expect(selectedSection).toContain(item.publishedLabel);
+      expect(articles).toContain(item.displayTitle ?? item.title);
+      expect(articles).toContain(item.reason);
+      expect(articles).toContain(item.publishedLabel);
     }
-    expect(selectedSection).toMatch(/<a[^>]*href="https:\/\/example\.com\/authored"[^>]*target="_blank"[^>]*rel="noreferrer"/);
+    expect(articles).not.toContain("Канонический заголовок внешней статьи");
+    expect(articles).toContain("Хабр");
+    expect(articles).toContain("Внешняя ссылка, откроется в новой вкладке");
+    expect(articles).toMatch(/<a[^>]*href="https:\/\/example\.com\/authored"[^>]*target="_blank"[^>]*rel="noreferrer"/);
     expect(html).not.toContain("Сейчас");
   });
 
@@ -197,8 +217,21 @@ describe("v3.1 personal pages", () => {
         label: "Выбранный текст", reason: "Разбор", sourceName: null
       }] }
     }));
-    expect(html).not.toContain('aria-labelledby="selected-reading-heading"');
-    expect(html).toContain(homeModel.featured[0].item.title);
+    expect(count(html, /<article\b/g)).toBe(1);
+    expect(count(html, new RegExp(`>${homeModel.featured[0].item.title}<`, "g"))).toBe(1);
+  });
+
+  it("keeps navigation useful when no articles or optional handbook chapters are eligible", () => {
+    const html = renderToStaticMarkup(createElement(HomePageContent, {
+      model: { ...homeModel, featured: [], selected: [], readingPath: [], handbookLinks: [] }
+    }));
+
+    expect(html).not.toContain('aria-labelledby="home-articles-heading"');
+    expect(html).not.toContain('aria-labelledby="home-project-heading"');
+    expect(html).not.toContain('href="/ai-platform/components/prefix-cache"');
+    expect(html).not.toContain('href="/ai-platform/areas/inference-plane"');
+    expect(html).toContain('href="/ai-platform/map"');
+    expect(html).toContain("Все материалы");
   });
 
   it("renders every native Blog entry with format-specific actions", () => {

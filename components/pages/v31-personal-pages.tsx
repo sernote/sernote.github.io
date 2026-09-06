@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { EditorialLink } from "@/components/editorial/editorial-link";
 import { SelectedReadingCards } from "@/components/editorial/selected-reading";
@@ -11,7 +11,7 @@ import type {
   BlogListItemViewModel,
   BlogViewModel,
   HomeViewModel,
-  ReadingStep,
+  SelectedReading,
   MaterialsViewModel,
   TalkSummaryViewModel,
   ExternalPublicationViewModel
@@ -35,43 +35,29 @@ function ExternalEditorialLink({ href, children }: { href: string; children: str
   );
 }
 
-function HomeEntrance({ entrance }: { entrance: HomeViewModel["entrances"][number] }) {
+function HomeReading({ item }: { item: SelectedReading }) {
+  const linkClassName = "block min-h-11 underline-offset-4 hover:text-primary hover:underline";
   return (
-    <Link
-      href={entrance.href}
-      data-home-entrance={entrance.id}
-      className="group grid min-h-28 grid-cols-[2rem_minmax(0,1fr)_1.5rem] gap-4 border-b border-border py-6 md:min-h-36 md:grid-cols-[2rem_minmax(0,1fr)_1.5rem] md:gap-5 md:border-b-0 md:py-8"
-    >
-      <span className="pt-1 font-mono text-xs text-muted-foreground">{entrance.index}</span>
-      <span>
-        <span className="block text-[1.35rem] font-semibold tracking-[-0.025em] md:text-2xl">{entrance.label}</span>
-        <span className="mt-2 block max-w-sm text-sm leading-6 text-muted-foreground md:text-base">
-          {entrance.description}
-        </span>
-      </span>
-      <ArrowRight
-        aria-hidden="true"
-        className="mt-0.5 size-4 justify-self-end text-primary transition-transform group-hover:translate-x-1"
-      />
-    </Link>
-  );
-}
-
-function CacheReadingPath({ steps }: { steps: readonly ReadingStep[] }) {
-  if (!steps.length) return null;
-  return (
-    <nav aria-label="Разобраться с префиксным кэшем" className="mt-8 border-t border-border pt-5">
-      <p className="text-sm font-semibold">От разбора к проверке</p>
-      <ol className="mt-4 grid list-none gap-6 p-0 md:grid-cols-2">
-        {steps.map((step, index) => (
-          <li key={step.entityId}>
-            <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
-            <Link href={step.href} className="mt-1 flex min-h-11 items-center gap-2 font-semibold text-primary hover:underline">{step.action}<ArrowRight aria-hidden="true" className="size-4" /></Link>
-            <p className="text-sm leading-6 text-muted-foreground">{step.outcome}</p>
-          </li>
-        ))}
-      </ol>
-    </nav>
+    <article className="border-b border-border py-6 first:pt-[19px] last:border-0 last:pb-0">
+      <h3 className="text-[23px] font-medium leading-[1.3] tracking-[-0.55px] [text-wrap:pretty]">
+        {item.linkKind === "external" ? (
+          <a href={item.href} target="_blank" rel="noreferrer" className={linkClassName}>
+            {item.displayTitle ?? item.title}
+            <ArrowUpRight aria-hidden="true" className="ml-1 inline size-4 align-baseline" />
+            <span className="sr-only">Внешняя ссылка, откроется в новой вкладке</span>
+          </a>
+        ) : (
+          <Link href={item.href} className={linkClassName}>{item.displayTitle ?? item.title}</Link>
+        )}
+      </h3>
+      <p className="mt-2.5 text-lg leading-[1.6] text-foreground/80">{item.reason}</p>
+      {item.publishedLabel || item.sourceName ? (
+        <p className="mt-3 flex flex-wrap gap-x-3 text-[13px] leading-5 text-muted-foreground">
+          {item.publishedLabel ? <span>{item.publishedLabel}</span> : null}
+          {item.sourceName ? <span>{item.sourceName}</span> : null}
+        </p>
+      ) : null}
+    </article>
   );
 }
 
@@ -79,50 +65,72 @@ export function HomePageContent({ model }: { model: HomeViewModel }) {
   const selected = model.readingPath?.find((step) => step.contentType === "article");
   const latest = model.featured.find((entry) => entry.surface === "blog");
   const lead = selected ?? latest?.item;
-  const continuation = (model.readingPath ?? []).filter((step) =>
-    step.entityId !== lead?.entityId || step.contentType !== lead?.contentType
+  const isCacheLead = lead?.entityId === "cache-locality-is-a-routing-problem";
+  const project = model.readingPath?.find((step) =>
+    step.contentType === "project" && step.entityId === "audit-prompt-caching"
   );
   const otherReading = (model.selected ?? []).filter((item) =>
     item.entityId !== lead?.entityId || item.contentType !== lead?.contentType
   );
+  const hasReading = lead !== undefined || otherReading.length > 0;
   return (
     <EditorialShell currentPath="/">
-      <section className="bg-[var(--surface-subtle)]">
-        <div className={`${frameClassName} py-10 md:py-16`}>
-          <header className="grid gap-7 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
-            <div>
-              <h1 className="text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">{AUTHOR_PROFILE.name}</h1>
-              <p className="mt-4 text-sm font-semibold text-primary md:text-base">{AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}</p>
-            </div>
-            <div className="max-w-2xl self-end">
-              <p className="text-base leading-7 md:text-lg">{AUTHOR_PROFILE.aboutIntro}</p>
-              <EditorialLink href="/about" className="mt-3 min-h-11">Подробнее обо мне</EditorialLink>
-            </div>
-          </header>
+      <div className="mx-auto w-full max-w-[1024px] px-[19px] min-[441px]:px-[22px] min-[641px]:px-[25px] min-[761px]:px-9">
+        <header className="border-b border-border py-[27px] min-[641px]:pb-[34px] min-[641px]:pt-[37px]">
+          <h1 className="text-[30px] font-medium leading-[1.2] tracking-[-0.8px] min-[641px]:text-[35px] min-[641px]:tracking-[-1.2px]">{AUTHOR_PROFILE.name}</h1>
+          <p className="mt-[9px] text-[15px] leading-6 text-primary">{AUTHOR_PROFILE.role} в {AUTHOR_PROFILE.company}</p>
+          <p className="mt-[15px] max-w-[660px] text-lg leading-[1.6] text-foreground/80">Здесь разбираю, как работают модели под нагрузкой, где теряется время и из чего складывается стоимость.</p>
+        </header>
+        <div className={`grid items-start gap-[31px] pb-[30px] pt-[25px] min-[641px]:gap-[27px] min-[641px]:pb-10 min-[641px]:pt-8 min-[761px]:gap-[46px] ${hasReading ? "min-[641px]:grid-cols-[minmax(0,1.48fr)_minmax(235px,1fr)] min-[761px]:grid-cols-[minmax(0,1.72fr)_minmax(265px,1fr)]" : ""}`}>
+          {hasReading ? (
+            <section aria-labelledby="home-articles-heading" className="min-w-0">
+              <h2 id="home-articles-heading" className="text-xl font-medium leading-[1.3] tracking-[-0.3px]">Статьи</h2>
+              <div>
+                {lead ? (
+                  <article className="border-b border-border pb-6 pt-[19px] last:border-0 last:pb-0">
+                    <p className="mb-3 text-[13px] font-medium leading-5 text-primary">{isCacheLead ? "Кэш и маршрутизация" : latest?.label}</p>
+                    <h3 className="text-[27px] font-medium leading-[1.2] tracking-[-0.9px] [text-wrap:pretty] min-[761px]:text-[30px]">
+                      <Link href={lead.href} className="block min-h-11 underline-offset-4 hover:text-primary hover:underline">{lead.title}</Link>
+                    </h3>
+                    <p className="mt-2.5 text-lg leading-[1.6] text-foreground/80">{isCacheLead ? "Почему запросу иногда выгоднее пересчитать префикс, чем ждать реплику с готовым кэшем." : lead.description}</p>
+                    <EditorialLink href={lead.href} className="mt-2 min-h-11 text-[15px]">{isCacheLead ? "Читать разбор" : selected?.action ?? (latest?.label === "Заметка" ? "Читать заметку" : "Читать статью")}</EditorialLink>
+                  </article>
+                ) : null}
+                {otherReading.map((item) => <HomeReading key={item.entityId} item={item} />)}
+              </div>
+            </section>
+          ) : null}
+          <aside aria-label="Хэндбук и открытые проекты" className="grid min-w-0 gap-[25px] min-[441px]:max-[640px]:grid-cols-2 min-[641px]:gap-0">
+            <section aria-labelledby="home-handbook-heading" className="bg-accent p-5 min-[761px]:p-6">
+              <p className="mb-3 text-[13px] font-medium leading-5 text-primary">Хэндбук</p>
+              <h2 id="home-handbook-heading" className="text-[25px] font-medium leading-[1.25] tracking-[-0.6px]">Как устроена AI‑платформа</h2>
+              <p className="mt-[13px] text-[17px] leading-[1.6] text-foreground/80">Исполнение моделей, кэш и выбор реплики.</p>
+              <EditorialLink href="/ai-platform/map" className="mb-[15px] mt-[19px] flex min-h-11 justify-between bg-primary px-3.5 py-2.5 text-[15px] text-primary-foreground">Карта платформы</EditorialLink>
+              {(model.handbookLinks?.length ?? 0) > 0 ? (
+                <ul className="m-0 list-none p-0">
+                  {model.handbookLinks?.map((item) => (
+                    <li key={item.entityId} className="border-t border-border">
+                      <Link href={item.href} className="flex min-h-11 items-center py-2.5 text-[15px] leading-6 underline-offset-4 hover:text-primary hover:underline">{item.title}</Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+            {project ? (
+              <section aria-labelledby="home-project-heading" className="px-0.5 min-[641px]:mt-[27px]">
+                <p className="mb-3 text-[13px] font-medium leading-5 text-primary">Открытый проект</p>
+                <h2 id="home-project-heading" className="text-[23px] font-medium leading-[1.3] tracking-[-0.4px]">Проверить кэш в своём проекте</h2>
+                <p className="mt-3 text-[17px] leading-[1.6] text-foreground/80">Скилл для Codex помогает найти изменения в начале запроса.</p>
+                <EditorialLink href={project.href} className="mt-2.5 min-h-11 text-[15px]">Как запустить аудит</EditorialLink>
+              </section>
+            ) : null}
+            <section aria-labelledby="home-materials-heading" className="border-t border-border pt-[23px] min-[441px]:max-[640px]:col-span-2 min-[641px]:mt-[23px]">
+              <h2 id="home-materials-heading" className="text-[19px] font-medium leading-[1.35]">Выступления и подкасты</h2>
+              <p className="mt-2 text-[15px] leading-6 text-foreground/80">Разговоры про AI-платформы и инженерную работу.</p>
+              <EditorialLink href="/materials" className="min-h-11 text-[15px]">Все материалы</EditorialLink>
+            </section>
+          </aside>
         </div>
-      </section>
-      <section className={`${frameClassName} py-10 md:py-16`}>
-        {lead ? (
-          <article className="border-l-2 border-primary pl-5 md:pl-8">
-            <p className="text-sm font-medium text-primary">{selected ? "Начните с этого разбора" : latest?.label}</p>
-            <h2 className="mt-4 max-w-4xl text-[2.2rem] font-semibold leading-[1.08] tracking-[-0.045em] md:text-[3.5rem]">
-              <Link href={lead.href} className="hover:text-primary">{lead.title}</Link>
-            </h2>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{lead.description}</p>
-            <EditorialLink href={lead.href} className="mt-4 min-h-11">Читать {latest?.label === "Заметка" && !selected ? "заметку" : "статью"}</EditorialLink>
-          </article>
-        ) : null}
-        <CacheReadingPath steps={continuation} />
-      </section>
-      {otherReading.length > 0 ? (
-        <div className={`${frameClassName} pb-8 md:pb-10`}>
-          <SelectedReadingCards items={otherReading} title="Ещё почитать" />
-        </div>
-      ) : null}
-      <div className={`${frameClassName} pb-10`}>
-        <nav aria-label="Основные разделы" className="grid border-y border-border md:grid-cols-3 md:gap-12">
-          {model.entrances.map((entrance) => <HomeEntrance key={entrance.id} entrance={entrance} />)}
-        </nav>
       </div>
     </EditorialShell>
   );
