@@ -1,5 +1,7 @@
 # notevskii.tech v2 specification
 
+> **Historical proposal, superseded.** These v2 documents were added by the late merge of PR 2 on 6 September 2026. They are retained as history. The current product direction is [v3.1](../superpowers/specs/2026-07-27-notevskii-tech-v3-1-correction-design.md); current work is tracked in [the implementation plan](../../.agent/IMPLEMENTATION_PLAN.md) and [status](../../.agent/STATUS.md).
+
 The v2 specification defines `notevskii.tech` as the author-led engineering publication and public workbench of **Сергей Нотевский**.
 
 The publication has four durable surfaces:

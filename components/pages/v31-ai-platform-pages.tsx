@@ -292,7 +292,7 @@ export function AiPlatformReferencePage({
           <p className="text-sm font-medium text-primary">{model.typeLabel}</p>
           {model.isSynthetic ? (
             <p className="mt-4 border-y border-border py-3 text-sm leading-6 text-foreground">
-              Синтетический кейс: публичная демонстрация на специально подготовленных данных, а не результат production-системы.
+              Учебный пример на специально подготовленных данных.
             </p>
           ) : null}
           {model.reviewStatus === "stale" ? (
