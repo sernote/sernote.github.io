@@ -166,7 +166,7 @@ describe("v3.1 AI Platform map", () => {
     expect(count(html, /<ol\b/g)).toBe(1);
     expect(count(html, /data-platform-area=/g)).toBe(7);
     expect(count(html, /data-area-link=/g)).toBe(1);
-    expect(count(html, /data-area-status="Проверено"/g)).toBe(1);
+    expect(count(html, /data-area-status="Читать"/g)).toBe(1);
     expect(count(html, /data-area-status="Запланировано"/g)).toBe(6);
     expect(count(html, />Ключевой вопрос</g)).toBe(7);
     expect(count(html, />Основные компоненты</g)).toBe(7);

@@ -23,10 +23,12 @@ export type SelectedReading = V3ListItemViewModel & Readonly<{
   reason: string;
   label: string;
   sourceName: string | null;
+  publishedLabel?: string;
 }>;
 
 export type HomeViewModel = Readonly<{
   readingPath?: readonly ReadingStep[];
+  selected?: readonly SelectedReading[];
   entrances: readonly Readonly<{
     id: "blog" | "materials" | "ai-platform";
     index: string;
@@ -115,9 +117,7 @@ export type BlogListItemViewModel = V3ListItemViewModel &
   }>;
 
 export type BlogViewModel = Readonly<{
-  readingPath?: readonly ReadingStep[];
   selected?: readonly SelectedReading[];
-  journey?: readonly SelectedReading[];
   items: readonly BlogListItemViewModel[];
 }>;
 
@@ -518,7 +518,7 @@ export function getCacheReadingPath(source: V3Source): readonly ReadingStep[] {
   const choices = [
     ["article", "cache-locality-is-a-routing-problem", "Читать разбор", "Почему тёплая реплика может ответить позже холодной.", ""],
     ["platform-component", "prefix-cache", "Изменить условия", "Сравнить очередь и оставшуюся обработку входа в учебном примере.", "#experiment"],
-    ["project", "audit-prompt-caching", "Проверить свой запрос", "Найти изменения в начале запроса с помощью открытого линтера.", ""]
+    ["project", "audit-prompt-caching", "Проверить свой проект", "Разобрать сборку запросов с помощью скилла для Codex.", "#your-project"]
   ] as const;
   return Object.freeze(choices.flatMap(([type, id, action, outcome, anchor]) => {
     const record = source.listFeatured(type, "ru").find((item) => item.entityId === id);
@@ -540,7 +540,12 @@ export function getHomeViewModel(source: V3Source): HomeViewModel {
     })
   );
 
-  return Object.freeze({ entrances: HOME_ENTRANCES, featured, readingPath: getCacheReadingPath(source) });
+  return Object.freeze({
+    entrances: HOME_ENTRANCES,
+    featured,
+    readingPath: getCacheReadingPath(source),
+    selected: selectReadings(source, HOME_SELECTED_READINGS)
+  });
 }
 
 export function getWorkViewModel(source: V3Source): WorkViewModel {
@@ -600,41 +605,28 @@ const BLOG_SELECTED_READINGS = [
   [
     "hybrid-reasoners-in-production",
     "Когда одной модели нужен не один сервер",
-    "Разбираю, почему короткие ответы и длинные рассуждения мешают друг другу — и когда общий пул всё же разумен."
+    "Когда короткие ответы и длинные рассуждения могут делить один пул."
   ],
   [
     "cache-locality-is-a-routing-problem",
     "Как кэш меняет маршрутизацию",
-    "Совпавший префикс ещё не гарантирует быстрый ответ. Смотрю, как выбор реплики и очередь меняют результат."
+    "Как выбор реплики и очередь меняют выигрыш от совпавшего префикса."
   ],
   [
     "effective-cost-habr",
     "Что считать в стоимости модели",
-    "Сравниваю стоимость запросов с учётом попаданий в кэш. Цена миллиона токенов оказывается только частью расчёта."
+    "Как попадания в кэш меняют стоимость запроса."
   ]
 ] as const satisfies readonly ReadingChoice[];
 
-const BLOG_READING_JOURNEY = [
+const HOME_SELECTED_READINGS = [
   [
-    "workload-shape-over-model-name",
-    "Описать нагрузку",
-    "Длина входа и ответа, параллельные запросы и повторы задают требования к инференсу."
+    "kv-offload-economics",
+    "Когда возвращать кэш на GPU",
+    "Загрузка KV, пересчёт и цена записи блоков, которые больше не понадобятся."
   ],
-  [
-    "hybrid-reasoners-in-production",
-    "Выбрать общий или отдельный пул",
-    "Затем разбираю, когда разные запросы могут делить один пул, а когда начинают мешать друг другу."
-  ],
-  [
-    "cache-locality-is-a-routing-problem",
-    "Учесть кэш и очередь",
-    "Внутри пула смотрю на выбор реплики: что даст повторное использование префикса и сколько придётся ждать."
-  ],
-  [
-    "effective-cost-habr",
-    "Пересчитать стоимость",
-    "С учётом попаданий в кэш возвращаюсь к расчёту стоимости запросов."
-  ]
+  BLOG_SELECTED_READINGS[0],
+  BLOG_SELECTED_READINGS[2]
 ] as const satisfies readonly ReadingChoice[];
 
 function selectReadings(source: V3Source, choices: readonly ReadingChoice[]): readonly SelectedReading[] {
@@ -649,7 +641,8 @@ function selectReadings(source: V3Source, choices: readonly ReadingChoice[]): re
       ...normalizeListItem(record),
       label,
       reason,
-      sourceName: record.sourceName
+      sourceName: record.sourceName,
+      ...(record.publishedAt === null ? {} : { publishedLabel: formatRussianDate(record.publishedAt) })
     })];
   }));
 }
@@ -691,12 +684,9 @@ export function getBlogViewModel(source: V3Source): BlogViewModel {
       })
   );
 
-  const journey = selectReadings(source, BLOG_READING_JOURNEY);
   return Object.freeze({
     items,
-    readingPath: getCacheReadingPath(source),
-    selected: selectReadings(source, BLOG_SELECTED_READINGS),
-    journey: journey.length >= 2 ? journey : Object.freeze([])
+    selected: selectReadings(source, BLOG_SELECTED_READINGS)
   });
 }
 
@@ -950,7 +940,7 @@ const PLATFORM_QUESTIONS = [
   {
     id: "replica-choice", type: "platform-component", entityId: "prefix-cache", fragment: "#experiment",
     question: "Отправить запрос к тёплой или свободной реплике?",
-    outcome: "Измените очередь и долю общего префикса в учебном расчёте. Посмотрите, где меняется выбор маршрута.",
+    outcome: "Меняйте очередь, время обработки входа и доступность префикса. Посмотрите, когда выгоднее другая реплика.",
     action: "Сравнить маршруты", format: "Интерактивный расчёт"
   },
   {
@@ -1002,7 +992,7 @@ export function getPlatformLandingViewModel(source: V3Source): PlatformLandingVi
       title: "Разобраться по порядку",
       description: hasStaleReference
         ? "От исполнения запросов к префиксному кэшу, синтетическому примеру и локальной проверке. Часть материалов требует повторной проверки."
-        : "Проверенные материалы об исполнении запросов и префиксном кэше, синтетический пример и инструмент для локальной проверки.",
+        : "От исполнения запроса к префиксному кэшу: механизм, учебный пример и проверка своего проекта.",
       href: "#current-vertical"
     })
   ]);

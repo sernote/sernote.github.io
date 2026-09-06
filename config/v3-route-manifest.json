@@ -331,7 +331,7 @@
     "behavior": "archive",
     "locale": "en",
     "archivedAt": "2026-08-02",
-    "archiveTarget": "/materials"
+    "archiveTarget": "/projects/audit-prompt-caching"
   },
   {
     "source": "/en/writing",

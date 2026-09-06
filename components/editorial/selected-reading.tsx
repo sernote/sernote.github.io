@@ -18,22 +18,30 @@ function ReadingLink({ item, children }: { item: SelectedReading; children: Reac
   return <Link href={item.href} className={className}>{children}</Link>;
 }
 
-function ReadingSource({ item }: { item: SelectedReading }) {
-  if (item.linkKind !== "external") return null;
+function ReadingMetadata({ item }: { item: SelectedReading }) {
+  if (!item.publishedLabel && item.linkKind !== "external") return null;
   return (
     <p className="mt-3 flex flex-wrap gap-x-3 text-xs leading-5 text-muted-foreground">
-      {item.sourceName ? <span>{item.sourceName}</span> : null}
-      <span>В новой вкладке</span>
+      {item.publishedLabel ? <span>{item.publishedLabel}</span> : null}
+      {item.linkKind === "external" ? (
+        <>
+          {item.sourceName ? <span>{item.sourceName}</span> : null}
+          <span>В новой вкладке</span>
+        </>
+      ) : null}
     </p>
   );
 }
 
-export function SelectedReadingCards({ items }: { items: readonly SelectedReading[] }) {
+export function SelectedReadingCards({ items, title = "Для первого знакомства" }: {
+  items: readonly SelectedReading[];
+  title?: string;
+}) {
   if (items.length === 0) return null;
   return (
     <section aria-labelledby="selected-reading-heading" className="py-10 md:py-12">
       <h2 id="selected-reading-heading" className="text-2xl font-semibold tracking-[-0.03em]">
-        Для первого знакомства
+        {title}
       </h2>
       <ol className="mt-7 grid list-none gap-8 p-0 md:grid-cols-3 md:gap-8 lg:gap-12">
         {items.map((item) => (
@@ -43,33 +51,10 @@ export function SelectedReadingCards({ items }: { items: readonly SelectedReadin
               <ReadingLink item={item}>{item.title}</ReadingLink>
             </h3>
             <p className="mt-4 text-base leading-7 text-muted-foreground">{item.reason}</p>
-            <ReadingSource item={item} />
+            <ReadingMetadata item={item} />
           </li>
         ))}
       </ol>
     </section>
-  );
-}
-
-export function ReadingJourney({ items }: { items: readonly SelectedReading[] }) {
-  if (items.length < 2) return null;
-  return (
-    <nav aria-labelledby="reading-journey-heading" className="border-y border-border bg-[var(--surface-subtle)] px-5 py-8 md:px-8 md:py-10">
-      <h2 id="reading-journey-heading" className="text-2xl font-semibold tracking-[-0.03em]">
-        От нагрузки к стоимости
-      </h2>
-      <ol className="mt-7 grid list-none gap-7 p-0 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-        {items.map((item, index) => (
-          <li key={item.entityId} className="min-w-0">
-            <p className="font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</p>
-            <h3 className="mt-2 text-base font-semibold leading-6">
-              <ReadingLink item={item}>{item.label}</ReadingLink>
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">{item.reason}</p>
-            <ReadingSource item={item} />
-          </li>
-        ))}
-      </ol>
-    </nav>
   );
 }

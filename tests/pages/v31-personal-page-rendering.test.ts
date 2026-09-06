@@ -114,7 +114,6 @@ describe("v3.1 personal pages", () => {
     expect(viewModels).toContain("export const TALK_FORMAT_LABELS");
     expect(talkPage).toContain("TALK_FORMAT_LABELS");
     expect(talkPage).toContain('record.format === "stream" ? "Дата эфира"');
-    expect(talkPage).toContain('record.format === "stream" ? "Обсудить стрим"');
     expect(talkPage).toContain('value: TALK_FORMAT_LABELS[record.format]');
     expect(talkPage).toContain('kindLabel={TALK_FORMAT_LABELS[record.format]}');
     expect(talkPage).toContain('label: "Запись опубликована"');
@@ -123,9 +122,7 @@ describe("v3.1 personal pages", () => {
       'item.type === "talk" ? TALK_FORMAT_LABELS[item.format] : "AI Platform"'
     );
     expect(talkPage).toContain("formatTimestampLabel(takeaway.timestampSeconds)");
-    expect(talkPage).toContain('record.format === "podcast"');
-    expect(talkPage).toContain('"Обсудить выпуск"');
-    expect(talkPage).toContain('"Пригласить выступить"');
+    expect(talkPage).toContain('bylineLabel="Участник"');
   });
 
   it("formats talk timestamps on both sides of one hour", () => {
@@ -133,7 +130,7 @@ describe("v3.1 personal pages", () => {
     expect(formatTimestampLabel(4236)).toBe("1:10:36");
   });
 
-  it("renders Home as three entrances and an author introduction, editorial lead and current selections", () => {
+  it("renders Home with three entrances, the author and an available lead without requiring selections", () => {
     const html = renderToStaticMarkup(
       createElement(HomePageContent, { model: homeModel })
     );
@@ -143,19 +140,65 @@ describe("v3.1 personal pages", () => {
     expect(html).toContain("AI Platform Lead в Битрикс24");
     expect(html).not.toContain("Статьи, выступления и рабочая система знаний об AI Platform.");
     expect(html).not.toContain('data-home-intro=""');
-    expect(html).toContain("Сейчас");
+    expect(html).not.toContain("Сейчас");
+    expect(html).not.toContain('aria-labelledby="selected-reading-heading"');
     expect(html).not.toContain("Все материалы");
     expect(html).toContain("Workload shape важнее названия модели");
     expect(html).toContain("Заметка");
     expect(html).toContain(AUTHOR_PROFILE.aboutIntro);
     expect(html).toContain("Читать заметку");
-    expect(html).toContain("Зачем Битрикс24 своя AI-платформа?");
-    expect(html).toContain("Prefix Cache");
     expect(html).toContain('href="/blog"');
     expect(html).toContain('href="/materials"');
     expect(html).toContain('href="/ai-platform"');
     expect(html).not.toContain("Отвечаю за инференс");
     expect(html).not.toContain("Профессиональный контекст");
+  });
+
+  it("shows one Home lead with two continuations and dated reading choices", () => {
+    const lead = listItem("lead", "Главный разбор", "/blog/lead");
+    const selected: SelectedReading[] = [
+      { ...listItem("new", "Свежий разбор", "/blog/new"), label: "Хранение кэша", reason: "Загрузка или пересчёт", sourceName: null, publishedLabel: "5 сентября 2026 года" },
+      { ...listItem("other", "Другой разбор", "/blog/other"), label: "Общий пул", reason: "Разные запросы в одном пуле", sourceName: null, publishedLabel: "21 августа 2026 года" },
+      { ...listItem("external", "Внешняя статья", "https://example.com/authored"), linkKind: "external", label: "Стоимость", reason: "Стоимость с учётом кэша", sourceName: "Хабр", publishedLabel: "10 марта 2026 года" }
+    ];
+    const html = renderToStaticMarkup(createElement(HomePageContent, {
+      model: {
+        ...homeModel,
+        selected,
+        readingPath: [
+          { ...lead, action: "Читать разбор", outcome: "Понять механизм" },
+          { ...listItem("example", "Пример", "/ai-platform/components/prefix-cache#experiment"), contentType: "platform-component", action: "Изменить условия", outcome: "Сравнить варианты" },
+          { ...listItem("project", "Проект", "/projects/audit-prompt-caching#your-project"), contentType: "project", action: "Проверить проект", outcome: "Проверить запросы" }
+        ]
+      }
+    }));
+    const continuation = html.match(/<nav[^>]*aria-label="Разобраться с префиксным кэшем"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    const selectedSection = html.match(/<section[^>]*aria-labelledby="selected-reading-heading"[\s\S]*?<\/section>/)?.[0] ?? "";
+
+    expect(count(html, />Главный разбор</g)).toBe(1);
+    expect(continuation).not.toContain(`href="${lead.href}"`);
+    expect(count(continuation, /<a\b/g)).toBe(2);
+    expect(continuation).toContain('href="/ai-platform/components/prefix-cache#experiment"');
+    expect(continuation).toContain('href="/projects/audit-prompt-caching#your-project"');
+    expect(selectedSection).toContain("Ещё почитать");
+    for (const item of selected) {
+      expect(selectedSection).toContain(item.title);
+      expect(selectedSection).toContain(item.reason);
+      expect(selectedSection).toContain(item.publishedLabel);
+    }
+    expect(selectedSection).toMatch(/<a[^>]*href="https:\/\/example\.com\/authored"[^>]*target="_blank"[^>]*rel="noreferrer"/);
+    expect(html).not.toContain("Сейчас");
+  });
+
+  it("does not repeat the fallback lead as another reading choice", () => {
+    const html = renderToStaticMarkup(createElement(HomePageContent, {
+      model: { ...homeModel, selected: [{
+        ...homeModel.featured[0].item,
+        label: "Выбранный текст", reason: "Разбор", sourceName: null
+      }] }
+    }));
+    expect(html).not.toContain('aria-labelledby="selected-reading-heading"');
+    expect(html).toContain(homeModel.featured[0].item.title);
   });
 
   it("renders every native Blog entry with format-specific actions", () => {
@@ -185,41 +228,34 @@ describe("v3.1 personal pages", () => {
     const html = renderToStaticMarkup(createElement(BlogPageContent, {
       model: {
         ...blogModel,
-        selected,
-        journey: selected,
-        readingPath: [{ ...listItem("legacy-path", "Legacy path", "/old-cache-path"), action: "Legacy action", outcome: "Legacy outcome" }]
+        selected
       }
     }));
 
     const selectedSection = html.match(/<section[^>]*aria-labelledby="selected-reading-heading"[\s\S]*?<\/section>/)?.[0] ?? "";
-    const journey = html.match(/<nav[^>]*aria-labelledby="reading-journey-heading"[\s\S]*?<\/nav>/)?.[0] ?? "";
     expect(selectedSection).not.toBe("");
-    expect(journey).not.toBe("");
-    expect(html.indexOf(selectedSection)).toBeLessThan(html.indexOf(journey));
-    expect(html.indexOf(journey)).toBeLessThan(html.indexOf('aria-labelledby="blog-archive-heading"'));
+    expect(count(html, /aria-labelledby="selected-reading-heading"/g)).toBe(1);
+    expect(html).not.toContain('aria-labelledby="reading-journey-heading"');
+    expect(html.indexOf('href="#blog-archive-heading"')).toBeGreaterThan(-1);
+    expect(html.indexOf('href="#blog-archive-heading"')).toBeLessThan(html.indexOf(selectedSection));
+    expect(html.indexOf(selectedSection)).toBeLessThan(html.indexOf('aria-labelledby="blog-archive-heading"'));
     for (const item of selected) {
       expect(selectedSection).toContain(item.reason);
       expect(selectedSection).toContain(item.title);
       expect(selectedSection).toContain(item.label);
-      expect(journey).toContain(item.reason);
-      expect(journey).toContain(item.label);
     }
-    for (const section of [selectedSection, journey]) {
-      expect(section).toMatch(/<a[^>]*href="https:\/\/example\.com\/authored"[^>]*target="_blank"[^>]*rel="noreferrer"/);
-      expect(section).toContain("Хабр");
-      expect(section).toMatch(/<span[^>]*>В новой вкладке<\/span>/);
-    }
-    expect(html).not.toContain("/old-cache-path");
+    expect(selectedSection).toMatch(/<a[^>]*href="https:\/\/example\.com\/authored"[^>]*target="_blank"[^>]*rel="noreferrer"/);
+    expect(selectedSection).toContain("Хабр");
+    expect(selectedSection).toMatch(/<span[^>]*>В новой вкладке<\/span>/);
     expect(html).toContain(`href="${siteLinks.telegram}"`);
     expect(html).toContain('href="/rss.xml"');
   });
 
-  it("omits unavailable reading selections and a one-item journey without hiding native entries", () => {
+  it("omits unavailable reading selections without hiding native entries", () => {
     const html = renderToStaticMarkup(createElement(BlogPageContent, {
       model: {
         ...blogModel,
-        selected: [],
-        journey: [{ ...listItem("single", "Один текст", "/blog/single"), label: "Начало", reason: "Причина", sourceName: null }]
+        selected: []
       }
     }));
     expect(html).not.toContain('aria-labelledby="selected-reading-heading"');
@@ -243,7 +279,7 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Открыть выступление");
     expect(html).not.toContain("58:10 · YouTube");
     expect(count(html, /data-publication=/g)).toBe(model.publications.length);
-    expect(count(html, /Написать в Telegram/g)).toBe(2);
+    expect(count(html, /Читать канал/g)).toBe(1);
     expect(html).not.toContain('href="/talks"');
     expect(html).not.toContain('href="/projects"');
   });
@@ -367,7 +403,7 @@ describe("v3.1 personal pages", () => {
     expect(html).not.toContain("Короткая биография для организаторов");
     expect(html).not.toContain("Как здесь оказался");
     expect(html).not.toContain("Кем не являюсь");
-    expect(count(html, /Написать в Telegram/g)).toBe(2);
+    expect(count(html, /Читать канал/g)).toBe(1);
     expect(html).toContain('href="/materials"');
     expect(html).toMatch(
       /<a[^>]+href="https:\/\/example\.com\/external"[^>]+target="_blank"[^>]+rel="noreferrer"/
@@ -405,6 +441,26 @@ describe("v3.1 personal pages", () => {
 });
 
 describe("v3.1 content detail shell", () => {
+  it("distinguishes participation in a recording from authorship of an article", () => {
+    const props = {
+      currentPath: "/talks/example",
+      kindLabel: "Подкаст",
+      title: "Разговор о платформе",
+      lead: "Разбор решений команды.",
+      authorHref: "/about",
+      contactLabel: "Читать канал"
+    };
+    const participant = renderToStaticMarkup(createElement(V31ContentDetailPage, {
+      ...props, bylineLabel: "Участник"
+    })).replace(/<[^>]+>/g, "");
+    const author = renderToStaticMarkup(createElement(V31ContentDetailPage, props))
+      .replace(/<[^>]+>/g, "");
+
+    expect(participant).toContain("Участник — Сергей Нотевский");
+    expect(participant).not.toContain("Автор — Сергей Нотевский");
+    expect(author).toContain("Автор — Сергей Нотевский");
+  });
+
   it("keeps one main, calm authorship, related items and one contact action", () => {
     const html = renderToStaticMarkup(
       createElement(

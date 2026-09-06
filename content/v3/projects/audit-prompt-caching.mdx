@@ -61,6 +61,8 @@ npx skills add https://github.com/sernote/audit-prompt-caching --skill audit-pro
 Начни с кода, который собирает и отправляет LLM-запросы.
 Объясни, нужны ли изменения префикса, инструментов или маршрутизации.
 Укажи, по каким данным проверить результат.
+Если изменений не нужно, объясни почему.
+Если данных не хватает, назови следующее конкретное наблюдение.
 ```
 
 Скилл ищет меняющиеся поля в начале промпта, перестановки инструментов и схем, изменения истории между шагами. Затем проверяет настройки провайдера и роутера: одинаковые запросы могут попадать на разные реплики, каждая со своим кэшем.
@@ -106,7 +108,9 @@ python3 audit-prompt-caching/scripts/prefix_stability_check.py --json \
 
 ## Как проверить результат
 
-После изменения промпта повторите вызовы и посмотрите, сколько входных токенов провайдер прочитал из кэша. Если API отдельно показывает создание кэша, проверьте и чтение в следующих вызовах. Названия полей и условия зависят от API; в репозитории есть справки для [OpenAI](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/openai.md), [Anthropic](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/anthropic.md) и [Bedrock](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/bedrock.md).
+Проверьте один вывод аудита. Если предложена правка, сравните готовые запросы до и после. Если начало уже стабильно, оставьте его как есть и проверьте фактическое чтение кэша.
+
+Повторите вызовы и посмотрите, сколько входных токенов провайдер прочитал из кэша. Если API отдельно показывает создание кэша, проверьте и чтение в следующих вызовах. Названия полей и условия зависят от API; в репозитории есть справки для [OpenAI](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/openai.md), [Anthropic](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/anthropic.md) и [Bedrock](https://github.com/sernote/audit-prompt-caching/blob/main/audit-prompt-caching/references/bedrock.md).
 
 Затем сравните время до первого токена и стоимость вызовов на той же нагрузке. Это отвечает на главный вопрос: помогло ли изменение приложению. Бывает, что кэш читается, а ответ всё равно задерживается в очереди. Такой случай разбираю в статье [«Тёплый кэш — ещё не быстрый ответ»](/blog/cache-locality-is-a-routing-problem).
 

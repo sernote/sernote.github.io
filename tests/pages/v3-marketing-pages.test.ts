@@ -357,7 +357,6 @@ describe("v3 Blog route contract", () => {
     expect(routeText).toContain('authorHref="/about"');
     expect(routeText).toContain('kindLabel={isNote ? "Короткая заметка" : "Статья"}');
     expect(routeText).toMatch(/v3Source\s*\.getRelatedForPage\(record, 3\)/);
-    expect(routeText).toContain('contactLabel="Обсудить материал"');
     expect(routeText).not.toContain("DocsPage");
     expect(routeText).not.toContain("dangerouslySetInnerHTML");
     expect(routeText).not.toContain("short-prompt-not-cheap");

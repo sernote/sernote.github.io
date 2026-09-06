@@ -99,7 +99,7 @@ export function AiPlatformPageContent({
                 <Link href={node.href} className="group grid min-h-11 grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 gap-y-3 py-6 md:grid-cols-[2rem_minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-x-7">
                   <span className="pt-1 font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{node.meta} · {node.statusLabel}</p>
+                    <p className="text-xs text-muted-foreground">{node.meta}{node.statusLabel === "Проверено" ? "" : ` · ${node.statusLabel}`}</p>
                     <h3 className="mt-2 text-lg font-semibold leading-6 group-hover:text-primary group-focus-visible:text-primary">
                       {node.title}<ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />
                     </h3>
@@ -128,7 +128,7 @@ export function AiPlatformPageContent({
           <div className="mt-7 border-t border-border">
             {mapModel.areas.map((area) => {
               const presentation = getAreaPresentation(area);
-              const status = area.statusLabel === "Планируется" ? "Запланировано" : area.statusLabel === "Доступно" ? "Проверено" : "Нужна проверка";
+              const status = area.statusLabel === "Планируется" ? "Запланировано" : area.statusLabel === "Доступно" ? "Читать" : "Нужна проверка";
               const content = (
                 <>
                   <div>
@@ -297,7 +297,7 @@ export function AiPlatformReferencePage({
           ) : null}
           {model.reviewStatus === "stale" ? (
             <p role="status" className="mt-4 border-y border-border py-3 text-sm leading-6">
-              Нужна повторная проверка: источники или допущения вышли за установленный review cycle.
+              Материал давно не обновлялся. Перед применением сверьте поведение со своей версией движка и указанными источниками.
             </p>
           ) : null}
           <h1 id="reference-detail-title" className="mt-4 text-[2.125rem] font-semibold leading-[1.08] tracking-[-0.04em] md:text-[2.75rem] lg:text-[3.25rem]">
@@ -306,20 +306,21 @@ export function AiPlatformReferencePage({
           <p className="mt-5 text-lg leading-7 text-muted-foreground md:text-xl md:leading-8">{model.description}</p>
           <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2 border-y border-border py-4 text-sm text-muted-foreground">
             <span>Автор — <Link href="/about" className="text-foreground hover:text-primary">Сергей Нотевский</Link></span>
-            <span>{model.typeLabel}</span>
-            <span>{model.reviewStatusLabel} <time dateTime={model.reviewedAt}>{model.reviewedLabel}</time></span>
           </div>
         </header>
 
-        <ContentToc toc={model.toc} />
-
-        <div className="mt-10 min-w-0 max-w-[760px] [overflow-wrap:anywhere] md:mt-12">
-          {children}
+        <div className="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12 xl:grid-cols-[minmax(0,760px)_16rem] xl:gap-16">
+          <div className="min-w-0 lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:self-start">
+            <ContentToc toc={model.toc} variant="reference" />
+          </div>
+          <div className="min-w-0 max-w-[760px] [overflow-wrap:anywhere] lg:col-start-1 lg:row-start-1">
+            {children}
+          </div>
         </div>
 
         <section aria-labelledby="reference-evidence-heading" className="mt-14 border-t border-border pt-7">
           <SectionTitle>
-            <span id="reference-evidence-heading">Проверка материала</span>
+            <span id="reference-evidence-heading">Источники и условия применения</span>
           </SectionTitle>
           <div className="grid md:grid-cols-2">
             <div className="border-b border-border py-5 md:border-r md:pr-8">

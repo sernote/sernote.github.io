@@ -1,0 +1,72 @@
+{
+  "revision": "0914f211bc7ecedb0fdffae579acdafc05e06d18",
+  "scratch": "/private/tmp/first-audit-walkthrough-pcbkdhub",
+  "python": "3.14.3",
+  "cases": {
+    "before": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "audit-prompt-caching/scripts/prefix_stability_check.py",
+        "--json",
+        "examples/first-audit/before-a.txt",
+        "examples/first-audit/before-b.txt"
+      ],
+      "exit_code": 1,
+      "report": {
+        "stable": false,
+        "stable_prefix_bytes": 43,
+        "first_difference": {
+          "byte_offset": 43,
+          "near": "",
+          "first_char": "5:00Z\nTicket: SUP-1042\nCustomer message:",
+          "second_char": "8:00Z\nTicket: SUP-1047\nCustomer message:"
+        }
+      }
+    },
+    "after": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "audit-prompt-caching/scripts/prefix_stability_check.py",
+        "--json",
+        "examples/first-audit/after-a.txt",
+        "examples/first-audit/after-b.txt"
+      ],
+      "exit_code": 1,
+      "report": {
+        "stable": false,
+        "stable_prefix_bytes": 254,
+        "first_difference": {
+          "byte_offset": 254,
+          "near": "",
+          "first_char": "5:00Z\nTicket: SUP-1042\nCustomer message:",
+          "second_char": "8:00Z\nTicket: SUP-1047\nCustomer message:"
+        }
+      }
+    },
+    "matching_inputs": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "audit-prompt-caching/scripts/prefix_stability_check.py",
+        "--json",
+        "examples/first-audit/after-a.txt",
+        "examples/first-audit/after-a.txt"
+      ],
+      "exit_code": 0,
+      "report": {
+        "stable": true,
+        "stable_prefix_bytes": 343,
+        "first_difference": null
+      }
+    }
+  },
+  "unchanged_lines_after_reorder": true,
+  "github_confirmed_blobs": {
+    "audit-prompt-caching/scripts/prefix_stability_check.py": "3c54795d63d852ad8cd83970276e06d0788565db",
+    "examples/first-audit/README.md": "4d3c3d158902fcbc5f46b0ad2e5f40b29ad86fec"
+  },
+  "case_decisions": {
+    "early_variable_context": "Layout edit justified within the rendered-text example: move unchanged task instructions before runtime context. Only increased byte-prefix stability is verified.",
+    "stable_beginning_variable_tail": "No further prefix-layout edit justified: unchanged instructions already lead; timestamp, ticket and customer message are needed variable tail. A differing full request and exit 1 are expected.",
+    "matching_inputs_without_usage": "Cache reuse unresolved: byte-identical control confirms only file equality. Next collect a documented cache-read field for repeated completed requests on a fixed model/API path, plus input tokens and repetition timestamps; for self-hosting include selected replica and compatible tokenizer/template."
+  }
+}

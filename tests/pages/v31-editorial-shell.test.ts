@@ -32,7 +32,7 @@ describe("v3.1 editorial shell", () => {
     expect(html).toContain("AI Platform");
     expect(html).toContain("Обо мне");
     expect(html).toMatch(/<a(?=[^>]*href="\/materials")(?=[^>]*aria-current="page")[^>]*>/);
-    expect(html).toContain("Написать в Telegram");
+    expect(html).toContain("Telegram-канал");
     expect(html).not.toContain("Сменить язык");
     expect(html).not.toContain(">SN<");
   });
