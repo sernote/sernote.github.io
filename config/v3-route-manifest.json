@@ -72,6 +72,12 @@
     "locale": "ru"
   },
   {
+    "source": "/blog/reasoning-effort-without-cache-reset",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/blog/roles-in-llm-prompts",
     "destination": null,
     "behavior": "keep",

@@ -20,6 +20,7 @@ const keep = new Set([
   "/blog/ai-platform-before-gpu",
   "/blog/hybrid-reasoners-in-production",
   "/blog/kv-offload-economics",
+  "/blog/reasoning-effort-without-cache-reset",
   "/blog/roles-in-llm-prompts",
   "/blog/sticky-sessions-vs-prefix-routing",
   "/blog/what-cache-router-knows",
@@ -72,9 +73,9 @@ const aliases = new Map<string, string>([
 ]);
 
 describe("v3.1 route decision set", () => {
-  it("contains exactly 112 non-service route decisions", () => {
-    expect(manifest).toHaveLength(112);
-    expect(new Set(manifest.map((record) => record.source)).size).toBe(112);
+  it("contains exactly 113 non-service route decisions", () => {
+    expect(manifest).toHaveLength(113);
+    expect(new Set(manifest.map((record) => record.source)).size).toBe(113);
   });
 
   it("matches the accepted keep and direct-alias sets", () => {
