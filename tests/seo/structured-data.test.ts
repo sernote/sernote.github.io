@@ -48,6 +48,7 @@ const expectedKeepPaths = [
   "/blog/cache-locality-is-a-routing-problem",
   "/blog/hybrid-reasoners-in-production",
   "/blog/kv-offload-economics",
+  "/blog/reasoning-effort-without-cache-reset",
   "/blog/roles-in-llm-prompts",
   "/blog/sticky-sessions-vs-prefix-routing",
   "/blog/what-cache-router-knows",
@@ -260,7 +261,7 @@ describe("public SEO URLs", () => {
     const urls = entries.map((entry) => entry.url);
 
     expect(urls).toEqual(expectedKeepPaths.map(canonicalUrl));
-    expect(urls).toHaveLength(23);
+    expect(urls).toHaveLength(24);
     expect(urls.every((url) => url.endsWith("/"))).toBe(true);
     expect(urls.some((url) => url.includes("habr.com"))).toBe(false);
     expect(urls).not.toContain("https://notevskii.tech/ru/");
