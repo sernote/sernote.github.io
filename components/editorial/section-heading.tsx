@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 type SectionHeadingProps = {
   title: string;
+  index?: string;
   action?: {
     href: string;
     label: string;
@@ -10,17 +11,15 @@ type SectionHeadingProps = {
   className?: string;
 };
 
-export function SectionHeading({ title, action, className }: SectionHeadingProps) {
+export function SectionHeading({ title, index, action, className }: SectionHeadingProps) {
   return (
-    <header
-      className={cn(
-        "flex min-h-16 items-center justify-between gap-4 border-b border-border py-3",
-        className
-      )}
-    >
-      <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{title}</h2>
+    <header className={cn("flex min-h-12 items-center justify-between gap-6", className)}>
+      <h2 className="section-kicker flex-1">
+        {index ? <span data-kicker-index="">{index}</span> : null}
+        <span>{title}</span>
+      </h2>
       {action ? (
-        <EditorialLink href={action.href} className="text-xs uppercase tracking-[0.08em]">
+        <EditorialLink href={action.href} className="shrink-0 text-sm">
           {action.label}
         </EditorialLink>
       ) : null}

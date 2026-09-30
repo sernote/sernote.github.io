@@ -61,7 +61,7 @@ export function getAreaPresentation(area: PlatformMapAreaViewModel): AreaPresent
   );
 }
 
-function displayStatus(area: PlatformMapAreaViewModel): "Читать" | "Нужна проверка" | "Запланировано" {
+export function displayStatus(area: PlatformMapAreaViewModel): "Читать" | "Нужна проверка" | "Запланировано" {
   if (area.statusLabel === "Доступно") return "Читать";
   if (area.statusLabel === "Нужна проверка") return "Нужна проверка";
   return "Запланировано";
@@ -134,5 +134,61 @@ export function PlatformMap({ model }: { model: PlatformMapViewModel }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+/** Areas that span the full width of the outline: strategy on top, control plane below, security as the base. */
+const FULL_WIDTH_AREAS = new Set(["strategy-boundaries", "control-plane", "security-ownership"]);
+
+const STATUS_TONE = Object.freeze({
+  "Читать": "accent",
+  "Нужна проверка": "warn",
+  "Запланировано": "muted"
+} as const);
+
+/**
+ * Compact schematic of the capability map for the AI Platform entrance.
+ * It mirrors the map rows as layered blocks and is purely descriptive: the
+ * linked area list and the full map remain the navigable versions.
+ */
+export function PlatformOutline({ model }: { model: PlatformMapViewModel }) {
+  const statuses = (Object.keys(STATUS_TONE) as (keyof typeof STATUS_TONE)[]).filter((status) =>
+    model.areas.some((area) => displayStatus(area) === status)
+  );
+  return (
+    <figure data-platform-outline="" className="panel m-0 p-4 sm:p-5">
+      <figcaption className="section-kicker">Карта областей</figcaption>
+      <ol className="m-0 mt-4 grid list-none grid-cols-2 gap-1.5 p-0">
+        {model.areas.map((area) => {
+          const [title, english] = getAreaPresentation(area).title.split(" (");
+          const status = displayStatus(area);
+          return (
+            <li
+              key={area.entityId}
+              data-outline-area={area.entityId}
+              className={`flex min-w-0 flex-col justify-between gap-3 border border-border bg-background/60 px-3 py-2.5 ${FULL_WIDTH_AREAS.has(area.entityId) ? "col-span-2" : ""}`}
+            >
+              <span className="flex items-center justify-between gap-3">
+                <span className="font-mono text-[0.6875rem] text-muted-foreground">{area.index}</span>
+                <span aria-hidden="true" className="status-dot" data-tone={STATUS_TONE[status]} />
+              </span>
+              <span className="text-sm font-medium leading-5 text-foreground">
+                {title}
+                {english ? <span className="block font-mono text-[0.625rem] uppercase tracking-[0.08em] text-muted-foreground">{english.replace(")", "")}</span> : null}
+                <span className="sr-only"> — {status}</span>
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+      <p aria-hidden="true" className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
+        {statuses.map((status) => (
+          <span key={status} className="inline-flex items-center gap-2">
+            <span className="status-dot" data-tone={STATUS_TONE[status]} />
+            {status}
+          </span>
+        ))}
+      </p>
+    </figure>
   );
 }

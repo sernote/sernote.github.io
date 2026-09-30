@@ -25,33 +25,67 @@
   --font-mono: var(--font-mono);
 }
 
+/*
+ * Graphite field-manual palette (visual refresh, 30 Sep 2026).
+ * The site is dark-only: the Russian root layout forces `dark` on <html>, so
+ * page, portaled dialogs and Fumadocs prose/code all resolve the same tokens.
+ */
 :root {
-  color-scheme: light;
-  --background: #ffffff;
-  --surface-subtle: #fafbfc;
-  --foreground: #101214;
-  --card: #ffffff;
-  --card-foreground: #101214;
-  --popover: #ffffff;
-  --popover-foreground: #101214;
-  --primary: #2f5c9e;
-  --primary-foreground: #ffffff;
-  --secondary: #f3f5f7;
-  --secondary-foreground: #101214;
-  --muted: #fafbfc;
-  --muted-foreground: #5b6166;
-  --accent: #f1f4f8;
-  --accent-foreground: #101214;
-  --destructive: #b42318;
-  --border: rgba(16, 18, 20, 0.12);
-  --input: rgba(16, 18, 20, 0.16);
-  --ring: #2f5c9e;
+  color-scheme: dark;
+  --background: #0b0d10;
+  --surface-subtle: #101318;
+  --surface-raised: #141920;
+  --foreground: #e8ecf0;
+  --card: #11151a;
+  --card-foreground: #e8ecf0;
+  --popover: #11151a;
+  --popover-foreground: #e8ecf0;
+  --primary: #86b6ff;
+  --primary-foreground: #07111f;
+  --secondary: #161b22;
+  --secondary-foreground: #e8ecf0;
+  --muted: #13171d;
+  --muted-foreground: #9ba5b0;
+  --accent: #16202c;
+  --accent-foreground: #dce9ff;
+  --destructive: #ff8a7a;
+  --border: rgb(200 214 232 / 0.11);
+  --border-strong: rgb(200 214 232 / 0.2);
+  --input: rgb(200 214 232 / 0.16);
+  --ring: #86b6ff;
+  --grid-line: rgb(134 182 255 / 0.045);
   --font-sans: "Onest Variable", "Onest", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "SFMono-Regular", "Roboto Mono", Consolas, monospace;
+  --font-mono: "SFMono-Regular", "JetBrains Mono", "Roboto Mono", Consolas, monospace;
 }
 
-* {
-  border-color: var(--border);
+/* Map Fumadocs (prose, code blocks, callouts) onto the same palette. */
+html.dark {
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-primary: var(--primary);
+  --color-fd-primary-foreground: var(--primary-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-ring: var(--ring);
+  --color-fd-overlay: rgb(3 5 8 / 0.72);
+}
+
+/* Base layer, so border-colour utilities such as `border-primary` can win. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
 }
 
 html {
@@ -154,7 +188,8 @@ a {
 }
 
 ::selection {
-  background: rgba(47, 92, 158, 0.2);
+  background: rgb(134 182 255 / 0.28);
+  color: var(--foreground);
 }
 
 .text-balance {
@@ -232,13 +267,114 @@ a {
   display: inline-flex;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .editorial-desktop-nav {
     display: flex;
   }
 
   .editorial-mobile-nav-trigger {
     display: none;
+  }
+}
+
+/* ---- Graphite field-manual primitives ---------------------------------- */
+/* Layered so Tailwind utilities on the same element always win. */
+@layer components {
+  /* Faint blueprint grid for anchor surfaces only, never under running text. */
+  .blueprint-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .blueprint-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    mask-image: radial-gradient(85% 70% at 12% 0%, #000 20%, transparent 78%);
+  }
+
+  @media (max-width: 767px) {
+    .blueprint-grid::before {
+      mask-image: linear-gradient(to bottom, #000 0, transparent 260px);
+    }
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid var(--border);
+    background: rgb(11 13 16 / 0.86);
+    backdrop-filter: saturate(140%) blur(12px);
+  }
+
+  /* Small monospace label that opens a section, followed by a hairline. */
+  .section-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 1rem;
+    text-transform: uppercase;
+  }
+
+  .section-kicker::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-kicker[data-rule="none"]::after {
+    display: none;
+  }
+
+  .section-kicker > [data-kicker-index] {
+    color: var(--primary);
+  }
+
+  /* Raised, hairline-framed surface for the one feature per page. */
+  .panel {
+    border: 1px solid var(--border-strong);
+    background: linear-gradient(180deg, var(--surface-raised), var(--card));
+  }
+
+  /* Arrow nudge used by entrance and feature links. */
+  .arrow-nudge {
+    transition: transform 160ms ease;
+  }
+
+  .group:hover .arrow-nudge,
+  .group:focus-visible .arrow-nudge {
+    transform: translateX(3px);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 999px;
+    background: var(--primary);
+  }
+
+  .status-dot[data-tone="muted"] {
+    border: 1px solid var(--muted-foreground);
+    background: transparent;
+  }
+
+  .status-dot[data-tone="warn"] {
+    background: #e8c27a;
   }
 }
 

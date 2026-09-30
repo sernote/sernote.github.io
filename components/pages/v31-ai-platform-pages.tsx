@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 
-import { PlatformMap, getAreaPresentation } from "@/components/ai-platform/platform-map";
+import { PlatformMap, PlatformOutline, displayStatus, getAreaPresentation } from "@/components/ai-platform/platform-map";
 import { ContentToc } from "@/components/editorial/content-toc";
 import { EditorialShell } from "@/components/site/editorial-shell";
 import type {
@@ -29,7 +29,7 @@ function InlineLink({ href, children }: { href: string; children: ReactNode }) {
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <h2 className="max-w-[52rem] text-2xl font-semibold leading-tight tracking-[-0.025em] text-foreground md:text-[1.75rem]">
+    <h2 className="max-w-[52rem] text-[1.75rem] font-semibold leading-tight tracking-[-0.035em] text-foreground md:text-[2.25rem]">
       {children}
     </h2>
   );
@@ -48,10 +48,11 @@ export function AiPlatformPageContent({
 
   return (
     <EditorialShell currentPath="/ai-platform">
-      <div className={`${frameClassName} py-10 md:py-12 lg:py-14`}>
-        <header data-platform-hero="" className="max-w-[820px]">
-          <p className="text-sm font-medium text-primary">Инженерный хэндбук</p>
-          <h1 className="mt-4 text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.055em] md:text-[3.75rem]">
+      <div className="blueprint-grid border-b border-border">
+        <div className={`${frameClassName} grid gap-10 pb-12 pt-14 md:pb-16 md:pt-20 lg:grid-cols-12 lg:gap-12`}>
+        <header data-platform-hero="" className="max-w-[820px] lg:col-span-7">
+          <p className="section-kicker" data-rule="none"><span data-kicker-index="">AI</span>Инженерный хэндбук</p>
+          <h1 className="mt-5 text-[2.75rem] font-semibold leading-[1] tracking-[-0.05em] md:text-[3.75rem]">
             AI Platform
           </h1>
           <p className="mt-7 max-w-[48rem] text-xl leading-[1.45] tracking-[-0.015em] md:text-[1.5rem] md:leading-[1.45]">
@@ -60,29 +61,39 @@ export function AiPlatformPageContent({
           <p className="mt-4 max-w-[43rem] text-base leading-7 text-muted-foreground">
             Начинаю с исполнения запросов и кэша. Здесь собраны главы, авторские разборы и воспроизводимые проверки.
           </p>
-          <nav aria-label="Как читать хэндбук" className="mt-5 flex flex-wrap gap-x-8">
+          <nav aria-label="Как читать хэндбук" className="mt-7 flex flex-wrap gap-x-8 border-t border-border pt-3">
             {questions.length > 0 ? <InlineLink href="#handbook-questions">Выбрать вопрос</InlineLink> : null}
             <InlineLink href={verticalEntry?.href ?? "#current-vertical"}>Читать по порядку</InlineLink>
             <InlineLink href={mapEntry?.href ?? "/ai-platform/map"}>Открыть карту</InlineLink>
           </nav>
         </header>
+        <div className="lg:col-span-5 lg:self-end">
+          <PlatformOutline model={mapModel} />
+        </div>
+        </div>
+      </div>
+
+      <div className={`${frameClassName} pb-14 md:pb-20`}>
 
         {questions.length > 0 ? (
-          <section id="handbook-questions" aria-labelledby="handbook-questions-heading" className="mt-10 scroll-mt-24 md:mt-14">
+          <section id="handbook-questions" aria-labelledby="handbook-questions-heading" className="mt-14 scroll-mt-24 md:mt-20">
             <SectionTitle><span id="handbook-questions-heading">С каким вопросом вы пришли</span></SectionTitle>
-            <div className="mt-6 grid border-l border-t border-border md:grid-cols-2">
-              {questions.map((question) => (
+            <div className="mt-8 grid border-l border-t border-border md:grid-cols-2">
+              {questions.map((question, index) => (
                 <Link
                   key={question.id}
                   href={question.href}
                   data-platform-question={question.id}
-                  className="group flex min-w-0 flex-col border-b border-r border-border px-5 py-6 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:bg-[var(--surface-subtle)] md:p-7"
+                  className="group flex min-w-0 flex-col border-b border-r border-border px-5 py-6 transition-colors hover:bg-[var(--surface-raised)] focus-visible:bg-[var(--surface-raised)] md:p-8"
                 >
-                  <p className="text-xs font-medium text-muted-foreground">{question.meta}</p>
-                  <h3 className="mt-3 text-xl font-semibold leading-[1.3] tracking-[-0.02em] group-hover:text-primary group-focus-visible:text-primary">{question.question}</h3>
+                  <p className="flex items-baseline gap-3 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+                    <span aria-hidden="true" className="text-primary">{String(index + 1).padStart(2, "0")}</span>
+                    {question.meta}
+                  </p>
+                  <h3 className="mt-4 text-xl font-semibold leading-[1.3] tracking-[-0.02em] group-hover:text-primary group-focus-visible:text-primary md:text-[1.375rem]">{question.question}</h3>
                   <p className="mb-5 mt-3 text-sm leading-6 text-muted-foreground">{question.outcome}</p>
                   <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                    {question.action}<ArrowRight aria-hidden="true" className="size-4 shrink-0" />
+                    {question.action}<ArrowRight aria-hidden="true" className="arrow-nudge size-4 shrink-0" />
                   </span>
                 </Link>
               ))}
@@ -96,8 +107,8 @@ export function AiPlatformPageContent({
           <ol className="m-0 mt-7 list-none border-t border-border p-0">
             {model.vertical.map((node, index) => (
               <li key={node.entityId} data-vertical-node={node.entityId} className="border-b border-border">
-                <Link href={node.href} className="group grid min-h-11 grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 gap-y-3 py-6 md:grid-cols-[2rem_minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-x-7">
-                  <span className="pt-1 font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                <Link href={node.href} className="group grid min-h-11 grid-cols-[1.75rem_minmax(0,1fr)] gap-x-4 gap-y-3 py-6 md:grid-cols-[1.75rem_minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-x-7">
+                  <span className="inline-flex size-7 items-center justify-center border border-[var(--border-strong)] font-mono text-[0.6875rem] text-primary group-hover:border-primary">{String(index + 1).padStart(2, "0")}</span>
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{node.meta}{node.statusLabel === "Проверено" ? "" : ` · ${node.statusLabel}`}</p>
                     <h3 className="mt-2 text-lg font-semibold leading-6 group-hover:text-primary group-focus-visible:text-primary">
@@ -117,7 +128,7 @@ export function AiPlatformPageContent({
           ) : null}
         </section>
 
-        <section aria-labelledby="platform-areas-heading" className="mt-14 border-t border-border pt-8 md:mt-20">
+        <section aria-labelledby="platform-areas-heading" className="mt-14 border-t border-border pt-10 md:mt-20">
           <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-2">
             <SectionTitle><span id="platform-areas-heading">Что ещё входит в AI-платформу</span></SectionTitle>
             <InlineLink href={mapEntry?.href ?? "/ai-platform/map"}>Карта с границами ответственности</InlineLink>
@@ -128,7 +139,7 @@ export function AiPlatformPageContent({
           <div className="mt-7 border-t border-border">
             {mapModel.areas.map((area) => {
               const presentation = getAreaPresentation(area);
-              const status = area.statusLabel === "Планируется" ? "Запланировано" : area.statusLabel === "Доступно" ? "Читать" : "Нужна проверка";
+              const status = displayStatus(area);
               const content = (
                 <>
                   <div>
@@ -136,7 +147,7 @@ export function AiPlatformPageContent({
                       {presentation.title}
                       {area.href === null ? null : <ArrowRight aria-hidden="true" className="ml-2 inline size-4 text-primary" />}
                     </h3>
-                    <p data-platform-area-status={status} className="mt-2 text-xs text-muted-foreground">{status}</p>
+                    <p data-platform-area-status={status} className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground"><span aria-hidden="true" className="status-dot" data-tone={status === "Читать" ? undefined : status === "Нужна проверка" ? "warn" : "muted"} />{status}</p>
                   </div>
                   <p className="text-sm leading-6 text-muted-foreground">{area.purpose}</p>
                 </>
@@ -160,7 +171,7 @@ export function AiPlatformMapPageContent({ model }: { model: PlatformMapViewMode
     <EditorialShell currentPath="/ai-platform/map">
       <div className={`${frameClassName} py-10 md:py-12 lg:py-14`}>
         <header className="max-w-[760px]">
-          <p className="text-sm font-medium text-primary">capability map</p>
+          <p className="section-kicker" data-rule="none"><span data-kicker-index="">AI</span>capability map</p>
           <h1 className="mt-3 text-[2.125rem] font-semibold leading-[1.08] tracking-[-0.04em] md:text-[2.75rem]">
             Карта AI Platform
           </h1>
@@ -289,18 +300,18 @@ export function AiPlatformReferencePage({
       <article data-reference-type={model.contentType} className={`${frameClassName} py-10 md:py-12 lg:py-14`}>
         <header className="max-w-[800px]">
           <Breadcrumb model={model} />
-          <p className="text-sm font-medium text-primary">{model.typeLabel}</p>
+          <p className="section-kicker" data-rule="none"><span data-kicker-index="">AI</span>{model.typeLabel}</p>
           {model.isSynthetic ? (
-            <p className="mt-4 border-y border-border py-3 text-sm leading-6 text-foreground">
+            <p className="mt-4 border-l-2 border-[#e8c27a] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6 text-foreground">
               Учебный пример на специально подготовленных данных.
             </p>
           ) : null}
           {model.reviewStatus === "stale" ? (
-            <p role="status" className="mt-4 border-y border-border py-3 text-sm leading-6">
+            <p role="status" className="mt-4 border-l-2 border-[#e8c27a] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6">
               Материал давно не обновлялся. Перед применением сверьте поведение со своей версией движка и указанными источниками.
             </p>
           ) : null}
-          <h1 id="reference-detail-title" className="mt-4 text-[2.125rem] font-semibold leading-[1.08] tracking-[-0.04em] md:text-[2.75rem] lg:text-[3.25rem]">
+          <h1 id="reference-detail-title" className="mt-5 text-[2.125rem] font-semibold leading-[1.05] tracking-[-0.05em] md:text-[2.75rem] lg:text-[3.5rem]">
             {model.title}
           </h1>
           <p className="mt-5 text-lg leading-7 text-muted-foreground md:text-xl md:leading-8">{model.description}</p>
@@ -322,12 +333,12 @@ export function AiPlatformReferencePage({
           <SectionTitle>
             <span id="reference-evidence-heading">Источники и условия применения</span>
           </SectionTitle>
-          <div className="grid md:grid-cols-2">
-            <div className="border-b border-border py-5 md:border-r md:pr-8">
+          <div className="panel mt-6 grid md:grid-cols-2">
+            <div className="border-b border-border p-5 md:border-b-0 md:border-r md:p-7">
               <h3 className="text-base font-semibold">Применимость</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{model.applicability}</p>
             </div>
-            <div className="border-b border-border py-5 md:pl-8">
+            <div className="p-5 md:p-7">
               <h3 className="text-base font-semibold">Ограничения</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{model.limitations}</p>
             </div>

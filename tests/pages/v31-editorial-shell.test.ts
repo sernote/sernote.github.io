@@ -58,11 +58,11 @@ describe("v3.1 editorial shell", () => {
     expect(html).toContain("editorial-desktop-nav");
     expect(html).not.toContain("hidden items-center gap-8 md:flex");
     expect(css).toMatch(/\.editorial-desktop-nav\s*{[^}]*display:\s*none/);
-    expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*\.editorial-desktop-nav\s*{[^}]*display:\s*flex/);
+    expect(css).toMatch(/@media \(min-width:\s*1024px\)[\s\S]*\.editorial-desktop-nav\s*{[^}]*display:\s*flex/);
     expect(html).toContain("editorial-mobile-nav-trigger");
     expect(html).not.toContain("text-primary md:hidden");
     expect(css).toMatch(/\.editorial-mobile-nav-trigger\s*{[^}]*display:\s*inline-flex/);
-    expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*\.editorial-mobile-nav-trigger\s*{[^}]*display:\s*none/);
+    expect(css).toMatch(/@media \(min-width:\s*1024px\)[\s\S]*\.editorial-mobile-nav-trigger\s*{[^}]*display:\s*none/);
   });
 
   it("provides minimal editorial heading and link primitives", () => {

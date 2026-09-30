@@ -2,7 +2,7 @@ import "../globals.css";
 import "fumadocs-ui/style.css";
 import "@fontsource-variable/onest";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { RootProvider } from "fumadocs-ui/provider/next";
 
@@ -26,11 +26,16 @@ export const metadata: Metadata = {
   }
 };
 
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#0b0d10"
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" className="dark" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
-        <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
+        <RootProvider theme={{ defaultTheme: "dark", enableSystem: false, forcedTheme: "dark" }}>
           {children}
         </RootProvider>
       </body>
