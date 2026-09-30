@@ -90,25 +90,25 @@ export function V31ContentDetailPage({
 
   return (
     <EditorialShell currentPath={currentPath}>
-      <article className="mx-auto w-full max-w-[52rem] px-5 py-10 md:px-10 md:py-16 lg:px-0">
+      <article className="mx-auto w-full max-w-[52rem] px-5 py-12 md:px-10 md:py-20 lg:px-0">
         <header className="border-b border-border pb-9">
-          <p className="text-sm text-muted-foreground">{kindLabel}</p>
-          <h1 className={`${compactIntro ? "max-w-3xl text-[2.15rem] md:text-[2.75rem]" : "text-[2.35rem] md:text-[3.15rem]"} mt-3 font-semibold leading-[1.08] tracking-[-0.045em]`}>
+          <p className="section-kicker" data-rule="none">{kindLabel}</p>
+          <h1 className={`${compactIntro ? "max-w-3xl text-[2.15rem] md:text-[2.75rem]" : "text-[2.35rem] md:text-[3.5rem]"} mt-5 font-semibold leading-[1.05] tracking-[-0.05em]`}>
             {title}
           </h1>
-          <p className={`${compactIntro ? "max-w-2xl text-base leading-7" : "max-w-3xl text-lg leading-8"} mt-5 text-muted-foreground`}>
+          <p className={`${compactIntro ? "max-w-2xl text-base leading-7" : "max-w-3xl text-lg leading-8 md:text-xl md:leading-9"} mt-6 text-muted-foreground`}>
             {lead}
           </p>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
             <p>{bylineLabel} — <Link href={authorHref} className="text-foreground hover:text-primary">Сергей Нотевский</Link></p>
             {publishedAt ? <p>Опубликовано <time dateTime={publishedAt}>{formatRussianDate(publishedAt)}</time></p> : null}
             {updatedAt && updatedAt !== publishedAt ? <p>Обновлено <time dateTime={updatedAt}>{formatRussianDate(updatedAt)}</time></p> : null}
           </div>
           {facts.length ? (
-            <dl className="mt-6 grid gap-4 border-t border-border pt-5 sm:grid-cols-2">
+            <dl className="mt-6 grid gap-px border border-border bg-[var(--border)] sm:grid-cols-2">
               {facts.map((fact) => (
-                <div key={fact.label}>
-                  <dt className="text-sm text-muted-foreground">{fact.label}</dt>
+                <div key={fact.label} className="bg-background px-4 py-3">
+                  <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground">{fact.label}</dt>
                   <dd className="mt-1 text-base font-medium">
                     {fact.dateTime ? <time dateTime={fact.dateTime}>{fact.value}</time> : fact.value}
                   </dd>
@@ -122,18 +122,18 @@ export function V31ContentDetailPage({
 
         <ArticleSeries series={series} />
 
-        <div className="prose prose-neutral mt-10 max-w-none prose-headings:tracking-[-0.025em] prose-a:text-primary prose-pre:max-w-full prose-pre:overflow-x-auto md:prose-lg">
+        <div className="prose mt-10 max-w-none prose-headings:tracking-[-0.025em] prose-a:text-primary prose-pre:max-w-full prose-pre:overflow-x-auto md:prose-lg">
           <ContentToc toc={toc} />{children}
         </div>
 
         {related.length ? (
           <section className="mt-14 border-t border-border pt-8">
-            <h2 className="text-xl font-semibold tracking-[-0.025em]">Связанные материалы</h2>
+            <h2 className="section-kicker" data-rule="none">Связанные материалы</h2>
             <div className="mt-4 border-t border-border">
               {related.slice(0, 3).map((item) => (
                 <Link key={`${item.href}:${item.title}`} href={item.href} className="grid min-h-16 gap-1 border-b border-border py-4 hover:text-primary sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-8">
-                  <span className="font-medium">{item.title}</span>
-                  <span className="text-sm text-muted-foreground">{item.meta}</span>
+                  <span className="text-lg font-semibold tracking-[-0.015em]">{item.title}</span>
+                  <span className="font-mono text-xs uppercase leading-7 tracking-[0.06em] text-muted-foreground">{item.meta}</span>
                 </Link>
               ))}
             </div>

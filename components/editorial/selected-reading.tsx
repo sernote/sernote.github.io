@@ -40,14 +40,17 @@ export function SelectedReadingCards({ items, title = "Для первого з�
   if (items.length === 0) return null;
   return (
     <section aria-labelledby="selected-reading-heading" className="py-10 md:py-12">
-      <h2 id="selected-reading-heading" className="text-2xl font-semibold tracking-[-0.03em]">
+      <h2 id="selected-reading-heading" className="text-2xl font-semibold leading-tight tracking-[-0.03em] md:text-[1.75rem]">
         {title}
       </h2>
-      <ol className="mt-7 grid list-none gap-8 p-0 md:grid-cols-3 md:gap-8 lg:gap-12">
-        {items.map((item) => (
-          <li key={item.entityId} className="min-w-0 border-t border-border pt-5">
-            <p className="text-sm font-medium leading-6 text-primary">{item.label}</p>
-            <h3 className="mt-3 text-xl font-semibold leading-7 tracking-[-0.025em]">
+      <ol className="mt-8 grid list-none border-l border-t border-border p-0 md:grid-cols-3">
+        {items.map((item, index) => (
+          <li key={item.entityId} className="flex min-w-0 flex-col border-b border-r border-border p-5 md:p-7">
+            <p className="flex items-baseline gap-3 text-sm font-medium leading-6 text-primary">
+              <span aria-hidden="true" className="font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+              {item.label}
+            </p>
+            <h3 className="mt-5 text-xl font-semibold leading-7 tracking-[-0.025em] md:text-[1.375rem] md:leading-8">
               <ReadingLink item={item}>{item.title}</ReadingLink>
             </h3>
             <p className="mt-4 text-base leading-7 text-muted-foreground">{item.reason}</p>

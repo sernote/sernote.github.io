@@ -22,15 +22,15 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
         <button
           ref={triggerRef}
           type="button"
-          className="editorial-mobile-nav-trigger min-h-11 min-w-11 items-center justify-center text-sm font-medium text-primary"
+          className="editorial-mobile-nav-trigger min-h-11 min-w-11 items-center justify-center border border-[var(--border-strong)] px-3.5 text-sm font-medium text-foreground"
         >
           Меню
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/15" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-[rgb(3_5_8/0.72)]" />
         <Dialog.Content
-          className="fixed inset-0 z-50 flex min-h-dvh flex-col bg-background px-5 pb-8"
+          className="fixed inset-0 z-50 flex min-h-dvh flex-col overflow-y-auto bg-background px-5 pb-8 text-foreground"
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             closeRef.current?.focus();
@@ -48,7 +48,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
               <button
                 ref={closeRef}
                 type="button"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center text-sm font-medium text-primary"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center border border-[var(--border-strong)] px-3.5 text-sm font-medium text-foreground"
               >
                 Закрыть
               </button>
@@ -60,14 +60,15 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
             Основные разделы сайта и Telegram-канал автора.
           </Dialog.Description>
 
-          <nav aria-label="Мобильная навигация" className="mt-8 flex flex-col border-t border-border">
+          <p className="section-kicker mt-8" aria-hidden="true">Разделы</p>
+          <nav aria-label="Мобильная навигация" className="mt-3 flex flex-col border-t border-border">
             {RU_PRIMARY_NAV.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={isActiveNavItem(currentPath, item.href) ? "page" : undefined}
                 onClick={() => setOpen(false)}
-                className="flex min-h-14 items-center border-b border-border text-lg font-medium text-foreground aria-[current=page]:text-primary"
+                className="flex min-h-16 items-center justify-between border-b border-border text-2xl font-semibold tracking-[-0.025em] text-foreground aria-[current=page]:text-primary"
               >
                 {item.label}
               </Link>
@@ -75,7 +76,7 @@ export function MobileNavigation({ currentPath, contactHref }: MobileNavigationP
             <a
               href={contactHref}
               onClick={() => setOpen(false)}
-              className="flex min-h-14 items-center border-b border-border text-lg font-medium text-primary"
+              className="mt-8 flex min-h-14 items-center justify-center border border-primary text-base font-medium text-primary"
             >
               Telegram-канал
             </a>
