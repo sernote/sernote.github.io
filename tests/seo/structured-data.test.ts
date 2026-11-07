@@ -44,6 +44,7 @@ const expectedKeepPaths = [
   "/ai-platform/components/prefix-cache",
   "/ai-platform/map",
   "/blog",
+  "/blog/agents-built-it-users-arrived",
   "/blog/ai-platform-before-gpu",
   "/blog/cache-locality-is-a-routing-problem",
   "/blog/hybrid-reasoners-in-production",
@@ -261,7 +262,7 @@ describe("public SEO URLs", () => {
     const urls = entries.map((entry) => entry.url);
 
     expect(urls).toEqual(expectedKeepPaths.map(canonicalUrl));
-    expect(urls).toHaveLength(24);
+    expect(urls).toHaveLength(25);
     expect(urls.every((url) => url.endsWith("/"))).toBe(true);
     expect(urls.some((url) => url.includes("habr.com"))).toBe(false);
     expect(urls).not.toContain("https://notevskii.tech/ru/");

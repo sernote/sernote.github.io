@@ -48,6 +48,12 @@
     "locale": "ru"
   },
   {
+    "source": "/blog/agents-built-it-users-arrived",
+    "destination": null,
+    "behavior": "keep",
+    "locale": "ru"
+  },
+  {
     "source": "/blog/ai-platform-before-gpu",
     "destination": null,
     "behavior": "keep",

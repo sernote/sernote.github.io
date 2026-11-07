@@ -39,7 +39,8 @@ const published = {
 
 const reviewed = {
   reviewStatus: "reviewed",
-  reviewedAt: "2026-07-22",
+  // Synthetic view-model fixtures stay current; registry.test.ts covers expiry with a fixed clock.
+  reviewedAt: new Date().toISOString().slice(0, 10),
   reviewCycleDays: 90,
   sources: [
     {
