@@ -547,10 +547,10 @@ describe("static export audit — production integration", () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it.runIf(hasExport)("has exactly 113 records split 24 keep / 35 alias / 54 archive", () => {
+  it.runIf(hasExport)("has exactly 114 records split 25 keep / 35 alias / 54 archive", () => {
     const records = JSON.parse(readFileSync(manifestPath, "utf8"));
-    expect(records).toHaveLength(113);
-    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(24);
+    expect(records).toHaveLength(114);
+    expect(records.filter((r: { behavior: string }) => r.behavior === "keep")).toHaveLength(25);
     expect(records.filter((r: { behavior: string }) => r.behavior === "static-alias")).toHaveLength(35);
     expect(records.filter((r: { behavior: string }) => r.behavior === "archive")).toHaveLength(54);
     expect(records).toContainEqual({
@@ -598,9 +598,9 @@ describe("static export audit — production integration", () => {
     expect(html).not.toContain("_next"); // self-contained: no site shell / chunks
   });
 
-  it.runIf(hasExport)("has exactly nineteen RSS items", () => {
+  it.runIf(hasExport)("has exactly twenty RSS items", () => {
     const rssXml = readFileSync(join(outDir, "rss.xml"), "utf8");
-    expect((rssXml.match(/<item>/g) ?? []).length).toBe(19);
+    expect((rssXml.match(/<item>/g) ?? []).length).toBe(20);
   });
 
   it.runIf(hasExport)("connects cache explanations to exported practice anchors", () => {
